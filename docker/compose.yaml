@@ -1,0 +1,9 @@
+services:
+  ultihub:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - '8000:8000'
+    volumes:
+      - ../ultihub/:/app/ultihub

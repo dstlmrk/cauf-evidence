@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "cauf-evidence"
+version = "0.1.0"
+description = "An app for ultimate frisbee national association and clubs to manage memberships, fees, transfers, and other administrative tasks efficiently."
+authors = ["Marek Dostál <dstlmrk@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11.6"
+django = "^5.1"
+pytest-django = "^4.8.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.6.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+django_find_project = false
+DJANGO_SETTINGS_MODULE = "ultihub.settings"
+pythonpath = ". ultihub"
+addopts = ["--import-mode=importlib",]
