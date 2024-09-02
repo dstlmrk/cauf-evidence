@@ -1,21 +1,45 @@
 name: App CI/CD pipeline
+env:
+  PYTHON_VERSION: 3.11.6
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+
 jobs:
-  build:
-    name: Push docker image to docker hub
+  # --------------------------------------------------------------------------------
+  qa-check:
+    name: QA checks
+    runs-on: ubuntu-latest
+    strategy:
+      # GitHub won't cancel other jobs in the matrix if any job in the matrix fails
+      fail-fast: false
+      matrix:
+        check: [ test, lint, style, type ]
+    steps:
+      - uses: actions/checkout@v4
+      - run: pipx install poetry
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "poetry"
+      - run: poetry install --no-root
+      - run: poetry run poe ${{ matrix.check }}
+  # --------------------------------------------------------------------------------
+  build-and-relase:
+    name: Build and push docker image to Docker hub
+    if: github.ref == 'refs/heads/main'
+    needs: [qa-check]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: login to docker hub
+      - uses: actions/checkout@v4
+      - name: Login to docker hub
         id: docker-hub
         env:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_PASSWORD}}
-        run: |
-          docker login -u $username -p $password
+        run: docker login -u $username -p $password
       - name: Build the docker image
         id: build-docker-image
         run: |
@@ -23,3 +47,4 @@ jobs:
       - name: Push the docker image
         id: push-docker-image
         run: docker push ${{secrets.DOCKERHUB_USERNAME}}/ultihub:latest
+  # --------------------------------------------------------------------------------

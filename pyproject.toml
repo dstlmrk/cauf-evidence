@@ -1,3 +1,6 @@
+[project]
+requires-python = ">=3.11"
+
 [tool.poetry]
 name = "cauf-evidence"
 version = "0.1.0"
@@ -8,10 +11,13 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11.6"
 django = "^5.1"
-pytest-django = "^4.8.0"
 
 [tool.poetry.group.dev.dependencies]
+pytest-django = "^4.9.0"
 ruff = "^0.6.3"
+poethepoet = "^0.28.0"
+mypy = "^1.11.2"
+django-stubs = "^5.0.4"
 
 [build-system]
 requires = ["poetry-core"]
@@ -22,3 +28,50 @@ django_find_project = false
 DJANGO_SETTINGS_MODULE = "ultihub.settings"
 pythonpath = ". ultihub"
 addopts = ["--import-mode=importlib",]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+	"I",   # isort
+	"E",   # pycodestyle errors
+	"W",   # pycodestyle warnings
+	"F",   # Pyflakes
+	"UP",  # pyupgrade
+	"B",   # flake8-bugbear
+	"DJ",  # flake8-django
+	"SIM", # flake8-simplify
+	"T20", # flake8-print
+	"PTH", # flake8-pathlib
+	"ARG", # flake8-unused-arguments
+]
+
+[tool.mypy]
+check_untyped_defs = true
+# disallow_untyped_defs = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_ignores = true
+
+[tool.poe.tasks.format]
+help = "Run formating tools on the code base"
+sequence = ["ruff check --select I001,F401 --fix-only .", "ruff format ."]
+default_item_type = "cmd"
+
+[tool.poe.tasks.test]
+help = "Run unit tests (without checks)"
+cmd = "pytest"
+
+[tool.poe.tasks.lint]
+help = "Run linter"
+cmd = "ruff check --no-fix --quiet --output-format=concise --force-exclude ."
+
+[tool.poe.tasks.style]
+help = "Validate code style"
+sequence = ["ruff check --select I001 .", "ruff format --check --diff ."]
+default_item_type = "cmd"
+
+[tool.poe.tasks.type]
+help = "Run the mypy type checker"
+cmd = "mypy ."
