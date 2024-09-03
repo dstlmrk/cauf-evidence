@@ -10,22 +10,26 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENVIRONMENT = os.environ.get("ENVIRONMENT")
+SECRET_KEY = os.environ.get("SECRET_KEY")
+DEBUG = ENVIRONMENT == "dev"
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-3ir(k1u$fdv2^feyi*#k7ru6^))puk%y1l9hia%192@j0)%3b)"
+if ENVIRONMENT == "prod":
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    CSRF_TRUSTED_ORIGINS = ["https://evidence.frisbee.cz"]
+    ALLOWED_HOSTS = ["evidence.frisbee.cz"]
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS: list = []
+else:
+    ALLOWED_HOSTS = ["localhost"]
 
 
 # Application definition

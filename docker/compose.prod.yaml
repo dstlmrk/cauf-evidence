@@ -1,0 +1,23 @@
+services:
+
+  ultihub:
+    image: dstlmrk/ultihub
+    expose:
+      - 8000
+    restart: always
+    networks:
+      - nginx-proxy_reverse-proxy
+      - ultihub
+    environment:
+      VIRTUAL_HOST: evidence.frisbee.cz
+      VIRTUAL_PORT: 8000
+      LETSENCRYPT_HOST: evidence.frisbee.cz
+      ENVIRONMENT: prod
+    env_file:
+      # It has to be manually managed on the server!
+      - path: secrets.env
+
+networks:
+  ultihub:
+  nginx-proxy_reverse-proxy:
+    external: true

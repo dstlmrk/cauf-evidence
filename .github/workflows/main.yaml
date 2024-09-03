@@ -1,16 +1,16 @@
 name: App CI/CD pipeline
 env:
-  PYTHON_VERSION: 3.11.6
+  PYTHON_VERSION: 3.12.5
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
 
 jobs:
   # --------------------------------------------------------------------------------
   qa-check:
-    name: QA checks
+    name: QA checks 🕵️
     runs-on: ubuntu-latest
     strategy:
       # GitHub won't cancel other jobs in the matrix if any job in the matrix fails
@@ -27,24 +27,107 @@ jobs:
       - run: poetry install --no-root
       - run: poetry run poe ${{ matrix.check }}
   # --------------------------------------------------------------------------------
-  build-and-relase:
-    name: Build and push docker image to Docker hub
+  build-and-release:
+    name: Build and release 🏗️
     if: github.ref == 'refs/heads/main'
-    needs: [qa-check]
+    needs: [ qa-check ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Login to docker hub
         id: docker-hub
         env:
-          username: ${{secrets.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_PASSWORD}}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
         run: docker login -u $username -p $password
       - name: Build the docker image
         id: build-docker-image
-        run: |
-          docker build . -f docker/Dockerfile -t ${{secrets.DOCKERHUB_USERNAME}}/ultihub:latest
+        run: docker build -f docker/Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/ultihub:latest .
       - name: Push the docker image
         id: push-docker-image
-        run: docker push ${{secrets.DOCKERHUB_USERNAME}}/ultihub:latest
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/ultihub:latest
   # --------------------------------------------------------------------------------
+  deployment-app:
+    name: App deployment 🚀
+    if: github.ref == 'refs/heads/main'
+    needs: build-and-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: docker/compose.prod.yaml
+      - name: Rename docker-compose file
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: mv docker/compose.prod.yaml docker-compose.yaml
+      - name: Copy docker-compose file
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_DEPLOY_KEY }}
+          source: docker-compose.yaml
+          target: /home/mara/ultihub
+      - name: Pull, down and up the docker-compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_DEPLOY_KEY }}
+          script: |
+            cd ultihub
+            docker compose pull
+            docker compose down
+            docker compose up -d
+  # --------------------------------------------------------------------------------
+  deployment-nginx:
+    name: Nginx deployment 🚀
+    if: github.ref == 'refs/heads/main'
+    needs: deployment-app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: nginx-proxy/**
+      - name: Replace letsencrypt email
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: sed -i 's/__LETSENCRYPT_EMAIL__/${{ secrets.LETSENCRYPT_EMAIL }}/g' nginx-proxy/docker-compose.yaml
+      - name: Copy nginx-proxy files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_DEPLOY_KEY }}
+          source: nginx-proxy/*
+          target: /home/mara/
+      - name: Pull, down and up the docker-compose
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_DEPLOY_KEY }}
+          script: |
+            cd nginx-proxy
+            docker compose pull
+            docker compose down
+            docker compose up -d
+  # --------------------------------------------------------------------------------
+  healthcheck:
+    name: Healthcheck ✅
+    if: github.ref == 'refs/heads/main'
+    needs: deployment-nginx
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check-action@v4
+        with:
+          url: https://evidence.frisbee.cz|http://evidence.frisbee.cz

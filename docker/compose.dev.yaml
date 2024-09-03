@@ -1,0 +1,16 @@
+services:
+
+  ultihub:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - '8000:8000'
+    restart: always
+    entrypoint: ["/app/ultihub/manage.py", "runserver", "0.0.0.0:8000"]
+    volumes:
+      - ../ultihub/:/app/ultihub
+    environment:
+      ENVIRONMENT: dev
+    env_file:
+      - path: secrets.env
