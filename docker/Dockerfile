@@ -1,4 +1,4 @@
-FROM python:3.12.3-slim as builder
+FROM python:3.12.5-slim as builder
 
 RUN pip install --no-cache-dir poetry==1.8.3
 
@@ -15,7 +15,7 @@ RUN touch README.md
 
 RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev --no-root
 
-FROM python:3.12.3-slim as runtime
+FROM python:3.12.5-slim as runtime
 
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH"
@@ -24,6 +24,7 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY ultihub /app/ultihub
 
-WORKDIR /app/
+WORKDIR /app/ultihub
 
-CMD ["/app/ultihub/manage.py", "runserver", "0.0.0.0:8000"]
+COPY docker/entrypoint.sh /
+ENTRYPOINT ["sh", "/entrypoint.sh"]
