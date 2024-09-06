@@ -12,6 +12,7 @@ readme = "README.md"
 python = "^3.12.5"
 django = "^5.1"
 gunicorn = "^23.0.0"
+django-environ = "^0.11.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest-django = "^4.9.0"
@@ -54,6 +55,7 @@ check_untyped_defs = true
 warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_ignores = true
+ignore_missing_imports = true
 
 [tool.poe.tasks.format]
 help = "Run formating tools on the code base"

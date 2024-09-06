@@ -10,26 +10,31 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-import os
 from pathlib import Path
+
+import environ
+
+env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ENVIRONMENT = os.environ.get("ENVIRONMENT")
-SECRET_KEY = os.environ.get("SECRET_KEY")
-DEBUG = ENVIRONMENT == "dev"
+# TODO: remove default values for tests with database in docker-compose
+ENVIRONMENT = env.str("ENVIRONMENT", "dev")
+SECRET_KEY = env.str("SECRET_KEY", "django-insecure")
+APP_DOMAIN = env.str("APP_DOMAIN", "localhost")
+ALLOWED_HOSTS = [APP_DOMAIN]
+
+# TODO: Fix later
+# DEBUG = env.bool("DEBUG", ENVIRONMENT == "dev")
+DEBUG = True
 
 
 if ENVIRONMENT == "prod":
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    CSRF_TRUSTED_ORIGINS = ["https://evidence.frisbee.cz"]
-    ALLOWED_HOSTS = ["evidence.frisbee.cz"]
-
-else:
-    ALLOWED_HOSTS = ["localhost"]
+    CSRF_TRUSTED_ORIGINS = [f"https://{APP_DOMAIN}"]
 
 
 # Application definition
