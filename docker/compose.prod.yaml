@@ -13,6 +13,7 @@ services:
       VIRTUAL_PORT: 8000
       LETSENCRYPT_HOST: evidence.frisbee.cz
       ENVIRONMENT: prod
+      APP_DOMAIN: evidence.frisbee.cz
     env_file:
       # It has to be manually managed on the server!
       - path: secrets.env
