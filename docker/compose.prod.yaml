@@ -13,10 +13,27 @@ services:
       VIRTUAL_PORT: 8000
       LETSENCRYPT_HOST: evidence.frisbee.cz
       ENVIRONMENT: prod
-      APP_DOMAIN: evidence.frisbee.cz
+      APPLICATION_DOMAIN: evidence.frisbee.cz
+      DATABASE_NAME: ultihub
+      DATABASE_USER: ultihub
+      DATABASE_HOST: db
     env_file:
       # It has to be manually managed on the server!
-      - path: secrets.env
+      - path: app.prod.en
+
+  db:
+    image: postgres:16.4-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: ultihub
+      POSTGRES_DB: ultihub
+    env_file:
+      - path: db.prod.env
+
+volumes:
+  postgres_data:
 
 networks:
   ultihub:

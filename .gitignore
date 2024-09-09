@@ -156,3 +156,6 @@ cython_debug/
 
 # PyCharm
 .idea/
+
+# Production config files
+secrets/*prod*

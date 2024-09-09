@@ -13,6 +13,7 @@ python = "^3.12.5"
 django = "^5.1"
 gunicorn = "^23.0.0"
 django-environ = "^0.11.2"
+psycopg2-binary = "^2.9.9"
 
 [tool.poetry.group.dev.dependencies]
 pytest-django = "^4.9.0"
@@ -46,16 +47,16 @@ select = [
 	"SIM", # flake8-simplify
 	"T20", # flake8-print
 	"PTH", # flake8-pathlib
-	"ARG", # flake8-unused-arguments
 ]
 
 [tool.mypy]
 check_untyped_defs = true
-# disallow_untyped_defs = true
+disallow_untyped_defs = true
 warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_ignores = true
 ignore_missing_imports = true
+exclude = "tests"
 
 [tool.poe.tasks.format]
 help = "Run formating tools on the code base"
@@ -64,7 +65,13 @@ default_item_type = "cmd"
 
 [tool.poe.tasks.test]
 help = "Run unit tests (without checks)"
-cmd = "pytest"
+sequence = [
+	"docker compose -f docker/compose.test.yaml up -d",
+	"python tests/wait_for_postgres.py",
+	"pytest",
+	"docker compose -f docker/compose.test.yaml down",
+]
+default_item_type = "cmd"
 
 [tool.poe.tasks.lint]
 help = "Run linter"

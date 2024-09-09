@@ -5,12 +5,31 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
     ports:
-      - '8000:8000'
+      - "8000:8000"
     restart: always
     entrypoint: ["/app/ultihub/manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - ../ultihub/:/app/ultihub
     environment:
       ENVIRONMENT: dev
+      DATABASE_NAME: ultihub
+      DATABASE_USER: ultihub
+      DATABASE_HOST: db
     env_file:
-      - path: secrets.env
+      - path: ../secrets/app.dev.env
+
+  db:
+    image: postgres:16.4-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ultihub
+      POSTGRES_DB: ultihub
+    env_file:
+      - path: ../secrets/db.dev.env
+
+volumes:
+  postgres_data:

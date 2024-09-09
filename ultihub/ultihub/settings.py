@@ -22,19 +22,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # TODO: remove default values for tests with database in docker-compose
 ENVIRONMENT = env.str("ENVIRONMENT", "dev")
 SECRET_KEY = env.str("SECRET_KEY", "django-insecure")
-APP_DOMAIN = env.str("APP_DOMAIN", "localhost")
-ALLOWED_HOSTS = [APP_DOMAIN]
-
-# TODO: Fix later
-# DEBUG = env.bool("DEBUG", ENVIRONMENT == "dev")
-DEBUG = True
+APPLICATION_DOMAIN = env.str("APPLICATION_DOMAIN", "localhost")
+ALLOWED_HOSTS = [APPLICATION_DOMAIN]
+DEBUG = env.bool("DEBUG", ENVIRONMENT == "dev")
 
 
 if ENVIRONMENT == "prod":
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    CSRF_TRUSTED_ORIGINS = [f"https://{APP_DOMAIN}"]
+    CSRF_TRUSTED_ORIGINS = [f"https://{APPLICATION_DOMAIN}"]
 
 
 # Application definition
@@ -79,13 +76,17 @@ TEMPLATES = [
 WSGI_APPLICATION = "ultihub.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+# ==============================================
+# Database (default values used for local tests)
+# ==============================================
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env.str("DATABASE_NAME", "test_db"),
+        "USER": env.str("DATABASE_USER", "test_user"),
+        "PASSWORD": env.str("DATABASE_PASSWORD", "test_password"),
+        "HOST": env.str("DATABASE_HOST", "localhost"),
+        "PORT": "5432",
     }
 }
 
@@ -130,3 +131,18 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}

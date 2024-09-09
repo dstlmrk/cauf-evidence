@@ -15,9 +15,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import logging
+
 from django.contrib import admin
+from django.db import connection
+from django.http import HttpRequest, HttpResponse
 from django.urls import path
 
+logger = logging.getLogger(__name__)
+
+
+def index(request: HttpRequest) -> HttpResponse:
+    cursor = connection.cursor()
+    cursor.execute("select 1 from pg_tables;")
+    return HttpResponse("Hello, world")
+
+
 urlpatterns = [
+    path("", index, name="index"),
     path("admin/", admin.site.urls),
 ]
