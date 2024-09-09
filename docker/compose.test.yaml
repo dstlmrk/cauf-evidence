@@ -1,0 +1,11 @@
+services:
+
+  test_db:
+    image: postgres:16.4-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_DB: test_db
+      POSTGRES_PASSWORD: test_password
