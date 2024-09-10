@@ -1,6 +1,6 @@
 services:
 
-  ultihub:
+  app:
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -15,6 +15,7 @@ services:
       DATABASE_NAME: ultihub
       DATABASE_USER: ultihub
       DATABASE_HOST: db
+      PYTHONUNBUFFERED: true
     env_file:
       - path: ../secrets/app.dev.env
 

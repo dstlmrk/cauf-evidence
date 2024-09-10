@@ -47,8 +47,8 @@ jobs:
         id: push-docker-image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/ultihub:latest
   # --------------------------------------------------------------------------------
-  deployment-app:
-    name: App deployment 🚀
+  deployment:
+    name: Deployment 🚀
     if: github.ref == 'refs/heads/main'
     needs: build-and-release
     runs-on: ubuntu-latest
@@ -58,10 +58,25 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v45
         with:
-          files: docker/compose.prod.yaml
+          files: |
+            docker/compose.prod.yaml
+            nginx-proxy/**
       - name: Rename docker-compose file
         if: steps.changed-files.outputs.any_changed == 'true'
         run: mv docker/compose.prod.yaml docker-compose.yaml
+      - name: Rename docker-compose file
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: mv nginx-proxy/redirect.conf redirect.conf
+      - name: Replace secrets
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          sed -i \
+            -e 's|__LETSENCRYPT_EMAIL__|${{ secrets.LETSENCRYPT_EMAIL }}|g' \
+            -e 's|__DATABASE_PASSWORD__|${{ secrets.DATABASE_PASSWORD }}|g' \
+            -e 's|__SECRET_KEY__|${{ secrets.SECRET_KEY }}|g' \
+            -e 's|__SENTRY_DNS__|${{ secrets.SENTRY_DNS }}|g' \
+            -e 's|__DATADOG_API_KEY__|${{ secrets.DATADOG_API_KEY }}|g' \
+            docker-compose.yaml
       - name: Copy docker-compose file
         if: steps.changed-files.outputs.any_changed == 'true'
         uses: appleboy/scp-action@v0.1.7
@@ -69,7 +84,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_DEPLOY_KEY }}
-          source: docker-compose.yaml
+          source: docker-compose.yaml,redirect.conf
           target: /home/mara/ultihub
       - name: Pull, down and up the docker-compose
         uses: appleboy/ssh-action@v1.0.3
@@ -83,47 +98,10 @@ jobs:
             docker compose down
             docker compose up -d
   # --------------------------------------------------------------------------------
-  deployment-nginx:
-    name: Nginx deployment 🚀
-    if: github.ref == 'refs/heads/main'
-    needs: deployment-app
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v45
-        with:
-          files: nginx-proxy/**
-      - name: Replace letsencrypt email
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: sed -i 's/__LETSENCRYPT_EMAIL__/${{ secrets.LETSENCRYPT_EMAIL }}/g' nginx-proxy/docker-compose.yaml
-      - name: Copy nginx-proxy files
-        if: steps.changed-files.outputs.any_changed == 'true'
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_DEPLOY_KEY }}
-          source: nginx-proxy/*
-          target: /home/mara/
-      - name: Pull, down and up the docker-compose
-        if: steps.changed-files.outputs.any_changed == 'true'
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_DEPLOY_KEY }}
-          script: |
-            cd nginx-proxy
-            docker compose pull
-            docker compose down
-            docker compose up -d
-  # --------------------------------------------------------------------------------
   healthcheck:
     name: Healthcheck ✅
     if: github.ref == 'refs/heads/main' && always()
-    needs: deployment-nginx
+    needs: deployment
     continue-on-error: true
     runs-on: ubuntu-latest
     steps:
