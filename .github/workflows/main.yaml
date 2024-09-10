@@ -122,7 +122,7 @@ jobs:
   # --------------------------------------------------------------------------------
   healthcheck:
     name: Healthcheck ✅
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && always()
     needs: deployment-nginx
     continue-on-error: true
     runs-on: ubuntu-latest

@@ -19,7 +19,7 @@ services:
       DATABASE_HOST: db
     env_file:
       # It has to be manually managed on the server!
-      - path: app.prod.en
+      - path: app.prod.env
 
   db:
     image: postgres:16.4-alpine
