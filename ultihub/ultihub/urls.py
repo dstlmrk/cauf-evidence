@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 def index(request: HttpRequest) -> HttpResponse:
+    logger.info("Calling request")
     cursor = connection.cursor()
     cursor.execute("select 1 from pg_tables;")
     return HttpResponse("Hello, world")

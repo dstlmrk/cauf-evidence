@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "ddtrace.contrib.django",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -100,13 +101,58 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
+    "formatters": {
+        "json": {
+            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "format": (
+                "%(asctime)s %(levelname)s %(message)s %(name)s"
+                " %(dd.service)s %(dd.env)s %(dd.version)s %(dd.trace_id)s %(dd.span_id)s"
+            ),
+        },
+        "simple": {"format": "%(levelname)s %(name)s: %(message)s"},
+    },
+    "loggers": {
+        "": {  # Root logger
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "ddtrace": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
+        "gunicorn": {
+            "level": "INFO",
+            "handlers": ["console"],
+            "propagate": False,
         },
     },
-    "root": {
-        "handlers": ["console"],
-        "level": "DEBUG",
-    },
 }
+
+if ENVIRONMENT == "prod":
+    LOGGING.update(
+        {
+            "handlers": {
+                "console": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "json",
+                },
+            }
+        }
+    )
+else:
+    LOGGING.update(
+        {
+            "handlers": {
+                "console": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "simple",
+                },
+            }
+        }
+    )

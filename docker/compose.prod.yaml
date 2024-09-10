@@ -1,13 +1,18 @@
 services:
 
-  ultihub:
+  app:
+    container_name: app
     image: dstlmrk/ultihub
     expose:
       - 8000
     restart: always
+    depends_on:
+      - db
+      - dd-agent
     networks:
-      - nginx-proxy_reverse-proxy
-      - ultihub
+      - reverse-proxy
+      - database
+      - monitored
     environment:
       VIRTUAL_HOST: evidence.frisbee.cz
       VIRTUAL_PORT: 8000
@@ -16,28 +21,90 @@ services:
       APPLICATION_DOMAIN: evidence.frisbee.cz
       DATABASE_NAME: ultihub
       DATABASE_USER: ultihub
+      DATABASE_PASSWORD: __DATABASE_PASSWORD__
       DATABASE_HOST: db
-    env_file:
-      # It has to be manually managed on the server!
-      - path: app.prod.env
+      SENTRY_DNS: __SENTRY_DNS__
+      DD_SERVICE: ultihub
+      DD_AGENT_HOST: dd-agent
+      DD_LOGS_INJECTION: true
+      SECRET_KEY: __SECRET_KEY__
+    labels:
+      com.datadoghq.ad.logs: '[{"source": "python", "service": "ultihub"}]'
 
   db:
+    container_name: db
     image: postgres:16.4-alpine
     restart: always
     networks:
-      - ultihub
+      - database
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
       POSTGRES_USER: ultihub
       POSTGRES_DB: ultihub
-    env_file:
-      - path: db.prod.env
+      POSTGRES_PASSWORD: __DATABASE_PASSWORD__
+
+  nginx-proxy:
+    container_name: nginx-proxy
+    image: nginxproxy/nginx-proxy:1.6.1-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - reverse-proxy
+    volumes:
+      - ../nginx-proxy/redirect.conf:/etc/nginx/conf.d/redirect.conf:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d  # configuration of vhosts
+
+  acme-companion:
+    container_name: acme-companion
+    image: nginxproxy/acme-companion
+    environment:
+      DEFAULT_EMAIL: __LETSENCRYPT_EMAIL__
+      ACME_CA_URI: https://acme-v02.api.letsencrypt.org/directory
+      NGINX_PROXY_CONTAINER: nginx-proxy
+    networks:
+      - reverse-proxy
+    volumes:
+      - acme:/etc/acme.sh
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html  # writes http-01 challenge files
+      - vhost:/etc/nginx/vhost.d
+    depends_on:
+      - nginx-proxy
+
+  dd-agent:
+    container_name: dd-agent
+    image: datadog/agent:7
+    restart: always
+    networks:
+      - monitored
+    environment:
+      DD_API_KEY: __DATADOG_API_KEY__
+      DD_SITE: datadoghq.eu
+      DD_ENV: prod
+      DD_APM_ENABLED: true
+      DD_LOGS_ENABLED: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /opt/datadog-agent/run:/opt/datadog-agent/run:rw
+    mem_limit: 512m
 
 volumes:
+  certs:
+  html:
+  vhost:
+  acme:
   postgres_data:
 
 networks:
-  ultihub:
-  nginx-proxy_reverse-proxy:
-    external: true
+  reverse-proxy:
+  database:
+  monitored:
