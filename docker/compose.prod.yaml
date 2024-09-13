@@ -54,7 +54,7 @@ services:
     networks:
       - reverse-proxy
     volumes:
-      - ../nginx-proxy/redirect.conf:/etc/nginx/conf.d/redirect.conf:ro
+      - ./redirect.conf:/etc/nginx/conf.d/redirect.conf:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - certs:/etc/nginx/certs
       - html:/usr/share/nginx/html
