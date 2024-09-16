@@ -17,6 +17,7 @@ psycopg2-binary = "^2.9.9"
 sentry-sdk = {extras = ["django"], version = "^2.14.0"}
 ddtrace = "^2.12.0"
 python-json-logger = "^2.0.7"
+django-allauth = {extras = ["socialaccount"], version = "^64.2.1"}
 
 [tool.poetry.group.dev.dependencies]
 pytest-django = "^4.9.0"
@@ -34,6 +35,7 @@ django_find_project = false
 DJANGO_SETTINGS_MODULE = "ultihub.settings"
 pythonpath = ". ultihub"
 addopts = ["--import-mode=importlib",]
+python_files = ["test_*.py", "*_test.py"]
 
 [tool.ruff]
 line-length = 100
@@ -53,28 +55,30 @@ select = [
 ]
 
 [tool.mypy]
+mypy_path = "ultihub"
 check_untyped_defs = true
 disallow_untyped_defs = true
 warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_ignores = true
 ignore_missing_imports = true
+strict_optional = true
 exclude = "tests"
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "ultihub.settings"
+
+[tool.poe]
+default_array_item_task_type = "cmd"
+
+[tool.poe.tasks]
+_run-dev = ["docker compose -f docker/compose.dev.yaml up -d", "python tests/wait_for_postgres.py"]
+_stop-dev = "docker compose -f docker/compose.dev.yaml down"
 
 [tool.poe.tasks.format]
 help = "Run formating tools on the code base"
 sequence = ["ruff check --select I001,F401 --fix-only .", "ruff format ."]
-default_item_type = "cmd"
-
-[tool.poe.tasks.test]
-help = "Run unit tests (without checks)"
-sequence = [
-	"docker compose -f docker/compose.test.yaml up -d",
-	"python tests/wait_for_postgres.py",
-	"pytest",
-	"docker compose -f docker/compose.test.yaml down",
-]
-default_item_type = "cmd"
 
 [tool.poe.tasks.lint]
 help = "Run linter"
@@ -83,8 +87,55 @@ cmd = "ruff check --no-fix --quiet --output-format=concise --force-exclude ."
 [tool.poe.tasks.style]
 help = "Validate code style"
 sequence = ["ruff check --select I001 .", "ruff format --check --diff ."]
-default_item_type = "cmd"
 
 [tool.poe.tasks.type]
 help = "Run the mypy type checker"
 cmd = "mypy ."
+envfile = "secrets/.env.test"
+
+[tool.poe.tasks.test]
+help = "Run unit tests (without checks)"
+sequence = [
+	"docker compose -f docker/compose.test.yaml up -d",
+	"python tests/wait_for_postgres.py",
+	"pytest",
+	"docker compose -f docker/compose.test.yaml down"
+]
+envfile = "secrets/.env.test"
+ignore_fail = true
+
+[tool.poe.tasks.migrate]
+help = "Migrate the database"
+sequence = [
+	{ ref = "_run-dev"},
+	"docker compose -f docker/compose.dev.yaml exec app python manage.py migrate",
+	{ ref = "_stop-dev"},
+]
+ignore_fail = true
+
+[tool.poe.tasks.makemigrations]
+help = "Make migrations"
+sequence = [
+	{ ref = "_run-dev"},
+	"docker compose -f docker/compose.dev.yaml exec app python manage.py makemigrations",
+	{ ref = "_stop-dev"},
+]
+ignore_fail = true
+
+[tool.poe.tasks.shell]
+help = "Run a shell"
+sequence = [
+	{ ref = "_run-dev"},
+	"docker compose -f docker/compose.dev.yaml exec app python manage.py shell",
+	{ ref = "_stop-dev"},
+]
+ignore_fail = true
+
+[tool.poe.tasks.loaddata]
+help = "Load data from a fixture"
+sequence = [
+	{ ref = "_run-dev"},
+	"docker compose -f docker/compose.dev.yaml exec app python manage.py loaddata initial_data",
+	{ ref = "_stop-dev"},
+]
+ignore_fail = true

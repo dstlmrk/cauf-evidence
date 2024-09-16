@@ -1,8 +1,3 @@
-"""
-Django settings for ultihub project.
-Default values are used for local tests.
-"""
-
 from pathlib import Path
 
 import environ
@@ -12,11 +7,11 @@ env = environ.Env()
 
 # BASE SETTINGS ---------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
-ENVIRONMENT = env.str("ENVIRONMENT", "dev")
-SECRET_KEY = env.str("SECRET_KEY", "django-insecure")
-APPLICATION_DOMAIN = env.str("APPLICATION_DOMAIN", "localhost")
+ENVIRONMENT = env.str("ENVIRONMENT")
+SECRET_KEY = env.str("SECRET_KEY")
+APPLICATION_DOMAIN = env.str("APPLICATION_DOMAIN")
 ALLOWED_HOSTS = [APPLICATION_DOMAIN]
-DEBUG = env.bool("DEBUG", ENVIRONMENT == "dev")
+DEBUG = env.bool("DEBUG", ENVIRONMENT in ["dev", "test"])
 
 if ENVIRONMENT == "prod":
     CSRF_COOKIE_SECURE = True
@@ -27,13 +22,20 @@ if ENVIRONMENT == "prod":
 
 # APPLICATION DEFINITION ------------------------------------------------------
 INSTALLED_APPS = [
+    "core.apps.CoreConfig",
+    "users.apps.UsersConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "ddtrace.contrib.django",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -43,6 +45,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 ROOT_URLCONF = "ultihub.urls"
 TEMPLATES = [
@@ -66,22 +69,37 @@ WSGI_APPLICATION = "ultihub.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": env.str("DATABASE_NAME", "test_db"),
-        "USER": env.str("DATABASE_USER", "test_user"),
-        "PASSWORD": env.str("DATABASE_PASSWORD", "test_password"),
-        "HOST": env.str("DATABASE_HOST", "localhost"),
+        "NAME": env.str("DATABASE_NAME"),
+        "USER": env.str("DATABASE_USER"),
+        "PASSWORD": env.str("DATABASE_PASSWORD"),
+        "HOST": env.str("DATABASE_HOST"),
         "PORT": "5432",
     }
 }
 
-# PASSWORD VALIDATION ---------------------------------------------------------
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+# AUTHENTICATION ---------------------------------------------------------------
+SITE_ID = 1
+LOGIN_REDIRECT_URL = "/"
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_ADAPTER = "users.adapters.SocialAccountAdapter"
+SOCIALACCOUNT_ONLY = True
+ACCOUNT_EMAIL_REQUIRED = True
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "APP": {
+            "client_id": env.str("GOOGLE_CLIENT_ID"),
+            "secret": env.str("GOOGLE_CLIENT_SECRET"),
+        },
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+    }
+}
 
 # INTERNATIONALIZATION --------------------------------------------------------
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
