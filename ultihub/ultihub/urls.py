@@ -20,7 +20,7 @@ import logging
 from django.contrib import admin
 from django.db import connection
 from django.http import HttpRequest, HttpResponse
-from django.urls import path
+from django.urls import include, path
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +33,8 @@ def index(request: HttpRequest) -> HttpResponse:
 
 
 urlpatterns = [
-    path("", index, name="index"),
+    # path("", index, name="index"),
     path("admin/", admin.site.urls),
+    path("accounts/", include("allauth.urls")),
+    path("", include("core.urls")),
 ]

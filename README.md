@@ -5,19 +5,17 @@ memberships, fees, transfers, and other administrative tasks efficiently.
 
 ## Development
 
-TBD
+All commands what you need you can see in output of `poetry run poe help` command.
 
-### Useful commands
-
-```bash
-poetry run poe style    # style check with ruff
-poetry run poe lint     # lint with ruff
-poetry run poe type     # type check with mypy
-poetry run poe format   # format code with ruff
-poetry run poe test     # tests with running database in docker
-```
+### Others
 
 ```bash
-poetry install --no-root # install dependencies without app itself
-poetry add package       # install new package
+# Install dependencies without app itself
+poetry install --no-root
+
+# Update lock file without updating dependencies
+poetry lock --no-update
+
+# Install new package
+poetry add package
 ```

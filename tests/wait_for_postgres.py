@@ -27,7 +27,7 @@ if __name__ == "__main__":
     wait_for_postgres(
         host="localhost",
         port=5432,
-        user="test_user",
-        password="test_password",
-        db="test_db",
+        user="ultihub",
+        password="password",
+        db="ultihub",
     )

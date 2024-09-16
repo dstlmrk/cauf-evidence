@@ -6,6 +6,6 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: test_user
-      POSTGRES_DB: test_db
-      POSTGRES_PASSWORD: test_password
+      POSTGRES_USER: ultihub
+      POSTGRES_DB: ultihub
+      POSTGRES_PASSWORD: password

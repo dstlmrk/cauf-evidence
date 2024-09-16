@@ -1,0 +1,28 @@
+{% load socialaccount %}
+<!--{% get_providers as socialaccount_providers %}-->
+<h1>Evidence ČAUF 🥏 🇨🇿 👨‍💻</h1>
+{{ user }}
+<hr>
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% if request.user.is_authenticated %}
+<h3>You Are Logged in!</h3>
+<form method="post" action="{% url 'account_logout' %}">
+  {% csrf_token %}
+  <button class="STYLE_ME" type="submit">Logout</button>
+  {% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+  {% endif %}
+</form>
+{% else %}
+<h3>You Are Logged Out!</h3>
+<form action="{% provider_login_url 'google' %}" method="post">
+  {% csrf_token %}
+  <button type="submit">SIGN IN WITH GOOGLE</button>
+</form>
+{% endif %}

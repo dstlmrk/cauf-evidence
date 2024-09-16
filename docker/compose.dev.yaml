@@ -14,10 +14,13 @@ services:
       ENVIRONMENT: dev
       DATABASE_NAME: ultihub
       DATABASE_USER: ultihub
+      DATABASE_PASSWORD: password
       DATABASE_HOST: db
       PYTHONUNBUFFERED: true
+      SECRET_KEY: django-insecure
+      APPLICATION_DOMAIN: localhost
     env_file:
-      - path: ../secrets/app.dev.env
+      - ../secrets/.env.dev
 
   db:
     image: postgres:16.4-alpine
@@ -28,9 +31,8 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: ultihub
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: ultihub
-    env_file:
-      - path: ../secrets/db.dev.env
 
 volumes:
   postgres_data:
