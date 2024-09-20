@@ -110,3 +110,5 @@ jobs:
         uses: jtalk/url-health-check-action@v4
         with:
           url: https://evidence.frisbee.cz|http://evidence.frisbee.cz
+          max-attempts: 3
+          retry-delay: 5s
