@@ -98,7 +98,6 @@ jobs:
             cd ultihub
             docker compose pull
             docker compose down
-            docker compose run app python manage.py migrate
             docker compose up -d
   # --------------------------------------------------------------------------------
   healthcheck:
