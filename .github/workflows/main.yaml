@@ -104,7 +104,6 @@ jobs:
     name: Healthcheck ✅
     if: github.ref == 'refs/heads/main' && always()
     needs: deployment
-    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - name: Check the deployed service URL
