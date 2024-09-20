@@ -1,0 +1,19 @@
+fail_fast: true
+repos:
+- repo: local
+  hooks:
+    - id: lint
+      name: lint
+      entry: poetry run poe lint
+      language: system
+      types: [file, python]
+    - id: style
+      name: style
+      entry: poetry run poe style
+      language: system
+      types: [ file, python ]
+    - id: type
+      name: type
+      entry: poetry run poe type
+      language: system
+      types: [ file, python ]

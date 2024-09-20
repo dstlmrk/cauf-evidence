@@ -10,6 +10,9 @@ All commands what you need you can see in output of `poetry run poe help` comman
 ### Others
 
 ```bash
+# Install pre-commit for better development experience:
+poetry run pre-commit install
+
 # Install dependencies without app itself
 poetry install --no-root
 

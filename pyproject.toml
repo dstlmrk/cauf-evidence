@@ -25,6 +25,7 @@ ruff = "^0.6.3"
 poethepoet = "^0.28.0"
 mypy = "^1.11.2"
 django-stubs = "^5.0.4"
+pre-commit = "^3.8.0"
 
 [build-system]
 requires = ["poetry-core"]
