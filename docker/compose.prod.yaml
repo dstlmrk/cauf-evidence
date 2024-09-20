@@ -64,7 +64,7 @@ services:
 
   acme-companion:
     container_name: acme-companion
-    image: nginxproxy/acme-companion
+    image: nginxproxy/acme-companion:2.4.0
     environment:
       DEFAULT_EMAIL: __LETSENCRYPT_EMAIL__
       ACME_CA_URI: https://acme-v02.api.letsencrypt.org/directory
@@ -82,7 +82,7 @@ services:
 
   dd-agent:
     container_name: dd-agent
-    image: datadog/agent:7
+    image: datadog/agent:7.57.1
     restart: always
     networks:
       - monitored
