@@ -1,0 +1,21 @@
+{
+    "plugins": ["prettier-plugin-jinja-template"],
+    "singleQuote": false,
+    "tabWidth": 4,
+    "trailingComma": "es5",
+    "printWidth": 120,
+    "overrides": [
+        {
+            "files": ["*.html"],
+            "options": {
+                "parser": "jinja-template"
+            }
+        },
+        {
+            "files": "*.yaml",
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}
