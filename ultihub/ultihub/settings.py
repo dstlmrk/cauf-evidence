@@ -11,7 +11,6 @@ ENVIRONMENT = env.str("ENVIRONMENT")
 SECRET_KEY = env.str("SECRET_KEY")
 APPLICATION_DOMAIN = env.str("APPLICATION_DOMAIN")
 ALLOWED_HOSTS = [APPLICATION_DOMAIN]
-DEBUG = env.bool("DEBUG", ENVIRONMENT in ["dev", "test"])
 
 if ENVIRONMENT == "prod":
     CSRF_COOKIE_SECURE = True
@@ -176,3 +175,17 @@ else:
             }
         }
     )
+
+
+# TESTING AND DEBUG ----------------------------------------------------------
+DEBUG = env.bool("DEBUG", ENVIRONMENT in ["dev", "test"])
+
+if ENVIRONMENT != "test":
+    INSTALLED_APPS = [
+        *INSTALLED_APPS,
+        "debug_toolbar",
+    ]
+    MIDDLEWARE = [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+        *MIDDLEWARE,
+    ]

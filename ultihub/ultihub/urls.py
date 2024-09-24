@@ -17,10 +17,13 @@ Including another URLconf
 
 import logging
 
+from debug_toolbar.toolbar import debug_toolbar_urls
 from django.contrib import admin
 from django.db import connection
 from django.http import HttpRequest, HttpResponse
 from django.urls import include, path
+
+from ultihub import settings
 
 logger = logging.getLogger(__name__)
 
@@ -38,3 +41,8 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("", include("core.urls")),
 ]
+
+if settings.ENVIRONMENT != "test":
+    urlpatterns = [
+        *urlpatterns,
+    ] + debug_toolbar_urls()
