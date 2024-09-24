@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    "django_htmx",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -109,8 +110,9 @@ USE_I18N = True
 USE_TZ = True
 
 # STATIC FILES ----------------------------------------------------------------
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
 STATIC_URL = "static/"
+STATIC_ROOT = Path("/app/static")
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # DJANGO ----------------------------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
