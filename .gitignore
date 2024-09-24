@@ -160,3 +160,6 @@ cython_debug/
 
 # Production config files
 secrets/.env.dev
+
+# Ignore all node_modules directories
+node_modules/

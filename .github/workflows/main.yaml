@@ -4,7 +4,7 @@ env:
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
       # GitHub won't cancel other jobs in the matrix if any job in the matrix fails
       fail-fast: false
       matrix:
-        check: [ test, lint, style, type ]
+        check: [test, lint, style, type]
     steps:
       - uses: actions/checkout@v4
       - run: pipx install poetry
@@ -26,11 +26,20 @@ jobs:
           cache: "poetry"
       - run: poetry install --no-root
       - run: poetry run poe ${{ matrix.check }}
+  prettier-check:
+    name: Prettier check 🕵️
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm install
+      - run: npx prettier --check .
+
   # --------------------------------------------------------------------------------
   build-and-release:
     name: Build and release 🏗️
     if: github.ref == 'refs/heads/main'
-    needs: [ qa-check ]
+    needs: [qa-check, prettier-check]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

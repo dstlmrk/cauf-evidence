@@ -81,7 +81,11 @@ _stop-dev = "docker compose -f docker/compose.dev.yaml down"
 
 [tool.poe.tasks.format]
 help = "Run formating tools on the code base"
-sequence = ["ruff check --select I001,F401 --fix-only .", "ruff format ."]
+sequence = [
+	"ruff check --select I001,F401 --fix-only .",
+	"ruff format .",
+	"npx prettier --write .",
+]
 
 [tool.poe.tasks.lint]
 help = "Run linter"

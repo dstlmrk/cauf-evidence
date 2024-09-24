@@ -20,7 +20,9 @@ body {
 }
 
 /* Bigger fonts for navbar */
-.navbar .nav-link, .navbar .navbar-brand, .navbar .btn {
+.navbar .nav-link,
+.navbar .navbar-brand,
+.navbar .btn {
     font-size: 18px;
 }
 
