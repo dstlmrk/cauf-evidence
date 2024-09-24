@@ -154,8 +154,9 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# PyCharm
+# PyCharm and macOS
 .idea/
+.DS_Store
 
 # Production config files
 secrets/.env.dev

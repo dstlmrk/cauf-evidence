@@ -1,28 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
 {% load socialaccount %}
-<!--{% get_providers as socialaccount_providers %}-->
-<h1>Evidence ČAUF 🥏 🇨🇿 👨‍💻</h1>
-{{ user }}
-<hr>
-{% if messages %}
-<ul class="messages">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evidence ČAUF</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="//unpkg.com/alpinejs"></script>
+    <script defer src="https://unpkg.com/htmx.org"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
+    <link href="{% static 'styles.css' %}" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <span class="navbar-brand fs-2">
+            <img src="{% static 'cauf_monogram.svg' %}">
+            Evidence ČAUF
+        </span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">
+                        <i class="bi-house-door-fill"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        <i class="bi bi-shield-fill"></i> Club
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-people-fill"></i> Members</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-lightning-fill"></i> Teams</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-arrow-left-right"></i> Transfers</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><i class="bi bi-trophy-fill"></i> Competitions</a>
+                </li>
+            </ul>
+            <div class="d-flex ">
+                <div class="btn-group me-2">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            Terrible Monkeys
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item" href="#">Prague Devils</a></li>
+                        </ul>
+                    </div>
+                </div>
+                {% if request.user.is_authenticated %}
+                <form method="post" action="{% url 'account_logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger"><i class="bi-door-open-fill"></i> Logout</button>
+                    {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                    {% endif %}
+                </form>
+                {% else %}
+                <form action="{% provider_login_url 'google' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success"><i class="bi-google"></i> Sign in</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    {% if messages %}
     {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-primary{% endif %}" role="alert">
+        {{ message }}
+    </div>
     {% endfor %}
-</ul>
-{% endif %}
-{% if request.user.is_authenticated %}
-<h3>You Are Logged in!</h3>
-<form method="post" action="{% url 'account_logout' %}">
-  {% csrf_token %}
-  <button class="STYLE_ME" type="submit">Logout</button>
-  {% if redirect_field_value %}
-    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
-  {% endif %}
-</form>
-{% else %}
-<h3>You Are Logged Out!</h3>
-<form action="{% provider_login_url 'google' %}" method="post">
-  {% csrf_token %}
-  <button type="submit">SIGN IN WITH GOOGLE</button>
-</form>
-{% endif %}
+    {% endif %}
+
+    <form hx-post="{% url 'home' %}" hx-target="#task-list" hx-swap="beforeend" class="mb-3">
+        {% csrf_token %}
+        <div class="input-group">
+            <input type="text" name="task" class="form-control" placeholder="Nový úkol" required>
+            <button type="submit" class="btn btn-primary">Přidat úkol</button>
+        </div>
+    </form>
+
+    <ul id="task-list" class="list-group"></ul>
+
+    <div x-data="{ show: false }" class="mt-4">
+        <button class="btn btn-secondary" @click="show = !show">Zobrazit/skryt text</button>
+        <p x-show="show" class="mt-2">Toto je text řízený pomocí Alpine.js</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org"></script>
+</body>
+</html>

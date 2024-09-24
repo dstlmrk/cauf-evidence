@@ -1,0 +1,45 @@
+/* Company font */
+body {
+    font-family: "Roboto Condensed", sans-serif;
+}
+
+/* Company colors for primary buttons */
+.btn-primary {
+    background-color: #143c7d;
+    border-color: #143c7d;
+}
+
+.btn-primary:hover {
+    background-color: #1c4ea2;
+    border-color: #1c4ea2;
+}
+
+.btn-primary:focus {
+    background-color: #1c4ea2;
+    border-color: #1c4ea2;
+}
+
+/* Bigger fonts for navbar */
+.navbar .nav-link, .navbar .navbar-brand, .navbar .btn {
+    font-size: 18px;
+}
+
+.navbar .dropdown-item {
+    font-size: 17px;
+}
+
+.navbar-brand img {
+    /* Bigger logo */
+    height: 45px;
+}
+
+.navbar-brand {
+    /* Center logo in navbar */
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand img {
+    /* Space between logo and text */
+    margin-right: 7px;
+}

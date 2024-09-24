@@ -1,7 +1,12 @@
-from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
+tasks = []
+
 
 def index(request: HttpRequest) -> HttpResponse:
-    return render(request, "core/index.html", {"users": User.objects.all()})
+    if request.method == "POST":
+        task = request.POST.get("task")
+        tasks.append(task)
+        return render(request, "partials/task_item.html", {"task": task})
+    return render(request, "core/index.html", {"tasks": tasks})
