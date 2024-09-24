@@ -98,6 +98,7 @@ jobs:
             cd ultihub
             docker compose pull
             docker compose down
+            docker volume rm ultihub_static
             docker compose up -d
   # --------------------------------------------------------------------------------
   healthcheck:
