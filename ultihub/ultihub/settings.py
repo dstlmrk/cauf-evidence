@@ -22,6 +22,7 @@ if ENVIRONMENT == "prod":
 # APPLICATION DEFINITION ------------------------------------------------------
 INSTALLED_APPS = [
     "core.apps.CoreConfig",
+    "clubs.apps.ClubsConfig",
     "users.apps.UsersConfig",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -36,6 +37,8 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "django_htmx",
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -79,6 +82,7 @@ DATABASES = {
 
 # AUTHENTICATION ---------------------------------------------------------------
 SITE_ID = 1
+LOGIN_URL = "/"
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_ADAPTER = "users.adapters.SocialAccountAdapter"
@@ -190,3 +194,8 @@ if ENVIRONMENT != "test":
         "debug_toolbar.middleware.DebugToolbarMiddleware",
         *MIDDLEWARE,
     ]
+
+
+# CRISPY FORMS ----------------------------------------------------------------
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

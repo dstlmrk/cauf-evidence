@@ -9,4 +9,4 @@ def index(request: HttpRequest) -> HttpResponse:
         task = request.POST.get("task")
         tasks.append(task)
         return render(request, "partials/task_item.html", {"task": task})
-    return render(request, "core/index.html", {"tasks": tasks})
+    return render(request, "core/homepage.html", {"tasks": tasks})
