@@ -23,7 +23,7 @@
         />
         <link href="{% static 'styles.css' %}" rel="stylesheet" />
     </head>
-    <body>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container">
                 <span class="navbar-brand fs-2">
@@ -48,72 +48,80 @@
                                 <i class="bi-house-door-fill"></i> Home
                             </a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a
-                                class="nav-link dropdown-toggle"
-                                href="#"
-                                role="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                            >
-                                <i class="bi bi-shield-fill"></i> Club
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item" href="#"><i class="bi bi-people-fill"></i> Members</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#"><i class="bi bi-lightning-fill"></i> Teams</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#"
-                                        ><i class="bi bi-arrow-left-right"></i> Transfers</a
-                                    >
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a>
-                                </li>
-                            </ul>
-                        </li>
+                        {% if request.user.is_authenticated %}
+                            <li class="nav-item dropdown">
+                                <a
+                                    class="nav-link dropdown-toggle"
+                                    href="#"
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    <i class="bi bi-shield-fill"></i> Club
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'clubs:members' 1 %}"
+                                            ><i class="bi bi-people-fill"></i> Members</a
+                                        >
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#"><i class="bi bi-lightning-fill"></i> Teams</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#"
+                                            ><i class="bi bi-arrow-left-right"></i> Transfers</a
+                                        >
+                                    </li>
+                                    <li>
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'clubs:settings' club_id=request.session.club_id %}"
+                                            ><i class="bi bi-gear"></i> Settings</a
+                                        >
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link" href="#"><i class="bi bi-trophy-fill"></i> Competitions</a>
                         </li>
                     </ul>
                     <div class="d-flex">
                         {% if request.user.is_authenticated %}
-                            <div class="btn-group me-2">
-                                <div class="dropdown">
-                                    <button
-                                        class="btn btn-primary dropdown-toggle"
-                                        type="button"
-                                        id="dropdownMenuButton1"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                    >
-                                        Terrible Monkeys
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                        <li>
-                                            <a class="dropdown-item" href="#">Prague Devils</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                            <button type="button" class="btn btn-primary me-2" disabled>Prague Devils</button>
                         {% endif %}
                         {% if request.user.is_authenticated %}
-                            <form method="post" action="{% url 'account_logout' %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger">
-                                    <i class="bi-door-open-fill"></i> Logout
-                                </button>
-                                {% if redirect_field_value %}
-                                    <input
-                                        type="hidden"
-                                        name="{{ redirect_field_name }}"
-                                        value="{{ redirect_field_value }}"
-                                    />
-                                {% endif %}
-                            </form>
+                            <div class="dropdown">
+                                <a
+                                    href="#"
+                                    class="navbar-avatar d-block link-body-emphasis text-decoration-none dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    <img src="{{ user.agent.picture_url }}" alt="mdo" class="rounded-circle" />
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="#"><i class="bi-person-fill"></i> Profile</a>
+                                    </li>
+                                    <form method="post" action="{% url 'account_logout' %}">
+                                        {% csrf_token %}
+                                        <li>
+                                            <button type="submit" class="dropdown-item" href="#">
+                                                <i class="bi-door-open-fill"></i> Sign out
+                                            </button>
+                                        </li>
+                                        {% if redirect_field_value %}
+                                            <input
+                                                type="hidden"
+                                                name="{{ redirect_field_name }}"
+                                                value="{{ redirect_field_value }}"
+                                            />
+                                        {% endif %}
+                                    </form>
+                                </ul>
+                            </div>
                         {% else %}
                             <form action="{% provider_login_url 'google' %}" method="post">
                                 {% csrf_token %}
@@ -125,7 +133,7 @@
             </div>
         </nav>
 
-        <div class="container mt-5">
+        <div class="container mt-4">
             {% if messages %}{% for message in messages %}
                 <div
                     class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-primary{% endif %}"
@@ -134,22 +142,10 @@
                     {{ message }}
                 </div>
             {% endfor %}{% endif %}
-            {% if request.user.is_authenticated %}
-                <form hx-post="{% url 'home' %}" hx-target="#task-list" hx-swap="beforeend" class="mb-3">
-                    {% csrf_token %}
-                    <div class="input-group">
-                        <input type="text" name="task" class="form-control" placeholder="Nový úkol" required />
-                        <button type="submit" class="btn btn-primary">Přidat úkol</button>
-                    </div>
-                </form>
 
-                <ul id="task-list" class="list-group"></ul>
+            <h1>{% block title %}{% endblock %}</h1>
 
-                <div x-data="{ show: false }" class="mt-4">
-                    <button class="btn btn-secondary" @click="show = !show">Zobrazit/skryt text</button>
-                    <p x-show="show" class="mt-2">Toto je text řízený pomocí Alpine.js</p>
-                </div>
-            {% endif %}
+            <div id="content" class="mt-4">{% block content %}{% endblock %}</div>
         </div>
 
         <script

@@ -26,3 +26,6 @@ def check_allowed_user(sender: type, request: HttpRequest, user: User, **kwargs:
         user.save()
         new_agent_request.processed_at = timezone.now()
         new_agent_request.save()
+
+    # TODO: remove later
+    request.session["club_id"] = 1

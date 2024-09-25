@@ -19,6 +19,15 @@ body {
     border-color: #1c4ea2;
 }
 
+.btn-primary:disabled {
+    background-color: #1c4ea2;
+    border-color: #1c4ea2;
+}
+
+.dropdown-item:active {
+    background-color: #1c4ea2;
+}
+
 /* Bigger fonts for navbar */
 .navbar .nav-link,
 .navbar .navbar-brand,
@@ -30,7 +39,8 @@ body {
     font-size: 17px;
 }
 
-.navbar-brand img {
+.navbar-brand img,
+.navbar-avatar img {
     /* Bigger logo */
     height: 45px;
 }

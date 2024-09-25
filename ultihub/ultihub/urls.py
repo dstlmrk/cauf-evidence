@@ -40,6 +40,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("", include("core.urls")),
+    path("clubs/", include("clubs.urls")),
 ]
 
 if settings.ENVIRONMENT != "test":

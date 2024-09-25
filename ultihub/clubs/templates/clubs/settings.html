@@ -1,0 +1,47 @@
+{% extends "core/base.html" %}
+
+{% block title %}Settings <i class="bi bi-gear"></i>{% endblock %}
+
+{% block content %}
+    {% load crispy_forms_tags %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <h5 class="card-header">Club</h5>
+                <div class="card-body" x-data="{ isModified: false }">
+                    <form method="POST" x-on:input="isModified = true">
+                        {% csrf_token %}
+                        {{ club_form|crispy }}
+                        <button type="submit" name="submit_club" class="btn btn-success" :disabled="!isModified">
+                            Save
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <h5 class="card-header">Agents</h5>
+                <div class="card-body">Agents</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <h5 class="card-header">Organization</h5>
+                <div class="card-body" x-data="{ isModified: false }">
+                    <form method="POST" x-on:input="isModified = true">
+                        {% csrf_token %}
+                        {{ organization_form|crispy }}
+                        <button
+                            type="submit"
+                            name="submit_organization"
+                            class="btn btn-success"
+                            :disabled="!isModified"
+                        >
+                            Save
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
