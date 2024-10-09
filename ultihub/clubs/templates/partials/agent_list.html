@@ -1,0 +1,71 @@
+{% load static %}
+<div class="d-none d-md-block">
+    <div class="list-group">
+        {% for agent in agents %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <img
+                        src="{% if agent.picture_url %}{{ agent.picture_url }}{% else %}{% static 'cauf_monogram.svg' %}{% endif %}"
+                        alt="Avatar"
+                        class="rounded-circle me-3"
+                        width="50"
+                        height="50"
+                    />
+                    <div>
+                        <h6 class="mb-1">{{ agent.email }}</h6>
+                        {% if agent.has_joined %}
+                            <small class="mb-0 text-muted">{{ agent.full_name }}</small>
+                        {% else %}
+                            <small class="mb-0 text-muted">Invited at {{ agent.invited_at | time }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                <button
+                    class="btn btn-danger"
+                    hx-post="{% url 'clubs:remove_agent_from_club' club_id %}"
+                    hx-trigger="click"
+                    hx-confirm="Do you really want to remove this agent?"
+                    hx-vals='{"email": "{{ agent.email }}"}'
+                    hx-swap="none"
+                >
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="d-block d-md-none">
+    <div class="list-group">
+        {% for agent in agents %}
+            <div class="list-group-item">
+                <img
+                    src="{% if agent.picture_url %}{{ agent.picture_url }}{% else %}{% static 'cauf_monogram.svg' %}{% endif %}"
+                    alt="Avatar"
+                    class="rounded-circle my-3"
+                    width="50"
+                    height="50"
+                />
+                <div>
+                    <h6 class="mb-1">asfafs.wefe.{{ agent.email }}</h6>
+                    {% if agent.has_joined %}
+                        <small class="mb-0 text-muted">{{ agent.full_name }}</small>
+                    {% else %}
+                        <small class="mb-0 text-muted">Invited at {{ agent.invited_at | time }}</small>
+                    {% endif %}
+                </div>
+
+                <button
+                    class="btn btn-danger my-2"
+                    hx-post="{% url 'clubs:remove_agent_from_club' club_id %}"
+                    hx-trigger="click"
+                    hx-confirm="Do you really want to remove this agent?"
+                    hx-vals='{"email": "{{ agent.email }}"}'
+                    hx-swap="none"
+                >
+                    Remove
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+</div>

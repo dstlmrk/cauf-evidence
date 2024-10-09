@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.http import HttpRequest
 from django.utils import timezone
 
+from users.api import assign_agent_to_club, get_user_managed_clubs
 from users.models import Agent, NewAgentRequest
 
 
@@ -26,6 +27,12 @@ def check_allowed_user(sender: type, request: HttpRequest, user: User, **kwargs:
         user.save()
         new_agent_request.processed_at = timezone.now()
         new_agent_request.save()
+        if new_agent_request.club:
+            assign_agent_to_club(user.agent, new_agent_request.club)
 
-    # TODO: remove later
-    request.session["club_id"] = 1
+    # The app allows only one club per user at this moment
+    user_managed_clubs = get_user_managed_clubs(user)
+    if club := user_managed_clubs.first():
+        request.session["club"] = {"id": club.id, "name": club.name}
+    else:
+        request.session["club"] = None

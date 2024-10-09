@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.http import HttpRequest
+from guardian.admin import GuardedModelAdmin
 
-from users.models import NewAgentRequest
+from users.models import Agent, NewAgentRequest
 
 
 class BaseAdmin(admin.ModelAdmin):
@@ -21,3 +22,10 @@ class NewAgentRequestAdmin(BaseAdmin):
             return ("email", "is_staff", "is_superuser", "processed_at") + fields
         else:
             return fields
+
+
+@admin.register(Agent)
+class AgentAdmin(GuardedModelAdmin):
+    list_display = ("user__email",)
+    search_fields = ("user__email",)
+    ordering = ("-pk",)

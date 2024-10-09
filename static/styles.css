@@ -3,6 +3,30 @@ body {
     font-family: "Roboto Condensed", sans-serif;
 }
 
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+/* Hlavní kontejner má minimální výšku 100% obrazovky */
+.min-vh-100 {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Obsah hlavní části se nezmenšuje */
+.flex-shrink-0 {
+    flex-shrink: 0;
+}
+
+/* Footer má automatickou margin-top, aby se "lepila" na spodní část */
+.footer {
+    margin-top: auto;
+    background-color: #f8f9fa;
+}
+
 /* Company colors for primary buttons */
 .btn-primary {
     background-color: #143c7d;

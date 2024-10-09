@@ -53,5 +53,8 @@ class Club(AuditModel):
     city = models.CharField(max_length=128)
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
 
+    class Meta:
+        permissions = (("manage_club", "Can manage club"),)
+
     def __str__(self) -> str:
         return f"<Club({self.pk}, name={self.name})>"

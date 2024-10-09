@@ -8,6 +8,15 @@ class NewAgentRequest(AuditModel):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     processed_at = models.DateTimeField(null=True, blank=True)
+    club = models.ForeignKey(
+        "clubs.Club",
+        on_delete=models.DO_NOTHING,
+        # Club is optional because the user might not be associated
+        # with a club but is still needed for staff/superuser
+        null=True,
+        blank=True,
+        help_text="The club the agent has permission to manage",
+    )
 
 
 class Agent(models.Model):

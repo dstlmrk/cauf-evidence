@@ -18,19 +18,12 @@ services:
       VIRTUAL_HOST: evidence.frisbee.cz
       VIRTUAL_PORT: 8000
       LETSENCRYPT_HOST: evidence.frisbee.cz
-      ENVIRONMENT: prod
-      APPLICATION_DOMAIN: evidence.frisbee.cz
-      DATABASE_NAME: ultihub
-      DATABASE_USER: ultihub
-      DATABASE_PASSWORD: __DATABASE_PASSWORD__
-      DATABASE_HOST: db
-      SENTRY_DNS: __SENTRY_DNS__
       DD_SERVICE: ultihub
       DD_AGENT_HOST: dd-agent
       DD_LOGS_INJECTION: true
-      SECRET_KEY: __SECRET_KEY__
-      GOOGLE_CLIENT_ID: __GOOGLE_CLIENT_ID__
-      GOOGLE_CLIENT_SECRET: __GOOGLE_CLIENT_SECRET__
+      RELEASE_DATETIME: __RELEASE_DATETIME__
+    env_file:
+      - ./.env.prod
     labels:
       com.datadoghq.ad.logs: '[{"source": "python", "service": "ultihub"}]'
 
