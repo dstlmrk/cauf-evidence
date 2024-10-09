@@ -1,0 +1,19 @@
+{% load crispy_forms_tags %}
+<div x-data="{ isFormValid: false }" x-init="isFormValid = $refs.form.checkValidity()">
+    <form
+        hx-post="{{ request.path }}"
+        class="modal-content"
+        x-ref="form"
+        @input="isFormValid = $refs.form.checkValidity()"
+    >
+        {% csrf_token %}
+        <div class="modal-header">
+            <h5 class="modal-title">Add agent <i class="bi bi-person-plus-fill"></i></h5>
+        </div>
+        <div class="modal-body">{% csrf_token %}{{ form|crispy }}</div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success" :disabled="!isFormValid">Submit</button>
+        </div>
+    </form>
+</div>

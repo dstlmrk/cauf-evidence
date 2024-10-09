@@ -81,12 +81,8 @@ jobs:
         run: |
           sed -i \
             -e 's|__LETSENCRYPT_EMAIL__|${{ secrets.LETSENCRYPT_EMAIL }}|g' \
-            -e 's|__DATABASE_PASSWORD__|${{ secrets.DATABASE_PASSWORD }}|g' \
-            -e 's|__SECRET_KEY__|${{ secrets.SECRET_KEY }}|g' \
-            -e 's|__SENTRY_DNS__|${{ secrets.SENTRY_DNS }}|g' \
             -e 's|__DATADOG_API_KEY__|${{ secrets.DATADOG_API_KEY }}|g' \
-            -e 's|__GOOGLE_CLIENT_ID__|${{ secrets.GOOGLE_CLIENT_ID }}|g' \
-            -e 's|__GOOGLE_CLIENT_SECRET__|${{ secrets.GOOGLE_CLIENT_SECRET }}|g' \
+            -e 's|__RELEASE_DATETIME__|$(TZ=Europe/Prague date '+%d/%m/%y %H:%M')|g' \
             docker-compose.yaml
       - name: Copy docker-compose file
         if: steps.changed-files.outputs.any_changed == 'true'

@@ -33,3 +33,12 @@ class ClubForm(forms.ModelForm):
             "website",
             "city",
         ]
+
+
+class AddAgentForm(forms.Form):
+    email = forms.EmailField(
+        label="Email",
+        help_text="Requires an email that is linked to a Google Account.",
+        max_length=100,
+        required=True,
+    )

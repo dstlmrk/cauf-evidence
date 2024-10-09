@@ -2,6 +2,7 @@ from pathlib import Path
 
 import environ
 import sentry_sdk
+from django.contrib import messages
 
 env = environ.Env()
 
@@ -11,6 +12,7 @@ ENVIRONMENT = env.str("ENVIRONMENT")
 SECRET_KEY = env.str("SECRET_KEY")
 APPLICATION_DOMAIN = env.str("APPLICATION_DOMAIN")
 ALLOWED_HOSTS = [APPLICATION_DOMAIN]
+RELEASE_DATETIME = env.str("RELEASE_DATETIME", "DD/MM/YY HH:MM")
 
 if ENVIRONMENT == "prod":
     CSRF_COOKIE_SECURE = True
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     "django_htmx",
     "crispy_forms",
     "crispy_bootstrap5",
+    "guardian",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -49,6 +52,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "core.middleware.HtmxMessageMiddleware",
 ]
 ROOT_URLCONF = "ultihub.urls"
 TEMPLATES = [
@@ -62,11 +66,20 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "core.context_processors.app_version_processor",
             ],
         },
     },
 ]
 WSGI_APPLICATION = "ultihub.wsgi.application"
+
+MESSAGE_TAGS = {
+    messages.DEBUG: "bg-light",
+    messages.INFO: "text-white bg-primary",
+    messages.SUCCESS: "text-white bg-success",
+    messages.WARNING: "text-dark bg-warning",
+    messages.ERROR: "text-white bg-danger",
+}
 
 # DATABASE --------------------------------------------------------------------
 DATABASES = {
@@ -91,6 +104,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
+    "guardian.backends.ObjectPermissionBackend",
 ]
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -107,9 +121,9 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # INTERNATIONALIZATION --------------------------------------------------------
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en-gb"
 TIME_ZONE = "UTC"
-USE_I18N = True
+USE_I18N = False
 USE_TZ = True
 
 # STATIC FILES ----------------------------------------------------------------
@@ -199,3 +213,12 @@ if ENVIRONMENT != "test":
 # CRISPY FORMS ----------------------------------------------------------------
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+# EMAIL SETTINGS --------------------------------------------------------------
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
