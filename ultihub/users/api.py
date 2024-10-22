@@ -1,5 +1,5 @@
 from clubs.models import Club
-from core.api import send_email
+from core.tasks import send_email
 from django.contrib.auth.models import User
 from django.db.models import QuerySet
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
@@ -31,8 +31,12 @@ def assign_or_invite_agent_to_club(email: str, club: Club) -> None:
         assign_agent_to_club(agent, club)
     else:
         NewAgentRequest.objects.create(email=email, is_staff=False, is_superuser=False, club=club)
-    # TODO: send email via dramatiq
-    send_email("Access to club granted", f"You have been granted access to {club.name}", [email])
+
+    send_email.delay(
+        "Access to club granted",
+        f"You have been granted access to {club.name}",
+        to=[email],
+    )
 
 
 def unassign_or_cancel_agent_invite_from_club(email: str, club: Club) -> None:
@@ -45,8 +49,12 @@ def unassign_or_cancel_agent_invite_from_club(email: str, club: Club) -> None:
         unassign_agent_from_club(agent, club)
     else:
         NewAgentRequest.objects.filter(email=email, club=club, processed_at__isnull=True).delete()
-    # TODO: send email via dramatiq
-    send_email("Access to club revoked", f"Your access to {club.name} has been revoked", [email])
+
+    send_email.delay(
+        "Access to club revoked",
+        f"Your access to {club.name} has been revoked",
+        to=[email],
+    )
 
 
 def get_user_managed_clubs(user: User) -> QuerySet[Club]:
