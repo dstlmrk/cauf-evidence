@@ -70,6 +70,7 @@ jobs:
           files: |
             docker/compose.prod.yaml
             nginx-proxy/**
+            .github/workflows/main.yaml
       - name: Rename docker-compose file
         if: steps.changed-files.outputs.any_changed == 'true'
         run: mv docker/compose.prod.yaml docker-compose.yaml
