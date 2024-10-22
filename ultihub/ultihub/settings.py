@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "guardian",
+    "django_rq",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -222,3 +223,11 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+
+# REDIS QUEUE -----------------------------------------------------------------
+RQ_QUEUES = {
+    "default": {
+        "URL": "redis://redis:6379/0",
+        "DEFAULT_TIMEOUT": 360,
+    }
+}

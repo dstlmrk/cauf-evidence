@@ -11,16 +11,30 @@ services:
       - ../ultihub/:/app/ultihub
       - ../static/:/app/ultihub/static
     environment:
-      ENVIRONMENT: dev
-      DATABASE_NAME: ultihub
-      DATABASE_USER: ultihub
-      DATABASE_PASSWORD: password
-      DATABASE_HOST: db
       PYTHONUNBUFFERED: true
-      SECRET_KEY: django-insecure
-      APPLICATION_DOMAIN: localhost
     env_file:
       - ../secrets/.env.dev
+
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: always
+    entrypoint: ["/app/ultihub/manage.py", "rqworker", "default"]
+    volumes:
+      - ../ultihub/:/app/ultihub
+    depends_on:
+      - redis
+    env_file:
+      - ../secrets/.env.dev
+    environment:
+      PYTHONUNBUFFERED: true
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
 
   db:
     image: postgres:16.4-alpine
