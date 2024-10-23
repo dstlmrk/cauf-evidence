@@ -101,6 +101,17 @@ cmd = "ruff check --no-fix --quiet --output-format=concise --force-exclude ."
 help = "Validate code style"
 sequence = ["ruff check --no-fix --select I001 .", "ruff format --check --diff ."]
 
+[tool.poe.tasks.migrations-check]
+help = "Check migrations"
+sequence = [
+	"docker compose -f docker/compose.test.yaml up -d",
+	"python tests/wait_for_postgres.py",
+	"poetry run python ultihub/manage.py makemigrations --check --dry-run",
+	"docker compose -f docker/compose.test.yaml down"
+]
+ignore_fail = true
+envfile = "secrets/.env.test"
+
 [tool.poe.tasks.type]
 help = "Run the mypy type checker"
 cmd = "mypy ."

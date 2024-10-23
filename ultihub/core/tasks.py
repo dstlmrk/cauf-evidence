@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 @job
 def send_email(subject: str, body: str, to: list[str]) -> None:
-    if ENVIRONMENT in ["prod", "dev"]:
+    if ENVIRONMENT in ["prod"]:
         logger.info("Sending email to %s", to)
         EmailMessage(subject=subject, body=body, to=to).send()
         logger.info("Email sent to %s", to)

@@ -4,33 +4,52 @@ from django.contrib.auth.models import User
 from django.db.models import QuerySet
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 
-from users.models import Agent, NewAgentRequest
+from users.models import Agent, AgentAtClub, NewAgentRequest
 
 
-def assign_agent_to_club(agent: Agent, club: Club) -> None:
+def assign_agent_to_club(
+    agent: Agent, club: Club, invited_by: User, is_primary: bool = False
+) -> None:
     """
     Assign permission to agent to manage club
     """
-    assign_perm("manage_club", agent.user, club)
+    if not agent.user.has_perm("manage_club", club):
+        AgentAtClub.objects.update_or_create(
+            agent=agent,
+            club=club,
+            defaults=dict(is_active=True, is_primary=is_primary, invited_by=invited_by),
+            create_defaults=dict(invited_by=invited_by, is_primary=is_primary),
+        )
+        assign_perm("manage_club", agent.user, club)
 
 
 def unassign_agent_from_club(agent: Agent, club: Club) -> None:
     """
     Remove permission from agent to manage club
     """
+    AgentAtClub.objects.filter(agent=agent, club=club).update(is_active=False)
     remove_perm("manage_club", agent.user, club)
 
 
-def assign_or_invite_agent_to_club(email: str, club: Club) -> None:
+def assign_or_invite_agent_to_club(
+    email: str, club: Club, invited_by: User, is_primary: bool = False
+) -> None:
     """
     Assign agent to club and invite him if he doesn't have an account in the app
     """
     if agent := Agent.objects.filter(user__email=email).first():
         if agent.user.has_perm("manage_club", club):
             return
-        assign_agent_to_club(agent, club)
+        assign_agent_to_club(agent, club, invited_by, is_primary)
     else:
-        NewAgentRequest.objects.create(email=email, is_staff=False, is_superuser=False, club=club)
+        NewAgentRequest.objects.create(
+            email=email,
+            is_staff=False,
+            is_superuser=False,
+            club=club,
+            invited_by=invited_by,
+            is_primary=is_primary,
+        )
 
     send_email.delay(
         "Access to club granted",
@@ -43,10 +62,14 @@ def unassign_or_cancel_agent_invite_from_club(email: str, club: Club) -> None:
     """
     Unassign agent from club or cancel pending invite
     """
-    if agent := Agent.objects.filter(user__email=email).first():
-        if not agent.user.has_perm("manage_club", club):
-            return
-        unassign_agent_from_club(agent, club)
+    agent_at_club = AgentAtClub.objects.filter(agent__user__email=email, club=club).first()
+
+    if agent_at_club:
+        if agent_at_club.is_primary:
+            raise ValueError("Cannot remove primary agent from club")
+        if not agent_at_club.agent.user.has_perm("manage_club", club):
+            raise ValueError("Cannot remove already removed agent from club")
+        unassign_agent_from_club(agent_at_club.agent, club)
     else:
         NewAgentRequest.objects.filter(email=email, club=club, processed_at__isnull=True).delete()
 

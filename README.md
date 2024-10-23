@@ -25,3 +25,16 @@ poetry lock --no-update
 # Install new package
 poetry add package
 ```
+
+### Project start
+
+```bash
+# Migrate database
+docker compose -f docker/compose.dev.yaml exec app python manage.py migrate
+
+# Create superuser with empty email
+docker compose -f docker/compose.dev.yaml exec app python manage.py createsuperuser --username admin
+
+# Load initial data
+docker compose -f docker/compose.dev.yaml exec app python manage.py loaddata initial_data
+```

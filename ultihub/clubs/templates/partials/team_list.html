@@ -1,0 +1,80 @@
+{% load static %}
+<div class="d-none d-md-block">
+    <div class="list-group">
+        {% for team in teams %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <h5>
+                            {{ team.name }}
+                            {% if team.is_primary %}<span class="badge bg-dark">Primary</span>{% endif %}
+                        </h5>
+                        <p class="mb-1">{{ team.description }}</p>
+                        {% if not team.is_primary %}
+                            {% include "partials/audit_info.html" with obj=team %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% if not team.is_primary %}
+                    <div>
+                        <button
+                            class="btn btn-primary"
+                            hx-get="{% url 'clubs:edit_team' club_id team.id %}"
+                            hx-target="#dialog"
+                        >
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+
+                        <button
+                            class="btn btn-danger"
+                            hx-post="{% url 'clubs:remove_team' club_id team.id %}"
+                            hx-trigger="click"
+                            hx-confirm="Do you really want to remove this team?"
+                            hx-swap="none"
+                        >
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="d-block d-md-none">
+    <div class="list-group">
+        {% for team in teams %}
+            <div class="list-group-item">
+                <div>
+                    <h5>{{ team.name }}</h5>
+                    <p class="mb-1">{{ team.description }}</p>
+                    {% include "partials/audit_info.html" with obj=team %}
+                </div>
+                <button
+                    class="btn btn-primary"
+                    hx-get="{% url 'clubs:edit_team' club_id team.id %}"
+                    hx-target="#dialog"
+                >
+                    Edit
+                </button>
+                <button
+                    class="btn btn-danger my-2"
+                    hx-post="{% url 'clubs:remove_team' club_id team.id %}"
+                    hx-trigger="click"
+                    hx-confirm="Do you really want to remove this team?"
+                    hx-vals='{"team_id": "{{ team.id }}"}'
+                    hx-swap="none"
+                >
+                    Remove
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+</script>
