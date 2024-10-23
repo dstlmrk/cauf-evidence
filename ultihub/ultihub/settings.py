@@ -23,6 +23,7 @@ if ENVIRONMENT == "prod":
 
 # APPLICATION DEFINITION ------------------------------------------------------
 INSTALLED_APPS = [
+    "competitions.apps.CompetitionsConfig",
     "core.apps.CoreConfig",
     "clubs.apps.ClubsConfig",
     "users.apps.UsersConfig",
@@ -33,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "django.contrib.humanize",
     "ddtrace.contrib.django",
     "allauth",
     "allauth.account",
@@ -68,6 +70,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "core.context_processors.app_version_processor",
+                "users.context_processors.user_managed_clubs",
             ],
         },
     },
@@ -123,7 +126,7 @@ SOCIALACCOUNT_PROVIDERS = {
 # INTERNATIONALIZATION --------------------------------------------------------
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 LANGUAGE_CODE = "en-gb"
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Prague"
 USE_I18N = False
 USE_TZ = True
 

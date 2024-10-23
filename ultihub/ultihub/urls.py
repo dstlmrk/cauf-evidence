@@ -37,11 +37,13 @@ def index(request: HttpRequest) -> HttpResponse:
 
 urlpatterns = [
     # path("", index, name="index"),
-    path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls, name="admin"),
     path("accounts/", include("allauth.urls")),
     path("django-rq/", include("django_rq.urls")),
     path("", include("core.urls")),
+    path("competitions/", include("competitions.urls")),
     path("clubs/", include("clubs.urls")),
+    path("users/", include("users.urls")),
 ]
 
 if settings.ENVIRONMENT != "test":

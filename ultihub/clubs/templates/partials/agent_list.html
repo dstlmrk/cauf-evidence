@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 <div class="d-none d-md-block">
     <div class="list-group">
         {% for agent in agents %}
@@ -12,24 +13,32 @@
                         height="50"
                     />
                     <div>
-                        <h6 class="mb-1">{{ agent.email }}</h6>
+                        <h5 class="mb-1">
+                            {{ agent.email }}
+                            {% if agent.is_primary %}<span class="badge bg-dark">Primary</span>{% endif %}
+                        </h5>
                         {% if agent.has_joined %}
-                            <small class="mb-0 text-muted">{{ agent.full_name }}</small>
+                            <p class="mb-1">{{ agent.full_name }}</p>
                         {% else %}
-                            <small class="mb-0 text-muted">Invited at {{ agent.invited_at | time }}</small>
+                            <p class="mb-0 text-muted">
+                                Invited {{ agent.invited_at | naturaltime }} by
+                                {{ agent.invited_by.get_full_name|default:agent.invited_by.username }}
+                            </p>
                         {% endif %}
                     </div>
                 </div>
-                <button
-                    class="btn btn-danger"
-                    hx-post="{% url 'clubs:remove_agent_from_club' club_id %}"
-                    hx-trigger="click"
-                    hx-confirm="Do you really want to remove this agent?"
-                    hx-vals='{"email": "{{ agent.email }}"}'
-                    hx-swap="none"
-                >
-                    <i class="bi bi-trash-fill"></i>
-                </button>
+                {% if not agent.is_primary %}
+                    <button
+                        class="btn btn-danger"
+                        hx-post="{% url 'clubs:remove_agent' club_id %}"
+                        hx-trigger="click"
+                        hx-confirm="Do you really want to remove this agent?"
+                        hx-vals='{"email": "{{ agent.email }}"}'
+                        hx-swap="none"
+                    >
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
@@ -47,24 +56,29 @@
                     height="50"
                 />
                 <div>
-                    <h6 class="mb-1">asfafs.wefe.{{ agent.email }}</h6>
+                    <h5 class="mb-1">{{ agent.email }}</h5>
+                    <h4>{% if agent.is_primary %}<span class="badge bg-dark">Primary</span>{% endif %}</h4>
                     {% if agent.has_joined %}
-                        <small class="mb-0 text-muted">{{ agent.full_name }}</small>
+                        <p class="mb-1 text-muted">{{ agent.full_name }}</p>
                     {% else %}
-                        <small class="mb-0 text-muted">Invited at {{ agent.invited_at | time }}</small>
+                        <p class="mb-0 text-muted">
+                            Invited {{ agent.invited_at | naturaltime }} by {{ agent.invited_by.get_full_name }}
+                        </p>
                     {% endif %}
                 </div>
 
-                <button
-                    class="btn btn-danger my-2"
-                    hx-post="{% url 'clubs:remove_agent_from_club' club_id %}"
-                    hx-trigger="click"
-                    hx-confirm="Do you really want to remove this agent?"
-                    hx-vals='{"email": "{{ agent.email }}"}'
-                    hx-swap="none"
-                >
-                    Remove
-                </button>
+                {% if not agent.is_primary %}
+                    <button
+                        class="btn btn-danger my-2"
+                        hx-post="{% url 'clubs:remove_agent' club_id %}"
+                        hx-trigger="click"
+                        hx-confirm="Do you really want to remove this agent?"
+                        hx-vals='{"email": "{{ agent.email }}"}'
+                        hx-swap="none"
+                    >
+                        Remove
+                    </button>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

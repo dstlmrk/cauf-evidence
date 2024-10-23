@@ -28,7 +28,12 @@ def check_allowed_user(sender: type, request: HttpRequest, user: User, **kwargs:
         new_agent_request.processed_at = timezone.now()
         new_agent_request.save()
         if new_agent_request.club:
-            assign_agent_to_club(user.agent, new_agent_request.club)
+            assign_agent_to_club(
+                agent=user.agent,
+                club=new_agent_request.club,
+                invited_by=new_agent_request.invited_by,
+                is_primary=new_agent_request.is_primary,
+            )
 
     # The app allows only one club per user at this moment
     user_managed_clubs = get_user_managed_clubs(user)

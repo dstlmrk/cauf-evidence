@@ -6,8 +6,21 @@
             "email": "dstlmrk@gmail.com",
             "is_staff": true,
             "is_superuser": true,
-            "created_at": "2020-01-01T00:00:00Z",
-            "updated_at": "2020-01-01T00:00:00Z"
+            "invited_by": 2,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.club",
+        "pk": 1,
+        "fields": {
+            "name": "Prague Devils",
+            "email": "info@praguedevils.org",
+            "website": "https://praguedevils.org/",
+            "city": "Prague",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
         }
     },
     {
@@ -22,21 +35,34 @@
             "city": "Praha 3",
             "postal_code": "130 00",
             "country": "Česká republika",
-            "created_at": "2024-10-01T12:00:00Z",
-            "updated_at": "2024-10-01T12:00:00Z"
+            "club": 1,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
         }
     },
     {
-        "model": "clubs.club",
+        "model": "clubs.team",
         "pk": 1,
         "fields": {
             "name": "Prague Devils",
-            "email": "info@praguedevils.org",
-            "website": "https://praguedevils.org/",
-            "city": "Prague",
-            "organization": 1,
-            "created_at": "2024-10-01T12:00:00Z",
-            "updated_at": "2024-10-01T12:00:00Z"
+            "is_primary": true,
+            "club": 1,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "users.NewAgentRequest",
+        "pk": 2,
+        "fields": {
+            "email": "dastycz.2@gmail.com",
+            "is_staff": true,
+            "is_superuser": false,
+            "invited_by": 2,
+            "is_primary": true,
+            "club": 1,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
         }
     }
 ]

@@ -1,4 +1,7 @@
+from typing import Any
+
 from core.models import AuditModel
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -9,25 +12,55 @@ from clubs.validators import (
 )
 
 
+class Club(AuditModel):
+    name = models.CharField(
+        max_length=48,
+    )
+    email = models.EmailField(
+        help_text="Contact email of the club",
+    )
+    website = models.URLField(
+        help_text="URL of the club's website",
+    )
+    city = models.CharField(
+        max_length=64,
+        help_text="City where the club is located",
+    )
+
+    class Meta:
+        permissions = (("manage_club", "Can manage club"),)
+
+    def __str__(self) -> str:
+        return f"<Club({self.pk}, name={self.name})>"
+
+
 class Organization(AuditModel):
-    name = models.CharField(max_length=128, unique=True)
+    name = models.CharField(
+        max_length=64,
+        unique=True,
+    )
     identification_number = models.CharField(
         max_length=8,
         unique=True,
         validators=[validate_identification_number],
-        help_text="IČO",
+        help_text="Company identification number",
     )
     account_number = models.CharField(
         max_length=17,  # 6 digits for prefix, 10 digits for account number, 1 hyphen
-        unique=True,
+        blank=True,
         validators=[validate_account_number],
     )
     bank_code = models.CharField(
         max_length=4,
+        blank=True,
         validators=[validate_bank_code],
     )
-    street = models.CharField(max_length=128)
-    city = models.CharField(max_length=128)
+    street = models.CharField(
+        max_length=64,
+    )
+    city = models.CharField(
+        max_length=64,
+    )
     postal_code = models.CharField(
         max_length=6,
         validators=[
@@ -38,23 +71,48 @@ class Organization(AuditModel):
         ],
     )
     country = models.CharField(
-        max_length=50,
+        max_length=32,
         default="Česká republika",
+    )
+    club = models.OneToOneField(
+        Club,
+        on_delete=models.PROTECT,
     )
 
     def __str__(self) -> str:
         return f"<Organization({self.pk}, name={self.name})>"
 
 
-class Club(AuditModel):
-    name = models.CharField(max_length=128)
-    email = models.EmailField()
-    website = models.URLField()
-    city = models.CharField(max_length=128)
-    organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
-
-    class Meta:
-        permissions = (("manage_club", "Can manage club"),)
+class Team(AuditModel):
+    name = models.CharField(
+        max_length=48,
+    )
+    description = models.CharField(
+        max_length=64,
+        blank=True,
+        help_text="Only for club internal purposes",
+    )
+    is_active = models.BooleanField(
+        default=True,
+    )
+    is_primary = models.BooleanField(
+        default=False,
+    )
+    club = models.ForeignKey(
+        Club,
+        on_delete=models.PROTECT,
+    )
 
     def __str__(self) -> str:
-        return f"<Club({self.pk}, name={self.name})>"
+        return f"<Team({self.pk}, name={self.name})>"
+
+    def clean(self) -> None:
+        if (
+            self.is_active
+            and Team.objects.filter(name=self.name, is_active=True).exclude(pk=self.pk).exists()
+        ):
+            raise ValidationError({"name": "There is already an active team with this name."})
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        self.full_clean()
+        super().save(*args, **kwargs)
