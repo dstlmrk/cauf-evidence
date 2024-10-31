@@ -1,5 +1,6 @@
 services:
   app:
+    image: ultihub
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -16,9 +17,7 @@ services:
       - ../secrets/.env.dev
 
   worker:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
+    image: ultihub
     restart: always
     entrypoint: ["/app/ultihub/manage.py", "rqworker", "default"]
     volumes:
