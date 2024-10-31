@@ -1,4 +1,15 @@
-FROM python:3.12.5-slim AS builder
+FROM node:16 AS node-builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json webpack.config.js ./
+
+RUN npm install
+
+COPY assets /app/assets
+RUN npm run build
+
+FROM python:3.12.5-slim AS python-builder
 
 RUN pip install --no-cache-dir poetry==1.8.3
 
@@ -20,10 +31,12 @@ FROM python:3.12.5-slim AS runtime
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH"
 
-COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+COPY --from=python-builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY ultihub /app/ultihub
 COPY static /app/static
+
+COPY --from=node-builder /app/static/dist /app/static/dist
 
 WORKDIR /app/ultihub
 
