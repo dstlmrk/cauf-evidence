@@ -9,4 +9,9 @@ urlpatterns = [
         views.competitions,
         name="competitions",
     ),
+    path(
+        "get",
+        views.json_competitions,
+        name="json_competitions",
+    ),
 ]

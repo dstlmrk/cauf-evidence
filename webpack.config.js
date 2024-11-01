@@ -18,6 +18,8 @@ module.exports = {
         new webpack.ProvidePlugin({
             bootstrap: "bootstrap",
             htmx: "htmx.org",
+            $: "jquery",
+            jQuery: "jquery",
         }),
     ],
     module: {
