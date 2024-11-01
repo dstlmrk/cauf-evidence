@@ -1,7 +1,4 @@
-from typing import Any
-
 from django.contrib import admin
-from django.http import HttpRequest
 
 from competitions.models import (
     AgeRestriction,
@@ -20,16 +17,10 @@ class SeasonAdmin(admin.ModelAdmin):
 class DivisionAdmin(admin.ModelAdmin):
     list_display = ("name", "is_female_allowed", "is_male_allowed")
 
-    def has_change_permission(self, request: HttpRequest, obj: Any | None = None) -> bool:
-        return False
-
 
 @admin.register(AgeRestriction)
 class AgeRestrictionAdmin(admin.ModelAdmin):
     list_display = ("name", "min", "max")
-
-    def has_change_permission(self, request: HttpRequest, obj: Any | None = None) -> bool:
-        return False
 
 
 @admin.register(Competition)
