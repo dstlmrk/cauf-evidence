@@ -1,6 +1,17 @@
 {% extends "core/base.html" %}
+{% load humanize %}
 
 {% block title %}Competitions <i class="bi bi-trophy-fill"></i>{% endblock %}
+
+{% block buttons %}
+    <button type="button" class="btn btn-success position-relative">
+        <i class="bi bi-receipt-cutoff"></i> Generate Invoice
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+            2
+            <span class="visually-hidden">unread messages</span>
+        </span>
+    </button>
+{% endblock %}
 
 {% block content %}
     {% load crispy_forms_tags %}
@@ -12,14 +23,63 @@
 
     <div class="row">
         <div class="col-md-12">
-            <table id="example" class="table table-striped" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Season</th>
-                    </tr>
-                </thead>
-            </table>
+            <div class="list-group">
+                {% for competition in competitions %}
+                    <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">
+                                <small class="text-muted"
+                                    >{{ competition.season }} / {{ competition.get_type_display | upper }}</small
+                                >
+                                {{ competition.name }}
+                            </h5>
+
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                style="z-index: 1050;"
+                            >
+                                1
+                            </span>
+                        </div>
+                        <div class="mb-1">
+                            <span class="badge text-bg-success">OPEN REGISTRATION</span>
+                            {#    <span class="badge text-bg-danger">CLOSED REGISTRATION</span>#}
+                            <span class="badge text-bg-primary">{{ competition.division | upper }}</span>
+
+                            {% if competition.age_restriction %}
+                                <span class="badge text-bg-primary">{{ competition.age_restriction | upper }}</span>
+                            {% endif %}
+                            {% if competition.is_on_beach %}<span class="badge text-bg-primary">BEACH</span>{% endif %}
+                        </div>
+
+                        <p class="mb-1">
+                            <i class="bi bi-people-fill"></i> Total registered teams: <strong>12</strong>
+                            <br />
+                            <i class="bi bi-person-fill"></i> Your Club's teams: <strong>1</strong>
+                            <span class="badge text-bg-danger">UNPAID</span>
+                            <br />
+                            <i class="bi bi-cash-coin"></i> Season fee:
+                            <strong>CZK {{ competition.season.player_fee }}</strong><br />
+
+                            <span class="d-block d-md-none">
+                                <i class="bi bi-clock"></i> Registration deadline:
+                                <b style="white-space: nowrap;"
+                                    >{{ competition.registration_deadline | date:'d/m/y H:i' }}</b
+                                >
+                            </span>
+                            <span class="d-none d-md-block">
+                                <i class="bi bi-clock"></i> Registration deadline:
+                                <b
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="{{ competition.registration_deadline | date:'d/m/y H:i' }}"
+                                    style="white-space: nowrap;"
+                                    >{{ competition.registration_deadline | naturaltime }}</b
+                                >
+                            </span>
+                        </p>
+                    </a>
+                {% endfor %}
+            </div>
         </div>
     </div>
 {% endblock %}

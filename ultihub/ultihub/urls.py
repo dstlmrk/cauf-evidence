@@ -19,34 +19,22 @@ import logging
 
 from debug_toolbar.toolbar import debug_toolbar_urls
 from django.contrib import admin
-from django.db import connection
-from django.http import HttpRequest, HttpResponse
 from django.urls import include, path
 
 from ultihub import settings
 
 logger = logging.getLogger(__name__)
 
-
-def index(request: HttpRequest) -> HttpResponse:
-    logger.info("Calling request")
-    cursor = connection.cursor()
-    cursor.execute("select 1 from pg_tables;")
-    return HttpResponse("Hello, world")
-
-
 urlpatterns = [
-    # path("", index, name="index"),
-    path("admin/", admin.site.urls, name="admin"),
-    path("accounts/", include("allauth.urls")),
-    path("django-rq/", include("django_rq.urls")),
     path("", include("core.urls")),
-    path("competitions/", include("competitions.urls")),
+    path("accounts/", include("allauth.urls")),
+    path("admin/", admin.site.urls, name="admin"),
+    path("api/", include("rest_api.urls")),
     path("clubs/", include("clubs.urls")),
+    path("competitions/", include("competitions.urls")),
+    path("django-rq/", include("django_rq.urls")),
     path("users/", include("users.urls")),
 ]
 
 if settings.ENVIRONMENT != "test":
-    urlpatterns = [
-        *urlpatterns,
-    ] + debug_toolbar_urls()
+    urlpatterns = [*urlpatterns] + debug_toolbar_urls()

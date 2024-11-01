@@ -17,3 +17,4 @@ import "datatables.net-responsive-bs5";
 import "./dtables";
 import "./dialog";
 import "./toasts";
+import "./tooltip";

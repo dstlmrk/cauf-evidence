@@ -168,7 +168,10 @@
             </nav>
 
             <div class="container mt-4">
-                <h1>{% block title %}{% endblock %}</h1>
+                <div class="d-flex w-100 justify-content-between">
+                    <h1>{% block title %}{% endblock %}</h1>
+                    <div class="mt-md-2">{% block buttons %}{% endblock %}</div>
+                </div>
                 <div id="content" class="mt-4">{% block content %}{% endblock %}</div>
             </div>
 

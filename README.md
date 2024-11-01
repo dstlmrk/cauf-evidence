@@ -25,8 +25,9 @@ poetry lock --no-update
 # Install new package
 poetry add package
 
-# Build new js/css bundles
+# Build new js/css bundles or watch for changes
 npm run build
+npm run watch
 ```
 
 ### Project start

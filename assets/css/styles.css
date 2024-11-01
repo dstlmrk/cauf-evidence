@@ -50,6 +50,10 @@ body {
     border-color: #1c4ea2;
 }
 
+.text-bg-primary {
+    background-color: #143c7d !important;
+}
+
 .dropdown-item:active {
     background-color: #1c4ea2;
 }
@@ -80,4 +84,11 @@ body {
 .navbar-brand img {
     /* Space between logo and text */
     margin-right: 7px;
+}
+
+.table td,
+.table th {
+    padding-top: 1rem; /* Zvětšení horního odsazení */
+    padding-bottom: 1rem; /* Zvětšení spodního odsazení */
+    font-size: 1.1rem;
 }
