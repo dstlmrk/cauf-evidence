@@ -5,8 +5,8 @@ from django.dispatch import receiver
 from django.http import HttpRequest
 from django.utils import timezone
 
-from users.api import assign_agent_to_club, get_user_managed_clubs
 from users.models import Agent, NewAgentRequest
+from users.services import assign_agent_to_club, get_user_managed_clubs
 
 
 @receiver(user_logged_in)

@@ -1,0 +1,42 @@
+{% extends "core/base.html" %}
+
+{% block title %}Invoices{% endblock %}
+
+{% block content %}
+    {% load crispy_forms_tags %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">VS</th>
+                            <th scope="col">Created at</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">State</th>
+                            <th scope="col">Amount (CZK)</th>
+                            <th scope="col">Download</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in invoices %}
+                            <tr>
+                                <!-- TODO: Show VS or ID from 3rd -->
+                                <th scope="row">202400{{ invoice.pk }}</th>
+                                <td class="text-muted">{{ invoice.created_at | date:'d/m/Y H:i' }}</td>
+                                <td>{{ invoice.get_type_display | upper }}</td>
+                                <td>{{ invoice.get_state_display | upper }}</td>
+                                <td>{{ invoice.amount }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-primary" disabled>
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

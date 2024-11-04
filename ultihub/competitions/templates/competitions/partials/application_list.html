@@ -1,0 +1,47 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-people-fill"></i> Registered teams</h5>
+    </div>
+    <div class="modal-body">
+        <div class="mb-2 d-none d-md-block">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">State</th>
+                        <th scope="col">Registered at</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in applications %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ application.team_name }}</td>
+                            <td>
+                                <span class="badge text-bg-primary">{{ application.get_state_display | upper }}</span>
+                            </td>
+                            <td>{{ application.created_at | date:"d/m/Y H:i" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-block d-md-none">
+            <ul class="list-group">
+                {% for application in applications %}
+                    <li class="list-group-item">
+                        #{{ forloop.counter }}<br />
+                        Name: <b>{{ application.team_name }}</b><br />
+                        State: <span class="badge text-bg-primary">{{ application.get_state_display | upper }}</span
+                        ><br />
+                        Registered at: <b>{{ application.created_at | date:"d/m/Y H:i" }}</b>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+</div>

@@ -30,7 +30,7 @@
                 {% if not agent.is_primary %}
                     <button
                         class="btn btn-danger"
-                        hx-post="{% url 'clubs:remove_agent' club_id %}"
+                        hx-post="{% url 'clubs:remove_agent' %}"
                         hx-trigger="click"
                         hx-confirm="Do you really want to remove this agent?"
                         hx-vals='{"email": "{{ agent.email }}"}'
@@ -70,7 +70,7 @@
                 {% if not agent.is_primary %}
                     <button
                         class="btn btn-danger my-2"
-                        hx-post="{% url 'clubs:remove_agent' club_id %}"
+                        hx-post="{% url 'clubs:remove_agent' %}"
                         hx-trigger="click"
                         hx-confirm="Do you really want to remove this agent?"
                         hx-vals='{"email": "{{ agent.email }}"}'

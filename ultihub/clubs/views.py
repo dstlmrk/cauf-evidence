@@ -1,50 +1,51 @@
+from core.helpers import get_club_id
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
-from guardian.decorators import permission_required_or_403
-from users.api import (
+from finance.models import Invoice
+from users.models import AgentAtClub, NewAgentRequest
+from users.services import (
     assign_or_invite_agent_to_club,
     unassign_or_cancel_agent_invite_from_club,
 )
-from users.models import AgentAtClub, NewAgentRequest
 
 from clubs.forms import AddAgentForm, ClubForm, OrganizationForm, TeamForm
 from clubs.models import Club, Team
 
 
 @login_required
-def members(request: HttpRequest, club_id: int) -> HttpResponse:
-    # https://docs.djangoproject.com/en/5.1/intro/tutorial03/
-    return render(request, "clubs/members.html", context={"club_id": club_id})
+def invoices(request: HttpRequest) -> HttpResponse:
+    return render(
+        request,
+        "clubs/invoices.html",
+        {"invoices": Invoice.objects.filter(club_id=get_club_id(request)).order_by("-pk")},
+    )
 
 
 @login_required
-@permission_required_or_403("clubs.manage_club", (Club, "id", "club_id"))
-def teams(request: HttpRequest, club_id: int) -> HttpResponse:
-    return render(request, "clubs/teams.html", {"club_id": club_id})
+def teams(request: HttpRequest) -> HttpResponse:
+    return render(request, "clubs/teams.html")
 
 
 @login_required
-@permission_required_or_403("clubs.manage_club", (Club, "id", "club_id"))
-def add_team(request: HttpRequest, club_id: int) -> HttpResponse:
+def add_team(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = TeamForm(request.POST)
         if form.is_valid():
-            form.instance.club_id = club_id
+            form.instance.club_id = get_club_id(request)
             form.save()
             messages.success(request, "Team added successfully.")
             return HttpResponse(status=204, headers={"HX-Trigger": "teamListChanged"})
     else:
         form = TeamForm()
-    return render(request, "partials/team_form.html", {"form": form})
+    return render(request, "clubs/partials/team_form.html", {"form": form})
 
 
 @login_required
-@permission_required_or_403("clubs.manage_club", (Club, "id", "club_id"))
-def edit_team(request: HttpRequest, club_id: int, team_id: int) -> HttpResponse:
-    team = get_object_or_404(Team, pk=team_id, club_id=club_id, is_primary=False)
+def edit_team(request: HttpRequest, team_id: int) -> HttpResponse:
+    team = get_object_or_404(Team, pk=team_id, club_id=get_club_id(request), is_primary=False)
     if request.method == "POST":
         form = TeamForm(request.POST, instance=team)
         if form.is_valid():
@@ -53,32 +54,31 @@ def edit_team(request: HttpRequest, club_id: int, team_id: int) -> HttpResponse:
             return HttpResponse(status=204, headers={"HX-Trigger": "teamListChanged"})
     else:
         form = TeamForm(instance=team)
-    return render(request, "partials/team_form.html", {"form": form})
+    return render(request, "clubs/partials/team_form.html", {"form": form})
 
 
 @login_required
-@permission_required_or_403("clubs.manage_club", (Club, "id", "club_id"))
 @require_POST
-def remove_team(request: HttpRequest, club_id: int, team_id: int) -> HttpResponse:
-    Team.objects.filter(id=team_id, club_id=club_id, is_primary=False).update(is_active=False)
+def remove_team(request: HttpRequest, team_id: int) -> HttpResponse:
+    Team.objects.filter(id=team_id, club_id=get_club_id(request), is_primary=False).update(
+        is_active=False
+    )
     messages.success(request, "Team removed successfully.")
-    return HttpResponse(status=200, headers={"HX-Trigger": "teamListChanged"})
+    return HttpResponse(status=204, headers={"HX-Trigger": "teamListChanged"})
 
 
 @login_required
-@permission_required_or_403("clubs.manage_club", (Club, "id", "club_id"))
-def team_list(request: HttpRequest, club_id: int) -> HttpResponse:
+def team_list(request: HttpRequest) -> HttpResponse:
     return render(
         request,
-        "partials/team_list.html",
-        {"teams": Team.objects.filter(club_id=club_id, is_active=True), "club_id": club_id},
+        "clubs/partials/team_list.html",
+        {"teams": Team.objects.filter(club_id=get_club_id(request), is_active=True)},
     )
 
 
 @login_required
-@permission_required_or_403("clubs.manage_club", (Club, "id", "club_id"))
-def settings(request: HttpRequest, club_id: int) -> HttpResponse:
-    club = get_object_or_404(Club, pk=club_id)
+def settings(request: HttpRequest) -> HttpResponse:
+    club = get_object_or_404(Club, pk=get_club_id(request))
 
     club_form = ClubForm(instance=club)
     organization_form = OrganizationForm(instance=club.organization)
@@ -94,20 +94,19 @@ def settings(request: HttpRequest, club_id: int) -> HttpResponse:
                 request.session.modified = True
 
                 messages.success(request, "Club updated successfully.")
-                return redirect("clubs:settings", club_id=club_id)
+                return redirect("clubs:settings")
 
         elif "submit_organization" in request.POST:
             organization_form = OrganizationForm(data=request.POST, instance=club.organization)
             if organization_form.is_valid():
                 organization_form.save()
                 messages.success(request, "Organization updated successfully.")
-                return redirect("clubs:settings", club_id=club_id)
+                return redirect("clubs:settings")
 
     return render(
         request,
         "clubs/settings.html",
         context={
-            "club_id": club_id,
             "club_form": club_form,
             "organization_form": organization_form,
         },
@@ -115,40 +114,37 @@ def settings(request: HttpRequest, club_id: int) -> HttpResponse:
 
 
 @login_required
-@permission_required_or_403("clubs.manage_club", (Club, "id", "club_id"))
-def add_agent(request: HttpRequest, club_id: int) -> HttpResponse:
+def add_agent(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = AddAgentForm(request.POST)
         if form.is_valid():
             assign_or_invite_agent_to_club(
                 email=form.cleaned_data["email"],
-                club=get_object_or_404(Club, pk=club_id),
+                club=get_object_or_404(Club, pk=get_club_id(request)),
                 invited_by=request.user,  # type: ignore
             )
             messages.success(request, "Agent added successfully.")
             return HttpResponse(status=204, headers={"HX-Trigger": "agentListChanged"})
     else:
         form = AddAgentForm()
-    return render(request, "partials/add_agent_form.html", {"form": form})
+    return render(request, "clubs/partials/add_agent_form.html", {"form": form})
 
 
 @login_required
-@permission_required_or_403("clubs.manage_club", (Club, "id", "club_id"))
 @require_POST
-def remove_agent(request: HttpRequest, club_id: int) -> HttpResponse:
+def remove_agent(request: HttpRequest) -> HttpResponse:
     unassign_or_cancel_agent_invite_from_club(
         email=request.POST["email"],
-        club=get_object_or_404(Club, pk=club_id),
+        club=get_object_or_404(Club, pk=get_club_id(request)),
         kicked_out_by=request.user,  # type: ignore
     )
     messages.success(request, "Agent removed successfully.")
-    return HttpResponse(status=200, headers={"HX-Trigger": "agentListChanged"})
+    return HttpResponse(status=204, headers={"HX-Trigger": "agentListChanged"})
 
 
 @login_required
-@permission_required_or_403("clubs.manage_club", (Club, "id", "club_id"))
-def agent_list(request: HttpRequest, club_id: int) -> HttpResponse:
-    club = get_object_or_404(Club, pk=club_id)
+def agent_list(request: HttpRequest) -> HttpResponse:
+    club = get_object_or_404(Club, pk=get_club_id(request))
     agents_at_club = AgentAtClub.objects.filter(club=club, is_active=True)
 
     agents = [
@@ -174,10 +170,5 @@ def agent_list(request: HttpRequest, club_id: int) -> HttpResponse:
     ]
 
     return render(
-        request,
-        "partials/agent_list.html",
-        {
-            "agents": agents + new_agent_requests,
-            "club_id": club_id,
-        },
+        request, "clubs/partials/agent_list.html", {"agents": agents + new_agent_requests}
     )

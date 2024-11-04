@@ -19,7 +19,7 @@
                     <div>
                         <button
                             class="btn btn-primary"
-                            hx-get="{% url 'clubs:edit_team' club_id team.id %}"
+                            hx-get="{% url 'clubs:edit_team' team.id %}"
                             hx-target="#dialog"
                         >
                             <i class="bi bi-pencil-fill"></i>
@@ -27,7 +27,7 @@
 
                         <button
                             class="btn btn-danger"
-                            hx-post="{% url 'clubs:remove_team' club_id team.id %}"
+                            hx-post="{% url 'clubs:remove_team' team.id %}"
                             hx-trigger="click"
                             hx-confirm="Do you really want to remove this team?"
                             hx-swap="none"
@@ -51,16 +51,12 @@
                     {% include "partials/audit_info.html" with obj=team %}
                 </div>
                 {% if not team.is_primary %}
-                    <button
-                        class="btn btn-primary"
-                        hx-get="{% url 'clubs:edit_team' club_id team.id %}"
-                        hx-target="#dialog"
-                    >
+                    <button class="btn btn-primary" hx-get="{% url 'clubs:edit_team' team.id %}" hx-target="#dialog">
                         Edit
                     </button>
                     <button
                         class="btn btn-danger my-2"
-                        hx-post="{% url 'clubs:remove_team' club_id team.id %}"
+                        hx-post="{% url 'clubs:remove_team' team.id %}"
                         hx-trigger="click"
                         hx-confirm="Do you really want to remove this team?"
                         hx-vals='{"team_id": "{{ team.id }}"}'

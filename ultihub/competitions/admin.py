@@ -26,18 +26,18 @@ class AgeRestrictionAdmin(admin.ModelAdmin):
 @admin.register(Competition)
 class CompetitionAdmin(admin.ModelAdmin):
     list_display_links = ("name",)
-    list_filter = ("season", "division", "age_restriction", "type", "is_on_beach")
+    list_filter = ("season", "division", "age_restriction", "type")
     list_display = (
         "season",
         "name",
         "division",
         "age_restriction",
         "type",
-        "is_on_beach",
         "is_for_national_teams",
         "player_fee_per_tournament",
         "is_exempted_from_season_fee",
         "registration_deadline",
+        "deposit",
     )
     fields = (
         "season",
@@ -45,11 +45,11 @@ class CompetitionAdmin(admin.ModelAdmin):
         "division",
         "age_restriction",
         "type",
-        "is_on_beach",
         "is_for_national_teams",
         "player_fee_per_tournament",
         "is_exempted_from_season_fee",
         "registration_deadline",
+        "deposit",
     )
 
 

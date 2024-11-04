@@ -66,8 +66,9 @@ class CreateClubForm(forms.ModelForm):
     )
 
     def clean(self) -> None:
+        cleaned_data = super().clean()
         if NewAgentRequest.objects.filter(
-            email=self.cleaned_data["primary_agent_email"],
+            email=cleaned_data.get("primary_agent_email"),  # type: ignore
             processed_at__isnull=True,
         ).exists():
             raise ValidationError(
