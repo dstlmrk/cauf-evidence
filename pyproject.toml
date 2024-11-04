@@ -131,36 +131,16 @@ ignore_fail = true
 
 [tool.poe.tasks.migrate]
 help = "Migrate the database"
-sequence = [
-	{ ref = "_run-dev"},
-	"docker compose -f docker/compose.dev.yaml exec app python manage.py migrate",
-	{ ref = "_stop-dev"},
-]
-ignore_fail = true
+cmd = "docker compose -f docker/compose.dev.yaml exec app python manage.py migrate"
 
 [tool.poe.tasks.makemigrations]
 help = "Make migrations"
-sequence = [
-	{ ref = "_run-dev"},
-	"docker compose -f docker/compose.dev.yaml exec app python manage.py makemigrations",
-	{ ref = "_stop-dev"},
-]
-ignore_fail = true
+cmd ="docker compose -f docker/compose.dev.yaml exec app python manage.py makemigrations"
 
 [tool.poe.tasks.shell]
 help = "Run a shell"
-sequence = [
-	{ ref = "_run-dev"},
-	"docker compose -f docker/compose.dev.yaml exec app python manage.py shell",
-	{ ref = "_stop-dev"},
-]
-ignore_fail = true
+cmd = "docker compose -f docker/compose.dev.yaml exec app python manage.py shell"
 
 [tool.poe.tasks.loaddata]
 help = "Load data from a fixture"
-sequence = [
-	{ ref = "_run-dev"},
-	"docker compose -f docker/compose.dev.yaml exec app python manage.py loaddata initial_data",
-	{ ref = "_stop-dev"},
-]
-ignore_fail = true
+cmd = "docker compose -f docker/compose.dev.yaml exec app python manage.py loaddata initial_data"

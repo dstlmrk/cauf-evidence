@@ -1,0 +1,50 @@
+{% load crispy_forms_tags %}
+<div
+    x-data="{
+        isFormValid: false,
+        isFormChanged: false,
+        initialData: {}
+    }"
+    x-init="
+        isFormValid = $refs.form.checkValidity();
+        initialData = Object.fromEntries(new FormData($refs.form).entries());
+    "
+>
+    <form
+        hx-post="{{ request.path }}"
+        class="modal-content"
+        x-ref="form"
+        @input="
+            isFormValid = $refs.form.checkValidity();
+            const currentData = Object.fromEntries(new FormData($refs.form).entries());
+            isFormChanged = JSON.stringify(currentData) !== JSON.stringify(initialData);
+        "
+    >
+        {% csrf_token %}
+        <div class="modal-header">
+            <h5 class="modal-title"><i class="bi bi-person-plus-fill"></i> Registration</h5>
+        </div>
+        <div class="modal-body">
+            <div class="alert alert-primary d-flex align-items-center" role="alert">
+                <i class="bi bi-info-circle-fill me-3"></i>
+                <div>
+                    After registering, it is necessary to generate an invoice and complete the payment. The registration
+                    will not be finalized until the payment is received in the association’s account.
+                </div>
+            </div>
+            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-3"></i>
+                <div>
+                    If you need to unregister an already registered team, please contact the association. This action
+                    cannot be completed in the application at this time.
+                </div>
+            </div>
+            {% csrf_token %}
+            {{ form|crispy }}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success" :disabled="!isFormValid || !isFormChanged">Submit</button>
+        </div>
+    </form>
+</div>

@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
 import pytest
-from users.api import assign_or_invite_agent_to_club, unassign_or_cancel_agent_invite_from_club
 from users.models import AgentAtClub, NewAgentRequest
+from users.services import assign_or_invite_agent_to_club, unassign_or_cancel_agent_invite_from_club
 
 from tests.factories import AgentAtClubFactory
 

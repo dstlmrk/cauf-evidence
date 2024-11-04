@@ -1,5 +1,5 @@
 from django.contrib import admin
-from users.api import assign_or_invite_agent_to_club
+from users.services import assign_or_invite_agent_to_club
 
 from clubs.forms import CreateClubForm
 from clubs.models import Club, Organization, Team

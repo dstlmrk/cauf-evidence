@@ -12,8 +12,11 @@ class HtmxMessageMiddleware(MiddlewareMixin):
 
     def process_response(self, request: HttpRequest, response: HttpResponse) -> HttpResponse:
         # The HX-Request header indicates that the request was made with HTMX
-
         if "HX-Request" not in request.headers:
+            return response
+
+        # When we want to wait with the messages until the next request
+        if "HX-Redirect" in response.headers or "HX-Refresh" in response.headers:
             return response
 
         # Ignore redirections because HTMX cannot read the headers

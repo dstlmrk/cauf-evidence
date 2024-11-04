@@ -86,9 +86,9 @@ body {
     margin-right: 7px;
 }
 
-.table td,
-.table th {
-    padding-top: 1rem; /* Zvětšení horního odsazení */
-    padding-bottom: 1rem; /* Zvětšení spodního odsazení */
-    font-size: 1.1rem;
-}
+/*.table td,*/
+/*.table th {*/
+/*    padding-top: 1rem; !* Zvětšení horního odsazení *!*/
+/*    padding-bottom: 1rem; !* Zvětšení spodního odsazení *!*/
+/*    font-size: 1.1rem;*/
+/*}*/

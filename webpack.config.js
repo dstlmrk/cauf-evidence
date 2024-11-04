@@ -20,6 +20,7 @@ module.exports = {
             htmx: "htmx.org",
             $: "jquery",
             jQuery: "jquery",
+            Alpine: "alpinejs",
         }),
     ],
     module: {

@@ -1,15 +1,9 @@
 {% extends "core/base.html" %}
 
-{% block title %}Teams <i class="bi bi-lightning-fill"></i>{% endblock %}
+{% block title %}Teams{% endblock %}
 
 {% block content %}
     {% load crispy_forms_tags %}
-
-    <!-- Placeholder for the modal -->
-    <div id="modal" class="modal fade">
-        <div id="dialog" class="modal-dialog" hx-target="this"></div>
-    </div>
-
     <div class="row">
         <div class="col-md-12">
             <div class="alert alert-primary d-flex align-items-center" role="alert">
@@ -20,12 +14,12 @@
                     might have a different name than the others, etc.
                 </div>
             </div>
-            <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_team' club_id %}" hx-target="#dialog">
+            <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_team' %}" hx-target="#dialog">
                 Add Team <i class="bi bi-plus"></i>
             </button>
             <div
                 hx-trigger="load, teamListChanged from:body"
-                hx-get="{% url 'clubs:team_list' club_id %}"
+                hx-get="{% url 'clubs:team_list' %}"
                 hx-target="this"
             ></div>
         </div>

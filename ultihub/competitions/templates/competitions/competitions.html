@@ -1,83 +1,127 @@
 {% extends "core/base.html" %}
 {% load humanize %}
 
-{% block title %}Competitions <i class="bi bi-trophy-fill"></i>{% endblock %}
+{% block title %}
+    Competitions
+{% endblock %}
 
 {% block buttons %}
-    <button type="button" class="btn btn-success position-relative">
-        <i class="bi bi-receipt-cutoff"></i> Generate Invoice
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
-            2
-            <span class="visually-hidden">unread messages</span>
-        </span>
-    </button>
+    {% if request.user.is_authenticated and request.session.club %}
+        <button
+            type="button"
+            class="btn btn-success position-relative"
+            hx-post="{% url 'finance:invoices' %}"
+            hx-trigger="click"
+            hx-confirm="Are you sure you don’t want to register any more teams for now? It’s always better to have fewer invoices than more. 🙂"
+            hx-swap="none"
+            {% if not club_application_without_invoice_count %}disabled{% endif %}
+        >
+            <i class="bi bi-receipt-cutoff"></i> Generate Invoice
+            <span class="position-absolute top-0 translate-middle badge rounded-pill bg-dark">
+                {{ club_application_without_invoice_count }} total
+            </span>
+        </button>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
     {% load crispy_forms_tags %}
-
-    <!-- Placeholder for the modal -->
-    <div id="modal" class="modal fade">
-        <div id="dialog" class="modal-dialog" hx-target="this"></div>
-    </div>
-
     <div class="row">
         <div class="col-md-12">
             <div class="list-group">
                 {% for competition in competitions %}
-                    <a href="#" class="list-group-item list-group-item-action" aria-current="true">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">
-                                <small class="text-muted"
-                                    >{{ competition.season }} / {{ competition.get_type_display | upper }}</small
-                                >
-                                {{ competition.name }}
-                            </h5>
-
+                    <div class="list-group-item">
+                        <h5 class="mb-1">
+                            <small class="text-muted"
+                                >{{ competition.season }} / {{ competition.get_type_display | upper }}</small
+                            >
+                            {{ competition.name }}
+                        </h5>
+                        {% if competition.club_application_without_invoice_count > 0 %}
                             <span
                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                 style="z-index: 1050;"
                             >
-                                1
+                                {{ competition.club_application_without_invoice_count }}
                             </span>
-                        </div>
+                        {% endif %}
                         <div class="mb-1">
-                            <span class="badge text-bg-success">OPEN REGISTRATION</span>
-                            {#    <span class="badge text-bg-danger">CLOSED REGISTRATION</span>#}
+                            {% if competition.registration_deadline > now %}
+                                <span class="badge text-bg-success">OPEN REGISTRATION</span>
+                            {% else %}
+                                <span class="badge text-bg-danger">CLOSED REGISTRATION</span>
+                            {% endif %}
                             <span class="badge text-bg-primary">{{ competition.division | upper }}</span>
-
                             {% if competition.age_restriction %}
                                 <span class="badge text-bg-primary">{{ competition.age_restriction | upper }}</span>
                             {% endif %}
-                            {% if competition.is_on_beach %}<span class="badge text-bg-primary">BEACH</span>{% endif %}
                         </div>
+                        <div class="d-flex w-100 justify-content-between">
+                            <p class="mb-1">
+                                <i class="bi bi-people-fill"></i> Total registered teams:
+                                <strong>{{ competition.application_count }}</strong>
+                                <br />
+                                <i class="bi bi-person-fill"></i> Your club's teams:
+                                <strong>{{ competition.club_application_count }}</strong>
+                                {% if competition.has_awaiting_payment %}
+                                    <span class="badge text-bg-danger">AWAITING PAYMENT</span>
+                                {% endif %}
+                                <br />
+                                <i class="bi bi-wallet2"></i> Deposit per team:
+                                <strong>CZK {{ competition.deposit }}</strong>
+                                <br />
+                                <i class="bi bi-cash-coin"></i> Season fee:
+                                <strong>CZK {{ competition.season.player_fee }}</strong>
+                                <br />
 
-                        <p class="mb-1">
-                            <i class="bi bi-people-fill"></i> Total registered teams: <strong>12</strong>
-                            <br />
-                            <i class="bi bi-person-fill"></i> Your Club's teams: <strong>1</strong>
-                            <span class="badge text-bg-danger">UNPAID</span>
-                            <br />
-                            <i class="bi bi-cash-coin"></i> Season fee:
-                            <strong>CZK {{ competition.season.player_fee }}</strong><br />
-
-                            <span class="d-block d-md-none">
-                                <i class="bi bi-clock"></i> Registration deadline:
-                                <b style="white-space: nowrap;"
-                                    >{{ competition.registration_deadline | date:'d/m/y H:i' }}</b
-                                >
-                            </span>
-                            <span class="d-none d-md-block">
                                 <i class="bi bi-clock"></i> Registration deadline:
                                 <b
                                     data-bs-toggle="tooltip"
-                                    data-bs-title="{{ competition.registration_deadline | date:'d/m/y H:i' }}"
+                                    data-bs-title="{{ competition.registration_deadline | date:'d/m/Y H:i' }}"
                                     style="white-space: nowrap;"
                                     >{{ competition.registration_deadline | naturaltime }}</b
                                 >
-                            </span>
-                        </p>
-                    </a>
+                            </p>
+                            <div class="mb-2 d-none d-md-block" style="align-self: end;">
+                                <button
+                                    class="btn btn-primary"
+                                    hx-get="{% url 'competitions:registration' competition.id %}"
+                                    hx-target="#dialog"
+                                >
+                                    <i class="bi bi-person-plus"></i> Registration
+                                </button>
+                                <button
+                                    class="btn btn-primary"
+                                    hx-get="{% url 'competitions:application_list' competition.id %}"
+                                    hx-target="#dialog-lg"
+                                >
+                                    <i class="bi bi-people"></i> Teams
+                                </button>
+                                <button type="button" class="btn btn-primary" disabled>
+                                    <i class="bi bi-trophy"></i> Results
+                                </button>
+                            </div>
+                        </div>
+                        <div class="d-block d-md-none">
+                            <button
+                                class="btn btn-primary mt-2"
+                                hx-get="{% url 'competitions:registration' competition.id %}"
+                                hx-target="#dialog"
+                            >
+                                <i class="bi bi-person-plus"></i> Registration
+                            </button>
+                            <button
+                                class="btn btn-primary mt-2"
+                                hx-get="{% url 'competitions:application_list' competition.id %}"
+                                hx-target="#dialog-lg"
+                            >
+                                <i class="bi bi-people"></i> Teams
+                            </button>
+                            <button type="button" class="btn btn-primary mt-2" disabled>
+                                <i class="bi bi-trophy"></i> Results
+                            </button>
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
         </div>

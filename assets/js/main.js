@@ -6,7 +6,6 @@ import "../css/styles.css";
 
 import * as bootstrap from "bootstrap";
 import "htmx.org";
-import "alpinejs";
 
 // Datatables
 import "jquery";
@@ -14,6 +13,7 @@ import "datatables.net-bs5";
 import "datatables.net-responsive-bs5";
 
 // Custom
+import "./alpine";
 import "./dtables";
 import "./dialog";
 import "./toasts";

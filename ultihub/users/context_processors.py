@@ -1,6 +1,6 @@
 from django.http import HttpRequest
 
-from users.api import get_user_managed_clubs
+from users.services import get_user_managed_clubs
 
 
 def user_managed_clubs(request: HttpRequest) -> dict:
