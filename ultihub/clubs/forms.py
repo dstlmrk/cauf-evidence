@@ -13,8 +13,6 @@ class OrganizationForm(forms.ModelForm):
         fields = [
             "name",
             "identification_number",
-            "account_number",
-            "bank_code",
             "street",
             "city",
             "postal_code",

@@ -62,14 +62,11 @@ class Migration(migrations.Migration):
                     models.CharField(
                         blank=True,
                         max_length=17,
-                        validators=[clubs.validators.validate_account_number],
                     ),
                 ),
                 (
                     "bank_code",
-                    models.CharField(
-                        blank=True, max_length=4, validators=[clubs.validators.validate_bank_code]
-                    ),
+                    models.CharField(blank=True, max_length=4),
                 ),
                 ("street", models.CharField(max_length=64)),
                 ("city", models.CharField(max_length=64)),
