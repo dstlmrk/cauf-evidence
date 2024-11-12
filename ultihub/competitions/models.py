@@ -154,3 +154,6 @@ class CompetitionApplication(AuditModel):
             f"<CompetitionApplication({self.pk},"
             f" team_name={self.team_name}, competition={self.competition})>"
         )
+
+    def registrant_name(self) -> str:
+        return self.registered_by.get_full_name()

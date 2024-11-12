@@ -3,6 +3,7 @@ from django.contrib import admin
 from competitions.models import (
     AgeRestriction,
     Competition,
+    CompetitionApplication,
     Division,
     Season,
 )
@@ -53,6 +54,18 @@ class CompetitionAdmin(admin.ModelAdmin):
     )
 
 
-# @admin.register(CompetitionApplication)
-# class CompetitionApplicationAdmin(admin.ModelAdmin):
-#     pass
+@admin.register(CompetitionApplication)
+class CompetitionApplicationAdmin(admin.ModelAdmin):
+    list_display = (
+        "competition__season",
+        "competition_display",
+        "team_name",
+        "team__club__name",
+        "registrant_name",
+        "state",
+    )
+
+    def competition_display(self, obj: CompetitionApplication) -> str:
+        return (
+            f"{obj.competition.age_restriction} {obj.competition.name} {obj.competition.division}"
+        )
