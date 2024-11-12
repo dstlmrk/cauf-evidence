@@ -31,11 +31,11 @@ def competitions(request: HttpRequest) -> HttpResponse:
     )
 
     if club_id:
-        context["club_application_without_invoice_count"] = CompetitionApplication.objects.filter(
+        context["club_application_without_invoice_total"] = CompetitionApplication.objects.filter(
             team__club=club_id, invoice__isnull=True
         ).count()
 
-        competitions_qs.annotate(
+        competitions_qs = competitions_qs.annotate(
             club_application_count=Count(
                 "competitionapplication",
                 filter=Q(

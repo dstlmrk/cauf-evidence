@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block buttons %}
-    {% if request.user.is_authenticated and request.session.club %}
+    {% if request.session.club %}
         <button
             type="button"
             class="btn btn-success position-relative"
@@ -14,11 +14,11 @@
             hx-trigger="click"
             hx-confirm="Are you sure you don’t want to register any more teams for now? It’s always better to have fewer invoices than more. 🙂"
             hx-swap="none"
-            {% if not club_application_without_invoice_count %}disabled{% endif %}
+            {% if not club_application_without_invoice_total %}disabled{% endif %}
         >
             <i class="bi bi-receipt-cutoff"></i> Generate Invoice
             <span class="position-absolute top-0 translate-middle badge rounded-pill bg-dark">
-                {{ club_application_without_invoice_count }} total
+                {{ club_application_without_invoice_total }} total
             </span>
         </button>
     {% endif %}
@@ -33,7 +33,7 @@
                     <div class="list-group-item">
                         <h5 class="mb-1">
                             <small class="text-muted"
-                                >{{ competition.season }} / {{ competition.get_type_display | upper }}</small
+                                >{{ competition.season }}/2026 | {{ competition.get_type_display | upper }}</small
                             >
                             {{ competition.name }}
                         </h5>
@@ -61,16 +61,18 @@
                                 <i class="bi bi-people-fill"></i> Total registered teams:
                                 <strong>{{ competition.application_count }}</strong>
                                 <br />
-                                <i class="bi bi-person-fill"></i> Your club's teams:
-                                <strong>{{ competition.club_application_count }}</strong>
-                                {% if competition.has_awaiting_payment %}
-                                    <span class="badge text-bg-danger">AWAITING PAYMENT</span>
+                                {% if request.session.club %}
+                                    <i class="bi bi-person-fill"></i> Your club's teams:
+                                    <strong>{{ competition.club_application_count }}</strong>
+                                    {% if competition.has_awaiting_payment %}
+                                        <span class="badge text-bg-danger">AWAITING PAYMENT</span>
+                                    {% endif %}
+                                    <br />
                                 {% endif %}
-                                <br />
-                                <i class="bi bi-wallet2"></i> Deposit per team:
+                                <i class="bi bi-cash-coin"></i> Deposit per team:
                                 <strong>CZK {{ competition.deposit }}</strong>
                                 <br />
-                                <i class="bi bi-cash-coin"></i> Season fee:
+                                <i class="bi bi-person"></i> Player's season fee:
                                 <strong>CZK {{ competition.season.player_fee }}</strong>
                                 <br />
 
@@ -83,13 +85,15 @@
                                 >
                             </p>
                             <div class="mb-2 d-none d-md-block" style="align-self: end;">
-                                <button
-                                    class="btn btn-primary"
-                                    hx-get="{% url 'competitions:registration' competition.id %}"
-                                    hx-target="#dialog"
-                                >
-                                    <i class="bi bi-person-plus"></i> Registration
-                                </button>
+                                {% if request.session.club %}
+                                    <button
+                                        class="btn btn-primary"
+                                        hx-get="{% url 'competitions:registration' competition.id %}"
+                                        hx-target="#dialog"
+                                    >
+                                        <i class="bi bi-person-plus"></i> Registration
+                                    </button>
+                                {% endif %}
                                 <button
                                     class="btn btn-primary"
                                     hx-get="{% url 'competitions:application_list' competition.id %}"
