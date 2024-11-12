@@ -35,8 +35,6 @@ class OrganizationFactory(factory.django.DjangoModelFactory):
 
     name = factory.Faker("company")
     # identification_number
-    # account_number
-    # bank_code
     street = factory.Faker("street_address")
     city = factory.Faker("city")
     postal_code = factory.Faker("postcode")

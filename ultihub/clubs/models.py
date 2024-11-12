@@ -5,11 +5,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
 
-from clubs.validators import (
-    validate_account_number,
-    validate_bank_code,
-    validate_identification_number,
-)
+from clubs.validators import validate_identification_number
 
 
 class Club(AuditModel):
@@ -44,16 +40,6 @@ class Organization(AuditModel):
         unique=True,
         validators=[validate_identification_number],
         help_text="Company identification number",
-    )
-    account_number = models.CharField(
-        max_length=17,  # 6 digits for prefix, 10 digits for account number, 1 hyphen
-        blank=True,
-        validators=[validate_account_number],
-    )
-    bank_code = models.CharField(
-        max_length=4,
-        blank=True,
-        validators=[validate_bank_code],
     )
     street = models.CharField(
         max_length=64,
