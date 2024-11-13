@@ -7,9 +7,34 @@ from django.db.models import Count, Exists, OuterRef, Prefetch, Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
+from django.views.decorators.http import require_GET
 
 from competitions.forms import RegistrationForm
-from competitions.models import ApplicationStateEnum, Competition, CompetitionApplication
+from competitions.models import (
+    ApplicationStateEnum,
+    Competition,
+    CompetitionApplication,
+    TeamAtTournament,
+    Tournament,
+)
+
+
+@require_GET
+def tournaments(request: HttpRequest) -> HttpResponse:
+    return render(
+        request,
+        "competitions/tournaments.html",
+        {
+            "tournaments": Tournament.objects.all()
+            .select_related(
+                "competition",
+                "competition__season",
+                "competition__division",
+                "competition__age_restriction",
+            )
+            .order_by("-start_date"),
+        },
+    )
 
 
 def competitions(request: HttpRequest) -> HttpResponse:
@@ -23,6 +48,13 @@ def competitions(request: HttpRequest) -> HttpResponse:
                 "competitionapplication_set",
                 queryset=CompetitionApplication.objects.select_related("team"),
                 to_attr="applications",
+            ),
+        )
+        .prefetch_related(
+            Prefetch(
+                "tournament_set",
+                queryset=Tournament.objects.all(),
+                to_attr="tournaments",
             ),
         )
         .annotate(application_count=Count("competitionapplication"))
@@ -111,6 +143,7 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
     return render(request, "competitions/partials/registration_form.html", {"form": form})
 
 
+@require_GET
 def application_list(request: HttpRequest, competition_id: int) -> HttpResponse:
     return render(
         request,
@@ -119,5 +152,20 @@ def application_list(request: HttpRequest, competition_id: int) -> HttpResponse:
             "applications": CompetitionApplication.objects.filter(
                 competition_id=competition_id
             ).order_by("created_at"),
+        },
+    )
+
+
+@require_GET
+def standings_list(request: HttpRequest, tournament_id: int) -> HttpResponse:
+    return render(
+        request,
+        "competitions/partials/standings_list.html",
+        {
+            "teams_at_tournament": (
+                TeamAtTournament.objects.filter(tournament_id=tournament_id)
+                .select_related("application", "application__team", "application__team__club")
+                .order_by("final_placement")
+            ),
         },
     )

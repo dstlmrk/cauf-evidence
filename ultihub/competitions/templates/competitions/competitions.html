@@ -31,12 +31,12 @@
             <div class="list-group">
                 {% for competition in competitions %}
                     <div class="list-group-item">
-                        <h5 class="mb-1">
+                        <h2 class="mb-1">
                             <small class="text-muted"
-                                >{{ competition.season }}/2026 | {{ competition.get_type_display | upper }}</small
+                                >{{ competition.season }} | {{ competition.get_type_display | upper }}</small
                             >
                             {{ competition.name }}
-                        </h5>
+                        </h2>
                         {% if competition.club_application_without_invoice_count > 0 %}
                             <span
                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -45,7 +45,7 @@
                                 {{ competition.club_application_without_invoice_count }}
                             </span>
                         {% endif %}
-                        <div class="mb-1">
+                        <h5 class="mb-1">
                             {% if competition.registration_deadline > now %}
                                 <span class="badge text-bg-success">OPEN REGISTRATION</span>
                             {% else %}
@@ -55,14 +55,15 @@
                             {% if competition.age_restriction %}
                                 <span class="badge text-bg-primary">{{ competition.age_restriction | upper }}</span>
                             {% endif %}
-                        </div>
+                        </h5>
                         <div class="d-flex w-100 justify-content-between">
-                            <p class="mb-1">
+                            <div class="mt-2 mb-1">
+                                <h3>Details</h3>
                                 <i class="bi bi-people-fill"></i> Total registered teams:
                                 <strong>{{ competition.application_count }}</strong>
                                 <br />
                                 {% if request.session.club %}
-                                    <i class="bi bi-person-fill"></i> Your club's teams:
+                                    <i class="bi bi-shield-fill"></i> Your club's teams:
                                     <strong>{{ competition.club_application_count }}</strong>
                                     {% if competition.has_awaiting_payment %}
                                         <span class="badge text-bg-danger">AWAITING PAYMENT</span>
@@ -83,7 +84,15 @@
                                     style="white-space: nowrap;"
                                     >{{ competition.registration_deadline | naturaltime }}</b
                                 >
-                            </p>
+                                <br />
+                                <h3 class="mt-2">Tournaments</h3>
+                                {% for tournament in competition.tournaments %}
+                                    <i class="bi bi-calendar-check"></i> {{ tournament.name }}
+                                    ({{ tournament.start_date | date:'d/m' }} —
+                                    {{ tournament.end_date | date:'d/m/Y' }}), {{ tournament.location }}<br />
+                                {% endfor %}
+                            </div>
+
                             <div class="mb-2 d-none d-md-block" style="align-self: end;">
                                 {% if request.session.club %}
                                     <button
@@ -99,10 +108,10 @@
                                     hx-get="{% url 'competitions:application_list' competition.id %}"
                                     hx-target="#dialog-lg"
                                 >
-                                    <i class="bi bi-people"></i> Teams
+                                    <i class="bi bi-people"></i> Registered teams
                                 </button>
                                 <button type="button" class="btn btn-primary" disabled>
-                                    <i class="bi bi-trophy"></i> Results
+                                    <i class="bi bi-trophy"></i> Standings
                                 </button>
                             </div>
                         </div>
@@ -119,10 +128,10 @@
                                 hx-get="{% url 'competitions:application_list' competition.id %}"
                                 hx-target="#dialog-lg"
                             >
-                                <i class="bi bi-people"></i> Teams
+                                <i class="bi bi-people"></i> Registered teams
                             </button>
                             <button type="button" class="btn btn-primary mt-2" disabled>
-                                <i class="bi bi-trophy"></i> Results
+                                <i class="bi bi-trophy"></i> Standings
                             </button>
                         </div>
                     </div>
