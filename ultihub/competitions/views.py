@@ -25,14 +25,12 @@ def tournaments(request: HttpRequest) -> HttpResponse:
         request,
         "competitions/tournaments.html",
         {
-            "tournaments": Tournament.objects.all()
-            .select_related(
+            "tournaments": Tournament.objects.select_related(
                 "competition",
                 "competition__season",
                 "competition__division",
                 "competition__age_restriction",
-            )
-            .order_by("-start_date"),
+            ).order_by("start_date", "name"),
         },
     )
 
@@ -53,7 +51,7 @@ def competitions(request: HttpRequest) -> HttpResponse:
         .prefetch_related(
             Prefetch(
                 "tournament_set",
-                queryset=Tournament.objects.all(),
+                queryset=Tournament.objects.all().order_by("start_date", "name"),
                 to_attr="tournaments",
             ),
         )
