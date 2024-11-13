@@ -78,18 +78,16 @@
                                 <br />
 
                                 <i class="bi bi-clock"></i> Registration deadline:
-                                <b
-                                    data-bs-toggle="tooltip"
-                                    data-bs-title="{{ competition.registration_deadline | date:'d/m/Y H:i' }}"
-                                    style="white-space: nowrap;"
-                                    >{{ competition.registration_deadline | naturaltime }}</b
-                                >
+                                <b>{{ competition.registration_deadline | date:'d/m/Y H:i' }}</b>
                                 <br />
                                 <h3 class="mt-2">Tournaments</h3>
                                 {% for tournament in competition.tournaments %}
-                                    <i class="bi bi-calendar-check"></i> {{ tournament.name }}
-                                    ({{ tournament.start_date | date:'d/m' }} —
-                                    {{ tournament.end_date | date:'d/m/Y' }}), {{ tournament.location }}<br />
+                                    <i class="bi bi-calendar-check"></i> <b>{{ tournament.name }}</b><br />
+                                    <i class="bi bi-calendar-check invisible"></i>
+                                    <span class="text-muted"
+                                        >{{ tournament.start_date | date:'d/m' }} —
+                                        {{ tournament.end_date | date:'d/m/Y' }}, {{ tournament.location }}</span
+                                    ><br />
                                 {% endfor %}
                             </div>
 
