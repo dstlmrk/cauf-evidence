@@ -6,13 +6,11 @@
     <div class="list-group">
         {% for tournament in tournaments %}
             <div class="list-group-item">
-                <h2 class="mb-1">
-                    <small class="text-muted"
-                        >{{ tournament.competition.season }} |
-                        {{ tournament.competition.get_type_display | upper }}</small
-                    >
-                    {{ tournament.name }}
-                </h2>
+                <span class="text-muted"
+                    >{{ tournament.competition.season }} • {{ tournament.competition.get_type_display | upper }}</span
+                ><br />
+                <h2 class="mb-1">{{ tournament.name }}</h2>
+
                 <h5 class="mb-1">
                     <span class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
                         >{{ tournament.competition.division | upper }}</span
@@ -42,7 +40,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="d-block d-md-none">
+                <div class="mb-3 mt-1 d-block d-md-none">
                     <button type="button" class="btn btn-primary" disabled>
                         <i class="bi bi-person-lines-fill"></i> Rosters
                     </button>

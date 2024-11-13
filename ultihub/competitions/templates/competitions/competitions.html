@@ -31,12 +31,10 @@
             <div class="list-group">
                 {% for competition in competitions %}
                     <div class="list-group-item">
-                        <h2 class="mb-1">
-                            <small class="text-muted"
-                                >{{ competition.season }} | {{ competition.get_type_display | upper }}</small
-                            >
-                            {{ competition.name }}
-                        </h2>
+                        <span class="text-muted"
+                            >{{ competition.season }} • {{ competition.get_type_display | upper }}</span
+                        ><br />
+                        <h2 class="mb-1">{{ competition.name }}</h2>
                         {% if competition.club_application_without_invoice_count > 0 %}
                             <span
                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -115,7 +113,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="d-block d-md-none">
+                        <div class="mb-3 mt-1 d-block d-md-none">
                             <button
                                 class="btn btn-primary mt-2"
                                 hx-get="{% url 'competitions:registration' competition.id %}"
