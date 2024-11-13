@@ -44,7 +44,7 @@ class Club(AuditModel):
         return f"<Club({self.pk}, name={self.name})>"
 
     def clean(self) -> None:
-        if self.organization_name is not None and (
+        if self.organization_name and (
             Club.objects.filter(organization_name=self.organization_name)
             .exclude(pk=self.pk)
             .exists()
@@ -53,7 +53,7 @@ class Club(AuditModel):
                 {"organization_name": "Club with this organization name already exists."}
             )
 
-        if self.identification_number is not None and (
+        if self.identification_number and (
             Club.objects.filter(identification_number=self.identification_number)
             .exclude(pk=self.pk)
             .exists()

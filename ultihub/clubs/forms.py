@@ -51,6 +51,7 @@ class CreateClubForm(forms.ModelForm):
     def clean(self) -> None:
         cleaned_data = super().clean()
         primary_agent_email = cleaned_data.get("primary_agent_email")  # type: ignore
+        team_name = cleaned_data["name"]  # type: ignore
         if (
             primary_agent_email
             and NewAgentRequest.objects.filter(
@@ -59,7 +60,11 @@ class CreateClubForm(forms.ModelForm):
             ).exists()
         ):
             raise ValidationError(
-                {"primary_agent_email": "Agent with this email must log in first"}
+                {"primary_agent_email": "Agent with this email must log in first"},
+            )
+        if Team.objects.filter(name=team_name, is_active=True).exists():
+            raise ValidationError(
+                {"name": "There is already an active team with this name"},
             )
 
     class Meta:
