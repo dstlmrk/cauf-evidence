@@ -1,6 +1,5 @@
-import factory
 import factory.fuzzy
-from clubs.models import Club, Organization, Team
+from clubs.models import Club, Team
 from django.contrib.auth.models import User
 from factory import SubFactory
 from pytest_factoryboy import register
@@ -29,19 +28,6 @@ class AgentFactory(factory.django.DjangoModelFactory):
 
 
 @register
-class OrganizationFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Organization
-
-    name = factory.Faker("company")
-    # identification_number
-    street = factory.Faker("street_address")
-    city = factory.Faker("city")
-    postal_code = factory.Faker("postcode")
-    country = "Česká republika"
-
-
-@register
 class ClubFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Club
@@ -50,7 +36,7 @@ class ClubFactory(factory.django.DjangoModelFactory):
     email = factory.Faker("email")
     website = factory.Faker("url")
     city = factory.Faker("city")
-    organization = SubFactory(OrganizationFactory)
+    organization_name = factory.Faker("company")
 
 
 @register

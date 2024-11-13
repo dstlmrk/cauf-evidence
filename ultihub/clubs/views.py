@@ -11,7 +11,7 @@ from users.services import (
     unassign_or_cancel_agent_invite_from_club,
 )
 
-from clubs.forms import AddAgentForm, ClubForm, OrganizationForm, TeamForm
+from clubs.forms import AddAgentForm, ClubForm, TeamForm
 from clubs.models import Club, Team
 
 
@@ -79,36 +79,25 @@ def team_list(request: HttpRequest) -> HttpResponse:
 @login_required
 def settings(request: HttpRequest) -> HttpResponse:
     club = get_object_or_404(Club, pk=get_club_id(request))
-
     club_form = ClubForm(instance=club)
-    organization_form = OrganizationForm(instance=club.organization)
 
-    if request.method == "POST":
-        if "submit_club" in request.POST:
-            club_form = ClubForm(request.POST, instance=club)
-            if club_form.is_valid():
-                club_form.save()
+    if request.method == "POST" and "submit_club" in request.POST:
+        club_form = ClubForm(request.POST, instance=club)
+        if club_form.is_valid():
+            club_form.save()
 
-                # Sync navbar club name
-                request.session["club"]["name"] = club_form.cleaned_data["name"]
-                request.session.modified = True
+            # Sync navbar club name
+            request.session["club"]["name"] = club_form.cleaned_data["name"]
+            request.session.modified = True
 
-                messages.success(request, "Club updated successfully.")
-                return redirect("clubs:settings")
-
-        elif "submit_organization" in request.POST:
-            organization_form = OrganizationForm(data=request.POST, instance=club.organization)
-            if organization_form.is_valid():
-                organization_form.save()
-                messages.success(request, "Organization updated successfully.")
-                return redirect("clubs:settings")
+            messages.success(request, "Club updated successfully.")
+            return redirect("clubs:settings")
 
     return render(
         request,
         "clubs/settings.html",
         context={
             "club_form": club_form,
-            "organization_form": organization_form,
         },
     )
 

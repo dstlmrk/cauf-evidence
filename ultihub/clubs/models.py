@@ -2,7 +2,6 @@ from typing import Any
 
 from core.models import AuditModel
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
 from django.db import models
 
 from clubs.validators import validate_identification_number
@@ -11,16 +10,31 @@ from clubs.validators import validate_identification_number
 class Club(AuditModel):
     name = models.CharField(
         max_length=48,
+        help_text="Only administrators can change this field",
     )
     email = models.EmailField(
+        blank=True,
         help_text="Contact email of the club",
     )
     website = models.URLField(
+        blank=True,
         help_text="URL of the club's website",
     )
     city = models.CharField(
         max_length=64,
+        blank=True,
         help_text="City where the club is located",
+    )
+    organization_name = models.CharField(
+        max_length=64,
+        blank=True,
+        help_text="Name of the organization with legal entity status",
+    )
+    identification_number = models.CharField(
+        max_length=8,
+        blank=True,
+        validators=[validate_identification_number],
+        help_text="Company identification number",
     )
 
     class Meta:
@@ -29,44 +43,24 @@ class Club(AuditModel):
     def __str__(self) -> str:
         return f"<Club({self.pk}, name={self.name})>"
 
-
-class Organization(AuditModel):
-    name = models.CharField(
-        max_length=64,
-        unique=True,
-    )
-    identification_number = models.CharField(
-        max_length=8,
-        unique=True,
-        validators=[validate_identification_number],
-        help_text="Company identification number",
-    )
-    street = models.CharField(
-        max_length=64,
-    )
-    city = models.CharField(
-        max_length=64,
-    )
-    postal_code = models.CharField(
-        max_length=6,
-        validators=[
-            RegexValidator(
-                regex=r"^\d{3}\s?\d{2}$",
-                message="Postal code must be in format XXXXX or XXX XX.",
+    def clean(self) -> None:
+        if self.organization_name is not None and (
+            Club.objects.filter(organization_name=self.organization_name)
+            .exclude(pk=self.pk)
+            .exists()
+        ):
+            raise ValidationError(
+                {"organization_name": "Club with this organization name already exists."}
             )
-        ],
-    )
-    country = models.CharField(
-        max_length=32,
-        default="Česká republika",
-    )
-    club = models.OneToOneField(
-        Club,
-        on_delete=models.PROTECT,
-    )
 
-    def __str__(self) -> str:
-        return f"<Organization({self.pk}, name={self.name})>"
+        if self.identification_number is not None and (
+            Club.objects.filter(identification_number=self.identification_number)
+            .exclude(pk=self.pk)
+            .exists()
+        ):
+            raise ValidationError(
+                {"identification_number": "Club with this identification number already exists."}
+            )
 
 
 class Team(AuditModel):

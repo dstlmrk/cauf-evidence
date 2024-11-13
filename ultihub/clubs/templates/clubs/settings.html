@@ -5,40 +5,34 @@
 {% block content %}
     {% load crispy_forms_tags %}
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-lg-7">
+            <h2>Club</h2>
             <div class="card mb-3">
-                <h5 class="card-header">Organization</h5>
                 <div class="card-body" x-data="{ isModified: false }">
                     <form method="POST" x-on:input="isModified = true">
                         {% csrf_token %}
-                        {{ organization_form|crispy }}
-                        <button
-                            type="submit"
-                            name="submit_organization"
-                            class="btn btn-success"
-                            :disabled="!isModified"
-                        >
-                            Save
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card mb-3">
-                <h5 class="card-header">Club</h5>
-                <div class="card-body" x-data="{ isModified: false }">
-                    <form method="POST" x-on:input="isModified = true">
-                        {% csrf_token %}
-                        {{ club_form|crispy }}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ club_form.name|as_crispy_field }}
+                                {{ club_form.website|as_crispy_field }}
+                                {{ club_form.email|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ club_form.city|as_crispy_field }}
+                                {{ club_form.organization_name|as_crispy_field }}
+                                {{ club_form.identification_number|as_crispy_field }}
+                            </div>
+                        </div>
                         <button type="submit" name="submit_club" class="btn btn-success" :disabled="!isModified">
                             Save
                         </button>
                     </form>
                 </div>
             </div>
+        </div>
+        <div class="col-lg-5">
+            <h2>Agents</h2>
             <div class="card mb-3">
-                <h5 class="card-header">Agents</h5>
                 <div class="card-body">
                     <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_agent' %}" hx-target="#dialog">
                         <i class="bi bi-person-plus"></i> Add Agent

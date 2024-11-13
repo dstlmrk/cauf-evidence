@@ -1,11 +1,10 @@
 import pytest
 from pytest_factoryboy import register
 
-from tests.factories import AgentFactory, ClubFactory, OrganizationFactory, TeamFactory, UserFactory
+from tests.factories import AgentFactory, ClubFactory, TeamFactory, UserFactory
 
 register(AgentFactory)
 register(ClubFactory)
-register(OrganizationFactory)
 register(UserFactory)
 register(TeamFactory)
 

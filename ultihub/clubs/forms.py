@@ -4,24 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from users.models import NewAgentRequest
 
-from clubs.models import Club, Organization, Team
-
-
-class OrganizationForm(forms.ModelForm):
-    class Meta:
-        model = Organization
-        fields = [
-            "name",
-            "identification_number",
-            "street",
-            "city",
-            "postal_code",
-            "country",
-        ]
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self.fields["country"].disabled = True
+from clubs.models import Club, Team
 
 
 class ClubForm(forms.ModelForm):
@@ -32,6 +15,8 @@ class ClubForm(forms.ModelForm):
             "email",
             "website",
             "city",
+            "organization_name",
+            "identification_number",
         ]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -59,20 +44,32 @@ class AddAgentForm(forms.Form):
 
 class CreateClubForm(forms.ModelForm):
     primary_agent_email = forms.EmailField(
-        required=True,
+        required=False,  # temporary solution
         help_text="Must be Google account",
     )
 
     def clean(self) -> None:
         cleaned_data = super().clean()
-        if NewAgentRequest.objects.filter(
-            email=cleaned_data.get("primary_agent_email"),  # type: ignore
-            processed_at__isnull=True,
-        ).exists():
+        primary_agent_email = cleaned_data.get("primary_agent_email")  # type: ignore
+        if (
+            primary_agent_email
+            and NewAgentRequest.objects.filter(
+                email=primary_agent_email,
+                processed_at__isnull=True,
+            ).exists()
+        ):
             raise ValidationError(
                 {"primary_agent_email": "Agent with this email must log in first"}
             )
 
     class Meta:
         model = Club
-        fields = ("name", "email", "website", "city", "primary_agent_email")
+        fields = (
+            "name",
+            "email",
+            "website",
+            "city",
+            "organization_name",
+            "identification_number",
+            "primary_agent_email",
+        )
