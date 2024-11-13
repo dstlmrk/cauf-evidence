@@ -62,7 +62,7 @@ def competitions(request: HttpRequest) -> HttpResponse:
 
     if club_id:
         context["club_application_without_invoice_total"] = CompetitionApplication.objects.filter(
-            team__club=club_id, invoice__isnull=True
+            team__club=club_id, invoice__isnull=True, state=ApplicationStateEnum.AWAITING_PAYMENT
         ).count()
 
         competitions_qs = competitions_qs.annotate(
@@ -77,6 +77,7 @@ def competitions(request: HttpRequest) -> HttpResponse:
                 filter=Q(
                     competitionapplication__invoice__isnull=True,
                     competitionapplication__team__club_id=club_id,
+                    competitionapplication__state=ApplicationStateEnum.AWAITING_PAYMENT,
                 ),
             ),
             has_awaiting_payment=Exists(

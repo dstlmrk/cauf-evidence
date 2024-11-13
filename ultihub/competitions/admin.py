@@ -2,14 +2,12 @@ from django.contrib import admin
 
 from competitions.models import (
     AgeRestriction,
-    ApplicationStateEnum,
     Competition,
     CompetitionApplication,
     Division,
     Season,
     Tournament,
 )
-from competitions.services import accept_team_to_competition, reject_team_from_competition
 
 
 @admin.register(Season)
@@ -72,14 +70,14 @@ class CompetitionApplicationAdmin(admin.ModelAdmin):
         "state",
     )
 
-    def save_model(self, request, obj, form, change):  # type: ignore
-        previous_state = self.model.objects.get(pk=obj.pk).state if change else None
-        super().save_model(request, obj, form, change)
-        if previous_state and previous_state != obj.state:
-            if obj.state == ApplicationStateEnum.ACCEPTED:
-                accept_team_to_competition(obj)
-            elif previous_state == ApplicationStateEnum.ACCEPTED:
-                reject_team_from_competition(obj)
+    # def save_model(self, request, obj, form, change):  # type: ignore
+    #     previous_state = self.model.objects.get(pk=obj.pk).state if change else None
+    #     super().save_model(request, obj, form, change)
+    #     if previous_state and previous_state != obj.state:
+    #         if obj.state == ApplicationStateEnum.ACCEPTED:
+    #             accept_team_to_competition(obj)
+    #         elif previous_state == ApplicationStateEnum.ACCEPTED:
+    #             reject_team_from_competition(obj)
 
 
 @admin.register(Tournament)

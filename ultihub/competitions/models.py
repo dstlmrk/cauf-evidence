@@ -130,6 +130,7 @@ class CompetitionApplication(AuditModel):
     invoice = models.ForeignKey(
         "finance.Invoice",
         null=True,
+        blank=True,
         on_delete=models.PROTECT,
         related_name="applications",
     )
