@@ -51,7 +51,9 @@
                             {% else %}
                                 <span class="badge text-bg-danger">CLOSED REGISTRATION</span>
                             {% endif %}
-                            <span class="badge text-bg-primary">{{ competition.division | upper }}</span>
+                            <span class="badge text-bg-primary text-bg-{{ competition.division | lower }}"
+                                >{{ competition.division | upper }}</span
+                            >
                             {% if competition.age_restriction %}
                                 <span class="badge text-bg-primary">{{ competition.age_restriction | upper }}</span>
                             {% endif %}

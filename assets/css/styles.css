@@ -54,6 +54,19 @@ body {
     background-color: #143c7d !important;
 }
 
+.text-bg-open {
+    background-color: #2f85ed !important;
+}
+
+.text-bg-women {
+    background-color: #990054 !important;
+}
+
+.text-bg-mixed {
+    background-color: #e6cf2e !important;
+    color: black !important;
+}
+
 .dropdown-item:active {
     background-color: #1c4ea2;
 }

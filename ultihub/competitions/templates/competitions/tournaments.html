@@ -14,7 +14,9 @@
                     {{ tournament.name }}
                 </h2>
                 <h5 class="mb-1">
-                    <span class="badge text-bg-primary">{{ tournament.competition.division | upper }}</span>
+                    <span class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
+                        >{{ tournament.competition.division | upper }}</span
+                    >
                     {% if tournament.competition.age_restriction %}
                         <span class="badge text-bg-primary">{{ tournament.competition.age_restriction | upper }}</span>
                     {% endif %}
