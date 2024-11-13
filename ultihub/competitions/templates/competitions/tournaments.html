@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+
+{% block title %}Tournaments{% endblock %}
+
+{% block content %}
+    <div class="list-group">
+        {% for tournament in tournaments %}
+            <div class="list-group-item">
+                <h2 class="mb-1">
+                    <small class="text-muted"
+                        >{{ tournament.competition.season }} |
+                        {{ tournament.competition.get_type_display | upper }}</small
+                    >
+                    {{ tournament.name }}
+                </h2>
+                <h5 class="mb-1">
+                    <span class="badge text-bg-primary">{{ tournament.competition.division | upper }}</span>
+                    {% if tournament.competition.age_restriction %}
+                        <span class="badge text-bg-primary">{{ tournament.competition.age_restriction | upper }}</span>
+                    {% endif %}
+                </h5>
+                <div class="d-flex w-100 justify-content-between">
+                    <div class="mt-2 mb-1">
+                        <i class="bi bi-calendar-check"></i> {{ tournament.start_date }} - {{ tournament.end_date }}<br />
+                        <i class="bi bi-geo-alt-fill"></i> {{ tournament.location }}<br />
+                        <i class="bi bi-trophy-fill"></i> {{ tournament.competition.age_restriction }}
+                        {{ tournament.competition.name }}
+                        {{ tournament.competition.division }} <br />
+                    </div>
+                    <div class="mb-2 d-none d-md-block" style="align-self: end;">
+                        <button type="button" class="btn btn-primary" disabled>
+                            <i class="bi bi-person-lines-fill"></i> Rosters
+                        </button>
+                        <button
+                            class="btn btn-primary"
+                            hx-get="{% url 'competitions:standings_list' tournament.id %}"
+                            hx-target="#dialog"
+                        >
+                            <i class="bi bi-trophy"></i> Standings
+                        </button>
+                    </div>
+                </div>
+                <div class="d-block d-md-none">
+                    <button type="button" class="btn btn-primary" disabled>
+                        <i class="bi bi-person-lines-fill"></i> Rosters
+                    </button>
+                    <button
+                        class="btn btn-primary"
+                        hx-get="{% url 'competitions:standings_list' tournament.id %}"
+                        hx-target="#dialog"
+                    >
+                        <i class="bi bi-trophy"></i> Standings
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,12 +1,11 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+from django.views.decorators.http import require_GET
 
-tasks = []
 
-
-def index(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
-        task = request.POST.get("task")
-        tasks.append(task)
-        return render(request, "partials/task_item.html", {"task": task})
-    return render(request, "core/homepage.html", {"tasks": tasks})
+@require_GET
+def homepage(request: HttpRequest) -> HttpResponse:
+    return render(
+        request,
+        "core/homepage.html",
+    )

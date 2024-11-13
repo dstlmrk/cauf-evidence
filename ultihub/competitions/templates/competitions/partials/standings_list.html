@@ -1,0 +1,44 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-trophy"></i> Standings</h5>
+    </div>
+    <div class="modal-body">
+        <div class="mb-2 d-none d-md-block">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Team</th>
+                        <th scope="col">Club</th>
+                        <th scope="col">Spirit AVG</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team_at_tournament in teams_at_tournament %}
+                        <tr>
+                            <th scope="row">{{ team_at_tournament.final_placement | default:"" }}</th>
+                            <td>{{ team_at_tournament.application.team_name }}</td>
+                            <td>{{ team_at_tournament.application.team.club.name }}</td>
+                            <td>{{ team_at_tournament.spirit_avg | default:"" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-block d-md-none">
+            <ul class="list-group">
+                {% for team_at_tournament in teams_at_tournament %}
+                    <li class="list-group-item">
+                        Placement: <b>{{ team_at_tournament.final_placement | default:"" }}</b><br />
+                        Name: <b>{{ team_at_tournament.application.team_name }}</b><br />
+                        Club: <b>{{ team_at_tournament.application.team.club.name }}</b><br />
+                        Spirit AVG: <b>{{ team_at_tournament.spirit_avg | default:"" }}</b><br />
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+</div>

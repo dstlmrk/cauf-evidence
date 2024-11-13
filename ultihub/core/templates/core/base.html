@@ -11,6 +11,7 @@
     </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         {% url 'competitions:competitions' as competitions_url %}
+        {% url 'tournaments' as tournaments_url %}
 
         <!-- Placeholder for the modal -->
         <div id="modal" class="modal fade">
@@ -90,6 +91,13 @@
                                     </ul>
                                 </li>
                             {% endif %}
+                            <li class="nav-item">
+                                <a
+                                    class="nav-link {% if request.path == tournaments_url %}active{% endif %}"
+                                    href="{{ tournaments_url }}"
+                                    ><i class="bi bi-fire"></i> Tournaments</a
+                                >
+                            </li>
                             <li class="nav-item">
                                 <a
                                     class="nav-link {% if request.path == competitions_url %}active{% endif %}"
