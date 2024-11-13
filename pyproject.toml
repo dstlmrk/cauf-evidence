@@ -107,10 +107,8 @@ help = "Check migrations"
 sequence = [
 	"docker compose -f docker/compose.test.yaml up -d",
 	"python tests/wait_for_postgres.py",
-	"poetry run python ultihub/manage.py makemigrations --check --dry-run",
-	"docker compose -f docker/compose.test.yaml down"
+	"bash -c 'poetry run python ultihub/manage.py makemigrations --check --dry-run || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down; exit $EXIT_CODE'"
 ]
-ignore_fail = true
 envfile = "secrets/.env.test"
 
 [tool.poe.tasks.type]
@@ -123,11 +121,9 @@ help = "Run unit tests (without checks)"
 sequence = [
 	"docker compose -f docker/compose.test.yaml up -d",
 	"python tests/wait_for_postgres.py",
-	"pytest",
-	"docker compose -f docker/compose.test.yaml down"
+	"bash -c 'pytest || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down; exit $EXIT_CODE'"
 ]
 envfile = "secrets/.env.test"
-ignore_fail = true
 
 [tool.poe.tasks.migrate]
 help = "Migrate the database"

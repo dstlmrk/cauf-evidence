@@ -56,3 +56,4 @@ class AgentAtClubFactory(factory.django.DjangoModelFactory):
 
     agent = SubFactory(AgentFactory)
     club = SubFactory(ClubFactory)
+    invited_by = SubFactory(UserFactory)
