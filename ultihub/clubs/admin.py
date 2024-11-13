@@ -2,37 +2,13 @@ from django.contrib import admin
 from users.services import assign_or_invite_agent_to_club
 
 from clubs.forms import CreateClubForm
-from clubs.models import Club, Organization, Team
-
-
-class OrganizationInline(admin.StackedInline):
-    model = Organization
-    can_delete = False
-    min_num = 1
-    readonly_fields = ("country",)
-    fieldsets = (
-        (
-            None,
-            {
-                "description": "The following fields pertain to organization information.",
-                "fields": (
-                    "name",
-                    "identification_number",
-                    "street",
-                    "city",
-                    "postal_code",
-                    "country",
-                ),
-            },
-        ),
-    )
+from clubs.models import Club, Team
 
 
 @admin.register(Club)
 class ClubAdmin(admin.ModelAdmin):
-    list_display = ("name", "city", "email")
+    list_display = ("name", "city", "organization_name", "identification_number")
     ordering = ("name",)
-    inlines = (OrganizationInline,)
     add_form = CreateClubForm
 
     def get_form(self, request, obj=None, **kwargs):  # type: ignore
@@ -50,9 +26,10 @@ class ClubAdmin(admin.ModelAdmin):
                 is_primary=True,
                 name=obj.name,
             )
-            assign_or_invite_agent_to_club(
-                club=obj,
-                is_primary=True,
-                email=form.cleaned_data["primary_agent_email"],
-                invited_by=request.user,
-            )
+            if primary_agent_email := form.cleaned_data.get("primary_agent_email"):
+                assign_or_invite_agent_to_club(
+                    club=obj,
+                    is_primary=True,
+                    email=primary_agent_email,
+                    invited_by=request.user,
+                )

@@ -19,21 +19,8 @@
             "email": "info@praguedevils.org",
             "website": "https://praguedevils.org/",
             "city": "Prague",
-            "created_at": "2024-11-01T00:00:00Z",
-            "updated_at": "2024-11-01T00:00:00Z"
-        }
-    },
-    {
-        "model": "clubs.organization",
-        "pk": 1,
-        "fields": {
-            "name": "Prague Devils, z.s.",
+            "organization_name": "Prague Devils, z.s.",
             "identification_number": "21983682",
-            "street": "Jeseniova 1909/151",
-            "city": "Praha 3",
-            "postal_code": "130 00",
-            "country": "Česká republika",
-            "club": 1,
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
