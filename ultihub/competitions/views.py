@@ -57,7 +57,7 @@ def competitions(request: HttpRequest) -> HttpResponse:
         )
         .annotate(application_count=Count("competitionapplication"))
         .exclude(is_for_national_teams=True)
-        .order_by("-pk")
+        .order_by("-registration_deadline")
     )
 
     if club_id:
@@ -94,7 +94,12 @@ def competitions(request: HttpRequest) -> HttpResponse:
         "competitions/competitions.html",
         context={
             "now": timezone.now(),
-            "competitions": competitions_qs,
+            "open_competitions": [
+                c for c in competitions_qs if c.registration_deadline > timezone.now()
+            ],
+            "closed_competitions": [
+                c for c in competitions_qs if c.registration_deadline <= timezone.now()
+            ],
             **context,
         },
     )

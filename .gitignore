@@ -164,3 +164,6 @@ secrets/.env.prod
 
 # Ignore all node_modules directories
 node_modules/
+
+# Backups
+backups/
