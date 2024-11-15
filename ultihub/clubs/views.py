@@ -1,9 +1,11 @@
 from core.helpers import get_club_id
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Exists, OuterRef
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_POST
+from django.utils.timezone import now
+from django.views.decorators.http import require_GET, require_POST
 from finance.models import Invoice
 from users.models import AgentAtClub, NewAgentRequest
 from users.services import (
@@ -11,8 +13,8 @@ from users.services import (
     unassign_or_cancel_agent_invite_from_club,
 )
 
-from clubs.forms import AddAgentForm, ClubForm, TeamForm
-from clubs.models import Club, Team
+from clubs.forms import AddAgentForm, ClubForm, MemberForm, TeamForm
+from clubs.models import Club, CoachLicence, Member, Team
 
 
 @login_required
@@ -21,6 +23,70 @@ def invoices(request: HttpRequest) -> HttpResponse:
         request,
         "clubs/invoices.html",
         {"invoices": Invoice.objects.filter(club_id=get_club_id(request)).order_by("-pk")},
+    )
+
+
+@login_required
+def members(request: HttpRequest) -> HttpResponse:
+    return render(request, "clubs/members.html")
+
+
+@login_required
+@require_GET
+def member_list(request: HttpRequest) -> HttpResponse:
+    current_date = now().date()
+    return render(
+        request,
+        "clubs/partials/member_list.html",
+        {
+            "members": Member.objects.filter(club_id=get_club_id(request)).annotate(
+                has_coach_licence=Exists(
+                    CoachLicence.objects.filter(
+                        member=OuterRef("pk"),
+                        valid_from__lte=current_date,
+                        valid_to__gte=current_date,
+                    )
+                ),
+            )
+        },
+    )
+
+
+@login_required
+def add_member(request: HttpRequest) -> HttpResponse:
+    if request.method == "POST":
+        form = MemberForm(request.POST)
+        if form.is_valid():
+            form.instance.club_id = get_club_id(request)
+            form.save()
+            messages.success(request, "Member added successfully.")
+            return HttpResponse(status=204, headers={"HX-Trigger": "memberListChanged"})
+    else:
+        form = MemberForm()
+    return render(request, "clubs/partials/member_form.html", {"form": form})
+
+
+@login_required
+def edit_member(request: HttpRequest, member_id: int) -> HttpResponse:
+    member = get_object_or_404(Member, pk=member_id, club_id=get_club_id(request))
+    if request.method == "POST":
+        form = MemberForm(request.POST, instance=member)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Member updated successfully.")
+            return HttpResponse(status=204, headers={"HX-Trigger": "memberListChanged"})
+    else:
+        form = MemberForm(instance=member)
+    return render(request, "clubs/partials/member_form.html", {"form": form})
+
+
+@login_required
+@require_GET
+def coach_licence_list(request: HttpRequest, member_id: int) -> HttpResponse:
+    return render(
+        request,
+        "clubs/partials/coach_licence_list.html",
+        {"coach_licences": CoachLicence.objects.filter(member_id=member_id).order_by("-valid_to")},
     )
 
 

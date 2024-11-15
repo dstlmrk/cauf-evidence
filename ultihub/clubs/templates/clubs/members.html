@@ -1,0 +1,45 @@
+{% extends "core/base.html" %}
+
+{% block title %}Members{% endblock %}
+
+{% block buttons %}
+    <div class="d-none d-md-block">
+        <button class="btn btn-success" hx-get="{% url 'clubs:add_member' %}" hx-target="#dialog">
+            <i class="bi bi-plus"></i> Add Member
+        </button>
+
+        <button type="button" class="btn btn-primary" disabled>
+            <i class="bi bi-file-earmark-arrow-down"></i> NSA Export
+        </button>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="d-block d-md-none mb-3">
+        <button class="btn btn-success" hx-get="{% url 'clubs:add_member' %}" hx-target="#dialog">
+            <i class="bi bi-plus"></i> Add Member
+        </button>
+        <button type="button" class="btn btn-primary" disabled>
+            <i class="bi bi-file-earmark-arrow-down"></i> NSA Export
+        </button>
+    </div>
+    <div class="row align-items-center">
+        <div class="col-md-4 mb-2">
+            <input id="memberSearch" type="text" class="form-control" placeholder="Search..." aria-label="Search" />
+        </div>
+        <div class="col-md-4 mb-2">
+            <select id="sexFilter" class="form-select" aria-label="Sex filter">
+                <option value="" selected>All sex</option>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-2">
+            <div class="form-check d-flex align-items-center">
+                <input class="form-check-input me-2" type="checkbox" value="" id="activeFilter" />
+                <label class="form-check-label" for="flexCheckDefault"> Include inactive members </label>
+            </div>
+        </div>
+    </div>
+    <div hx-trigger="load, memberListChanged from:body" hx-get="{% url 'clubs:member_list' %}" hx-target="this"></div>
+{% endblock %}

@@ -49,5 +49,292 @@
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
+    },
+    {
+        "model": "clubs.member",
+        "pk": 1,
+        "fields": {
+            "club": 1,
+            "first_name": "Jan",
+            "last_name": "Malý",
+            "birth_date": "1985-05-15",
+            "sex": 2,
+            "citizenship": "CZ",
+            "birth_number": "7059010002",
+            "address": "",
+            "email": "jan.maly@example.com",
+            "marketing_consent_given_at": null,
+            "is_active": true,
+            "is_favourite": false,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.member",
+        "pk": 2,
+        "fields": {
+            "club": 1,
+            "first_name": "Jane",
+            "last_name": "Smith",
+            "birth_date": "1990-09-10",
+            "sex": 1,
+            "citizenship": "US",
+            "birth_number": "",
+            "address": "123 Main St, Springfield",
+            "email": "jane.smith@example.com",
+            "marketing_consent_given_at": "2023-10-01T10:00:00Z",
+            "is_active": true,
+            "is_favourite": true,
+            "default_jersey_number": 23,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.member",
+        "pk": 3,
+        "fields": {
+            "club": 1,
+            "first_name": "Alice",
+            "last_name": "Malátná",
+            "birth_date": "1995-03-20",
+            "sex": 1,
+            "citizenship": "CZ",
+            "birth_number": "7059090005",
+            "address": "",
+            "email": "alice.malatna@example.com",
+            "marketing_consent_given_at": "2023-01-15T15:30:00Z",
+            "is_active": true,
+            "is_favourite": false,
+            "default_jersey_number": 10,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.member",
+        "pk": 4,
+        "fields": {
+            "club": 1,
+            "first_name": "Robert",
+            "last_name": "Taylor",
+            "birth_date": "1980-12-01",
+            "sex": 2,
+            "citizenship": "GB",
+            "birth_number": "",
+            "address": "456 Elm St, London",
+            "email": "robert.taylor@example.com",
+            "marketing_consent_given_at": null,
+            "is_active": false,
+            "is_favourite": false,
+            "default_jersey_number": 96,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.coachlicence",
+        "pk": 1,
+        "fields": {
+            "member": 1,
+            "level": 1,
+            "valid_from": "2022-01-01",
+            "valid_to": "2024-01-01",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.coachlicence",
+        "pk": 2,
+        "fields": {
+            "member": 1,
+            "level": 2,
+            "valid_from": "2023-06-01",
+            "valid_to": "2025-06-01",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.coachlicence",
+        "pk": 3,
+        "fields": {
+            "member": 3,
+            "level": 3,
+            "valid_from": "2021-05-01",
+            "valid_to": "2023-05-01",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.season",
+        "pk": 1,
+        "fields": {
+            "name": "2024/2025",
+            "player_fee": "500.00",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.division",
+        "pk": 1,
+        "fields": {
+            "name": "Women",
+            "is_female_allowed": true,
+            "is_male_allowed": false,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.division",
+        "pk": 2,
+        "fields": {
+            "name": "Mixed",
+            "is_female_allowed": true,
+            "is_male_allowed": true,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.agerestriction",
+        "pk": 1,
+        "fields": {
+            "name": "U20",
+            "min": 0,
+            "max": 20,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.agerestriction",
+        "pk": 2,
+        "fields": {
+            "name": "Masters",
+            "min": 35,
+            "max": 99,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.competition",
+        "pk": 1,
+        "fields": {
+            "name": "JMČR",
+            "season": 1,
+            "division": 1,
+            "age_restriction": 1,
+            "is_for_national_teams": false,
+            "type": 1,
+            "player_fee_per_tournament": "30.00",
+            "is_exempted_from_season_fee": true,
+            "deposit": "2000",
+            "registration_deadline": "2025-04-01T23:59:59Z",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.competition",
+        "pk": 2,
+        "fields": {
+            "name": "HMČR",
+            "season": 1,
+            "division": 2,
+            "age_restriction": null,
+            "is_for_national_teams": false,
+            "type": 2,
+            "player_fee_per_tournament": "30.00",
+            "is_exempted_from_season_fee": false,
+            "deposit": "4000.00",
+            "registration_deadline": "2024-11-15T23:59:59Z",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.tournament",
+        "pk": 1,
+        "fields": {
+            "competition": 1,
+            "name": "Autumn Cup Qualifiers",
+            "start_date": "2023-09-10",
+            "end_date": "2023-09-12",
+            "location": "Prague",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.tournament",
+        "pk": 2,
+        "fields": {
+            "competition": 1,
+            "name": "Autumn Cup Semifinals",
+            "start_date": "2023-10-01",
+            "end_date": "2023-10-02",
+            "location": "Brno",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.tournament",
+        "pk": 3,
+        "fields": {
+            "competition": 1,
+            "name": "Autumn Cup Finals",
+            "start_date": "2023-11-05",
+            "end_date": "2023-11-06",
+            "location": "Ostrava",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.tournament",
+        "pk": 4,
+        "fields": {
+            "competition": 2,
+            "name": "Winter Open Round 1",
+            "start_date": "2024-01-15",
+            "end_date": "2024-01-16",
+            "location": "Plzeň",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.tournament",
+        "pk": 5,
+        "fields": {
+            "competition": 2,
+            "name": "Winter Open Round 2",
+            "start_date": "2024-02-20",
+            "end_date": "2024-02-21",
+            "location": "Liberec",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.tournament",
+        "pk": 6,
+        "fields": {
+            "competition": 2,
+            "name": "Winter Open Finals",
+            "start_date": "2024-03-10",
+            "end_date": "2024-03-11",
+            "location": "Hradec Králové",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
     }
 ]

@@ -4,7 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from users.models import NewAgentRequest
 
-from clubs.models import Club, Team
+from clubs.models import Club, Member, Team
 
 
 class ClubForm(forms.ModelForm):
@@ -31,6 +31,26 @@ class TeamForm(forms.ModelForm):
             "name",
             "description",
         ]
+
+
+class MemberForm(forms.ModelForm):
+    class Meta:
+        model = Member
+        fields = [
+            "first_name",
+            "last_name",
+            "birth_date",
+            "sex",
+            "citizenship",
+            "birth_number",
+            "address",
+            "email",
+            "default_jersey_number",
+            "is_active",
+        ]
+        widgets = {
+            "birth_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+        }
 
 
 class AddAgentForm(forms.Form):

@@ -1,0 +1,34 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-patch-check-fill"></i> Coach licences</h5>
+    </div>
+    <div class="modal-body">
+        {% if coach_licences %}
+            <div class="mb-2">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Class</th>
+                            <th scope="col">Valid from</th>
+                            <th scope="col">Valid to</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for licence in coach_licences %}
+                            <tr>
+                                <th scope="row">{{ licence.get_level_display }}</th>
+                                <td>{{ licence.valid_from | date:"Y/d/m" }}</td>
+                                <td>{{ licence.valid_to | date:"Y/d/m" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-primary" role="alert">No coach licences found.</div>
+        {% endif %}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+</div>

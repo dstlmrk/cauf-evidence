@@ -1,0 +1,40 @@
+{% load crispy_forms_tags %}
+<div
+    x-data="{
+        isFormValid: false,
+        isFormChanged: false,
+        initialData: {}
+    }"
+    x-init="
+        isFormValid = $refs.form.checkValidity();
+        initialData = Object.fromEntries(new FormData($refs.form).entries());
+    "
+>
+    <form
+        hx-post="{{ request.path }}"
+        class="modal-content"
+        x-ref="form"
+        @input="
+            isFormValid = $refs.form.checkValidity();
+            const currentData = Object.fromEntries(new FormData($refs.form).entries());
+            isFormChanged = JSON.stringify(currentData) !== JSON.stringify(initialData);
+        "
+    >
+        {% csrf_token %}
+        <div class="modal-header">
+            <h5 class="modal-title">
+                {% if form.instance.pk %}
+                    <i class="bi bi-person-fill"></i> Edit Member
+                {% else %}
+                    <i class="bi bi-person-plus-fill"></i> Add Member
+                {% endif %}
+            </h5>
+        </div>
+
+        <div class="modal-body">{% csrf_token %}{{ form|crispy }}</div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success" :disabled="!isFormValid || !isFormChanged">Submit</button>
+        </div>
+    </form>
+</div>
