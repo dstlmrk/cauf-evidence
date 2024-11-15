@@ -9,10 +9,10 @@
         {% csrf_token %}
         <div class="modal-header">
             <h5 class="modal-title">
-                {% if form.instance %}
-                    Edit team <i class="bi bi-pencil-fill"></i>
+                {% if form.instance.pk %}
+                    <i class="bi bi-pencil-fill"></i> Edit Team
                 {% else %}
-                    Add team <i class="bi bi-plus"></i>
+                    <i class="bi bi-plus"></i> Add Team
                 {% endif %}
             </h5>
         </div>

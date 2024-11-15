@@ -99,6 +99,14 @@ body {
     margin-right: 7px;
 }
 
+.bg-male {
+    --bs-table-bg: #f0fbff;
+}
+
+.bg-female {
+    --bs-table-bg: #fff4f4;
+}
+
 /*.table td,*/
 /*.table th {*/
 /*    padding-top: 1rem; !* Zvětšení horního odsazení *!*/

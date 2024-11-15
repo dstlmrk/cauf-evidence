@@ -2,9 +2,22 @@ from typing import Any
 
 from core.models import AuditModel
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django_countries.fields import CountryField
 
-from clubs.validators import validate_identification_number
+from clubs.validators import validate_czech_birth_number, validate_identification_number
+
+
+class MemberSexEnum(models.IntegerChoices):
+    FEMALE = 1, "Female"
+    MALE = 2, "Male"
+
+
+class CoachLicenceClassEnum(models.IntegerChoices):
+    FIRST = 1, "First"
+    SECOND = 2, "Second"
+    THIRD = 3, "Third"
 
 
 class Club(AuditModel):
@@ -96,3 +109,97 @@ class Team(AuditModel):
     def save(self, *args: Any, **kwargs: Any) -> None:
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class Member(AuditModel):
+    club = models.ForeignKey(
+        Club,
+        on_delete=models.PROTECT,
+    )
+    first_name = models.CharField(
+        max_length=32,
+        null=False,
+    )
+    last_name = models.CharField(
+        max_length=32,
+        null=False,
+    )
+    birth_date = models.DateField(
+        null=False,
+    )
+    sex = models.IntegerField(
+        choices=MemberSexEnum.choices,
+    )
+    citizenship = CountryField(
+        default="CZ",
+    )
+    birth_number = models.CharField(
+        max_length=10,
+        blank=True,
+        validators=[validate_czech_birth_number],
+        help_text="Required for czech citizens",
+    )
+    address = models.CharField(
+        max_length=128,
+        blank=True,
+        help_text="Required for non-czech citizens",
+    )
+    email = models.EmailField(
+        blank=True,
+        help_text="Member has to confirm this email",
+    )
+    is_email_confirmed = models.BooleanField(
+        default=False,
+    )
+    marketing_consent_given_at = models.DateTimeField(
+        null=True,
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text=(
+            "If you no longer need the member, you can deactivate them."
+            " This means they will not appear in selection lists for rosters, etc."
+            " You can reactivate the member at any time."
+        ),
+    )
+    is_favourite = models.BooleanField(
+        default=False,
+    )
+    default_jersey_number = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(99)]
+    )
+
+    def clean(self) -> None:
+        if self.birth_number and self.citizenship != "CZ":
+            raise ValidationError({"birth_number": "Birth number is only for czech citizens."})
+        if self.address and self.citizenship == "CZ":
+            raise ValidationError({"address": "Address is only for non-czech citizens."})
+        if self.email and Member.objects.filter(email=self.email).exclude(pk=self.pk).exists():
+            raise ValidationError({"email": "Member with this email already exists."})
+        if (
+            self.birth_number
+            and Member.objects.filter(birth_number=self.birth_number).exclude(pk=self.pk).exists()
+        ):
+            raise ValidationError({"birth_number": "Member with this birth number already exists."})
+
+
+class CoachLicence(AuditModel):
+    member = models.ForeignKey(
+        Member,
+        on_delete=models.PROTECT,
+    )
+    level = models.IntegerField(
+        choices=CoachLicenceClassEnum.choices,
+    )
+    valid_from = models.DateField(
+        null=False,
+    )
+    valid_to = models.DateField(
+        null=False,
+    )
+
+    def clean(self) -> None:
+        if self.valid_from > self.valid_to:
+            raise ValidationError(
+                {"valid_to": "Valid to date must be greater than valid from date."}
+            )

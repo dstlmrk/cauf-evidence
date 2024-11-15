@@ -1,0 +1,45 @@
+{% load static %}
+
+<table class="table align-middle" id="membersTable" style="visibility: hidden;">
+    <thead>
+        <tr class="align-middle">
+            <th>Number</th>
+            <th>Name</th>
+            <th>Birth Date</th>
+            <th>Citizenship</th>
+            <th>Sex</th>
+            <th>Coach Licence</th>
+            <th>Active</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for member in members %}
+            <tr class="bg-{% if member.sex == 1 %}female{% else %}male{% endif %}">
+                <th>{{ member.default_jersey_number | default:"2" }}</th>
+                <td>{{ member.first_name }} {{ member.last_name }}</td>
+                <td>{{ member.birth_date | date:'Y/m/d' }}</td>
+                <td>{{ member.citizenship.unicode_flag }} {{ member.citizenship }}</td>
+                <td>{{ member.get_sex_display }}</td>
+                <td>
+                    <a href="" hx-get="{% url 'clubs:coach_licence_list' member.id %}" hx-target="#dialog"
+                        >{% if member.has_coach_licence %}YES{% else %}NO{% endif %}</a
+                    >
+                </td>
+                <td>{% if member.is_active %}YES{% else %}NO{% endif %}</td>
+                <td>
+                    <button
+                        class="btn btn-primary"
+                        hx-get="{% url 'clubs:edit_member' member.id %}"
+                        hx-target="#dialog"
+                    >
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script>
+    initializeMembersTable();
+</script>
