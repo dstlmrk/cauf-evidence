@@ -1,9 +1,12 @@
+from uuid import UUID
+
 from core.helpers import get_club_id
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Exists, OuterRef
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.timezone import now
 from django.views.decorators.http import require_GET, require_POST
 from finance.models import Invoice
@@ -13,7 +16,7 @@ from users.services import (
     unassign_or_cancel_agent_invite_from_club,
 )
 
-from clubs.forms import AddAgentForm, ClubForm, MemberForm, TeamForm
+from clubs.forms import AddAgentForm, ClubForm, MemberConfirmEmailForm, MemberForm, TeamForm
 from clubs.models import Club, CoachLicence, Member, Team
 
 
@@ -52,6 +55,23 @@ def member_list(request: HttpRequest) -> HttpResponse:
     )
 
 
+def confirm_email(request: HttpRequest, token: UUID) -> HttpResponse:
+    member = get_object_or_404(Member, email_confirmation_token=token)
+    if request.method == "POST":
+        form = MemberConfirmEmailForm(request.POST, member=member)
+        if form.is_valid():
+            member.has_email_confirmed = True
+            member.email_confirmation_token = None
+            if form.cleaned_data.get("marketing_consent"):
+                member.marketing_consent_given_at = now()
+            member.save()
+            messages.success(request, "You have confirmed your email")
+            return HttpResponse(status=204, headers={"HX-Redirect": reverse("home")})
+    else:
+        form = MemberConfirmEmailForm(member=member)
+    return render(request, "clubs/confirm_email.html", {"form": form, "member": member})
+
+
 @login_required
 def add_member(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
@@ -59,7 +79,7 @@ def add_member(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             form.instance.club_id = get_club_id(request)
             form.save()
-            messages.success(request, "Member added successfully.")
+            messages.success(request, "Confirmation email sent")
             return HttpResponse(status=204, headers={"HX-Trigger": "memberListChanged"})
     else:
         form = MemberForm()

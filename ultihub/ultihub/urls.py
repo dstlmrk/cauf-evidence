@@ -17,6 +17,7 @@ Including another URLconf
 
 import logging
 
+from clubs.views import confirm_email
 from competitions.views import tournaments
 from debug_toolbar.toolbar import debug_toolbar_urls
 from django.contrib import admin
@@ -32,6 +33,7 @@ urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
     path("api/", include("rest_api.urls")),
     path("club/", include("clubs.urls")),
+    path("confirm-email/<uuid:token>", confirm_email, name="confirm_email"),
     path("competitions/", include("competitions.urls")),
     path("django-rq/", include("django_rq.urls")),
     path("finance/", include("finance.urls")),

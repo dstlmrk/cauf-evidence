@@ -5,10 +5,11 @@
         <tr class="align-middle">
             <th>Number</th>
             <th>Name</th>
-            <th>Birth Date</th>
+            <th>Birthdate</th>
             <th>Citizenship</th>
             <th>Sex</th>
-            <th>Coach Licence</th>
+            <th>Coach licence</th>
+            <th>Confirmed email</th>
             <th>Active</th>
             <th></th>
         </tr>
@@ -26,6 +27,7 @@
                         >{% if member.has_coach_licence %}YES{% else %}NO{% endif %}</a
                     >
                 </td>
+                <td>{% if member.has_email_confirmed %}YES{% else %}NO{% endif %}</td>
                 <td>{% if member.is_active %}YES{% else %}NO{% endif %}</td>
                 <td>
                     <button

@@ -10,7 +10,7 @@ function initializeMembersTable() {
                 { targets: 0, type: "num", className: "text-center" },
                 { targets: 2, className: "text-start" },
                 { targets: 4, searchable: true },
-                { targets: 7, orderable: false },
+                { targets: 8, orderable: false },
             ],
         });
 
@@ -28,11 +28,10 @@ function initializeMembersTable() {
         $("#activeFilter").on("change", function () {
             let isChecked = $(this).is(":checked");
             let searchValue = isChecked ? "" : "YES";
-            console.log(searchValue);
-            dt.column(6).search(searchValue).draw();
+            dt.column(7).search(searchValue).draw();
         });
         // Initial filtering
-        dt.column(6).search("YES").draw();
+        dt.column(7).search("YES").draw();
 
         // Be able to use htmx after DOM change (because of child rows)
         const observer = new MutationObserver(() => {

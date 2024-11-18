@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+    {% load static %}
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <title>Evidence ČAUF</title>
+        <link href="{% static 'dist/bundle.css' %}" rel="stylesheet" />
+        <script defer src="{% static 'dist/bundle.js' %}"></script>
+    </head>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        <!-- Placeholder for the modal -->
+        <div id="modal" class="modal fade">
+            <div id="dialog" class="modal-dialog" hx-target="this"></div>
+        </div>
+
+        <div id="modal-lg" class="modal fade">
+            <div id="dialog-lg" class="modal-dialog modal-lg" hx-target="this"></div>
+        </div>
+
+        <div class="min-vh-100">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container">
+                    <span class="navbar-brand fs-2">
+                        <img src="{% static 'cauf_monogram.svg' %}" />
+                        Evidence ČAUF
+                    </span>
+                    {% block navbar %}{% endblock %}
+                </div>
+            </nav>
+
+            <div class="container mt-4 mb-5">{% block base_content %}{% endblock %}</div>
+
+            <footer class="footer mt-auto py-3 text-center">
+                <div class="container">
+                    <span class="text-muted">© 2024 | {{ release_datetime }}</span>
+                </div>
+            </footer>
+
+            <div data-toast-container class="toast-container position-fixed start-50 translate-middle-x py-3 mt-5">
+                <div
+                    data-toast-template
+                    class="toast align-items-center border-0"
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                >
+                    <div class="d-flex">
+                        <div data-toast-body class="toast-body" style="font-size: 1rem;"></div>
+                        <button
+                            type="button"
+                            class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                </div>
+                {% for message in messages %}
+                    <div
+                        class="toast align-items-center border-0 {{ message.tags }}"
+                        role="alert"
+                        aria-live="assertive"
+                        aria-atomic="true"
+                    >
+                        <div class="d-flex">
+                            <div data-toast-body class="toast-body" style="font-size: 1rem;">{{ message.message }}</div>
+                            <button
+                                type="button"
+                                class="btn-close btn-close-white me-2 m-auto"
+                                data-bs-dismiss="toast"
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if debug %}
+                <script>
+                    if (typeof window.htmx !== "undefined") {
+                        htmx.on("htmx:afterSettle", function (detail) {
+                            if (typeof window.djdt !== "undefined" && detail.target instanceof HTMLBodyElement) {
+                                djdt.show_toolbar();
+                            }
+                        });
+                    }
+                </script>
+            {% endif %}
+        </div>
+    </body>
+</html>
