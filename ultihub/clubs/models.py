@@ -1,10 +1,13 @@
+import uuid
 from typing import Any
 
 from core.models import AuditModel
+from core.tasks import send_email
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django_countries.fields import CountryField
+from users.adapters import logger
 
 from clubs.validators import validate_czech_birth_number, validate_identification_number
 
@@ -148,7 +151,11 @@ class Member(AuditModel):
         blank=True,
         help_text="Member has to confirm this email",
     )
-    is_email_confirmed = models.BooleanField(
+    email_confirmation_token = models.UUIDField(
+        null=True,
+        editable=False,
+    )
+    has_email_confirmed = models.BooleanField(
         default=False,
     )
     marketing_consent_given_at = models.DateTimeField(
@@ -181,6 +188,52 @@ class Member(AuditModel):
             and Member.objects.filter(birth_number=self.birth_number).exclude(pk=self.pk).exists()
         ):
             raise ValidationError({"birth_number": "Member with this birth number already exists."})
+        if (
+            self.email_confirmation_token
+            and Member.objects.filter(email_confirmation_token=self.email_confirmation_token)
+            .exclude(pk=self.pk)
+            .exists()
+        ):
+            raise ValidationError(
+                {
+                    "email_confirmation_token": (
+                        "Member with this email confirmation token already exists."
+                    )
+                }
+            )
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        send_token = False
+
+        if self.pk:
+            old_email = Member.objects.filter(pk=self.pk).values_list("email", flat=True).first()
+            if self.email != old_email:
+                self.has_email_confirmed = False
+                if self.email:
+                    self.email_confirmation_token = uuid.uuid4()
+                    send_token = True
+                else:
+                    self.email_confirmation_token = None
+        else:
+            if self.email:
+                self.email_confirmation_token = uuid.uuid4()
+                send_token = True
+
+        super().save(*args, **kwargs)
+
+        if send_token:
+            link = f"https://evidence.frisbee.cz/confirm-email/{self.email_confirmation_token}"
+            send_email.delay(
+                "Please confirm your email",
+                (
+                    f"You have been registered as a member of {self.club.name}.\n"
+                    f" Please confirm your email by clicking on the following link:\n{link}"
+                ),
+                to=[self.email],
+            )
+            logger.info(
+                "Confirmation token %s sent to %s", self.email_confirmation_token, self.email
+            )
 
 
 class CoachLicence(AuditModel):

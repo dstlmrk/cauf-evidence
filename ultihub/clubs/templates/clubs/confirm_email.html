@@ -1,0 +1,116 @@
+{% extends "core/_base.html" %}
+
+{% block base_content %}
+    {% load crispy_forms_tags %}
+
+    <h1>Check your data and read the terms and conditions</h1>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h2>{{ member.first_name }} {{ member.last_name }}</h2>
+            Birthdate: <b>{{ member.birth_date | date:'d/m/Y' }}</b><br />
+            {% if member.birth_number %}
+                Birth number: <b>{{ member.birth_number }}</b><br />
+            {% else %}
+                Address: <b>{{ member.address }}</b><br />
+            {% endif %}
+            Sex: <b>{{ member.get_sex_display }}</b><br />
+            Citizenship: <b>{{ member.citizenship.unicode_flag }} {{ member.citizenship }}</b><br />
+            Email: <b>{{ member.email }}</b><br />
+            Club: <b>{{ member.club.name }}</b><br />
+        </div>
+    </div>
+
+    <div class="card mt-2">
+        <div class="card-body">
+            <h2>Zásady zpracování osobních údajů</h2>
+            <p>Tyto zásady ochrany osobních údajů upravují způsob zpracování a ochrany osobních údajů:</p>
+            <ol>
+                <li>členů České asociace ultimate frisbee, z.s. (dále jen ČAUF),</li>
+                <li>
+                    současných a bývalých členů či podporovatelů, kteří se přihlásili k odběru emailových newsletterů
+                </li>
+            </ol>
+            <p>
+                Ochrana osobních údajů je poskytována zákonem č. 101/2000 Sb., o ochraně osobních údajů, ve znění
+                pozdějších předpisů.
+            </p>
+            <p>Členové asociace a další osoby mají ve vztahu ke zpracování osobních údajů zejména následující práva:</p>
+            <ul>
+                <li>a) právo znát údaje, které o nich ČAUF vede,</li>
+                <li>b) právo na opravu, respektive doplnění osobních údajů,</li>
+                <li>
+                    c) právo na výmaz osobních údajů po ukončení členství formou anonymizace, ledaže má ve vztahu k
+                    těmto osobním údajům ČAUF povinnost tyto po určitou dobu po zániku členství uchovávat podle
+                    závazného právního předpisu,
+                </li>
+                <li>
+                    d) obrátit se na výkonnou radu ČAUF s žádostí o nápravu, zjistí-li porušení Zákona o ochraně
+                    osobních údajů.
+                </li>
+            </ul>
+            <p>
+                Správcem osobních údajů je <b>Česká asociace ultimate frisbee, z.s.</b>, kterou je možné kontaktovat na
+                emailu info@frisbee.cz. Se svojí stížností se můžete také obrátit na dozorový orgán, kterým je Úřad pro
+                ochranu osobních údajů, se sídlem Pplk. Sochora 27, 170 00 Praha 7.
+            </p>
+
+            <p>
+                Všechny osoby, které s osobními údaji přicházejí do styku, jsou vázány povinností mlčenlivosti.
+                Zpracování osobních údajů v elektronické podobě probíhá jen s důslednou ochranou těchto údajů, úměrnou
+                jejich významu. Pověřené osoby musí především střežit elektronická zařízení, na kterých se osobní údaje
+                nacházejí, před ztrátou a odcizením.
+            </p>
+
+            <p>Tyto zásady zpracování osobních údajů jsou účinné od 1. 8. 2023.</p>
+
+            <h3>Osobní údaje shromažďované v souvislosti s členstvím v asociaci</h3>
+            <p>
+                Česká asociace ultimate frisbee sbírá tyto údaje svých členů: celé jméno, datum narození, rodné číslo (u
+                cizinců určení místa, kde se v ČR převážně zdržují) a státní občanství.
+            </p>
+
+            <p>
+                Osobní údaje jsou zpracovávány za účelem vedení evidence členské základny a s tím souvisejícími
+                činnostmi (např. žádosti o dotace) a budou uchovávány ještě po dobu 10 let ode dne, kdy dotyčná osoba
+                přestane být členem asociace - zejména za účelem obnovení údajů o členství v ČAUF, pokud se člen
+                rozhodne do ČAUF znovu vstoupit. Osobní údaje jsou současně předávány zastřešující organizaci České
+                asociaci létajícího disku, která je zpracovává na základě §3a odst. 3 zákona 115/2001 o podpoře sportu,
+                a příslušným orgánům státní správy, zejména Národní sportovní agentuře prostřednictvím Rejstříku
+                sportovních organizací, sportovců, trenérů a sportovních zařízení. Jméno a příjmení mohou být využity
+                aplikací pro evidenci výsledků ČAUF Catcher.
+            </p>
+
+            <p>
+                Osoba, která odmítne poskytnout výše zmíněné osobní údaje, se nemůže stát členem České asociace ultimate
+                frisbee a tudíž ani hrát na žádném soutěžním ČAUF turnaji.
+            </p>
+            <h3>Zasílání newsletterů</h3>
+
+            <p>
+                Účelem zpracování osobních údajů je zasílání emailových newsletterů České asociace ultimate frisbee,
+                z.s.
+            </p>
+            <p>
+                Právním základem pro zpracování osobních údajů je souhlas udělený při přihlášení k odběru newsletterů.
+                Osobní údaje zpracováváme v rozsahu: e-mailová adresa, jméno, příjmení.
+            </p>
+            <p>
+                Doba zpracování osobních údajů: osobní údaje pro výše uvedený účel zpracováváme do doby odvolání
+                uděleného souhlasu. Souhlas je možné kdykoliv odvolat, a to zasláním e-mailu z e-mailové adresy, pro
+                kterou jste souhlas udělili, nebo kliknutím na odkaz v newsletteru pro odhlášení z odběru.
+            </p>
+            <p>
+                Osobní údaje v uvedeném rozsahu mohou být pro zajištění výše popsaného účelu zpracovávány vedle správce
+                také zpracovateli, zejména společností Ecomail, s.r.o., IČO 027 62 943 se sídlem Na Zderaze 1275/15, 120
+                00 Praha 5.
+            </p>
+        </div>
+    </div>
+
+    <form hx-post="{% url 'confirm_email' member.email_confirmation_token %}" method="post" class="mt-4">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+{% endblock %}
