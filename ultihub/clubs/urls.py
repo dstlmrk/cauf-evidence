@@ -8,11 +8,6 @@ urlpatterns = [
     # MEMBERS ------------------------------------------------------------
     path("member-list", views.member_list, name="member_list"),
     path("members", views.members, name="members"),
-    path(
-        "members/<int:member_id>/licence-list", views.coach_licence_list, name="coach_licence_list"
-    ),
-    path("members/<int:member_id>/edit", views.edit_member, name="edit_member"),
-    path("members/add", views.add_member, name="add_member"),
     # TEAMS --------------------------------------------------------------
     path("team-list", views.team_list, name="team_list"),
     path("teams", views.teams, name="teams"),

@@ -108,7 +108,7 @@
         </div>
     </div>
 
-    <form hx-post="{% url 'confirm_email' member.email_confirmation_token %}" method="post" class="mt-4">
+    <form hx-post="{% url 'members:confirm_email' member.email_confirmation_token %}" method="post" class="mt-4">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-success">Submit</button>
