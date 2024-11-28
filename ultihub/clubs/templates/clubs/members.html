@@ -4,7 +4,7 @@
 
 {% block buttons %}
     <div class="d-none d-md-block">
-        <button class="btn btn-success" hx-get="{% url 'clubs:add_member' %}" hx-target="#dialog">
+        <button class="btn btn-success" hx-get="{% url 'members:add_member' %}" hx-target="#dialog">
             <i class="bi bi-plus"></i> Add Member
         </button>
 
@@ -16,7 +16,7 @@
 
 {% block content %}
     <div class="d-block d-md-none mb-3">
-        <button class="btn btn-success" hx-get="{% url 'clubs:add_member' %}" hx-target="#dialog">
+        <button class="btn btn-success" hx-get="{% url 'members:add_member' %}" hx-target="#dialog">
             <i class="bi bi-plus"></i> Add Member
         </button>
         <button type="button" class="btn btn-primary" disabled>

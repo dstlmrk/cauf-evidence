@@ -5,8 +5,6 @@ import django.db.models.deletion
 import django_countries.fields
 from django.db import migrations, models
 
-import clubs.validators
-
 
 class Migration(migrations.Migration):
     dependencies = [
@@ -36,7 +34,6 @@ class Migration(migrations.Migration):
                         blank=True,
                         help_text="Required for czech citizens",
                         max_length=10,
-                        validators=[clubs.validators.validate_czech_birth_number],
                     ),
                 ),
                 (

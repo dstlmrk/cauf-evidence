@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "competitions.apps.CompetitionsConfig",
     "core.apps.CoreConfig",
     "finance.apps.FinanceConfig",
+    "members.apps.MembersConfig",
     "rest_api.apps.RestApiConfig",
     "users.apps.UsersConfig",
     # 3rd party
