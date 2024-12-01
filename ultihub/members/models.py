@@ -25,6 +25,13 @@ class CoachLicenceClassEnum(models.IntegerChoices):
     THIRD = 3, "Third"
 
 
+class TransferStateEnum(models.IntegerChoices):
+    REQUESTED = 1, "Requested"
+    PROCESSED = 2, "Processed"
+    REVOKED = 3, "Revoked"
+    REJECTED = 4, "Rejected"
+
+
 class Member(AuditModel):
     club = models.ForeignKey(
         "clubs.Club",
@@ -167,3 +174,76 @@ class CoachLicence(AuditModel):
             raise ValidationError(
                 {"valid_to": "Valid to date must be greater than valid from date."}
             )
+
+
+class Transfer(AuditModel):
+    member = models.ForeignKey(
+        Member,
+        on_delete=models.PROTECT,
+        related_name="transfers",
+    )
+    state = models.IntegerField(
+        choices=TransferStateEnum.choices,
+        default=TransferStateEnum.REQUESTED,
+    )
+    source_club = models.ForeignKey(
+        "clubs.Club",
+        on_delete=models.PROTECT,
+        related_name="outgoing_transfers",
+    )
+    target_club = models.ForeignKey(
+        "clubs.Club",
+        on_delete=models.PROTECT,
+        related_name="incoming_transfers",
+    )
+    requesting_club = models.ForeignKey(
+        "clubs.Club",
+        on_delete=models.PROTECT,
+        related_name="requested_transfers",
+    )
+    approving_club = models.ForeignKey(
+        "clubs.Club",
+        on_delete=models.PROTECT,
+        related_name="approved_transfers",
+    )
+    requested_by = models.ForeignKey(
+        "users.Agent",
+        on_delete=models.PROTECT,
+        related_name="requested_transfers",
+    )
+    approved_by = models.ForeignKey(
+        "users.Agent",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="approved_transfers",
+    )
+    approved_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def clean(self) -> None:
+        if self.source_club == self.target_club:
+            raise ValidationError("Target club must be different from source club")
+        if self.state == TransferStateEnum.PROCESSED and not self.approved_by:
+            raise ValidationError("Approved by agent must be set")
+
+        if (
+            Transfer.objects.filter(
+                member=self.member,
+                state=TransferStateEnum.REQUESTED,
+                source_club=self.source_club,
+                target_club=self.target_club,
+            )
+            .exclude(pk=self.pk)
+            .exists()
+        ):
+            raise ValidationError("Member already has a pending transfer request")
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        self.clean()
+        super().save(*args, **kwargs)

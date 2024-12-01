@@ -1,5 +1,7 @@
 from typing import Any
 
+from clubs.models import Club
+from core.helpers import SessionClub
 from django import forms
 
 from members.models import Member
@@ -50,3 +52,42 @@ class MemberConfirmEmailForm(forms.Form):
         super().__init__(*args, **kwargs)
         if member and member.marketing_consent_given_at:
             self.fields.pop("marketing_consent")
+
+
+class TransferRequestForm(forms.Form):
+    member_id = forms.IntegerField(widget=forms.HiddenInput())
+    source_club = forms.ChoiceField(
+        required=True,
+        disabled=True,
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+    target_club = forms.ChoiceField(
+        choices=[],
+        required=True,
+        disabled=True,
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+
+class TransferRequestFromMyClubForm(TransferRequestForm):
+    def __init__(self, *args: Any, member: Member, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["member_id"].initial = member.id
+        self.fields["source_club"].choices = [(member.club.id, member.club.name)]  # type: ignore
+        self.fields["source_club"].initial = member.club.id
+        self.fields["target_club"].disabled = False
+        self.fields["target_club"].choices = [  # type: ignore
+            (club.id, club.name) for club in Club.objects.exclude(id=member.club.id)
+        ]
+
+
+class TransferRequestToMyClubForm(TransferRequestForm):
+    def __init__(
+        self, *args: Any, member: Member, current_club: SessionClub, **kwargs: Any
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["member_id"].initial = member.id
+        self.fields["source_club"].choices = [(member.club.id, member.club.name)]  # type: ignore
+        self.fields["source_club"].initial = member.club.id
+        self.fields["target_club"].choices = [(current_club.id, current_club.name)]  # type: ignore
+        self.fields["target_club"].initial = current_club.id

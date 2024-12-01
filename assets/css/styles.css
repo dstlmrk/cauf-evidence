@@ -113,3 +113,20 @@ body {
 /*    padding-bottom: 1rem; !* Zvětšení spodního odsazení *!*/
 /*    font-size: 1.1rem;*/
 /*}*/
+
+/*.position-relative {*/
+/*    position: relative;*/
+/*}*/
+
+/*.list-group-item {*/
+/*    border-width: 1px 1px 0; !* Odstraníme spodní hranici pro všechny kromě poslední *!*/
+/*}*/
+
+/*.list-group-item:last-child {*/
+/*    border-width: 1px; !* Poslední položka má normální hranici *!*/
+/*}*/
+
+.shadowed-list-group {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Jemný stín */
+    background-color: white; /* Ujistíme se, že je seznam čitelný */
+}

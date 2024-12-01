@@ -5,6 +5,7 @@ from clubs import views
 app_name = "clubs"
 urlpatterns = [
     path("invoices", views.invoices, name="invoices"),
+    path("transfers", views.transfers, name="transfers"),
     # MEMBERS ------------------------------------------------------------
     path("member-list", views.member_list, name="member_list"),
     path("members", views.members, name="members"),
