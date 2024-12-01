@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 
 @require_POST
 def switch_club(request: HttpRequest) -> HttpResponse:
-    messages.success(request, "Club switched successfully.")
+    messages.success(request, "Club switched successfully")
     club = Club.objects.get(id=request.POST["club_id"])
     if request.user.has_perm("manage_club", club):
         request.session["club"] = {"id": club.id, "name": club.name}

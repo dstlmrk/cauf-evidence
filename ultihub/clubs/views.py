@@ -1,18 +1,22 @@
-from core.helpers import get_club_id
+import logging
+
+from core.helpers import get_club_id, get_current_club
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
 from django.views.decorators.http import require_GET, require_POST
 from finance.models import Invoice
-from members.models import CoachLicence, Member
+from members.models import CoachLicence, Member, Transfer
 from users.models import AgentAtClub, NewAgentRequest
 from users.services import assign_or_invite_agent_to_club, unassign_or_cancel_agent_invite_from_club
 
 from clubs.forms import AddAgentForm, ClubForm, TeamForm
 from clubs.models import Club, Team
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -21,6 +25,20 @@ def invoices(request: HttpRequest) -> HttpResponse:
         request,
         "clubs/invoices.html",
         {"invoices": Invoice.objects.filter(club_id=get_club_id(request)).order_by("-pk")},
+    )
+
+
+@login_required
+def transfers(request: HttpRequest) -> HttpResponse:
+    current_club = get_current_club(request)
+    return render(
+        request,
+        "clubs/transfers.html",
+        {
+            "transfers": Transfer.objects.filter(
+                Q(source_club__id=current_club.id) | Q(target_club__id=current_club.id)
+            )
+        },
     )
 
 

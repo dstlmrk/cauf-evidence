@@ -1,8 +1,167 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Title</title>
-    </head>
-    <body></body>
-</html>
+{% extends "core/base.html" %}
+
+{% block title %}Transfers{% endblock %}
+
+{% block buttons %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestTransferModal">
+        <i class="bi bi-envelope-plus"></i> Request transfer
+    </button>
+{% endblock %}
+
+{% block content %}
+    {% load crispy_forms_tags %}
+
+    <!-- Modal -->
+    <div class="modal fade" id="requestTransferModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5"><i class="bi bi-envelope-plus"></i> Transfer request</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div x-data="memberSearch()">
+                    <div class="modal-body">
+                        <div>
+                            <label class="mb-2">Member*</label>
+                            <input
+                                id="id_member_search"
+                                type="text"
+                                class="form-control"
+                                placeholder="Search members..."
+                                x-model="query"
+                                @input.debounce.300ms="search()"
+                                @focus="showResults = true"
+                            />
+                            <ul
+                                class="list-group shadowed-list-group position-absolute w-100"
+                                x-show="showResults"
+                                style="z-index: 1000; max-height: 300px; overflow-y: auto;"
+                            >
+                                <template x-for="result in results" :key="result.id">
+                                    <li
+                                        class="list-group-item list-group-item-action"
+                                        @click="selectMember(result)"
+                                        style="cursor: pointer"
+                                    >
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <small class="text-muted" x-text="result.birth_year"></small>
+                                                <span class="ms-2" x-text="result.flag"></span>
+                                                <strong x-text="result.full_name"></strong>
+                                            </div>
+                                            <div>
+                                                <small
+                                                    class="text-muted"
+                                                    x-show="result.default_jersey_number !== null"
+                                                    x-text="`#${result.default_jersey_number}`"
+                                                ></small>
+                                                <small class="text-muted" x-text="result.club.name"></small>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </template>
+                                <li
+                                    class="list-group-item text-muted text-center"
+                                    x-show="results.length === 0 && query.length >= 3"
+                                    style="cursor: default;"
+                                >
+                                    No members found matching your search
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div
+                            id="transfer-form-container"
+                            hx-trigger="load"
+                            hx-get="{% url 'members:transfer_form' %}"
+                            hx-target="this"
+                            class="mt-3"
+                        ></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="requestTransferForm">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>State</th>
+                <th>Member</th>
+                <th>Transfer</th>
+                <th>Requested by</th>
+                <th>Approved by</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transfer in transfers %}
+                <tr>
+                    <td>
+                        {% if transfer.state == 1 %}
+                            <span class="badge text-bg-warning">{{ transfer.get_state_display | upper }}</span>
+                            <br />
+                            <small class="text-muted">{{ transfer.created_at | date:'Y/m/d H:i' }}</small>
+                        {% elif transfer.state == 2 %}
+                            <span class="badge text-bg-success">{{ transfer.get_state_display | upper }}</span>
+                            <br />
+                            <small class="text-muted">{{ transfer.approved_at | date:'Y/m/d H:i' }}</small>
+                        {% else %}
+                            <span class="badge text-bg-danger">{{ transfer.get_state_display | upper }}</span>
+                            <br />
+                            <small class="text-muted">{{ transfer.updated_at | date:'Y/m/d H:i' }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ transfer.member.first_name }} {{ transfer.member.last_name }}<br />
+                        <small class="text-muted">{{ transfer.member.birth_date | date:'Y/m/d' }}</small>
+                    </td>
+                    <td>
+                        <small class="text-muted">{{ transfer.source_club.name }}</small> <br />→
+                        {{ transfer.target_club.name }}
+                    </td>
+                    <td>
+                        {{ transfer.requested_by.user.first_name }} {{ transfer.requested_by.user.last_name }}<br />
+                        <small class="text-muted">{{ transfer.requesting_club.name }}</small>
+                    </td>
+                    <td>
+                        {% if transfer.state == 2 %}
+                            {{ transfer.approved_by.user.first_name }}
+                            {{ transfer.approved_by.user.last_name }}
+                            <br />
+                            <small class="text-muted">{{ transfer.approving_club.name }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if transfer.state == 1 and transfer.approving_club.id == request.session.club.id %}
+                            <form
+                                method="POST"
+                                hx-post="{% url 'members:approve_transfer' %}"
+                                hx-confirm="Are you sure?"
+                            >
+                                {% csrf_token %}
+                                <input type="hidden" name="transfer_id" value="{{ transfer.id }}" />
+                                <button type="submit" class="btn btn-primary">Approve</button>
+                            </form>
+                        {% endif %}
+                        {% if transfer.state == 1 and transfer.requesting_club.id == request.session.club.id %}
+                            <form
+                                method="POST"
+                                hx-post="{% url 'members:revoke_transfer' %}"
+                                hx-confirm="Are you sure?"
+                            >
+                                {% csrf_token %}
+                                <input type="hidden" name="transfer_id" value="{{ transfer.id }}" />
+                                <button type="submit" class="btn btn-danger">Revoke</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

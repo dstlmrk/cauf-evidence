@@ -13,8 +13,12 @@ import "datatables.net-bs5";
 import "datatables.net-responsive-bs5";
 
 // Custom
-import "./alpine";
 import "./dtables";
 import "./dialog";
 import "./toasts";
 import "./tooltip";
+import "./search";
+
+// Alpine should be the last one
+import "./alpine";
+import "./listeners";
