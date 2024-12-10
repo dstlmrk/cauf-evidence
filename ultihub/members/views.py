@@ -20,7 +20,12 @@ from members.forms import (
     TransferRequestFromMyClubForm,
     TransferRequestToMyClubForm,
 )
-from members.helpers import approve_transfer, create_transfer_request, revoke_transfer
+from members.helpers import (
+    approve_transfer,
+    create_transfer_request,
+    export_members_to_csv_for_nsa,
+    revoke_transfer,
+)
 from members.models import CoachLicence, Member, Transfer
 
 logger = logging.getLogger(__name__)
@@ -204,3 +209,20 @@ def revoke_transfer_view(request: HttpRequest) -> HttpResponse:
     revoke_transfer(transfer=transfer)
     messages.success(request, "Transfer revoked")
     return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
+
+@login_required
+@require_POST
+def export_members_csv_for_nsa_view(request: HttpRequest) -> HttpResponse:
+    export_members_to_csv_for_nsa(
+        agent=request.user.agent,  # type: ignore
+        club=get_current_club(request),
+    )
+    messages.success(
+        request,
+        (
+            "The process of exporting members to NSA has started."
+            " The file will be sent to your email."
+        ),
+    )
+    return HttpResponse(status=204)

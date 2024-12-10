@@ -1,8 +1,18 @@
+import csv
+import logging
+from io import StringIO
+
 from clubs.models import Club
+from core.helpers import SessionClub
+from core.tasks import send_email
+from django.db.models import Exists, OuterRef
 from django.utils import timezone
+from django.utils.timezone import now
 from users.models import Agent
 
-from members.models import Member, Transfer, TransferStateEnum
+from members.models import CoachLicence, Member, Transfer, TransferStateEnum
+
+logger = logging.getLogger(__name__)
 
 
 def create_transfer_request(
@@ -43,3 +53,78 @@ def revoke_transfer(transfer: Transfer) -> None:
 
     transfer.state = TransferStateEnum.REVOKED
     transfer.save()
+
+
+def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
+    # https://rejstriksportu.cz/dashboard/public/dokumentace
+
+    logger.info(f"Agent {agent.user.email} requested NSA export for {club.name}")
+    csv_buffer = StringIO()
+    csv_writer = csv.writer(csv_buffer)
+
+    current_date = now().date()
+    members = Member.objects.filter(club_id=club.id).annotate(
+        has_coach_licence=Exists(
+            CoachLicence.objects.filter(
+                member=OuterRef("pk"),
+                valid_from__lte=current_date,
+                valid_to__gte=current_date,
+            )
+        ),
+    )
+
+    csv_writer.writerow(
+        [
+            "JMENO",
+            "PRIJMENI",
+            "RODNE_CISLO",
+            "OBCANSTVI",
+            "DATUM_NAROZENI",
+            "POHLAVI",
+            "NAZEV_OBCE",
+            "CISLO_POPISNE",
+            "PSC",
+            "SPORTOVEC",
+            "SPORTOVCEM_OD",
+            "SPORTOVEC_DRUH_SPORTU",
+            "SPORTOVEC_UCAST_SOUTEZE_POCET",
+            "TRENER",
+            "TRENEREM_OD",
+            "TRENER_DRUH_SPORTU",
+            "SVAZ_ICO_SKTJ",
+        ]
+    )
+
+    for member in members:
+        csv_writer.writerow(
+            [
+                member.first_name,
+                member.last_name,
+                member.birth_number,
+                member.citizenship.alpha3,
+                member.birth_date.strftime("%d.%m.%Y"),
+                "Ž" if member.sex == 1 else "M",
+                member.address,
+                "TBD",
+                "TBD",
+                "1",
+                "???",
+                "???",
+                "TBD",
+                "1" if member.has_coach_licence else "0",
+                "???",
+                "???",
+                "???",
+            ]
+        )
+
+    csv_data = csv_buffer.getvalue()
+    csv_buffer.close()
+
+    send_email.delay(
+        "NSA export",
+        f"Hi. Here is the CSV export of all members in {club.name} for NSA.",
+        to=[agent.user.email],
+        csv_data=csv_data,
+    )
+    logger.info(f"NSA export sent to {agent.user.email}")
