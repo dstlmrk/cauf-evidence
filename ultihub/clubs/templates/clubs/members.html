@@ -4,13 +4,22 @@
 
 {% block buttons %}
     <div class="d-none d-md-block">
-        <button class="btn btn-success" hx-get="{% url 'members:add_member' %}" hx-target="#dialog">
-            <i class="bi bi-plus"></i> Add Member
-        </button>
+        <div class="d-flex align-items-center gap-1">
+            <button class="btn btn-success" hx-get="{% url 'members:add_member' %}" hx-target="#dialog">
+                <i class="bi bi-plus"></i> Add member
+            </button>
 
-        <button type="button" class="btn btn-primary" disabled>
-            <i class="bi bi-file-earmark-arrow-down"></i> NSA Export
-        </button>
+            <form
+                method="POST"
+                hx-post="{% url 'members:export_members_csv_for_nsa' %}"
+                hx-confirm="Are you sure? The file will be sent to your email."
+            >
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-file-earmark-arrow-down"></i> NSA export
+                </button>
+            </form>
+        </div>
     </div>
 {% endblock %}
 

@@ -12,4 +12,5 @@ urlpatterns = [
     path("transfer-form", views.transfer_form, name="transfer_form"),
     path("approve-transfer", views.approve_transfer_view, name="approve_transfer"),
     path("revoke-transfer", views.revoke_transfer_view, name="revoke_transfer"),
+    path("nsa-export", views.export_members_csv_for_nsa_view, name="export_members_csv_for_nsa"),
 ]
