@@ -17,7 +17,10 @@ class MemberForm(forms.ModelForm):
             "sex",
             "citizenship",
             "birth_number",
-            "address",
+            "street",
+            "city",
+            "house_number",
+            "postal_code",
             "email",
             "default_jersey_number",
             "is_active",
@@ -25,6 +28,28 @@ class MemberForm(forms.ModelForm):
         widgets = {
             "birth_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
         }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["birth_number"].label = "Birth number*"
+        self.fields["birth_number"].help_text = ""
+        self.fields["city"].label = "City*"
+        self.fields["house_number"].label = "House number*"
+        self.fields["postal_code"].label = "Postal code*"
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean() or {}
+        if cleaned_data.get("citizenship") == "CZ":
+            if not cleaned_data.get("birth_number"):
+                self.add_error("birth_number", "This field is required for Czech citizens.")
+        else:
+            if not cleaned_data.get("city"):
+                self.add_error("city", "This field is required for non-Czech citizens.")
+            if not cleaned_data.get("house_number"):
+                self.add_error("house_number", "This field is required for non-Czech citizens.")
+            if not cleaned_data.get("postal_code"):
+                self.add_error("postal_code", "This field is required for non-Czech citizens.")
+        return cleaned_data
 
 
 class MemberConfirmEmailForm(forms.Form):

@@ -19,6 +19,7 @@
             const currentData = Object.fromEntries(new FormData($refs.form).entries());
             isFormChanged = JSON.stringify(currentData) !== JSON.stringify(initialData);
         "
+        novalidate
     >
         {% csrf_token %}
         <div class="modal-header">
@@ -31,10 +32,42 @@
             </h5>
         </div>
 
-        <div class="modal-body">{% csrf_token %}{{ form|crispy }}</div>
+        <div class="modal-body">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form.first_name|as_crispy_field }}
+                    {{ form.last_name|as_crispy_field }}
+                    {{ form.email|as_crispy_field }}
+                    {{ form.default_jersey_number|as_crispy_field }}
+                    {{ form.sex|as_crispy_field }}
+                    {{ form.is_active|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.birth_date|as_crispy_field }}
+                    {{ form.citizenship|as_crispy_field }}
+                    <div id="birth-number-fields" hidden>{{ form.birth_number|as_crispy_field }}</div>
+                    <div id="address-fields" hidden>
+                        <div class="alert alert-primary d-flex align-items-center" role="alert">
+                            <i class="bi bi-arrow-down-circle me-3"></i>
+                            <div>Czech address registered with the Foreigners’ Police by foreign nationals</div>
+                        </div>
+                        {{ form.street|as_crispy_field }}
+                        {{ form.city|as_crispy_field }}
+                        {{ form.house_number|as_crispy_field }}
+                        {{ form.postal_code|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             <button type="submit" class="btn btn-success" :disabled="!isFormValid || !isFormChanged">Submit</button>
         </div>
     </form>
 </div>
+
+<script>
+    listenCitizenship();
+</script>
