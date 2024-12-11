@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "django_rq",
     "guardian",
     "rest_framework",
+    "rangefilter",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
