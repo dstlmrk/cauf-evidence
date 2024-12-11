@@ -1,4 +1,9 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from finance.tasks import (
+    calculate_season_fees_and_generate_invoices,
+    calculate_season_fees_for_check,
+)
 
 from competitions.models import (
     AgeRestriction,
@@ -12,7 +17,31 @@ from competitions.models import (
 
 @admin.register(Season)
 class SeasonAdmin(admin.ModelAdmin):
-    list_display = ("name", "player_fee")
+    list_display = ("name", "player_fee", "has_generated_invoices")
+    change_form_template = "admin/season_change_form.html"
+
+    def has_generated_invoices(self, obj: Season) -> bool:
+        return obj.invoices_generated_at is not None
+
+    has_generated_invoices.boolean = True  # type: ignore
+
+    def response_change(self, request: HttpRequest, obj: Season) -> HttpResponse:
+        if "_check-fees" in request.POST:
+            calculate_season_fees_for_check.delay(request.user, obj)
+            self.message_user(
+                request, "Fees calculation (for check) started. Check you email for results."
+            )
+            return HttpResponseRedirect(".")
+        if "_generate-invoices" in request.POST:
+            if self.has_generated_invoices(obj):
+                self.message_user(request, "Invoices are already generated.", level=messages.ERROR)
+            else:
+                calculate_season_fees_and_generate_invoices.delay(obj)
+                self.message_user(
+                    request, "It's going to take a while. All clubs will be notified."
+                )
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
 
 
 @admin.register(Division)

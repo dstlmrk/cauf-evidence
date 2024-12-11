@@ -1,9 +1,7 @@
-import csv
 import logging
-from io import StringIO
 
 from clubs.models import Club
-from core.helpers import SessionClub
+from core.helpers import SessionClub, create_csv
 from core.tasks import send_email
 from django.db.models import Exists, OuterRef
 from django.utils import timezone
@@ -59,9 +57,6 @@ def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
     # https://rejstriksportu.cz/dashboard/public/dokumentace
 
     logger.info(f"Agent {agent.user.email} requested NSA export for {club.name}")
-    csv_buffer = StringIO()
-    csv_writer = csv.writer(csv_buffer)
-
     current_date = now().date()
     members = Member.objects.filter(club_id=club.id).annotate(
         has_coach_licence=Exists(
@@ -73,8 +68,8 @@ def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
         ),
     )
 
-    csv_writer.writerow(
-        [
+    csv_data = create_csv(
+        header=[
             "JMENO",
             "PRIJMENI",
             "RODNE_CISLO",
@@ -92,11 +87,8 @@ def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
             "TRENEREM_OD",
             "TRENER_DRUH_SPORTU",
             "SVAZ_ICO_SKTJ",
-        ]
-    )
-
-    for member in members:
-        csv_writer.writerow(
+        ],
+        data=[
             [
                 member.first_name,
                 member.last_name,
@@ -116,10 +108,9 @@ def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
                 "???",
                 "???",
             ]
-        )
-
-    csv_data = csv_buffer.getvalue()
-    csv_buffer.close()
+            for member in members
+        ],
+    )
 
     send_email.delay(
         "NSA export",

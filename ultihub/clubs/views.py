@@ -8,6 +8,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
 from django.views.decorators.http import require_GET, require_POST
+from finance.forms import SeasonFeesCheckForm
 from finance.models import Invoice
 from members.models import CoachLicence, Member, Transfer
 from users.models import AgentAtClub, NewAgentRequest
@@ -45,6 +46,10 @@ def transfers(request: HttpRequest) -> HttpResponse:
 @login_required
 def members(request: HttpRequest) -> HttpResponse:
     return render(request, "clubs/members.html")
+
+
+def seasonal_fees_view(request: HttpRequest) -> HttpResponse:
+    return render(request, "clubs/seasonal_fees.html", {"form": SeasonFeesCheckForm()})
 
 
 @login_required
