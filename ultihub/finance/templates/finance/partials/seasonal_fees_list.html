@@ -1,0 +1,31 @@
+<h2>Season {{ season.name }}</h2>
+<div class="card mt-3">
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Member</th>
+                    <th scope="col">Birth date</th>
+                    <th scope="col">Fee (CZK)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ member.first_name }} {{ member.last_name }}</td>
+                        <td>{{ member.birth_date | date:'Y/m/d' }}</td>
+                        <td>500</td>
+                    </tr>
+                {% endfor %}
+                <tr class="table-success">
+                    <td></td>
+                    <td><b>Total</b></td>
+                    <td></td>
+                    <td><b>4500</b></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

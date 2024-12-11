@@ -8,7 +8,6 @@
             <button class="btn btn-success" hx-get="{% url 'members:add_member' %}" hx-target="#dialog">
                 <i class="bi bi-plus"></i> Add member
             </button>
-
             <form
                 method="POST"
                 hx-post="{% url 'members:export_members_csv_for_nsa' %}"
@@ -46,7 +45,7 @@
         <div class="col-md-4 mb-2">
             <div class="form-check d-flex align-items-center">
                 <input class="form-check-input me-2" type="checkbox" value="" id="activeFilter" />
-                <label class="form-check-label" for="flexCheckDefault"> Include inactive members </label>
+                <label class="form-check-label mt-1" for="flexCheckDefault">Include inactive members</label>
             </div>
         </div>
     </div>

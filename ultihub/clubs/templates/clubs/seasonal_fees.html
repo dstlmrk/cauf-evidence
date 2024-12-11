@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+
+{% block title %}Seasonal fees{% endblock %}
+
+{% block content %}
+    <div class="alert alert-primary d-flex align-items-center" role="alert">
+        <i class="bi bi-info-circle-fill me-3"></i>
+        <div>
+            This overview is intended for monitoring during the season only. At the end of the season, an invoice will
+            be automatically generated, and you will be notified about its issuance.
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% load crispy_forms_tags %}
+            <form
+                hx-post="{% url 'finance:seasonal_fees_list' %}"
+                method="post"
+                hx-target="#results-container"
+                hx-swap="innerHTML"
+            >
+                {% csrf_token %}
+                {{ form | crispy }}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="results-container" class="mt-3"></div>
+{% endblock %}

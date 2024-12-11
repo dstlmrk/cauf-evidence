@@ -29,6 +29,10 @@ class Season(AuditModel):
         decimal_places=2,
         validators=[MinValueValidator(0)],
     )
+    invoices_generated_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
 
     def __str__(self) -> str:
         return self.name

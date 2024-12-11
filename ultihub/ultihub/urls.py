@@ -26,6 +26,10 @@ from ultihub import settings
 
 logger = logging.getLogger(__name__)
 
+admin.site.site_header = "ČAUF Admin"
+admin.site.site_title = "ČAUF Admin"
+admin.site.index_title = ""
+
 urlpatterns = [
     path("", include("core.urls")),
     path("accounts/", include("allauth.urls")),

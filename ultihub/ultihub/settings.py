@@ -83,11 +83,11 @@ TEMPLATES = [
 WSGI_APPLICATION = "ultihub.wsgi.application"
 
 MESSAGE_TAGS = {
-    messages.DEBUG: "bg-light",
-    messages.INFO: "text-white bg-primary",
-    messages.SUCCESS: "text-white bg-success",
-    messages.WARNING: "text-dark bg-warning",
-    messages.ERROR: "text-white bg-danger",
+    messages.DEBUG: "bg-light debug",
+    messages.INFO: "text-white bg-primary info",
+    messages.SUCCESS: "text-white bg-success success",
+    messages.WARNING: "text-dark bg-warning warning",
+    messages.ERROR: "text-white bg-danger error",
 }
 
 # DATABASE --------------------------------------------------------------------

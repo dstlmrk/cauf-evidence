@@ -1,4 +1,6 @@
 from core.models import AuditModel
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -35,3 +37,16 @@ class Invoice(AuditModel):
 
     def __str__(self) -> str:
         return f"<Invoice({self.pk}, amount={self.amount})>"
+
+
+class InvoiceRelatedObject(AuditModel):
+    invoice = models.ForeignKey(
+        Invoice,
+        on_delete=models.CASCADE,
+        related_name="related_objects",
+    )
+
+    # Generic relation to any object (season, competition, etc.)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    related_object = GenericForeignKey("content_type", "object_id")

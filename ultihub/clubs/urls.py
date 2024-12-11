@@ -9,6 +9,7 @@ urlpatterns = [
     # MEMBERS ------------------------------------------------------------
     path("member-list", views.member_list, name="member_list"),
     path("members", views.members, name="members"),
+    path("seasonal-fees", views.seasonal_fees_view, name="seasonal_fees"),
     # TEAMS --------------------------------------------------------------
     path("team-list", views.team_list, name="team_list"),
     path("teams", views.teams, name="teams"),
