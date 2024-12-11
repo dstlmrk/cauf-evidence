@@ -9,7 +9,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django_countries.fields import CountryField
 
-from members.validators import validate_czech_birth_number
+from members.validators import validate_czech_birth_number, validate_postal_code
 
 logger = logging.getLogger(__name__)
 
@@ -60,10 +60,22 @@ class Member(AuditModel):
         validators=[validate_czech_birth_number],
         help_text="Required for czech citizens",
     )
-    address = models.CharField(
+    street = models.CharField(
         max_length=128,
         blank=True,
-        help_text="Required for non-czech citizens",
+    )
+    city = models.CharField(
+        max_length=64,
+        blank=True,
+    )
+    house_number = models.CharField(
+        max_length=16,
+        blank=True,
+    )
+    postal_code = models.CharField(
+        max_length=5,
+        blank=True,
+        validators=[validate_postal_code],
     )
     email = models.EmailField(
         blank=True,
@@ -95,10 +107,12 @@ class Member(AuditModel):
     )
 
     def clean(self) -> None:
-        if self.birth_number and self.citizenship != "CZ":
-            raise ValidationError({"birth_number": "Birth number is only for czech citizens."})
-        if self.address and self.citizenship == "CZ":
-            raise ValidationError({"address": "Address is only for non-czech citizens."})
+        if self.citizenship == "CZ" and not self.birth_number:
+            raise ValidationError({"birth_number": "Birth number is required for czech citizens."})
+        if self.citizenship != "CZ" and (
+            not self.city or not self.house_number or not self.postal_code
+        ):
+            raise ValidationError("Address fields are required for non-czech citizens.")
         if self.email and Member.objects.filter(email=self.email).exclude(pk=self.pk).exists():
             raise ValidationError({"email": "Member with this email already exists."})
         if (

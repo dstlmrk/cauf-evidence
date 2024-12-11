@@ -51,7 +51,7 @@
         }
     },
     {
-        "model": "clubs.member",
+        "model": "members.member",
         "pk": 1,
         "fields": {
             "club": 1,
@@ -61,7 +61,6 @@
             "sex": 2,
             "citizenship": "CZ",
             "birth_number": "7059010002",
-            "address": "",
             "email": "jan.maly@example.com",
             "marketing_consent_given_at": null,
             "is_active": true,
@@ -71,7 +70,7 @@
         }
     },
     {
-        "model": "clubs.member",
+        "model": "members.member",
         "pk": 2,
         "fields": {
             "club": 1,
@@ -81,7 +80,10 @@
             "sex": 1,
             "citizenship": "US",
             "birth_number": "",
-            "address": "123 Main St, Springfield",
+            "street": "Main St",
+            "city": "Springfield",
+            "house_number": "123",
+            "postal_code": "00000",
             "email": "jane.smith@example.com",
             "marketing_consent_given_at": "2023-10-01T10:00:00Z",
             "is_active": true,
@@ -92,7 +94,7 @@
         }
     },
     {
-        "model": "clubs.member",
+        "model": "members.member",
         "pk": 3,
         "fields": {
             "club": 1,
@@ -102,7 +104,6 @@
             "sex": 1,
             "citizenship": "CZ",
             "birth_number": "7059090005",
-            "address": "",
             "email": "alice.malatna@example.com",
             "marketing_consent_given_at": "2023-01-15T15:30:00Z",
             "is_active": true,
@@ -113,7 +114,7 @@
         }
     },
     {
-        "model": "clubs.member",
+        "model": "members.member",
         "pk": 4,
         "fields": {
             "club": 1,
@@ -123,7 +124,10 @@
             "sex": 2,
             "citizenship": "GB",
             "birth_number": "",
-            "address": "456 Elm St, London",
+            "street": "Main St",
+            "city": "Springfield",
+            "house_number": "123",
+            "postal_code": "00000",
             "email": "robert.taylor@example.com",
             "marketing_consent_given_at": null,
             "is_active": false,
@@ -134,7 +138,7 @@
         }
     },
     {
-        "model": "clubs.coachlicence",
+        "model": "members.coachlicence",
         "pk": 1,
         "fields": {
             "member": 1,
@@ -146,7 +150,7 @@
         }
     },
     {
-        "model": "clubs.coachlicence",
+        "model": "members.coachlicence",
         "pk": 2,
         "fields": {
             "member": 1,
@@ -158,7 +162,7 @@
         }
     },
     {
-        "model": "clubs.coachlicence",
+        "model": "members.coachlicence",
         "pk": 3,
         "fields": {
             "member": 3,

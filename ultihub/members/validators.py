@@ -34,3 +34,8 @@ def validate_czech_birth_number(value: str) -> None:
 
     if len(value_cleaned) == 10 and int(value_cleaned) % 11 != 0:
         raise ValidationError("Birth number is not divisible by 11.")
+
+
+def validate_postal_code(value: str) -> None:
+    if not value.isdigit() or len(value) != 5:
+        raise ValidationError("Invalid postal code format.")

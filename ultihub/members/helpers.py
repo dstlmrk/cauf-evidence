@@ -3,7 +3,7 @@ import logging
 from clubs.models import Club
 from core.helpers import SessionClub, create_csv
 from core.tasks import send_email
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Subquery
 from django.utils import timezone
 from django.utils.timezone import now
 from users.models import Agent
@@ -58,7 +58,9 @@ def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
 
     logger.info(f"Agent {agent.user.email} requested NSA export for {club.name}")
     current_date = now().date()
-    members = Member.objects.filter(club_id=club.id).annotate(
+    data = []
+
+    for member in Member.objects.filter(club_id=club.id).annotate(
         has_coach_licence=Exists(
             CoachLicence.objects.filter(
                 member=OuterRef("pk"),
@@ -66,7 +68,34 @@ def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
                 valid_to__gte=current_date,
             )
         ),
-    )
+        earliest_coach_licence_date=Subquery(
+            CoachLicence.objects.filter(member=OuterRef("pk"))
+            .order_by("valid_from")
+            .values("valid_from")[:1]
+        ),
+    ):
+        data.append(
+            [
+                member.first_name,
+                member.last_name,
+                member.birth_number,
+                member.citizenship.alpha3,
+                member.birth_date.strftime("%d.%m.%Y"),
+                "Ž" if member.sex == 1 else "M",
+                member.city,
+                member.street,
+                member.house_number,
+                member.postal_code,
+                "1",
+                member.created_at,
+                "98.3",
+                "",  # TODO: calculate it
+                "1" if member.has_coach_licence else "0",
+                member.earliest_coach_licence_date if member.has_coach_licence else "",
+                "98.3",
+                member.club.identification_number,
+            ]
+        )
 
     csv_data = create_csv(
         header=[
@@ -77,6 +106,7 @@ def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
             "DATUM_NAROZENI",
             "POHLAVI",
             "NAZEV_OBCE",
+            "NAZEV_ULICE",
             "CISLO_POPISNE",
             "PSC",
             "SPORTOVEC",
@@ -88,28 +118,7 @@ def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
             "TRENER_DRUH_SPORTU",
             "SVAZ_ICO_SKTJ",
         ],
-        data=[
-            [
-                member.first_name,
-                member.last_name,
-                member.birth_number,
-                member.citizenship.alpha3,
-                member.birth_date.strftime("%d.%m.%Y"),
-                "Ž" if member.sex == 1 else "M",
-                member.address,
-                "TBD",
-                "TBD",
-                "1",
-                "???",
-                "???",
-                "TBD",
-                "1" if member.has_coach_licence else "0",
-                "???",
-                "???",
-                "???",
-            ]
-            for member in members
-        ],
+        data=data,
     )
 
     send_email.delay(
