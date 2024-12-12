@@ -87,81 +87,85 @@
         </div>
     </div>
 
-    <table class="table align-middle">
-        <thead>
-            <tr>
-                <th>State</th>
-                <th>Member</th>
-                <th>Transfer</th>
-                <th>Requested by</th>
-                <th>Approved by</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for transfer in transfers %}
+    {% if transfers %}
+        <table class="table align-middle">
+            <thead>
                 <tr>
-                    <td>
-                        {% if transfer.state == 1 %}
-                            <span class="badge text-bg-warning">{{ transfer.get_state_display | upper }}</span>
-                            <br />
-                            <small class="text-muted">{{ transfer.created_at | date:'Y/m/d H:i' }}</small>
-                        {% elif transfer.state == 2 %}
-                            <span class="badge text-bg-success">{{ transfer.get_state_display | upper }}</span>
-                            <br />
-                            <small class="text-muted">{{ transfer.approved_at | date:'Y/m/d H:i' }}</small>
-                        {% else %}
-                            <span class="badge text-bg-danger">{{ transfer.get_state_display | upper }}</span>
-                            <br />
-                            <small class="text-muted">{{ transfer.updated_at | date:'Y/m/d H:i' }}</small>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {{ transfer.member.first_name }} {{ transfer.member.last_name }}<br />
-                        <small class="text-muted">{{ transfer.member.birth_date | date:'Y/m/d' }}</small>
-                    </td>
-                    <td>
-                        <small class="text-muted">{{ transfer.source_club.name }}</small> <br />→
-                        {{ transfer.target_club.name }}
-                    </td>
-                    <td>
-                        {{ transfer.requested_by.user.first_name }} {{ transfer.requested_by.user.last_name }}<br />
-                        <small class="text-muted">{{ transfer.requesting_club.name }}</small>
-                    </td>
-                    <td>
-                        {% if transfer.state == 2 %}
-                            {{ transfer.approved_by.user.first_name }}
-                            {{ transfer.approved_by.user.last_name }}
-                            <br />
-                            <small class="text-muted">{{ transfer.approving_club.name }}</small>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if transfer.state == 1 and transfer.approving_club.id == request.session.club.id %}
-                            <form
-                                method="POST"
-                                hx-post="{% url 'members:approve_transfer' %}"
-                                hx-confirm="Are you sure?"
-                            >
-                                {% csrf_token %}
-                                <input type="hidden" name="transfer_id" value="{{ transfer.id }}" />
-                                <button type="submit" class="btn btn-primary">Approve</button>
-                            </form>
-                        {% endif %}
-                        {% if transfer.state == 1 and transfer.requesting_club.id == request.session.club.id %}
-                            <form
-                                method="POST"
-                                hx-post="{% url 'members:revoke_transfer' %}"
-                                hx-confirm="Are you sure?"
-                            >
-                                {% csrf_token %}
-                                <input type="hidden" name="transfer_id" value="{{ transfer.id }}" />
-                                <button type="submit" class="btn btn-danger">Revoke</button>
-                            </form>
-                        {% endif %}
-                    </td>
+                    <th>State</th>
+                    <th>Member</th>
+                    <th>Transfer</th>
+                    <th>Requested by</th>
+                    <th>Approved by</th>
+                    <th>Action</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for transfer in transfers %}
+                    <tr>
+                        <td>
+                            {% if transfer.state == 1 %}
+                                <span class="badge text-bg-warning">{{ transfer.get_state_display | upper }}</span>
+                                <br />
+                                <small class="text-muted">{{ transfer.created_at | date:'Y/m/d H:i' }}</small>
+                            {% elif transfer.state == 2 %}
+                                <span class="badge text-bg-success">{{ transfer.get_state_display | upper }}</span>
+                                <br />
+                                <small class="text-muted">{{ transfer.approved_at | date:'Y/m/d H:i' }}</small>
+                            {% else %}
+                                <span class="badge text-bg-danger">{{ transfer.get_state_display | upper }}</span>
+                                <br />
+                                <small class="text-muted">{{ transfer.updated_at | date:'Y/m/d H:i' }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ transfer.member.first_name }} {{ transfer.member.last_name }}<br />
+                            <small class="text-muted">{{ transfer.member.birth_date | date:'Y/m/d' }}</small>
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ transfer.source_club.name }}</small> <br />→
+                            {{ transfer.target_club.name }}
+                        </td>
+                        <td>
+                            {{ transfer.requested_by.user.first_name }} {{ transfer.requested_by.user.last_name }}<br />
+                            <small class="text-muted">{{ transfer.requesting_club.name }}</small>
+                        </td>
+                        <td>
+                            {% if transfer.state == 2 %}
+                                {{ transfer.approved_by.user.first_name }}
+                                {{ transfer.approved_by.user.last_name }}
+                                <br />
+                                <small class="text-muted">{{ transfer.approving_club.name }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if transfer.state == 1 and transfer.approving_club.id == request.session.club.id %}
+                                <form
+                                    method="POST"
+                                    hx-post="{% url 'members:approve_transfer' %}"
+                                    hx-confirm="Are you sure?"
+                                >
+                                    {% csrf_token %}
+                                    <input type="hidden" name="transfer_id" value="{{ transfer.id }}" />
+                                    <button type="submit" class="btn btn-primary">Approve</button>
+                                </form>
+                            {% endif %}
+                            {% if transfer.state == 1 and transfer.requesting_club.id == request.session.club.id %}
+                                <form
+                                    method="POST"
+                                    hx-post="{% url 'members:revoke_transfer' %}"
+                                    hx-confirm="Are you sure?"
+                                >
+                                    {% csrf_token %}
+                                    <input type="hidden" name="transfer_id" value="{{ transfer.id }}" />
+                                    <button type="submit" class="btn btn-danger">Revoke</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-dark" role="alert">No transfers found.</div>
+    {% endif %}
 {% endblock %}

@@ -25,20 +25,104 @@
 {% endblock %}
 
 {% block content %}
-    {% load crispy_forms_tags %}
-    <h2>Open registration ({{ open_competitions | length }})</h2>
-    <div class="list-group">
-        {% if not open_competitions %}
-            <div class="alert alert-primary" role="alert">No competitions are currently open for registration.</div>
-        {% endif %}
-        {% for competition in open_competitions %}
-            {% include "clubs/components/competition-list-group-item.html" with competition=competition %}
-        {% endfor %}
+    <div class="d-none d-md-block">
+        <table class="table align-middle">
+            <thead>
+                <tr class="align-middle">
+                    <th scope="col">Registration<br /><small class="text-muted">Deadline</small></th>
+                    <th scope="col">Season</th>
+                    <th scope="col">Competition</th>
+                    <th scope="col">Deposit<br /><small class="text-muted">per team </small></th>
+                    <th scope="col">Season fee<br /><small class="text-muted">PF per tournament</small></th>
+                    <th scope="col" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for competition in competitions %}
+                    <tr>
+                        <td class="fit pe-5">
+                            {% if competition.registration_deadline > now %}
+                                <span class="badge text-bg-success">OPEN</span>
+                                {% if competition.has_awaiting_payment %}
+                                    <span class="badge text-bg-danger">AWAITING PAYMENT</span>
+                                {% endif %}
+                                <br />
+                                <small class="text-muted"
+                                    >{{ competition.registration_deadline | date:'d/m/Y H:i' }}</small
+                                >
+                            {% else %}
+                                <span class="badge text-bg-dark">CLOSED</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ competition.season }}<br />
+                            <small class="text-muted">{{ competition.get_type_display | upper }}</small>
+                        </td>
+                        <td>
+                            {{ competition.name }}<br />
+                            <span class="badge text-bg-primary text-bg-{{ competition.division | lower }}"
+                                >{{ competition.division | upper }}</span
+                            >
+                            {% if competition.age_restriction %}
+                                <span class="badge text-bg-primary">{{ competition.age_restriction | upper }}</span>
+                            {% endif %}
+                        </td>
+                        <td>CZK {{ competition.deposit | floatformat:0 }}</td>
+                        <td>
+                            CZK {{ competition.season_fee | floatformat:0 }}<br />
+                            <small class="text-muted"> CZK {{ competition.player_fee | floatformat:0 }} </small>
+                        </td>
+                        <td class="fit text-end">
+                            {% if request.session.club and competition.registration_deadline > now %}
+                                <button
+                                    class="btn btn-success position-relative"
+                                    hx-get="{% url 'competitions:registration' competition.id %}"
+                                    hx-target="#dialog"
+                                >
+                                    Registration
+                                    <span class="badge text-bg-dark">{{ competition.club_application_count }}</span>
+                                    {% if competition.club_application_without_invoice_count > 0 %}
+                                        <span
+                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                            style="z-index: 1050;"
+                                        >
+                                            {{ competition.club_application_without_invoice_count }}
+                                        </span>
+                                    {% endif %}
+                                </button>
+                            {% endif %}
+
+                            <button
+                                class="btn btn-primary"
+                                hx-get="{% url 'competitions:application_list' competition.id %}"
+                                hx-target="#dialog-lg"
+                            >
+                                Registered teams
+                                <span class="badge text-bg-secondary">{{ competition.application_count }}</span>
+                            </button>
+
+                            <button
+                                class="btn btn-primary"
+                                hx-get="{% url 'competitions:competition_detail' competition.id %}"
+                                hx-target="#dialog"
+                            >
+                                <i class="bi bi-info-circle"></i>
+                            </button>
+                            <button type="button" class="btn btn-primary" disabled>
+                                <i class="bi bi-trophy"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <h2 class="mt-4">Closed registration</h2>
-    <div class="list-group">
-        {% for competition in closed_competitions %}
-            {% include "clubs/components/competition-list-group-item.html" with competition=competition %}
-        {% endfor %}
+
+    <div class="d-block d-md-none">
+        <div class="list-group">
+            {% for competition in competitions %}
+                {% include "clubs/components/competition-list-group-item.html" with competition=competition %}
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}

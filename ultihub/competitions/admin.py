@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from finance.tasks import (
     calculate_season_fees_and_generate_invoices,
@@ -7,6 +8,7 @@ from finance.tasks import (
 
 from competitions.models import (
     AgeRestriction,
+    ApplicationStateEnum,
     Competition,
     CompetitionApplication,
     Division,
@@ -17,7 +19,13 @@ from competitions.models import (
 
 @admin.register(Season)
 class SeasonAdmin(admin.ModelAdmin):
-    list_display = ("name", "player_fee", "has_generated_invoices")
+    list_display = (
+        "name",
+        "discounted_fee",
+        "regular_fee",
+        "fee_at_tournament",
+        "has_generated_invoices",
+    )
     change_form_template = "admin/season_change_form.html"
 
     def has_generated_invoices(self, obj: Season) -> bool:
@@ -71,6 +79,7 @@ class CompetitionAdmin(admin.ModelAdmin):
         "name",
         "division",
         "type",
+        "fee_type",
         "registration_deadline",
     )
     fields = (
@@ -79,11 +88,11 @@ class CompetitionAdmin(admin.ModelAdmin):
         "name",
         "division",
         "type",
+        "fee_type",
         "is_for_national_teams",
-        "player_fee_per_tournament",
-        "is_exempted_from_season_fee",
         "registration_deadline",
         "deposit",
+        "description",
     )
     inlines = [TournamentInline]
 
@@ -98,6 +107,21 @@ class CompetitionApplicationAdmin(admin.ModelAdmin):
         "registrant_name",
         "state",
     )
+    list_display_links = ("team_name",)
+
+    actions = ["approve", "decline"]
+
+    @admin.display(description="Approve selected applications")
+    def approve(self, request: HttpRequest, queryset: QuerySet) -> None:
+        # TODO: make it more specific and add some checks
+        queryset.update(state=ApplicationStateEnum.ACCEPTED)
+        self.message_user(request, "Applications approved")
+
+    @admin.display(description="Decline selected applications")
+    def decline(self, request: HttpRequest, queryset: QuerySet) -> None:
+        # TODO: make it more specific and add some checks
+        queryset.update(state=ApplicationStateEnum.DECLINED)
+        self.message_user(request, "Applications approved")
 
     # def save_model(self, request, obj, form, change):  # type: ignore
     #     previous_state = self.model.objects.get(pk=obj.pk).state if change else None

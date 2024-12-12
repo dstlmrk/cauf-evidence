@@ -58,6 +58,7 @@ class MemberAdmin(admin.ModelAdmin):
         "has_coach_licence",
         "_created_at",
     )
+    readonly_fields = ["email_confirmation_token", "has_email_confirmed"]
 
     list_display_links = ("first_name", "last_name")
     actions = ["export_as_csv"]

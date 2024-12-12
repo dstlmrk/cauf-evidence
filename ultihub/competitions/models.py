@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from core.models import AuditModel
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -19,12 +21,28 @@ class ApplicationStateEnum(models.IntegerChoices):
     WITHDRAWN = 5, "Withdrawn"
 
 
+class CompetitionFeeTypeEnum(models.IntegerChoices):
+    FREE = 1, "Free"
+    DISCOUNTED = 2, "Discounted"
+    REGULAR = 3, "Regular"
+
+
 class Season(AuditModel):
     name = models.CharField(
         max_length=32,
         unique=True,
     )
-    player_fee = models.DecimalField(
+    discounted_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
+    regular_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
+    fee_at_tournament = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         validators=[MinValueValidator(0)],
@@ -100,13 +118,9 @@ class Competition(AuditModel):
     type = models.IntegerField(
         choices=CompetitionTypeEnum.choices,
     )
-    player_fee_per_tournament = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        validators=[MinValueValidator(0)],
-    )
-    is_exempted_from_season_fee = models.BooleanField(
-        default=False,
+    fee_type = models.IntegerField(
+        choices=CompetitionFeeTypeEnum.choices,
+        help_text="FREE and DISCOUNTED cause no player fee to be charged",
     )
     deposit = models.DecimalField(
         max_digits=10,
@@ -115,12 +129,27 @@ class Competition(AuditModel):
         help_text="Deposit (CZK) required to secure a spot in the competition",
     )
     registration_deadline = models.DateTimeField()
+    description = models.TextField(
+        blank=True,
+    )
 
     class Meta:
         unique_together = ("name", "season", "type", "division", "age_restriction")
 
     def __str__(self) -> str:
         return f"{self.age_restriction} {self.name} {self.division}"
+
+    def season_fee(self) -> Decimal:
+        if self.fee_type == CompetitionFeeTypeEnum.REGULAR:
+            return self.season.regular_fee
+        if self.fee_type == CompetitionFeeTypeEnum.DISCOUNTED:
+            return self.season.discounted_fee
+        return Decimal(0)
+
+    def player_fee(self) -> Decimal:
+        if self.fee_type == CompetitionFeeTypeEnum.REGULAR:
+            return self.season.fee_at_tournament
+        return Decimal(0)
 
 
 class CompetitionApplication(AuditModel):

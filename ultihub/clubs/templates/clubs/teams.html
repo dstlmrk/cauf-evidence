@@ -2,6 +2,12 @@
 
 {% block title %}Teams{% endblock %}
 
+{% block buttons %}
+    <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_team' %}" hx-target="#dialog">
+        <i class="bi bi-plus"></i> Add team
+    </button>
+{% endblock %}
+
 {% block content %}
     {% load crispy_forms_tags %}
     <div class="row">
@@ -10,13 +16,14 @@
                 <i class="bi bi-info-circle-fill me-3"></i>
                 <div>
                     Additional teams are suitable if you want to register your B team for a tournament or if you
-                    occasionally want to register your club under a different name. For example, your junior’s team
-                    might have a different name than the others, etc.
+                    occasionally want to register your club under a different name.
+
+                    <div class="mt-1 mb-0">
+                        For example, your junior’s team might have a different name than the others, etc.
+                    </div>
                 </div>
             </div>
-            <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_team' %}" hx-target="#dialog">
-                Add Team <i class="bi bi-plus"></i>
-            </button>
+
             <div
                 hx-trigger="load, teamListChanged from:body"
                 hx-get="{% url 'clubs:team_list' %}"

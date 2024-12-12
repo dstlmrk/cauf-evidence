@@ -36,6 +36,7 @@ class MemberForm(forms.ModelForm):
         self.fields["city"].label = "City*"
         self.fields["house_number"].label = "House number*"
         self.fields["postal_code"].label = "Postal code*"
+        self.fields["email"].required = True
 
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean() or {}

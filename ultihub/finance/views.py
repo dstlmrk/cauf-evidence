@@ -17,14 +17,14 @@ def invoices(request: HttpRequest) -> HttpResponse:
 
 
 @require_POST
-def seasonal_fees_list_view(request: HttpRequest) -> HttpResponse:
+def season_fees_list_view(request: HttpRequest) -> HttpResponse:
     form = SeasonFeesCheckForm(request.POST)
     if form.is_valid():
         members = Member.objects.filter(club_id=get_current_club(request).id)
-        messages.success(request, "Seasonal fees have been calculated")
+        messages.success(request, "Season fees have been calculated")
         return render(
             request,
-            "finance/partials/seasonal_fees_list.html",
+            "finance/partials/season_fees_list.html",
             {
                 "season": form.cleaned_data["season"],
                 "total_amount": 999,

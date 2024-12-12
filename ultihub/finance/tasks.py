@@ -43,7 +43,7 @@ def calculate_season_fees_and_generate_invoices(season: Season) -> None:
     clubs = Club.objects.all()
     for club in clubs:
         # TODO: calculate amount properly
-        amount = season.player_fee * Member.objects.filter(club=club).count()
+        amount = season.regular_fee * Member.objects.filter(club=club).count()
         create_invoice(
             club.id, amount, InvoiceTypeEnum.ANNUAL_PLAYER_FEES, related_objects=[season]
         )
