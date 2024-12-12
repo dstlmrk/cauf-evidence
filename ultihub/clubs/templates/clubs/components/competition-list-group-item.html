@@ -11,7 +11,7 @@
                     {{ competition.club_application_without_invoice_count }}
                 </span>
             {% endif %}
-            <h5 class="mb-1">
+            <div class="mb-1">
                 {% if competition.registration_deadline > now %}
                     <span class="badge text-bg-success">OPEN REGISTRATION</span>
                 {% else %}
@@ -23,83 +23,68 @@
                 {% if competition.age_restriction %}
                     <span class="badge text-bg-primary">{{ competition.age_restriction | upper }}</span>
                 {% endif %}
-            </h5>
-        </div>
-
-        <div class="mt-2 d-none d-md-block">
-            {% if request.session.club and competition.registration_deadline > now %}
-                <button
-                    class="btn btn-primary"
-                    hx-get="{% url 'competitions:registration' competition.id %}"
-                    hx-target="#dialog"
-                >
-                    <i class="bi bi-person-plus"></i> Registration
-                </button>
-            {% endif %}
-            <button
-                class="btn btn-primary"
-                hx-get="{% url 'competitions:application_list' competition.id %}"
-                hx-target="#dialog-lg"
-            >
-                <i class="bi bi-people"></i> Registered teams
-            </button>
-            <button type="button" class="btn btn-primary" disabled><i class="bi bi-trophy"></i> Standings</button>
+            </div>
         </div>
     </div>
-    <div class="row mt-2 mb-3">
-        <div class="col-md-4">
-            <h3>Details</h3>
-            <i class="bi bi-people-fill"></i> Total registered teams:
-            <strong>{{ competition.application_count }}</strong>
-            <br />
-            {% if request.session.club %}
-                <i class="bi bi-shield-fill"></i> Your club's teams:
-                <strong>{{ competition.club_application_count }}</strong>
-                {% if competition.has_awaiting_payment %}
-                    <span class="badge text-bg-danger">AWAITING PAYMENT</span>
-                {% endif %}
-                <br />
+    <div class="mt-2 mb-2">
+        {# TODO: Make template for these liens because it's used twice #}
+        <i class="bi bi-people-fill"></i> Total registered teams:
+        <strong>{{ competition.application_count }}</strong>
+        <br />
+        {% if request.session.club %}
+            <i class="bi bi-shield-fill"></i> Your club's teams:
+            <strong>{{ competition.club_application_count }}</strong>
+            {% if competition.has_awaiting_payment %}
+                <span class="badge text-bg-danger">AWAITING PAYMENT</span>
             {% endif %}
-            <i class="bi bi-cash-coin"></i> Deposit per team:
-            <strong>CZK {{ competition.deposit }}</strong>
             <br />
-            <i class="bi bi-person"></i> Player's season fee:
-            <strong>CZK {{ competition.season.player_fee }}</strong>
-            <br />
+        {% endif %}
+        <i class="bi bi-cash-coin"></i> Deposit per team:
+        <strong>CZK {{ competition.deposit }}</strong>
+        <br />
+        <i class="bi bi-person"></i> Player's season fee:
+        <strong>CZK {{ competition.season.player_fee }}</strong>
+        <br />
 
-            <i class="bi bi-clock"></i> Registration deadline:
-            <b>{{ competition.registration_deadline | date:'d/m/Y H:i' }}</b>
-            <br />
-        </div>
-        <div class="col-md-8">
-            <h3 class="mt-2">Tournaments</h3>
-            {% for tournament in competition.tournaments %}
-                <i class="bi bi-calendar-check"></i> <b>{{ tournament.name }}</b><br />
-                <i class="bi bi-calendar-check invisible"></i>
-                <span class="text-muted"
-                    >{{ tournament.start_date | date:'d/m' }} — {{ tournament.end_date | date:'d/m/Y' }},
-                    {{ tournament.location }}</span
-                ><br />
-            {% endfor %}
-        </div>
+        <i class="bi bi-clock"></i> Registration deadline:
+        <b>{{ competition.registration_deadline | date:'d/m/Y H:i' }}</b>
+        <br />
     </div>
-    <div class="mb-2 d-block d-md-none">
+    <div class="mb-2">
         {% if request.session.club and competition.registration_deadline > now %}
             <button
-                class="btn btn-primary mt-2"
+                class="btn btn-success position-relative mt-2"
                 hx-get="{% url 'competitions:registration' competition.id %}"
                 hx-target="#dialog"
             >
-                <i class="bi bi-person-plus"></i> Registration
+                Registration
+                {% if competition.club_application_without_invoice_count > 0 %}
+                    <span
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        style="z-index: 1050;"
+                    >
+                        {{ competition.club_application_without_invoice_count }}
+                    </span>
+                {% endif %}
             </button>
         {% endif %}
+
         <button
             class="btn btn-primary mt-2"
             hx-get="{% url 'competitions:application_list' competition.id %}"
             hx-target="#dialog-lg"
         >
-            <i class="bi bi-people"></i> Registered teams
+            Registered teams
         </button>
-        <button type="button" class="btn btn-primary mt-2" disabled><i class="bi bi-trophy"></i> Standings</button>
+
+        <button
+            class="btn btn-primary mt-2"
+            hx-get="{% url 'competitions:competition_detail' competition.id %}"
+            hx-target="#dialog"
+        >
+            Details
+        </button>
+
+        <button type="button" class="btn btn-primary mt-2" disabled>Standings</button>
     </div>
 </div>

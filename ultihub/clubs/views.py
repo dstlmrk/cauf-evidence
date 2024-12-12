@@ -45,11 +45,15 @@ def transfers(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def members(request: HttpRequest) -> HttpResponse:
-    return render(request, "clubs/members.html")
+    return render(
+        request,
+        "clubs/members.html",
+        {"any_member_exists": Member.objects.filter(club_id=get_club_id(request)).exists()},
+    )
 
 
-def seasonal_fees_view(request: HttpRequest) -> HttpResponse:
-    return render(request, "clubs/seasonal_fees.html", {"form": SeasonFeesCheckForm()})
+def season_fees_view(request: HttpRequest) -> HttpResponse:
+    return render(request, "clubs/season_fees.html", {"form": SeasonFeesCheckForm()})
 
 
 @login_required

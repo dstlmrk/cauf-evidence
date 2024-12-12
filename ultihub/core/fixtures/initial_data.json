@@ -37,6 +37,17 @@
         }
     },
     {
+        "model": "clubs.team",
+        "pk": 2,
+        "fields": {
+            "name": "Prague Devils B",
+            "is_primary": false,
+            "club": 1,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
         "model": "users.NewAgentRequest",
         "pk": 2,
         "fields": {
@@ -178,7 +189,9 @@
         "pk": 1,
         "fields": {
             "name": "2024/2025",
-            "player_fee": "500.00",
+            "discounted_fee": "200.00",
+            "regular_fee": "600.00",
+            "fee_at_tournament": "60.00",
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
@@ -237,8 +250,7 @@
             "age_restriction": 1,
             "is_for_national_teams": false,
             "type": 1,
-            "player_fee_per_tournament": "30.00",
-            "is_exempted_from_season_fee": true,
+            "fee_type": 2,
             "deposit": "2000",
             "registration_deadline": "2025-04-01T23:59:59Z",
             "created_at": "2024-11-01T00:00:00Z",
@@ -255,8 +267,7 @@
             "age_restriction": null,
             "is_for_national_teams": false,
             "type": 2,
-            "player_fee_per_tournament": "30.00",
-            "is_exempted_from_season_fee": false,
+            "fee_type": 3,
             "deposit": "4000.00",
             "registration_deadline": "2024-11-15T23:59:59Z",
             "created_at": "2024-11-01T00:00:00Z",

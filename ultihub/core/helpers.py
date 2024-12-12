@@ -19,6 +19,13 @@ def get_current_club(request: HttpRequest) -> SessionClub:
     return SessionClub(**request.session.get("club", {}))
 
 
+def get_current_club_or_none(request: HttpRequest) -> SessionClub | None:
+    try:
+        return get_current_club(request)
+    except TypeError:
+        return None
+
+
 def create_csv(header: list[str], data: list[list]) -> str:
     csv_buffer = StringIO()
     csv_buffer.write("\ufeff")  # BOM (Byte Order Mark) to support Excel

@@ -130,3 +130,9 @@ body {
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Jemný stín */
     background-color: white; /* Ujistíme se, že je seznam čitelný */
 }
+
+.table td.fit,
+.table th.fit {
+    white-space: nowrap;
+    width: 1%;
+}

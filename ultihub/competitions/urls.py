@@ -20,6 +20,11 @@ urlpatterns = [
         name="application_list",
     ),
     path(
+        "<int:competition_id>/detail",
+        views.competition_detail_view,
+        name="competition_detail",
+    ),
+    path(
         "tournaments/<int:tournament_id>/standings-list",
         views.standings_list,
         name="standings_list",

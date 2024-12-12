@@ -1,44 +1,56 @@
 {% load static %}
 <div class="d-none d-md-block">
-    <div class="list-group">
-        {% for team in teams %}
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div>
-                        <h5>
-                            {{ team.name }}
-                            {% if team.is_primary %}<span class="badge bg-dark">Primary</span>{% endif %}
-                        </h5>
-                        <p class="mb-1">{{ team.description }}</p>
-                        {% if not team.is_primary %}
-                            {% include "partials/audit_info.html" with obj=team %}
-                        {% endif %}
-                    </div>
-                </div>
-                {% if not team.is_primary %}
-                    <div>
-                        <button
-                            class="btn btn-primary"
-                            hx-get="{% url 'clubs:edit_team' team.id %}"
-                            hx-target="#dialog"
-                        >
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Team name</th>
+                <th scope="col">Description</th>
+                <th scope="col" class="fit">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in teams %}
+                <tr style="height: 55px">
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td><b>{{ team.name }}</b></td>
 
-                        <button
-                            class="btn btn-danger"
-                            hx-post="{% url 'clubs:remove_team' team.id %}"
-                            hx-trigger="click"
-                            hx-confirm="Do you really want to remove this team?"
-                            hx-swap="none"
-                        >
-                            <i class="bi bi-trash-fill"></i>
-                        </button>
-                    </div>
-                {% endif %}
-            </div>
-        {% endfor %}
-    </div>
+                    {#    {% include "partials/audit_info.html" with obj=team %}#}
+
+                    <td>
+                        {% if team.is_primary %}
+                            <span class="badge bg-dark">Primary</span>
+                        {% else %}
+                            {{ team.description }}
+                        {% endif %}
+                    </td>
+                    <td class="fit">
+                        {% if not team.is_primary %}
+                            <div>
+                                <button
+                                    class="btn btn-primary"
+                                    hx-get="{% url 'clubs:edit_team' team.id %}"
+                                    hx-target="#dialog"
+                                >
+                                    Edit
+                                </button>
+
+                                <button
+                                    class="btn btn-danger"
+                                    hx-post="{% url 'clubs:remove_team' team.id %}"
+                                    hx-trigger="click"
+                                    hx-confirm="Do you really want to remove this team?"
+                                    hx-swap="none"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 <div class="d-block d-md-none">
