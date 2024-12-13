@@ -10,7 +10,6 @@ urlpatterns = [
     path("confirm-email/<uuid:token>", views.confirm_email, name="confirm_email"),
     path("search", views.search, name="search"),
     path("transfer-form", views.transfer_form, name="transfer_form"),
-    path("approve-transfer", views.approve_transfer_view, name="approve_transfer"),
-    path("revoke-transfer", views.revoke_transfer_view, name="revoke_transfer"),
+    path("change-transfer-state", views.change_transfer_state_view, name="change_transfer_state"),
     path("nsa-export", views.export_members_csv_for_nsa_view, name="export_members_csv_for_nsa"),
 ]

@@ -76,6 +76,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "core.context_processors.app_version_processor",
+                "clubs.context_processors.notifications",
                 "users.context_processors.user_managed_clubs",
             ],
         },

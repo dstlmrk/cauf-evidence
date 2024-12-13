@@ -21,4 +21,6 @@ urlpatterns = [
     path("agents/add", views.add_agent, name="add_agent"),
     path("agents/remove", views.remove_agent, name="remove_agent"),
     path("settings", views.settings, name="settings"),
+    # OTHERS -------------------------------------------------------------
+    path("notifications-dialog", views.notifications_dialog_view, name="notifications_dialog"),
 ]

@@ -1,6 +1,7 @@
 import logging
 
 from clubs.models import Club
+from clubs.service import notify_club
 from core.helpers import SessionClub, create_csv
 from core.tasks import send_email
 from django.db.models import Exists, OuterRef, Subquery
@@ -21,15 +22,22 @@ def create_transfer_request(
     if member.club == target_club:
         raise ValueError("Member is already in target club")
 
+    approving_club = target_club if current_club == source_club else source_club
+
     Transfer.objects.create(
         member=member,
         source_club=source_club,
         target_club=target_club,
         requesting_club=current_club,
-        approving_club=target_club if current_club == source_club else source_club,
+        approving_club=approving_club,
         requested_by=agent,
     )
-    # TODO: send email/notification
+
+    notify_club(
+        club=approving_club,
+        subject="Transfer request",
+        message=f"You have been requested to approve the transfer of {member.full_name}.",
+    )
 
 
 def approve_transfer(agent: Agent, transfer: Transfer) -> None:
@@ -44,6 +52,12 @@ def approve_transfer(agent: Agent, transfer: Transfer) -> None:
     transfer.member.club = transfer.target_club
     transfer.member.save()
 
+    notify_club(
+        club=transfer.requesting_club,
+        subject="Transfer approved",
+        message=f"Your request to transfer {transfer.member.full_name} has been approved.",
+    )
+
 
 def revoke_transfer(transfer: Transfer) -> None:
     if transfer.state != TransferStateEnum.REQUESTED:
@@ -51,6 +65,26 @@ def revoke_transfer(transfer: Transfer) -> None:
 
     transfer.state = TransferStateEnum.REVOKED
     transfer.save()
+
+    notify_club(
+        club=transfer.approving_club,
+        subject="Transfer revoked",
+        message=f"The transfer of {transfer.member.full_name} has been revoked by requester.",
+    )
+
+
+def reject_transfer(transfer: Transfer) -> None:
+    if transfer.state != TransferStateEnum.REQUESTED:
+        raise ValueError("Transfer must be in REQUESTED state to be rejected")
+
+    transfer.state = TransferStateEnum.REJECTED
+    transfer.save()
+
+    notify_club(
+        club=transfer.requesting_club,
+        subject="Transfer rejected",
+        message=f"The transfer of {transfer.member.full_name} has been rejected by approver.",
+    )
 
 
 def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:

@@ -85,18 +85,17 @@
         <div class="d-flex">
             {% if request.user.is_authenticated and request.session.club %}
                 {% if user_managed_clubs|length == 1 %}
-                    <button type="button" class="btn btn-primary me-2" disabled>{{ request.session.club.name }}</button>
+                    <button type="button" class="btn btn-primary" disabled>{{ request.session.club.name }}</button>
                 {% else %}
-                    <div class="dropdown me-2">
-                        <a
+                    <div class="btn-group" role="group">
+                        <button
+                            type="button"
                             class="btn btn-primary dropdown-toggle"
-                            href="#"
-                            role="button"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                         >
                             {{ request.session.club.name }}
-                        </a>
+                        </button>
                         <ul class="dropdown-menu">
                             {% for user_managed_club in user_managed_clubs %}
                                 <li>
@@ -114,6 +113,22 @@
                         </ul>
                     </div>
                 {% endif %}
+                <button
+                    type="button"
+                    class="btn btn-primary position-relative ms-1 me-2"
+                    hx-get="{% url 'clubs:notifications_dialog' %}"
+                    hx-target="#dialog"
+                >
+                    <i class="bi bi-bell-fill"></i>
+                    {% if new_notifications_count %}
+                        <span
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="z-index: 1050;"
+                        >
+                            {{ new_notifications_count }}
+                        </span>
+                    {% endif %}
+                </button>
             {% endif %}
             {% if request.user.is_authenticated %}
                 <div class="dropdown">
@@ -127,7 +142,9 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
-                            <a class="dropdown-item" href="#"><i class="bi-person-fill"></i> Profile</a>
+                            <a class="dropdown-item" href="{% url 'users:profile' %}">
+                                <i class="bi-person-fill"></i> Profile
+                            </a>
                         </li>
                         <form method="post" action="{% url 'account_logout' %}">
                             {% csrf_token %}

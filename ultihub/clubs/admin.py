@@ -1,8 +1,10 @@
 from django.contrib import admin
+from django.db.models import QuerySet
+from django.http import HttpRequest
 from users.services import assign_or_invite_agent_to_club
 
 from clubs.forms import CreateClubForm
-from clubs.models import Club, Team
+from clubs.models import Club, ClubNotification, Team
 
 
 @admin.register(Club)
@@ -35,3 +37,26 @@ class ClubAdmin(admin.ModelAdmin):
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
     list_display = ("name", "club__name", "is_primary", "is_active")
+
+
+@admin.register(ClubNotification)
+class ClubNotificationAdmin(admin.ModelAdmin):
+    list_display = (
+        "created_at",
+        "subject",
+        "message",
+        "is_read",
+        "agent_at_club__agent__user__email",
+        "agent_at_club__club__name",
+    )
+    list_display_links = ("subject",)
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
+        qs = super().get_queryset(request)
+        qs = qs.select_related(
+            "agent_at_club",
+            "agent_at_club__agent",
+            "agent_at_club__agent__user",
+            "agent_at_club__club",
+        )
+        return qs

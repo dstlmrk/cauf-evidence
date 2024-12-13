@@ -96,3 +96,13 @@ class Team(AuditModel):
     def save(self, *args: Any, **kwargs: Any) -> None:
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class ClubNotification(AuditModel):
+    agent_at_club = models.ForeignKey("users.AgentAtClub", on_delete=models.PROTECT)
+    subject = models.CharField(max_length=64)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f"<ClubNotification({self.pk}, agent={self.agent_at_club})>"

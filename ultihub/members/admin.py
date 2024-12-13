@@ -77,7 +77,7 @@ class MemberAdmin(admin.ModelAdmin):
     def get_queryset(self, request: HttpRequest) -> QuerySet:
         current_date = now().date()
         qs = super().get_queryset(request)
-        queryset = qs.select_related("club").annotate(
+        qs = qs.select_related("club").annotate(
             has_coach_licence=Exists(
                 CoachLicence.objects.filter(
                     member=OuterRef("pk"),
@@ -86,7 +86,7 @@ class MemberAdmin(admin.ModelAdmin):
                 )
             ),
         )
-        return queryset
+        return qs
 
     @admin.display(ordering="birth_date")
     def _birth_date(self, obj: Member) -> str:
@@ -189,5 +189,5 @@ class CoachLicenceAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request: HttpRequest) -> QuerySet:
         qs = super().get_queryset(request)
-        queryset = qs.select_related("member", "member__club")
-        return queryset
+        qs = qs.select_related("member", "member__club")
+        return qs

@@ -96,7 +96,7 @@
                     <th>Transfer</th>
                     <th>Requested by</th>
                     <th>Approved by</th>
-                    <th>Action</th>
+                    <th class="fit text-end">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -137,27 +137,27 @@
                                 <small class="text-muted">{{ transfer.approving_club.name }}</small>
                             {% endif %}
                         </td>
-                        <td>
-                            {% if transfer.state == 1 and transfer.approving_club.id == request.session.club.id %}
+                        <td class="fit text-end">
+                            {% if transfer.state == 1 %}
                                 <form
                                     method="POST"
-                                    hx-post="{% url 'members:approve_transfer' %}"
+                                    hx-post="{% url 'members:change_transfer_state' %}"
                                     hx-confirm="Are you sure?"
                                 >
                                     {% csrf_token %}
                                     <input type="hidden" name="transfer_id" value="{{ transfer.id }}" />
-                                    <button type="submit" class="btn btn-primary">Approve</button>
-                                </form>
-                            {% endif %}
-                            {% if transfer.state == 1 and transfer.requesting_club.id == request.session.club.id %}
-                                <form
-                                    method="POST"
-                                    hx-post="{% url 'members:revoke_transfer' %}"
-                                    hx-confirm="Are you sure?"
-                                >
-                                    {% csrf_token %}
-                                    <input type="hidden" name="transfer_id" value="{{ transfer.id }}" />
-                                    <button type="submit" class="btn btn-danger">Revoke</button>
+                                    {% if transfer.approving_club.id == request.session.club.id %}
+                                        <button type="submit" class="btn btn-success" name="action" value="approve">
+                                            Approve
+                                        </button>
+                                        <button type="submit" class="btn btn-danger" name="action" value="reject">
+                                            Reject
+                                        </button>
+                                    {% elif transfer.requesting_club.id == request.session.club.id %}
+                                        <button type="submit" class="btn btn-danger" name="action" value="revoke">
+                                            Revoke
+                                        </button>
+                                    {% endif %}
                                 </form>
                             {% endif %}
                         </td>
