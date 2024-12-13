@@ -15,7 +15,7 @@ from users.models import AgentAtClub, NewAgentRequest
 from users.services import assign_or_invite_agent_to_club, unassign_or_cancel_agent_invite_from_club
 
 from clubs.forms import AddAgentForm, ClubForm, TeamForm
-from clubs.models import Club, Team
+from clubs.models import Club, ClubNotification, Team
 
 logger = logging.getLogger(__name__)
 
@@ -178,7 +178,6 @@ def remove_agent(request: HttpRequest) -> HttpResponse:
     unassign_or_cancel_agent_invite_from_club(
         email=request.POST["email"],
         club=get_object_or_404(Club, pk=get_club_id(request)),
-        kicked_out_by=request.user,  # type: ignore
     )
     messages.success(request, "Agent removed successfully.")
     return HttpResponse(status=204, headers={"HX-Trigger": "agentListChanged"})
@@ -214,3 +213,26 @@ def agent_list(request: HttpRequest) -> HttpResponse:
     return render(
         request, "clubs/partials/agent_list.html", {"agents": agents + new_agent_requests}
     )
+
+
+def notifications_dialog_view(request: HttpRequest) -> HttpResponse:
+    notifications_qs = ClubNotification.objects.filter(
+        agent_at_club__agent_id=request.user.agent.id,  # type: ignore
+        agent_at_club__club_id=get_current_club(request).id,
+    ).order_by("-created_at")
+
+    if request.method == "POST":
+        notifications_qs.filter(is_read=False).update(is_read=True)
+        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+    else:
+        limit = 5
+        unread_notifications_count = notifications_qs.filter(is_read=False).count()
+        if unread_notifications_count > 0:
+            notifications_qs = notifications_qs[: max(unread_notifications_count + 1, limit)]
+        else:
+            notifications_qs = notifications_qs[:limit]
+        return render(
+            request,
+            "clubs/partials/notifications_dialog.html",
+            {"notifications": notifications_qs},
+        )

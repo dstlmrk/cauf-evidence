@@ -27,6 +27,9 @@ class NewAgentRequest(AuditModel):
 class Agent(AuditModel):
     picture_url = models.URLField()
     user = models.OneToOneField(User, on_delete=models.PROTECT, related_name="agent")
+    has_email_notifications_enabled = models.BooleanField(
+        default=True, verbose_name="Email notifications enabled"
+    )
 
     def __str__(self) -> str:
         return f"<Agent({self.pk})>"
@@ -56,4 +59,4 @@ class AgentAtClub(AuditModel):
         unique_together = ("agent", "club")
 
     def __str__(self) -> str:
-        return f"<AgentAtClub({self.pk}, agent={self.agent}, club={self.club})>"
+        return f"<AgentAtClub({self.pk}, agent={self.agent.user.email}, club={self.club.name})>"

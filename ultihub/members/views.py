@@ -24,6 +24,7 @@ from members.helpers import (
     approve_transfer,
     create_transfer_request,
     export_members_to_csv_for_nsa,
+    reject_transfer,
     revoke_transfer,
 )
 from members.models import CoachLicence, Member, Transfer
@@ -157,6 +158,8 @@ def transfer_form(request: HttpRequest) -> HttpResponse:
                         target_club=Club.objects.get(pk=form.cleaned_data["target_club"]),
                     )
                     messages.success(request, "Transfer request created")
+                    # TODO: solve HTMX cases when the request fails (everywhere in the app)
+                    #  I don't see error messages in the UI (or in the console)
                     return HttpResponse(status=204, headers={"HX-Refresh": "true"})
             except ValidationError as ex:
                 messages.error(request, ex.message)
@@ -185,29 +188,26 @@ def transfer_form(request: HttpRequest) -> HttpResponse:
 
 @login_required
 @require_POST
-def approve_transfer_view(request: HttpRequest) -> HttpResponse:
+def change_transfer_state_view(request: HttpRequest) -> HttpResponse:
     transfer_id = request.POST.get("transfer_id")
+    action = request.POST.get("action")
     transfer = get_object_or_404(Transfer, pk=transfer_id)
 
-    if transfer.approving_club.id != get_current_club(request).id:
-        return HttpResponse(status=403)
+    if action in ["approve", "reject"]:
+        if transfer.approving_club.id != get_current_club(request).id:
+            return HttpResponse(status=403)
+        if action == "approve":
+            approve_transfer(agent=request.user.agent, transfer=transfer)  # type: ignore
+            messages.success(request, "Transfer approved")
+        else:
+            reject_transfer(transfer=transfer)
+            messages.success(request, "Transfer rejected")
+    else:
+        if transfer.requesting_club.id != get_current_club(request).id:
+            return HttpResponse(status=403)
+        revoke_transfer(transfer=transfer)
+        messages.success(request, "Transfer revoked")
 
-    approve_transfer(agent=request.user.agent, transfer=transfer)  # type: ignore
-    messages.success(request, "Transfer approved")
-    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
-
-
-@login_required
-@require_POST
-def revoke_transfer_view(request: HttpRequest) -> HttpResponse:
-    transfer_id = request.POST.get("transfer_id")
-    transfer = get_object_or_404(Transfer, pk=transfer_id)
-
-    if transfer.requesting_club.id != get_current_club(request).id:
-        return HttpResponse(status=403)
-
-    revoke_transfer(transfer=transfer)
-    messages.success(request, "Transfer revoked")
     return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
 

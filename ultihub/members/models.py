@@ -106,6 +106,10 @@ class Member(AuditModel):
         null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(99)]
     )
 
+    @property
+    def full_name(self) -> str:
+        return f"{self.first_name} {self.last_name}"
+
     def clean(self) -> None:
         if self.citizenship == "CZ" and not self.birth_number:
             raise ValidationError({"birth_number": "Birth number is required for czech citizens."})
