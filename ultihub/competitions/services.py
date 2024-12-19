@@ -1,13 +1,12 @@
 import logging
 
 from django.db.models import Count, Exists, OuterRef, Prefetch, Q, QuerySet
+from tournaments.models import TeamAtTournament, Tournament
 
 from competitions.models import (
     ApplicationStateEnum,
     Competition,
     CompetitionApplication,
-    TeamAtTournament,
-    Tournament,
 )
 
 logger = logging.getLogger(__name__)

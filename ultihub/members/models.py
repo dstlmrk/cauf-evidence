@@ -110,6 +110,9 @@ class Member(AuditModel):
     def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
+    def __str__(self) -> str:
+        return f"{self.full_name} ({self.club.short_name or self.club.name})"
+
     def clean(self) -> None:
         if self.citizenship == "CZ" and not self.birth_number:
             raise ValidationError({"birth_number": "Birth number is required for czech citizens."})

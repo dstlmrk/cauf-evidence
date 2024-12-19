@@ -3,7 +3,7 @@
 {% block navbar %}
     {% load socialaccount %}
     {% url 'competitions:competitions' as competitions_url %}
-    {% url 'tournaments' as tournaments_url %}
+    {% url 'tournaments:tournaments' as tournaments_url %}
     <button
         class="navbar-toggler"
         type="button"
@@ -175,7 +175,7 @@
 
 {% block base_content %}
     <div class="d-flex w-100 justify-content-between">
-        <h1>{% block title %}{% endblock %}</h1>
+        <div>{% block title %}{% endblock %}</div>
         <div class="mt-md-2">{% block buttons %}{% endblock %}</div>
     </div>
     <div id="content" class="mt-4">{% block content %}{% endblock %}</div>

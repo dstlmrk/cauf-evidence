@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
             model_name="club",
             name="name",
             field=models.CharField(
-                help_text="Only administrators can change this field", max_length=48
+                help_text="Only administrators can change this value", max_length=48
             ),
         ),
         migrations.AlterField(

@@ -1,0 +1,52 @@
+<div x-data="memberSearch({{ tournament_id|default:'null' }})" style="position: relative;">
+    <label class="mb-2">Member*</label>
+    <input
+        id="id_member_search"
+        type="text"
+        class="form-control"
+        placeholder="Search members..."
+        x-model="query"
+        @input.debounce.300ms="search()"
+        @focus="onFocus()"
+        @keydown.arrow-down.prevent="moveDown()"
+        @keydown.arrow-up.prevent="moveUp()"
+        @keydown.enter.prevent="selectHighlighted()"
+    />
+    <ul
+        class="list-group shadowed-list-group"
+        x-show="showResults"
+        style="position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000; max-height: 300px; overflow-y: auto;"
+    >
+        <template x-for="(result, index) in results" :key="result.id">
+            <li
+                class="list-group-item list-group-item-action"
+                :class="{'active': highlightedIndex === index}"
+                @click="selectMember(result)"
+                style="cursor: pointer"
+            >
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted" x-text="result.birth_year"></small>
+                        <span class="ms-2" x-text="result.flag"></span>
+                        <strong x-text="result.full_name"></strong>
+                    </div>
+                    <div>
+                        <small
+                            class="text-muted"
+                            x-show="result.default_jersey_number !== null"
+                            x-text="`#${result.default_jersey_number}`"
+                        ></small>
+                        <small class="text-muted" x-text="result.club.name"></small>
+                    </div>
+                </div>
+            </li>
+        </template>
+        <li
+            class="list-group-item text-muted text-center"
+            x-show="results.length === 0 && query.length >= 3"
+            style="cursor: default;"
+        >
+            No members found matching your search
+        </li>
+    </ul>
+</div>

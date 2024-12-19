@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "finance.apps.FinanceConfig",
     "members.apps.MembersConfig",
     "rest_api.apps.RestApiConfig",
+    "tournaments.apps.TournamentsConfig",
     "users.apps.UsersConfig",
     # 3rd party
     "allauth",

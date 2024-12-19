@@ -17,7 +17,6 @@ Including another URLconf
 
 import logging
 
-from competitions.views import tournaments
 from debug_toolbar.toolbar import debug_toolbar_urls
 from django.contrib import admin
 from django.urls import include, path
@@ -40,7 +39,7 @@ urlpatterns = [
     path("django-rq/", include("django_rq.urls")),
     path("finance/", include("finance.urls")),
     path("members/", include("members.urls")),
-    path("tournaments/", tournaments, name="tournaments"),
+    path("tournaments/", include("tournaments.urls")),
     path("users/", include("users.urls")),
 ]
 

@@ -137,7 +137,7 @@ class Competition(AuditModel):
         unique_together = ("name", "season", "type", "division", "age_restriction")
 
     def __str__(self) -> str:
-        return f"{self.age_restriction} {self.name} {self.division}"
+        return f"{self.season}: {self.name} {self.division} {self.age_restriction or ""}".strip()
 
     def season_fee(self) -> Decimal:
         if self.fee_type == CompetitionFeeTypeEnum.REGULAR:
@@ -191,46 +191,3 @@ class CompetitionApplication(AuditModel):
 
     def registrant_name(self) -> str:
         return self.registered_by.get_full_name()
-
-
-class Tournament(AuditModel):
-    competition = models.ForeignKey(
-        Competition,
-        on_delete=models.PROTECT,
-    )
-    name = models.CharField(max_length=48)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    location = models.CharField(max_length=128)
-
-    class Meta:
-        unique_together = ("competition", "name")
-
-    def __str__(self) -> str:
-        return f"{self.name} ({self.competition})"
-
-
-class TeamAtTournament(AuditModel):
-    tournament = models.ForeignKey(
-        Tournament,
-        on_delete=models.PROTECT,
-    )
-    application = models.ForeignKey(
-        CompetitionApplication,
-        on_delete=models.PROTECT,
-    )
-    final_placement = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(1)],
-    )
-    spirit_avg = models.DecimalField(
-        max_digits=5,
-        decimal_places=3,
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(20)],
-    )
-
-    class Meta:
-        unique_together = ("tournament", "application")

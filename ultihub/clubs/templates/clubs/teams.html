@@ -1,6 +1,6 @@
 {% extends "core/base.html" %}
 
-{% block title %}Teams{% endblock %}
+{% block title %}<h1>Teams</h1>{% endblock %}
 
 {% block buttons %}
     <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_team' %}" hx-target="#dialog">

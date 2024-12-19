@@ -1,0 +1,13 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <p>{{ description }}</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="submit-row">
+            <input type="submit" value="Potvrdit" class="default" />
+            <input type="button" value="Zrušit" class="button" onclick="window.history.back();" />
+        </div>
+    </form>
+{% endblock %}

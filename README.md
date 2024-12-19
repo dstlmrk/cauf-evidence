@@ -42,3 +42,9 @@ docker compose -f docker/compose.dev.yaml exec app python manage.py createsuperu
 # Load initial data
 docker compose -f docker/compose.dev.yaml exec app python manage.py loaddata initial_data
 ```
+
+### Backup
+
+```bash
+./run-backup.sh mara 46.101.97.63
+```

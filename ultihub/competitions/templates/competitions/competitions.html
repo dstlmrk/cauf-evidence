@@ -1,9 +1,7 @@
 {% extends "core/base.html" %}
 {% load humanize %}
 
-{% block title %}
-    Competitions
-{% endblock %}
+{% block title %}<h1>Competitions</h1>{% endblock %}
 
 {% block buttons %}
     {% if request.session.club %}
@@ -34,7 +32,7 @@
                     <th scope="col">Competition</th>
                     <th scope="col">Deposit<br /><small class="text-muted">per team </small></th>
                     <th scope="col">Season fee<br /><small class="text-muted">PF per tournament</small></th>
-                    <th scope="col" class="text-end">Actions</th>
+                    <th scope="col" class="text-end"></th>
                 </tr>
             </thead>
             <tbody>
@@ -46,13 +44,11 @@
                                 {% if competition.has_awaiting_payment %}
                                     <span class="badge text-bg-danger">AWAITING PAYMENT</span>
                                 {% endif %}
-                                <br />
-                                <small class="text-muted"
-                                    >{{ competition.registration_deadline | date:'d/m/Y H:i' }}</small
-                                >
                             {% else %}
                                 <span class="badge text-bg-dark">CLOSED</span>
                             {% endif %}
+                            <br />
+                            <small class="text-muted">{{ competition.registration_deadline | date:'d/m/Y H:i' }}</small>
                         </td>
                         <td>
                             {{ competition.season }}<br />
