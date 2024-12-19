@@ -22,6 +22,8 @@ class ClubForm(forms.ModelForm):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.fields["name"].disabled = True
+        if self.instance.short_name:
+            self.initial["name"] = f"{self.instance.name} ({self.instance.short_name})"  # type: ignore
 
 
 class TeamForm(forms.ModelForm):

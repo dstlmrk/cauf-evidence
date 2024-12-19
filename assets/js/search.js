@@ -1,11 +1,13 @@
-window.memberSearch = function (club_id) {
+window.memberSearch = function (tournament_id) {
     return {
-        query: "",
         results: [],
         selectedMember: {},
         showResults: false,
-        club_id: club_id,
+        highlightedIndex: -1,
+        query: "",
+        tournament_id: tournament_id, // for rosters only
 
+        // Used for transfer form
         async fetchForm(member_id = null) {
             const url = member_id ? `/members/transfer-form?member_id=${member_id}` : `/members/transfer-form`;
 
@@ -19,8 +21,31 @@ window.memberSearch = function (club_id) {
             }
         },
 
+        onFocus() {
+            this.showResults = true;
+            if (this.tournament_id) {
+                this.search();
+            }
+        },
+
+        moveDown() {
+            if (this.highlightedIndex < this.results.length - 1) {
+                this.highlightedIndex++;
+            }
+        },
+        moveUp() {
+            if (this.highlightedIndex > 0) {
+                this.highlightedIndex--;
+            }
+        },
+        selectHighlighted() {
+            if (this.highlightedIndex >= 0 && this.highlightedIndex < this.results.length) {
+                this.selectMember(this.results[this.highlightedIndex]);
+            }
+        },
+
         async search() {
-            if (this.query.length < 3) {
+            if (this.query.length > 0 && this.query.length < 3) {
                 this.results = [];
                 this.showResults = false;
                 this.selectedMember = {};
@@ -28,7 +53,8 @@ window.memberSearch = function (club_id) {
                 return;
             }
 
-            const response = await fetch(`/members/search?q=${this.query}`);
+            const response = await fetch(`/members/search?q=${this.query}&tournament_id=${this.tournament_id}`);
+
             if (response.ok) {
                 const data = await response.json();
                 this.results = data.results;
@@ -40,8 +66,15 @@ window.memberSearch = function (club_id) {
             this.selectedMember = member;
             this.query = member.full_name + " (" + member.birth_year + ")";
             this.showResults = false;
+            this.highlightedIndex = -1;
 
-            await this.fetchForm(member.id);
+            if (this.tournament_id) {
+                // Roster page
+                document.querySelector("#id_member_id").value = member.id;
+            } else {
+                // Transfer page
+                await this.fetchForm(member.id);
+            }
         },
     };
 };

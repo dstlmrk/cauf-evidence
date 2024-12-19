@@ -74,6 +74,7 @@
             "birth_number": "7059010002",
             "email": "jan.maly@example.com",
             "marketing_consent_given_at": null,
+            "has_email_confirmed": true,
             "is_active": true,
             "is_favourite": false,
             "created_at": "2024-11-01T00:00:00Z",
@@ -97,6 +98,7 @@
             "postal_code": "00000",
             "email": "jane.smith@example.com",
             "marketing_consent_given_at": "2023-10-01T10:00:00Z",
+            "has_email_confirmed": true,
             "is_active": true,
             "is_favourite": true,
             "default_jersey_number": 23,
@@ -117,6 +119,7 @@
             "birth_number": "7059090005",
             "email": "alice.malatna@example.com",
             "marketing_consent_given_at": "2023-01-15T15:30:00Z",
+            "has_email_confirmed": true,
             "is_active": true,
             "is_favourite": false,
             "default_jersey_number": 10,
@@ -141,6 +144,7 @@
             "postal_code": "00000",
             "email": "robert.taylor@example.com",
             "marketing_consent_given_at": null,
+            "has_email_confirmed": true,
             "is_active": false,
             "is_favourite": false,
             "default_jersey_number": 96,
@@ -275,7 +279,7 @@
         }
     },
     {
-        "model": "competitions.tournament",
+        "model": "tournaments.tournament",
         "pk": 1,
         "fields": {
             "competition": 1,
@@ -283,12 +287,13 @@
             "start_date": "2023-09-10",
             "end_date": "2023-09-12",
             "location": "Prague",
+            "rosters_deadline": "2023-09-09T18:00:00Z",
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
     },
     {
-        "model": "competitions.tournament",
+        "model": "tournaments.tournament",
         "pk": 2,
         "fields": {
             "competition": 1,
@@ -296,12 +301,13 @@
             "start_date": "2023-10-01",
             "end_date": "2023-10-02",
             "location": "Brno",
+            "rosters_deadline": "2023-09-30T18:00:00Z",
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
     },
     {
-        "model": "competitions.tournament",
+        "model": "tournaments.tournament",
         "pk": 3,
         "fields": {
             "competition": 1,
@@ -309,12 +315,13 @@
             "start_date": "2023-11-05",
             "end_date": "2023-11-06",
             "location": "Ostrava",
+            "rosters_deadline": "2023-11-04T18:00:00Z",
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
     },
     {
-        "model": "competitions.tournament",
+        "model": "tournaments.tournament",
         "pk": 4,
         "fields": {
             "competition": 2,
@@ -322,34 +329,37 @@
             "start_date": "2024-01-15",
             "end_date": "2024-01-16",
             "location": "Plzeň",
+            "rosters_deadline": "2024-01-14T18:00:00Z",
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
     },
     {
-        "model": "competitions.tournament",
+        "model": "tournaments.tournament",
         "pk": 5,
         "fields": {
             "competition": 2,
             "name": "Winter Open Round 2",
-            "start_date": "2024-02-20",
-            "end_date": "2024-02-21",
+            "start_date": "2025-02-20",
+            "end_date": "2025-02-21",
             "location": "Liberec",
-            "created_at": "2024-11-01T00:00:00Z",
-            "updated_at": "2024-11-01T00:00:00Z"
+            "rosters_deadline": "2025-02-19T18:00:00Z",
+            "created_at": "2025-11-01T00:00:00Z",
+            "updated_at": "2025-11-01T00:00:00Z"
         }
     },
     {
-        "model": "competitions.tournament",
+        "model": "tournaments.tournament",
         "pk": 6,
         "fields": {
             "competition": 2,
             "name": "Winter Open Finals",
-            "start_date": "2024-03-10",
-            "end_date": "2024-03-11",
+            "start_date": "2025-03-10",
+            "end_date": "2025-03-11",
             "location": "Hradec Králové",
-            "created_at": "2024-11-01T00:00:00Z",
-            "updated_at": "2024-11-01T00:00:00Z"
+            "rosters_deadline": "2025-03-09T18:00:00Z",
+            "created_at": "2025-11-01T00:00:00Z",
+            "updated_at": "2025-11-01T00:00:00Z"
         }
     }
 ]

@@ -136,3 +136,17 @@ body {
     white-space: nowrap;
     width: 1%;
 }
+
+.list-group-item.active {
+    background-color: #1c4ea2 !important;
+    border-color: #1c4ea2 !important;
+    color: white !important;
+}
+
+.list-group-item.active .text-muted {
+    color: white !important;
+}
+
+.text-primary {
+    color: #143c7d !important;
+}

@@ -17,8 +17,8 @@
     <tbody>
         {% for member in members %}
             <tr class="bg-{% if member.sex == 1 %}female{% else %}male{% endif %}">
-                <th>{{ member.default_jersey_number | default:"2" }}</th>
-                <td>{{ member.first_name }} {{ member.last_name }}</td>
+                <th>{{ member.default_jersey_number | default:"" }}</th>
+                <td>{{ member.full_name }}</td>
                 <td>{{ member.birth_date | date:'Y/m/d' }}</td>
                 <td>{{ member.citizenship.unicode_flag }} {{ member.citizenship }}</td>
                 <td>{{ member.get_sex_display }}</td>

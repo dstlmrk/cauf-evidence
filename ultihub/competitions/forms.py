@@ -20,3 +20,15 @@ class RegistrationForm(forms.Form):
                 initial=bool(application),
                 disabled=bool(application),
             )
+
+
+class AddTeamsToTournamentForm(forms.Form):
+    tournament = forms.ChoiceField(choices=[], label="Select tournament")
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        related_tournaments = kwargs.pop("related_tournaments", [])
+        super().__init__(*args, **kwargs)
+
+        self.fields["tournament"].choices = [  # type: ignore
+            (obj.id, f"{obj.name} ({obj.competition})") for obj in related_tournaments
+        ]

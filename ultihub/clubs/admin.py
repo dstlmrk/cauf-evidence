@@ -9,7 +9,7 @@ from clubs.models import Club, ClubNotification, Team
 
 @admin.register(Club)
 class ClubAdmin(admin.ModelAdmin):
-    list_display = ("name", "city", "organization_name", "identification_number")
+    list_display = ("name", "short_name", "city", "organization_name", "identification_number")
     ordering = ("name",)
     add_form = CreateClubForm
 

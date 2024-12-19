@@ -1,11 +1,19 @@
+import logging
+from typing import Any
+
 from django.contrib import admin, messages
-from django.db.models import QuerySet
+from django.db import transaction
+from django.db.models import QuerySet, Subquery
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import URLPattern, path, reverse
 from finance.tasks import (
     calculate_season_fees_and_generate_invoices,
     calculate_season_fees_for_check,
 )
+from tournaments.models import TeamAtTournament, Tournament
 
+from competitions.forms import AddTeamsToTournamentForm
 from competitions.models import (
     AgeRestriction,
     ApplicationStateEnum,
@@ -13,8 +21,9 @@ from competitions.models import (
     CompetitionApplication,
     Division,
     Season,
-    Tournament,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @admin.register(Season)
@@ -65,7 +74,7 @@ class AgeRestrictionAdmin(admin.ModelAdmin):
 class TournamentInline(admin.TabularInline):
     model = Tournament
     extra = 1
-    fields = ("name", "start_date", "end_date", "location")
+    fields = ("name", "start_date", "end_date", "location", "rosters_deadline")
     show_change_link = True
 
 
@@ -97,6 +106,23 @@ class CompetitionAdmin(admin.ModelAdmin):
     inlines = [TournamentInline]
 
 
+class SeasonFilter(admin.SimpleListFilter):
+    title = "Season"
+    parameter_name = "competition__season"
+
+    def lookups(self, request: HttpRequest, model_admin: Any) -> list[tuple]:
+        seasons = set(
+            ca.competition.season
+            for ca in model_admin.model.objects.select_related("competition").all()
+        )
+        return [(season.id, season.name) for season in seasons]
+
+    def queryset(self, request: HttpRequest, queryset: QuerySet) -> QuerySet:
+        if self.value():
+            return queryset.filter(competition__season=self.value())
+        return queryset
+
+
 @admin.register(CompetitionApplication)
 class CompetitionApplicationAdmin(admin.ModelAdmin):
     list_display = (
@@ -107,33 +133,98 @@ class CompetitionApplicationAdmin(admin.ModelAdmin):
         "registrant_name",
         "state",
     )
+    list_filter = (SeasonFilter, "competition", "state")
+    ordering = ["-id"]
+    show_facets = admin.ShowFacets.ALWAYS
     list_display_links = ("team_name",)
 
-    actions = ["approve", "decline"]
+    actions = ["approve", "decline", "add_teams_to_tournament"]
 
+    def get_urls(self) -> list[URLPattern]:
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "add-teams-to-tournament/",
+                self.admin_site.admin_view(self.add_teams_to_tournament_view),
+                name="add_teams_to_tournament",
+            ),
+        ]
+        return custom_urls + urls
+
+    @admin.display(description="Add teams to the tournament")
+    def add_teams_to_tournament(self, request: HttpRequest, queryset: QuerySet) -> HttpResponse:
+        if queryset.exclude(state=ApplicationStateEnum.ACCEPTED).exists():
+            self.message_user(
+                request, "Applications must be in ACCEPTED state", level=messages.ERROR
+            )
+            return HttpResponseRedirect(request.get_full_path())
+
+        applications = ",".join(str(obj.id) for obj in queryset)
+        return HttpResponseRedirect(f"add-teams-to-tournament/?ids={applications}")
+
+    def add_teams_to_tournament_view(self, request: HttpRequest) -> HttpResponse:
+        application_ids = request.GET.get("ids", "").split(",")
+
+        related_tournaments = Tournament.objects.filter(
+            competition_id__in=Subquery(
+                CompetitionApplication.objects.filter(id__in=application_ids).values(
+                    "competition_id"
+                )
+            )
+        )
+
+        if request.method == "POST":
+            form = AddTeamsToTournamentForm(request.POST, related_tournaments=related_tournaments)
+
+            if form.is_valid():
+                tournament_id = form.cleaned_data["tournament"]
+                team_at_tournament_instances = [
+                    TeamAtTournament(
+                        tournament_id=tournament_id,
+                        application_id=application_id,
+                    )
+                    for application_id in application_ids
+                ]
+                created_instances = TeamAtTournament.objects.bulk_create(
+                    team_at_tournament_instances
+                )
+
+                logger.info(
+                    "Applications %s (%s) added to tournament %s",
+                    application_ids,
+                    len(created_instances),
+                    tournament_id,
+                )
+
+                self.message_user(
+                    request, f"Teams ({len(created_instances)}) have been added to the tournament"
+                )
+                return HttpResponseRedirect(
+                    reverse("admin:competitions_competitionapplication_changelist")
+                )
+        else:
+            form = AddTeamsToTournamentForm(related_tournaments=related_tournaments)
+
+        return render(
+            request,
+            "admin/add_teams_to_tournament.html",
+            {
+                "form": form,
+                "title": "Add teams to the tournament",
+                "description": "Selected teams will be able to register players on rosters.",
+            },
+        )
+
+    def competition_type(self, obj: CompetitionApplication) -> str:
+        return obj.competition.get_type_display()
+
+    @transaction.atomic
     @admin.display(description="Approve selected applications")
     def approve(self, request: HttpRequest, queryset: QuerySet) -> None:
-        # TODO: make it more specific and add some checks
         queryset.update(state=ApplicationStateEnum.ACCEPTED)
         self.message_user(request, "Applications approved")
 
     @admin.display(description="Decline selected applications")
     def decline(self, request: HttpRequest, queryset: QuerySet) -> None:
-        # TODO: make it more specific and add some checks
         queryset.update(state=ApplicationStateEnum.DECLINED)
         self.message_user(request, "Applications approved")
-
-    # def save_model(self, request, obj, form, change):  # type: ignore
-    #     previous_state = self.model.objects.get(pk=obj.pk).state if change else None
-    #     super().save_model(request, obj, form, change)
-    #     if previous_state and previous_state != obj.state:
-    #         if obj.state == ApplicationStateEnum.ACCEPTED:
-    #             accept_team_to_competition(obj)
-    #         elif previous_state == ApplicationStateEnum.ACCEPTED:
-    #             reject_team_from_competition(obj)
-
-
-@admin.register(Tournament)
-class TournamentAdmin(admin.ModelAdmin):
-    list_display = ("competition", "name", "start_date", "end_date", "location")
-    ordering = ("-created_at",)

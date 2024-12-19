@@ -1,0 +1,17 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-person"></i> Roster</h5>
+    </div>
+    <div class="modal-body">
+        {# {% load crispy_forms_tags %}#}
+        {% include "members/partials/member_search.html" %}
+        <form id="addMemberToRosterForm" hx-post="{% url 'tournaments:roster_dialog_add_form' team_at_tournament_id %}">
+            {% csrf_token %}
+            {{ form }}
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" form="addMemberToRosterForm">Submit</button>
+    </div>
+</div>

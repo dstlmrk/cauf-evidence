@@ -1,0 +1,32 @@
+<table class="table align-middle">
+    <thead>
+        <tr class="align-middle">
+            <th>Standing <i class="bi bi-arrow-up-short"></i></th>
+            <th>SOTG avg</th>
+            <th>Team</th>
+            <th>Club</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for team in teams_at_tournament %}
+            <tr>
+                <td>{{ team.final_placement | default:"" }}</td>
+                <td>{{ team.spirit_avg | floatformat:1 }}</td>
+                <td>{{ team.application.team_name }}</td>
+                <td>{{ team.application.team.club.name }}</td>
+                <td class="fit text-end">
+                    <button
+                        id="rosterButton-{{ team.id }}"
+                        class="btn btn-primary"
+                        hx-get="{% url 'tournaments:roster_dialog' team.id %}"
+                        hx-target="#dialog-lg"
+                    >
+                        Roster
+                        <span class="badge text-bg-secondary">{{ team.members_count_on_roster }}</span>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -26,3 +26,9 @@ function listenCitizenship() {
 
 // For another usage after partial page load
 window.listenCitizenship = listenCitizenship;
+
+document.body.addEventListener("showRosterDialog", (event) => {
+    const { teamAtTournamentId } = event.detail;
+    const rosterButton = document.getElementById(`rosterButton-${teamAtTournamentId}`);
+    rosterButton.click();
+});

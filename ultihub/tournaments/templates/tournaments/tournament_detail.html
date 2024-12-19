@@ -1,0 +1,44 @@
+{% extends "core/base.html" %}
+{% load humanize %}
+
+{% block title %}
+    <small class="text-muted">
+        {{ tournament.competition.season }} • {{ tournament.competition.get_type_display | upper }}
+    </small>
+    <h1 class="mb-0">{{ tournament.name }}</h1>
+    <small class="h5">
+        {{ tournament.location }}, {{ tournament.start_date | date:'d.m.Y' }} - {{ tournament.end_date | date:'d.m.Y' }}
+    </small>
+    <div>
+        <span class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
+            >{{ tournament.competition.division | upper }}</span
+        >
+        {% if tournament.competition.age_restriction %}
+            <span class="badge text-bg-primary">{{ tournament.competition.age_restriction | upper }}</span>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block buttons %}
+    <div class="text-end">
+        {% if tournament.rosters_deadline > now %}
+            <span class="badge text-bg-success">OPEN ROSTERS</span>
+        {% else %}
+            <span class="badge text-bg-dark">CLOSED ROSTERS</span>
+        {% endif %}
+    </div>
+
+    <small class="text-muted">Deadline at {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}</small>
+{% endblock %}
+
+{% block content %}
+    {% if tournament.team_count %}
+        <div
+            hx-trigger="load, teamsListChanged from:body"
+            hx-get="{% url 'tournaments:teams_table' tournament.id %}"
+            hx-target="this"
+        ></div>
+    {% else %}
+        <div class="alert alert-dark" role="alert">No teams have been assigned to the tournament yet.</div>
+    {% endif %}
+{% endblock %}

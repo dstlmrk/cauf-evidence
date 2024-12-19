@@ -24,9 +24,4 @@ urlpatterns = [
         views.competition_detail_view,
         name="competition_detail",
     ),
-    path(
-        "tournaments/<int:tournament_id>/standings-list",
-        views.standings_list,
-        name="standings_list",
-    ),
 ]

@@ -2,6 +2,7 @@ from typing import Any
 
 from core.models import AuditModel
 from django.core.exceptions import ValidationError
+from django.core.validators import MinLengthValidator
 from django.db import models
 
 from clubs.validators import validate_identification_number
@@ -10,7 +11,13 @@ from clubs.validators import validate_identification_number
 class Club(AuditModel):
     name = models.CharField(
         max_length=48,
-        help_text="Only administrators can change this field",
+        help_text="Only administrators can change this value",
+    )
+    short_name = models.CharField(
+        max_length=3,
+        blank=True,
+        help_text="Short name of the club (2-3 characters)",
+        validators=[MinLengthValidator(2)],
     )
     email = models.EmailField(
         blank=True,
@@ -41,7 +48,7 @@ class Club(AuditModel):
         permissions = (("manage_club", "Can manage club"),)
 
     def __str__(self) -> str:
-        return f"<Club({self.pk}, name={self.name})>"
+        return self.short_name or self.name
 
     def clean(self) -> None:
         if self.organization_name and (

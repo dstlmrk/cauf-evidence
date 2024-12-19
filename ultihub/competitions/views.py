@@ -1,5 +1,5 @@
 from clubs.models import Team
-from core.helpers import get_current_club_or_none
+from core.helpers import get_current_club, get_current_club_or_none
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -13,26 +13,8 @@ from competitions.forms import RegistrationForm
 from competitions.models import (
     ApplicationStateEnum,
     CompetitionApplication,
-    TeamAtTournament,
-    Tournament,
 )
 from competitions.services import get_competitions_qs_with_related_data
-
-
-@require_GET
-def tournaments(request: HttpRequest) -> HttpResponse:
-    return render(
-        request,
-        "competitions/tournaments.html",
-        {
-            "tournaments": Tournament.objects.select_related(
-                "competition",
-                "competition__season",
-                "competition__division",
-                "competition__age_restriction",
-            ).order_by("start_date", "name"),
-        },
-    )
 
 
 def competitions(request: HttpRequest) -> HttpResponse:
@@ -59,8 +41,8 @@ def competitions(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
-    club_id = request.session["club"]["id"]
-    teams_with_applications = Team.objects.filter(club_id=club_id).prefetch_related(
+    current_club = get_current_club(request)
+    teams_with_applications = Team.objects.filter(club_id=current_club.id).prefetch_related(
         Prefetch(
             "competition_application",
             queryset=CompetitionApplication.objects.filter(competition_id=competition_id),
@@ -74,7 +56,7 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
             for checkbox_name, value in form.cleaned_data.items():
                 team_id = int(checkbox_name.split("_")[1])
                 team = teams_with_applications.get(pk=team_id)
-                if request.user.has_perm("manage_club", team.club):
+                if team.club.id == current_club.id:
                     if value and not team.applications:  # type: ignore
                         CompetitionApplication.objects.create(
                             team_name=team.name,
@@ -124,20 +106,5 @@ def competition_detail_view(request: HttpRequest, competition_id: int) -> HttpRe
                 competition_id=competition_id,
             ).get(),
             "now": timezone.now(),
-        },
-    )
-
-
-@require_GET
-def standings_list(request: HttpRequest, tournament_id: int) -> HttpResponse:
-    return render(
-        request,
-        "competitions/partials/standings_list.html",
-        {
-            "teams_at_tournament": (
-                TeamAtTournament.objects.filter(tournament_id=tournament_id)
-                .select_related("application", "application__team", "application__team__club")
-                .order_by("final_placement")
-            ),
         },
     )

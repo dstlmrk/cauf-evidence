@@ -22,7 +22,6 @@ function initializeModal(modalId, dialogId) {
     });
 }
 
-// Volání funkce dvakrát s různými ID
 initializeModal("modal", "dialog");
 initializeModal("modal-lg", "dialog-lg");
 initializeModal("modal-xl", "dialog-xl");
