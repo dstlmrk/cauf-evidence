@@ -18,9 +18,9 @@
                         <small class="text-muted">End date</small>
                     </th>
                     <th scope="col">
-                        Number
+                        Number of teams
                         <br />
-                        of teams
+                        <small class="text-muted">Winner</small>
                     </th>
                 </tr>
             </thead>
@@ -56,15 +56,19 @@
                                 {{ tournament.name }}
                             </a>
                             <br />
-                            <small class="text-muted"> {{ tournament.location }} </small>
+                            <small class="text-muted">{{ tournament.location }}</small>
                         </td>
                         <td>
                             {{ tournament.start_date | date:'d.m.Y' }}<br />
-                            <small class="text-muted"> {{ tournament.end_date | date:'d.m.Y' }} </small>
+                            <small class="text-muted">{{ tournament.end_date | date:'d.m.Y' }}</small>
                         </td>
                         <td>
                             {% if tournament.team_count %}
-                                <span class="badge text-bg-primary rounded-pill"> {{ tournament.team_count }} </span>
+                                <span class="badge text-bg-primary rounded-pill">{{ tournament.team_count }}</span>
+                            {% endif %}
+                            {% if tournament.winner_team %}
+                                <br />
+                                <small class="text-muted">{{ tournament.winner_team }}</small>
                             {% endif %}
                         </td>
                     </tr>
