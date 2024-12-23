@@ -48,6 +48,9 @@ class TeamAtTournament(AuditModel):
         unique_together = ("tournament", "application")
         app_label = "tournaments"
 
+    def __str__(self) -> str:
+        return f"{self.application.team_name}"
+
 
 class MemberAtTournament(AuditModel):
     tournament = models.ForeignKey(
@@ -81,3 +84,6 @@ class MemberAtTournament(AuditModel):
             ("tournament", "member"),
             ("team_at_tournament", "member"),
         )
+
+    def __str__(self) -> str:
+        return f"{self.member}"
