@@ -5,7 +5,7 @@ from core.helpers import get_current_club
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Subquery
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -34,7 +34,14 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
                 "competition__division",
                 "competition__age_restriction",
             )
-            .annotate(team_count=Count("teamattournament"))
+            .annotate(
+                team_count=Count("teamattournament"),
+                winner_team=Subquery(
+                    TeamAtTournament.objects.filter(
+                        tournament=OuterRef("pk"), final_placement=1
+                    ).values("application__team_name")[:1]
+                ),
+            )
             .order_by("-start_date", "name"),
         },
     )
