@@ -51,7 +51,10 @@
                     <div id="address-fields" hidden>
                         <div class="alert alert-primary d-flex align-items-center" role="alert">
                             <i class="bi bi-arrow-down-circle me-3"></i>
-                            <div>Czech address registered with the Foreigners’ Police by foreign nationals</div>
+                            <div>
+                                Czech address registered with the Foreigners’ Police. Leave blank if the foreigner
+                                resides permanently outside the Czech Republic.
+                            </div>
                         </div>
                         {{ form.street|as_crispy_field }}
                         {{ form.city|as_crispy_field }}
