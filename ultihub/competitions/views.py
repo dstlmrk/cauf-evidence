@@ -3,7 +3,7 @@ from core.helpers import get_current_club, get_current_club_or_none
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db.models import Prefetch
+from django.db.models import Exists, OuterRef, Prefetch
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
@@ -33,6 +33,13 @@ def competitions(request: HttpRequest) -> HttpResponse:
             "now": timezone.now(),
             "competitions": get_competitions_qs_with_related_data(
                 club_id=club.id if club else None
+            ).annotate(
+                has_final_placement=Exists(
+                    CompetitionApplication.objects.filter(
+                        competition_id=OuterRef("pk"),
+                        final_placement__isnull=False,
+                    )
+                )
             ),
             **context,
         },
@@ -106,5 +113,24 @@ def competition_detail_view(request: HttpRequest, competition_id: int) -> HttpRe
                 competition_id=competition_id,
             ).get(),
             "now": timezone.now(),
+        },
+    )
+
+
+@require_GET
+def competition_final_placements_dialog_view(
+    request: HttpRequest, competition_id: int
+) -> HttpResponse:
+    return render(
+        request,
+        "competitions/partials/competition_final_placements_dialog.html",
+        {
+            "competition_applications": CompetitionApplication.objects.select_related(
+                "team", "team__club"
+            )
+            .filter(
+                competition_id=competition_id,
+            )
+            .order_by("final_placement"),
         },
     )

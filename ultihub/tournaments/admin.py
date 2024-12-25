@@ -14,6 +14,13 @@ class TeamAtTournamentInline(admin.TabularInline):
         return f"{obj.application.team_name} ({obj.application.team.club})"
 
 
+class MemberAtTournamentInline(admin.TabularInline):
+    model = MemberAtTournament
+    extra = 0
+    fields = ("member", "is_captain", "is_coach", "jersey_number")
+    readonly_fields = ("member",)
+
+
 @admin.register(Tournament)
 class TournamentAdmin(admin.ModelAdmin):
     list_display = (
@@ -39,6 +46,7 @@ class TeamAtTournamentAdmin(admin.ModelAdmin):
     )
 
     list_display_links = ("application__team_name",)
+    inlines = [MemberAtTournamentInline]
 
 
 @admin.register(MemberAtTournament)

@@ -24,4 +24,9 @@ urlpatterns = [
         views.competition_detail_view,
         name="competition_detail",
     ),
+    path(
+        "<int:competition_id>/final-placements-dialog",
+        views.competition_final_placements_dialog_view,
+        name="competition_final_placements_dialog",
+    ),
 ]

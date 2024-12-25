@@ -179,6 +179,11 @@ class CompetitionApplication(AuditModel):
         null=False,
         on_delete=models.PROTECT,
     )
+    final_placement = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1)],
+    )
 
     class Meta:
         unique_together = ("competition", "team")
