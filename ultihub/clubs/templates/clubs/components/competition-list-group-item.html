@@ -20,8 +20,8 @@
                 <span class="badge text-bg-primary text-bg-{{ competition.division | lower }}"
                     >{{ competition.division | upper }}</span
                 >
-                {% if competition.age_restriction %}
-                    <span class="badge text-bg-primary">{{ competition.age_restriction | upper }}</span>
+                {% if competition.age_limit %}
+                    <span class="badge text-bg-primary">{{ competition.age_limit | upper }}</span>
                 {% endif %}
             </div>
         </div>

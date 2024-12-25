@@ -52,7 +52,7 @@ def get_competitions_qs_with_related_data(
         competitions_qs = Competition.objects.all()
 
     competitions_qs = (
-        competitions_qs.select_related("age_restriction", "season", "division")
+        competitions_qs.select_related("age_limit", "season", "division")
         .prefetch_related(
             Prefetch(
                 "competitionapplication_set",

@@ -5,7 +5,7 @@ from rest_framework import serializers
 class CompetitionSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField()
     division = serializers.StringRelatedField()
-    age_restriction = serializers.StringRelatedField()
+    age_limit = serializers.StringRelatedField()
     season = serializers.StringRelatedField()
 
     class Meta:
@@ -18,8 +18,8 @@ class CompetitionSerializer(serializers.ModelSerializer):
     def get_division(self, obj: Competition) -> str:
         return obj.division.name
 
-    def get_age_restriction(self, obj: Competition) -> str:
-        return obj.age_restriction.name if obj.age_restriction else ""
+    def get_age_limit(self, obj: Competition) -> str:
+        return obj.age_limit.name if obj.age_limit else ""
 
     def get_season(self, obj: Competition) -> str:
         return obj.season.name

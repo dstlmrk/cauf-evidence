@@ -51,6 +51,13 @@ class Season(AuditModel):
         null=True,
         blank=True,
     )
+    min_allowed_age = models.PositiveSmallIntegerField(
+        help_text="Members younger than this age are not allowed to participate",
+        validators=[MaxValueValidator(99)],
+    )
+    age_reference_date = models.DateField(
+        help_text="Determining date for age calculation (typically 31st December)",
+    )
 
     def __str__(self) -> str:
         return self.name
@@ -72,25 +79,41 @@ class Division(AuditModel):
         return self.name
 
 
-class AgeRestriction(AuditModel):
+class AgeLimit(AuditModel):
     name = models.CharField(
         max_length=32,
         unique=True,
     )
-    min = models.PositiveSmallIntegerField(
-        default=0,
+    m_min = models.PositiveSmallIntegerField(
+        default=14,
         validators=[MaxValueValidator(99)],
+        verbose_name="Minimum age for men",
+        help_text="Minimum age allowed (inclusive) for men",
     )
-    max = models.PositiveSmallIntegerField(
+    m_max = models.PositiveSmallIntegerField(
         default=99,
         validators=[MaxValueValidator(99)],
+        verbose_name="Maximum age for women",
+        help_text="Maximum age allowed (inclusive) for men",
+    )
+    f_min = models.PositiveSmallIntegerField(
+        default=14,
+        validators=[MaxValueValidator(99)],
+        verbose_name="Minimum age for women",
+        help_text="Minimum age allowed (inclusive) for women",
+    )
+    f_max = models.PositiveSmallIntegerField(
+        default=99,
+        validators=[MaxValueValidator(99)],
+        verbose_name="Maximum age for women",
+        help_text="Maximum age allowed (inclusive) for women",
     )
 
     def __str__(self) -> str:
         return self.name
 
     def clean(self) -> None:
-        if self.min is not None and self.max is not None and self.min > self.max:
+        if self.m_min > self.m_max or self.f_min > self.f_max:
             raise ValidationError("Min age must be less than or equal to max age.")
 
 
@@ -106,8 +129,8 @@ class Competition(AuditModel):
         Division,
         on_delete=models.PROTECT,
     )
-    age_restriction = models.ForeignKey(
-        AgeRestriction,
+    age_limit = models.ForeignKey(
+        AgeLimit,
         null=True,
         blank=True,
         on_delete=models.PROTECT,
@@ -134,10 +157,10 @@ class Competition(AuditModel):
     )
 
     class Meta:
-        unique_together = ("name", "season", "type", "division", "age_restriction")
+        unique_together = ("name", "season", "type", "division", "age_limit")
 
     def __str__(self) -> str:
-        return f"{self.season}: {self.name} {self.division} {self.age_restriction or ""}".strip()
+        return f"{self.season}: {self.name} {self.division} {self.age_limit or ""}".strip()
 
     def season_fee(self) -> Decimal:
         if self.fee_type == CompetitionFeeTypeEnum.REGULAR:

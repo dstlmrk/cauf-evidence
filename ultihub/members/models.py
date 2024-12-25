@@ -1,5 +1,6 @@
 import logging
 import uuid
+from datetime import date
 from typing import Any
 
 from core.models import AuditModel
@@ -7,6 +8,7 @@ from core.tasks import send_email
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import F, FloatField, Func, Manager, QuerySet, Value
 from django_countries.fields import CountryField
 
 from members.validators import validate_czech_birth_number, validate_postal_code
@@ -30,6 +32,27 @@ class TransferStateEnum(models.IntegerChoices):
     PROCESSED = 2, "Processed"
     REVOKED = 3, "Revoked"
     REJECTED = 4, "Rejected"
+
+
+class MemberQuerySet(QuerySet):
+    def annotate_age(self, age_reference_date: date) -> QuerySet:
+        return self.annotate(
+            age=Func(
+                Func(
+                    Value(age_reference_date),
+                    F("birth_date"),
+                    function="AGE",
+                ),
+                function="DATE_PART",
+                template="DATE_PART('year', %(expressions)s)",
+                output_field=FloatField(),
+            )
+        )
+
+
+class MemberManager(Manager):
+    def get_queryset(self) -> MemberQuerySet:
+        return MemberQuerySet(self.model, using=self._db)
 
 
 class Member(AuditModel):
@@ -99,12 +122,11 @@ class Member(AuditModel):
             " You can reactivate the member at any time."
         ),
     )
-    is_favourite = models.BooleanField(
-        default=False,
-    )
     default_jersey_number = models.IntegerField(
         null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(99)]
     )
+
+    objects = MemberManager()
 
     @property
     def full_name(self) -> str:

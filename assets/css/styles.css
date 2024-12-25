@@ -150,3 +150,11 @@ body {
 .text-primary {
     color: #143c7d !important;
 }
+
+.form-error-msg {
+    color: var(--bs-form-invalid-color) !important;
+    font-size: 0.875em !important;
+    margin-top: 0.25rem !important;
+    box-sizing: border-box !important;
+    font-weight: bolder !important;
+}

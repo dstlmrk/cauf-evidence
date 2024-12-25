@@ -27,6 +27,7 @@ django-rq = "^2.10.2"
 djangorestframework = "^3.15.2"
 django-countries = "^7.6.1"
 django-admin-rangefilter = "^0.13.2"
+fakeredis = "^2.26.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest-django = "^4.9.0"
@@ -123,7 +124,7 @@ help = "Run unit tests (without checks)"
 sequence = [
 	"docker compose -f docker/compose.test.yaml up -d",
 	"python tests/wait_for_postgres.py",
-	"bash -c 'pytest || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down; exit $EXIT_CODE'"
+	"bash -c 'pytest --disable-warnings || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down; exit $EXIT_CODE'"
 ]
 envfile = "secrets/.env.test"
 

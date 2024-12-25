@@ -68,6 +68,12 @@ class MemberAtTournament(AuditModel):
     is_captain = models.BooleanField(
         default=False,
         verbose_name="Captain",
+        help_text="Only one captain per team is allowed",
+    )
+    is_spirit_captain = models.BooleanField(
+        default=False,
+        verbose_name="Spirit captain",
+        help_text="Only one spirit captain per team is allowed",
     )
     is_coach = models.BooleanField(
         default=False,

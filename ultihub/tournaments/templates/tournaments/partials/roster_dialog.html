@@ -10,7 +10,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Home club</th>
                     <th scope="col">Birth year</th>
-                    <th scope="col">Created at</th>
+                    <th scope="col">Added at</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -23,6 +23,9 @@
                                 {{ member.citizenship.unicode_flag }} {{ member.full_name }}
                                 {% if member_at_tournament.is_captain %}
                                     (C)
+                                {% endif %}
+                                {% if member_at_tournament.is_spirit_captain %}
+                                    (SC)
                                 {% endif %}
                                 {% if member_at_tournament.is_coach %}
                                     (COACH)
