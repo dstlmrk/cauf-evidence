@@ -33,9 +33,6 @@ class MemberForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["birth_number"].label = "Birth number*"
         self.fields["birth_number"].help_text = ""
-        self.fields["city"].label = "City*"
-        self.fields["house_number"].label = "House number*"
-        self.fields["postal_code"].label = "Postal code*"
         self.fields["email"].required = True
 
     def clean(self) -> dict[str, Any]:
@@ -44,12 +41,17 @@ class MemberForm(forms.ModelForm):
             if not cleaned_data.get("birth_number"):
                 self.add_error("birth_number", "This field is required for Czech citizens.")
         else:
-            if not cleaned_data.get("city"):
-                self.add_error("city", "This field is required for non-Czech citizens.")
-            if not cleaned_data.get("house_number"):
-                self.add_error("house_number", "This field is required for non-Czech citizens.")
-            if not cleaned_data.get("postal_code"):
-                self.add_error("postal_code", "This field is required for non-Czech citizens.")
+            city = cleaned_data.get("city")
+            house_number = cleaned_data.get("house_number")
+            postal_code = cleaned_data.get("postal_code")
+            if city or house_number or postal_code:
+                error_msg = "This field is required if an address is provided."
+                if not city:
+                    self.add_error("city", error_msg)
+                if not house_number:
+                    self.add_error("house_number", error_msg)
+                if not postal_code:
+                    self.add_error("postal_code", error_msg)
         return cleaned_data
 
 
