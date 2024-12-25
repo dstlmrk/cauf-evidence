@@ -78,6 +78,17 @@ class TournamentInline(admin.TabularInline):
     show_change_link = True
 
 
+class CompetitionApplicationInline(admin.TabularInline):
+    model = CompetitionApplication
+    extra = 0
+    fields = ("club", "team_name", "state", "final_placement")
+    readonly_fields = ("club",)
+
+    @admin.display(description="Club")
+    def club(self, obj: CompetitionApplication) -> str:
+        return str(obj.team.club)
+
+
 @admin.register(Competition)
 class CompetitionAdmin(admin.ModelAdmin):
     list_display_links = ("name",)
@@ -103,7 +114,7 @@ class CompetitionAdmin(admin.ModelAdmin):
         "deposit",
         "description",
     )
-    inlines = [TournamentInline]
+    inlines = [TournamentInline, CompetitionApplicationInline]
 
 
 class SeasonFilter(admin.SimpleListFilter):

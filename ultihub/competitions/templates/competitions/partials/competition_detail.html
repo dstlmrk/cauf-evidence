@@ -41,12 +41,10 @@
         <div>
             <i class="bi bi-clock"></i> Registration deadline:
             <b>{{ competition.registration_deadline | date:'d/m/Y H:i' }}</b>
-        </div>
-        <div>
             {% if competition.registration_deadline > now %}
-                <span class="badge text-bg-success">OPEN REGISTRATION</span>
+                <span class="badge text-bg-success">OPEN</span>
             {% else %}
-                <span class="badge text-bg-dark">CLOSED REGISTRATION</span>
+                <span class="badge text-bg-dark">CLOSED</span>
             {% endif %}
         </div>
 

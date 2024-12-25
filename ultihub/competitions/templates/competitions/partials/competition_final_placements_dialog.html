@@ -1,0 +1,38 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">Final placements</h5>
+    </div>
+    <div class="modal-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Team name</th>
+                    <th scope="col">Club</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in competition_applications %}
+                    <tr>
+                        <th class="fit text-center">
+                            {% if application.final_placement == 1 %}
+                                🥇
+                            {% elif application.final_placement == 2 %}
+                                🥈
+                            {% elif application.final_placement == 3 %}
+                                🥉
+                            {% else %}
+                                {{ application.final_placement }}
+                            {% endif %}
+                        </th>
+                        <td>{{ application.team_name }}</td>
+                        <td>{{ application.team.club.name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+</div>

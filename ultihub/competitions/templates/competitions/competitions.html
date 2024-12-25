@@ -30,8 +30,8 @@
                     <th scope="col">Registration<br /><small class="text-muted">Deadline</small></th>
                     <th scope="col">Season</th>
                     <th scope="col">Competition</th>
-                    <th scope="col">Deposit<br /><small class="text-muted">per team </small></th>
-                    <th scope="col">Season fee<br /><small class="text-muted">PF per tournament</small></th>
+                    <th scope="col">Deposit<br />per team</th>
+                    <th scope="col">Season fee<br /><small class="text-muted">Tournament fee</small></th>
                     <th scope="col" class="text-end"></th>
                 </tr>
             </thead>
@@ -75,7 +75,7 @@
                                     hx-get="{% url 'competitions:registration' competition.id %}"
                                     hx-target="#dialog"
                                 >
-                                    Registration
+                                    Registrate
                                     <span class="badge text-bg-dark">{{ competition.club_application_count }}</span>
                                     {% if competition.club_application_without_invoice_count > 0 %}
                                         <span
@@ -93,7 +93,7 @@
                                 hx-get="{% url 'competitions:application_list' competition.id %}"
                                 hx-target="#dialog-lg"
                             >
-                                Registered teams
+                                Teams
                                 <span class="badge text-bg-secondary">{{ competition.application_count }}</span>
                             </button>
 
@@ -104,7 +104,14 @@
                             >
                                 <i class="bi bi-info-circle"></i>
                             </button>
-                            <button type="button" class="btn btn-primary" disabled>
+                            <button
+                                class="btn btn-primary"
+                                hx-get="{% url 'competitions:competition_final_placements_dialog' competition.id %}"
+                                hx-target="#dialog"
+                                {% if not competition.has_final_placement %}
+                                    disabled
+                                {% endif %}
+                            >
                                 <i class="bi bi-trophy"></i>
                             </button>
                         </td>
