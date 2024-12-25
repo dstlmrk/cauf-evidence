@@ -1,12 +1,15 @@
 import logging
+from collections import Counter
 
 from clubs.models import Club
 from clubs.service import notify_club
+from competitions.models import Season
 from core.helpers import SessionClub, create_csv
 from core.tasks import send_email
 from django.db.models import Exists, OuterRef, Subquery
 from django.utils import timezone
 from django.utils.timezone import now
+from tournaments.models import MemberAtTournament, Tournament
 from users.models import Agent
 
 from members.models import CoachLicence, Member, Transfer, TransferStateEnum
@@ -87,12 +90,30 @@ def reject_transfer(transfer: Transfer) -> None:
     )
 
 
+def get_member_participation_counts_for_last_season() -> Counter[int]:
+    last_season = Season.objects.last()
+    tournament_lengths = {}
+    for tournament in Tournament.objects.filter(competition__season=last_season):
+        delta_days = (tournament.end_date - tournament.start_date).days + 1
+        tournament_lengths[tournament.id] = delta_days
+    member_participation: Counter[int] = Counter()
+    for member_at_tournament in MemberAtTournament.objects.filter(
+        tournament_id__in=tournament_lengths.keys()
+    ):
+        member_participation[member_at_tournament.member_id] += tournament_lengths[
+            member_at_tournament.tournament.id
+        ]
+    return member_participation
+
+
 def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
     # https://rejstriksportu.cz/dashboard/public/dokumentace
 
     logger.info(f"Agent {agent.user.email} requested NSA export for {club.name}")
     current_date = now().date()
     data = []
+
+    member_participation = get_member_participation_counts_for_last_season()
 
     for member in Member.objects.filter(club_id=club.id).annotate(
         has_coach_licence=Exists(
@@ -123,7 +144,7 @@ def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
                 "1",
                 member.created_at,
                 "98.3",
-                "",  # TODO: calculate it
+                member_participation[member.id],
                 "1" if member.has_coach_licence else "0",
                 member.earliest_coach_licence_date if member.has_coach_licence else "",
                 "98.3",

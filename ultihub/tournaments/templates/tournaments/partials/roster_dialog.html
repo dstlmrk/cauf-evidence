@@ -1,6 +1,6 @@
 <div class="modal-content">
     <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-person"></i> Roster</h5>
+        <h5 class="modal-title"><i class="bi bi-people"></i> Roster: {{ team_at_tournament }}</h5>
     </div>
     <div class="modal-body">
         <table class="table align-middle">
@@ -32,7 +32,7 @@
                             <td>{{ member.birth_date | date:'Y' }}</td>
                             <td>{{ member_at_tournament.created_at | date:'Y/m/d H:i' }}</td>
                             <td class="fit text-end">
-                                {% if request.session.club and request.session.club.id == member_at_tournament.team_at_tournament.application.team.club_id %}
+                                {% if request.session.club and request.session.club.id == member_at_tournament.team_at_tournament.application.team.club_id and team_at_tournament.tournament.rosters_deadline > now %}
                                     <button
                                         class="btn btn-primary"
                                         hx-get="{% url 'tournaments:roster_dialog_update_form' member_at_tournament.id %}"
@@ -57,7 +57,7 @@
     </div>
     <div class="modal-footer d-flex w-100 justify-content-between">
         <div>
-            {% if request.session.club and request.session.club.id == team_at_tournament.application.team.club_id %}
+            {% if request.session.club and request.session.club.id == team_at_tournament.application.team.club_id and team_at_tournament.tournament.rosters_deadline > now %}
                 <button
                     class="btn btn-success"
                     hx-get="{% url 'tournaments:roster_dialog_add_form' team_at_tournament.id %}"
