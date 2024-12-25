@@ -17,11 +17,8 @@
                         <br />
                         <small class="text-muted">End date</small>
                     </th>
-                    <th scope="col">
-                        Number of teams
-                        <br />
-                        <small class="text-muted">Winner</small>
-                    </th>
+                    <th scope="col">Total teams<br />/ members</th>
+                    <th scope="col">Winner</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,9 +42,9 @@
                             <span class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
                                 >{{ tournament.competition.division | upper }}</span
                             >
-                            {% if tournament.competition.age_restriction %}
+                            {% if tournament.competition.age_limit %}
                                 <span class="badge text-bg-primary"
-                                    >{{ tournament.competition.age_restriction | upper }}</span
+                                    >{{ tournament.competition.age_limit | upper }}</span
                                 >
                             {% endif %}
                         </td>
@@ -64,11 +61,13 @@
                         </td>
                         <td>
                             {% if tournament.team_count %}
-                                <span class="badge text-bg-primary rounded-pill">{{ tournament.team_count }}</span>
+                                {{ tournament.team_count }}
+                                / {{ tournament.member_count }}
                             {% endif %}
+                        </td>
+                        <td>
                             {% if tournament.winner_team %}
-                                <br />
-                                <small class="text-muted">{{ tournament.winner_team }}</small>
+                                {{ tournament.winner_team }}
                             {% endif %}
                         </td>
                     </tr>
@@ -91,10 +90,8 @@
                         <span class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
                             >{{ tournament.competition.division | upper }}</span
                         >
-                        {% if tournament.competition.age_restriction %}
-                            <span class="badge text-bg-primary"
-                                >{{ tournament.competition.age_restriction | upper }}</span
-                            >
+                        {% if tournament.competition.age_limit %}
+                            <span class="badge text-bg-primary">{{ tournament.competition.age_limit | upper }}</span>
                         {% endif %}
                     </h5>
                     <div class="d-flex w-100 justify-content-between">
@@ -102,7 +99,7 @@
                             <i class="bi bi-calendar-check"></i> {{ tournament.start_date }} -
                             {{ tournament.end_date }}<br />
                             <i class="bi bi-geo-alt-fill"></i> {{ tournament.location }}<br />
-                            <i class="bi bi-trophy-fill"></i> {{ tournament.competition.age_restriction }}
+                            <i class="bi bi-trophy-fill"></i> {{ tournament.competition.age_limit }}
                             {{ tournament.competition.name }}
                             {{ tournament.competition.division }} <br />
                         </div>

@@ -6,13 +6,12 @@ from core.helpers import get_current_club
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.timezone import now
 from django.views.decorators.http import require_GET, require_POST
-from tournaments.models import MemberAtTournament, Tournament
+from tournaments.models import Tournament
 
 from members.forms import (
     MemberConfirmEmailForm,
@@ -28,7 +27,8 @@ from members.helpers import (
     reject_transfer,
     revoke_transfer,
 )
-from members.models import CoachLicence, Member, MemberSexEnum, Transfer
+from members.models import CoachLicence, Member, Transfer
+from members.services import search as search_service
 
 logger = logging.getLogger(__name__)
 
@@ -91,51 +91,15 @@ def confirm_email(request: HttpRequest, token: UUID) -> HttpResponse:
 @login_required
 def search(request: HttpRequest) -> JsonResponse:
     current_club = get_current_club(request)
-
     query = request.GET.get("q", "").strip()
-    query_length = len(query)
+    tournament_id = request.GET.get("tournament_id")
 
-    raw_tournament_id = request.GET.get("tournament_id")
-    tournament_id = None if raw_tournament_id == "null" else raw_tournament_id
+    if tournament_id == "null":
+        tournament = None
+    else:
+        tournament = get_object_or_404(Tournament, pk=tournament_id)
 
     logger.info(f"Searching for members with query: {query}, tournament_id: {tournament_id}")
-
-    if 0 < query_length < 3:
-        return JsonResponse({"results": []})
-
-    query_filter = Q()
-
-    if query_length >= 3:  # regular search for members over all clubs
-        search_terms = query.split()
-
-        if len(search_terms) == 2:
-            first, second = search_terms
-            query_filter |= (Q(first_name__icontains=first) & Q(last_name__icontains=second)) | (
-                Q(first_name__icontains=second) & Q(last_name__icontains=first)
-            )
-        else:
-            for term in search_terms:
-                query_filter |= Q(first_name__icontains=term) | Q(last_name__icontains=term)
-
-    else:  # search for members in the current club
-        query_filter &= Q(club_id=current_club.id)
-        query_filter &= Q(is_active=True)
-
-    if tournament_id:
-        tournament = get_object_or_404(Tournament, pk=tournament_id)
-        division = tournament.competition.division
-
-        if division.is_male_allowed != division.is_female_allowed:
-            sex_filter = MemberSexEnum.MALE if division.is_male_allowed else MemberSexEnum.FEMALE
-            query_filter &= Q(sex=sex_filter)
-
-        already_assigned_members_ids = MemberAtTournament.objects.filter(
-            tournament=tournament
-        ).values_list("member_id", flat=True)
-        query_filter &= ~Q(id__in=already_assigned_members_ids)
-
-        # TODO: filter by age
-        # TODO: add higher weight to members who already played for the club in this competition
 
     return JsonResponse(
         {
@@ -151,7 +115,7 @@ def search(request: HttpRequest) -> JsonResponse:
                     "default_jersey_number": member.default_jersey_number,
                     "flag": member.citizenship.unicode_flag,
                 }
-                for member in Member.objects.filter(query_filter).select_related("club")[:20]
+                for member in search_service(query, current_club.id, tournament)
             ]
         }
     )

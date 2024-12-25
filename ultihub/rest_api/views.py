@@ -6,8 +6,6 @@ from .serializers import CompetitionSerializer
 
 class CompetitionView(ListAPIView):
     queryset = (
-        Competition.objects.select_related("age_restriction", "season", "division")
-        .order_by("-pk")
-        .all()
+        Competition.objects.select_related("age_limit", "season", "division").order_by("-pk").all()
     )
     serializer_class = CompetitionSerializer

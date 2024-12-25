@@ -15,7 +15,7 @@ from tournaments.models import TeamAtTournament, Tournament
 
 from competitions.forms import AddTeamsToTournamentForm
 from competitions.models import (
-    AgeRestriction,
+    AgeLimit,
     ApplicationStateEnum,
     Competition,
     CompetitionApplication,
@@ -33,6 +33,8 @@ class SeasonAdmin(admin.ModelAdmin):
         "discounted_fee",
         "regular_fee",
         "fee_at_tournament",
+        "min_allowed_age",
+        "age_reference_date",
         "has_generated_invoices",
     )
     change_form_template = "admin/season_change_form.html"
@@ -66,9 +68,9 @@ class DivisionAdmin(admin.ModelAdmin):
     list_display = ("name", "is_female_allowed", "is_male_allowed")
 
 
-@admin.register(AgeRestriction)
-class AgeRestrictionAdmin(admin.ModelAdmin):
-    list_display = ("name", "min", "max")
+@admin.register(AgeLimit)
+class AgeLimitAdmin(admin.ModelAdmin):
+    list_display = ("name", "m_min", "m_max", "f_min", "f_max")
 
 
 class TournamentInline(admin.TabularInline):
@@ -92,10 +94,10 @@ class CompetitionApplicationInline(admin.TabularInline):
 @admin.register(Competition)
 class CompetitionAdmin(admin.ModelAdmin):
     list_display_links = ("name",)
-    list_filter = ("season", "division", "age_restriction", "type")
+    list_filter = ("season", "division", "age_limit", "type")
     list_display = (
         "season",
-        "age_restriction",
+        "age_limit",
         "name",
         "division",
         "type",
@@ -104,7 +106,7 @@ class CompetitionAdmin(admin.ModelAdmin):
     )
     fields = (
         "season",
-        "age_restriction",
+        "age_limit",
         "name",
         "division",
         "type",
@@ -162,7 +164,7 @@ class CompetitionApplicationAdmin(admin.ModelAdmin):
         ]
         return custom_urls + urls
 
-    @admin.display(description="Add teams to the tournament")
+    @admin.display(description="Add teams to a tournament")
     def add_teams_to_tournament(self, request: HttpRequest, queryset: QuerySet) -> HttpResponse:
         if queryset.exclude(state=ApplicationStateEnum.ACCEPTED).exists():
             self.message_user(
@@ -221,7 +223,7 @@ class CompetitionApplicationAdmin(admin.ModelAdmin):
             "admin/add_teams_to_tournament.html",
             {
                 "form": form,
-                "title": "Add teams to the tournament",
+                "title": "Add teams to a tournament",
                 "description": "Selected teams will be able to register players on rosters.",
             },
         )

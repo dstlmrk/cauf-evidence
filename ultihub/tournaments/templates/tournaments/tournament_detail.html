@@ -13,8 +13,8 @@
         <span class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
             >{{ tournament.competition.division | upper }}</span
         >
-        {% if tournament.competition.age_restriction %}
-            <span class="badge text-bg-primary">{{ tournament.competition.age_restriction | upper }}</span>
+        {% if tournament.competition.age_limit %}
+            <span class="badge text-bg-primary">{{ tournament.competition.age_limit | upper }}</span>
         {% endif %}
     </div>
 {% endblock %}
@@ -41,4 +41,5 @@
     {% else %}
         <div class="alert alert-dark" role="alert">No teams have been assigned to the tournament yet.</div>
     {% endif %}
+    <div class="text-end">Total members: <b>{{ tournament.member_count }}</b></div>
 {% endblock %}

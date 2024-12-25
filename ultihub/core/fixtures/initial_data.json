@@ -76,7 +76,6 @@
             "marketing_consent_given_at": null,
             "has_email_confirmed": true,
             "is_active": true,
-            "is_favourite": false,
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
@@ -100,7 +99,6 @@
             "marketing_consent_given_at": "2023-10-01T10:00:00Z",
             "has_email_confirmed": true,
             "is_active": true,
-            "is_favourite": true,
             "default_jersey_number": 23,
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
@@ -121,7 +119,6 @@
             "marketing_consent_given_at": "2023-01-15T15:30:00Z",
             "has_email_confirmed": true,
             "is_active": true,
-            "is_favourite": false,
             "default_jersey_number": 10,
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
@@ -146,7 +143,6 @@
             "marketing_consent_given_at": null,
             "has_email_confirmed": true,
             "is_active": false,
-            "is_favourite": false,
             "default_jersey_number": 96,
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
@@ -192,10 +188,12 @@
         "model": "competitions.season",
         "pk": 1,
         "fields": {
-            "name": "2024/2025",
+            "name": "2025",
             "discounted_fee": "200.00",
             "regular_fee": "600.00",
             "fee_at_tournament": "60.00",
+            "min_allowed_age": 14,
+            "age_reference_date": "2025-12-31",
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
@@ -223,23 +221,27 @@
         }
     },
     {
-        "model": "competitions.agerestriction",
+        "model": "competitions.agelimit",
         "pk": 1,
         "fields": {
             "name": "U20",
-            "min": 0,
-            "max": 20,
+            "m_min": 12,
+            "m_max": 19,
+            "f_min": 12,
+            "f_max": 19,
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
     },
     {
-        "model": "competitions.agerestriction",
+        "model": "competitions.agelimit",
         "pk": 2,
         "fields": {
             "name": "Masters",
-            "min": 35,
-            "max": 99,
+            "m_min": 33,
+            "m_max": 99,
+            "f_min": 30,
+            "f_max": 99,
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
@@ -251,7 +253,7 @@
             "name": "JMČR",
             "season": 1,
             "division": 1,
-            "age_restriction": 1,
+            "age_limit": 1,
             "is_for_national_teams": false,
             "type": 1,
             "fee_type": 2,
@@ -268,7 +270,7 @@
             "name": "HMČR",
             "season": 1,
             "division": 2,
-            "age_restriction": null,
+            "age_limit": null,
             "is_for_national_teams": false,
             "type": 2,
             "fee_type": 3,

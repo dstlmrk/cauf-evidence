@@ -32,10 +32,11 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
                 "competition",
                 "competition__season",
                 "competition__division",
-                "competition__age_restriction",
+                "competition__age_limit",
             )
             .annotate(
-                team_count=Count("teamattournament"),
+                team_count=Count("teamattournament", distinct=True),
+                member_count=Count("memberattournament", distinct=True),
                 winner_team=Subquery(
                     TeamAtTournament.objects.filter(
                         tournament=OuterRef("pk"), final_placement=1
@@ -55,7 +56,10 @@ def tournament_detail_view(request: HttpRequest, tournament_id: int) -> HttpResp
         {
             "now": timezone.now(),
             "tournament": Tournament.objects.select_related("competition")
-            .annotate(team_count=Count("teamattournament"))
+            .annotate(
+                team_count=Count("teamattournament", distinct=True),
+                member_count=Count("memberattournament", distinct=True),
+            )
             .get(pk=tournament_id),
         },
     )
@@ -81,7 +85,12 @@ def roster_dialog_view(request: HttpRequest, team_at_tournament_id: int) -> Http
 def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int) -> HttpResponse:
     team_at_tournament = get_object_or_404(
         TeamAtTournament.objects.select_related(
-            "application", "application__team", "application__team__club", "tournament"
+            "application",
+            "application__team",
+            "application__team__club",
+            "tournament",
+            "tournament__competition",
+            "tournament__competition__season",
         ),
         pk=team_at_tournament_id,
     )
@@ -91,26 +100,16 @@ def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int
         raise PermissionDenied()
 
     if request.method == "POST":
-        form = AddMemberToRosterForm(request.POST)
-
-        if team_at_tournament.tournament.rosters_deadline < timezone.now():
-            messages.error(request, "The roster deadline has passed")
-            return HttpResponse(status=400)
+        member = (
+            Member.objects.select_related("club")
+            .annotate_age(team_at_tournament.tournament.competition.season.age_reference_date)  # type: ignore
+            .get(pk=request.POST["member_id"])
+        )
+        form = AddMemberToRosterForm(
+            request.POST, tournament=team_at_tournament.tournament, member=member
+        )
 
         if form.is_valid():
-            member = Member.objects.get(pk=form.cleaned_data["member_id"])
-
-            if not member.has_email_confirmed:
-                messages.error(request, "Member must have confirmed email")
-                response = HttpResponse(status=400)
-                response["HX-Trigger"] = json.dumps(
-                    dict(
-                        showRosterDialog=dict(teamAtTournamentId=team_at_tournament_id),
-                        teamsListChanged=False,
-                    )
-                )
-                return response
-
             MemberAtTournament.objects.create(
                 tournament_id=team_at_tournament.tournament_id,
                 team_at_tournament_id=team_at_tournament.id,

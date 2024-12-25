@@ -14,7 +14,7 @@
             hx-swap="none"
             {% if not club_application_without_invoice_total %}disabled{% endif %}
         >
-            <i class="bi bi-receipt-cutoff"></i> Generate Invoice
+            <i class="bi bi-receipt-cutoff"></i> Generate invoice
             <span class="position-absolute top-0 translate-middle badge rounded-pill bg-dark">
                 {{ club_application_without_invoice_total }} total
             </span>
@@ -59,8 +59,8 @@
                             <span class="badge text-bg-primary text-bg-{{ competition.division | lower }}"
                                 >{{ competition.division | upper }}</span
                             >
-                            {% if competition.age_restriction %}
-                                <span class="badge text-bg-primary">{{ competition.age_restriction | upper }}</span>
+                            {% if competition.age_limit %}
+                                <span class="badge text-bg-primary">{{ competition.age_limit | upper }}</span>
                             {% endif %}
                         </td>
                         <td>CZK {{ competition.deposit | floatformat:0 }}</td>
