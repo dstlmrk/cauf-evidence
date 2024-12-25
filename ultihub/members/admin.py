@@ -7,7 +7,9 @@ from django.http import HttpRequest, HttpResponse
 from django.utils.timezone import now
 from django_countries.fields import Country
 from rangefilter.filters import DateRangeFilterBuilder
+from tournaments.admin import MemberAtTournamentInline
 
+from members.helpers import get_member_participation_counts_for_last_season
 from members.models import CoachLicence, Member, MemberSexEnum
 
 
@@ -57,16 +59,15 @@ class MemberAdmin(admin.ModelAdmin):
         "has_marketing_consent_given",
         "has_coach_licence",
         "_created_at",
+        "participation_count",
     )
-    readonly_fields = [
-        "email_confirmation_token",
-        "has_email_confirmed",
-    ]
+    readonly_fields = ["email_confirmation_token", "has_email_confirmed", "participation_count"]
 
     list_display_links = ("first_name", "last_name")
     actions = ["export_as_csv"]
     ordering = ["-id"]
     show_facets = admin.ShowFacets.ALWAYS
+    inlines = [MemberAtTournamentInline]
 
     search_fields = ["first_name", "last_name", "email"]
     list_filter = [
@@ -77,7 +78,14 @@ class MemberAdmin(admin.ModelAdmin):
         "club__name",
     ]
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.member_participation: dict = {}
+
     def get_queryset(self, request: HttpRequest) -> QuerySet:
+        # Calculate member participation count
+        self.member_participation = get_member_participation_counts_for_last_season()
+
         current_date = now().date()
         qs = super().get_queryset(request)
         qs = qs.select_related("club").annotate(
@@ -90,6 +98,14 @@ class MemberAdmin(admin.ModelAdmin):
             ),
         )
         return qs
+
+    @admin.display(description="Participation count")
+    def participation_count(self, obj: Member) -> int:
+        """
+        Return the number of days the member has participated
+        in tournaments in current season
+        """
+        return self.member_participation[obj.id]
 
     @admin.display(ordering="birth_date")
     def _birth_date(self, obj: Member) -> str:
@@ -139,6 +155,7 @@ class MemberAdmin(admin.ModelAdmin):
             "has_email_confirmed",
             "marketing_consent_given_at",
             "has_coach_licence",
+            "participation_count",
             "created_at",
         ]
 
@@ -166,6 +183,7 @@ class MemberAdmin(admin.ModelAdmin):
                     obj.has_email_confirmed,
                     obj.marketing_consent_given_at,
                     obj.has_coach_licence,
+                    self.member_participation[obj.id],
                     self._created_at(obj),
                 ]
             )

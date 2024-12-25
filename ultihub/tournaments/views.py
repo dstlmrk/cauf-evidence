@@ -68,6 +68,7 @@ def roster_dialog_view(request: HttpRequest, team_at_tournament_id: int) -> Http
         request,
         "tournaments/partials/roster_dialog.html",
         {
+            "now": timezone.now(),
             "team_at_tournament": team_at_tournament,
             "members_at_tournament": MemberAtTournament.objects.select_related("member").filter(
                 team_at_tournament_id=team_at_tournament.id

@@ -17,8 +17,8 @@ class TeamAtTournamentInline(admin.TabularInline):
 class MemberAtTournamentInline(admin.TabularInline):
     model = MemberAtTournament
     extra = 0
-    fields = ("member", "is_captain", "is_coach", "jersey_number")
-    readonly_fields = ("member",)
+    fields = ("tournament", "member", "is_captain", "is_coach", "jersey_number")
+    readonly_fields = ("tournament", "member")
 
 
 @admin.register(Tournament)
