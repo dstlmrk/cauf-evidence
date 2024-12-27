@@ -14,6 +14,7 @@ SECRET_KEY = env.str("SECRET_KEY")
 APPLICATION_DOMAIN = env.str("APPLICATION_DOMAIN")
 ALLOWED_HOSTS = [APPLICATION_DOMAIN]
 RELEASE_DATETIME = env.str("RELEASE_DATETIME", "DD/MM/YY HH:MM")
+FORMS_URLFIELD_ASSUME_HTTPS = True
 
 if ENVIRONMENT == "prod":
     CSRF_COOKIE_SECURE = True
@@ -24,12 +25,12 @@ if ENVIRONMENT == "prod":
 
 # APPLICATION DEFINITION ------------------------------------------------------
 INSTALLED_APPS = [
+    "api.apps.ApiConfig",
     "clubs.apps.ClubsConfig",
     "competitions.apps.CompetitionsConfig",
     "core.apps.CoreConfig",
     "finance.apps.FinanceConfig",
     "members.apps.MembersConfig",
-    "rest_api.apps.RestApiConfig",
     "tournaments.apps.TournamentsConfig",
     "users.apps.UsersConfig",
     # 3rd party
@@ -48,11 +49,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.sites",
     "django.contrib.staticfiles",
+    "django_filters",
     "django_htmx",
     "django_rq",
     "guardian",
-    "rest_framework",
     "rangefilter",
+    "rest_framework",
+    "rest_framework.authtoken",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -208,7 +211,6 @@ else:
         }
     )
 
-
 # TESTING AND DEBUG ----------------------------------------------------------
 DEBUG = env.bool("DEBUG", ENVIRONMENT in ["dev", "test"])
 
@@ -222,11 +224,9 @@ if ENVIRONMENT != "test":
         *MIDDLEWARE,
     ]
 
-
 # CRISPY FORMS ----------------------------------------------------------------
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-
 
 # EMAIL SETTINGS --------------------------------------------------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -269,3 +269,13 @@ if ENVIRONMENT == "test":
         )
 
     django_rq.queues.get_redis_connection = get_fake_connection
+
+# REST FRAMEWORK --------------------------------------------------------------
+REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+}

@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from core.models import AuditModel
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -32,7 +34,7 @@ class Invoice(AuditModel):
     amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(0)],
+        validators=[MinValueValidator(Decimal(0))],
     )
 
     def __str__(self) -> str:

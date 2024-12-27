@@ -35,17 +35,17 @@ class Season(AuditModel):
     discounted_fee = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(0)],
+        validators=[MinValueValidator(Decimal(0))],
     )
     regular_fee = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(0)],
+        validators=[MinValueValidator(Decimal(0))],
     )
     fee_at_tournament = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(0)],
+        validators=[MinValueValidator(Decimal(0))],
     )
     invoices_generated_at = models.DateTimeField(
         null=True,
@@ -148,7 +148,7 @@ class Competition(AuditModel):
     deposit = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(0)],
+        validators=[MinValueValidator(Decimal(0))],
         help_text="Deposit (CZK) required to secure a spot in the competition",
     )
     registration_deadline = models.DateTimeField()
@@ -193,9 +193,12 @@ class CompetitionApplication(AuditModel):
     competition = models.ForeignKey(
         Competition,
         on_delete=models.PROTECT,
+        related_name="applications",
     )
     team = models.ForeignKey(
-        "clubs.Team", on_delete=models.PROTECT, related_name="competition_application"
+        "clubs.Team",
+        on_delete=models.PROTECT,
+        related_name="applications",
     )
     registered_by = models.ForeignKey(
         User,

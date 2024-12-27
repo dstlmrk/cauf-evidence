@@ -138,10 +138,14 @@ class Member(AuditModel):
     def clean(self) -> None:
         if self.citizenship == "CZ" and not self.birth_number:
             raise ValidationError({"birth_number": "Birth number is required for czech citizens."})
-        if self.citizenship != "CZ" and (
-            not self.city or not self.house_number or not self.postal_code
-        ):
-            raise ValidationError("Address fields are required for non-czech citizens.")
+        if self.citizenship != "CZ" and (self.city or self.house_number or self.postal_code):
+            error_msg = "This field is required if an address is provided."
+            if not self.city:
+                raise ValidationError({"city": error_msg})
+            if not self.house_number:
+                raise ValidationError({"house_number": error_msg})
+            if not self.postal_code:
+                raise ValidationError({"postal_code": error_msg})
         if self.email and Member.objects.filter(email=self.email).exclude(pk=self.pk).exists():
             raise ValidationError({"email": "Member with this email already exists."})
         if (
@@ -183,12 +187,15 @@ class Member(AuditModel):
         super().save(*args, **kwargs)
 
         if send_token:
-            link = f"https://evidence.frisbee.cz/confirm-email/{self.email_confirmation_token}"
+            link = (
+                f"https://evidence.frisbee.cz/members/confirm-email/{self.email_confirmation_token}"
+            )
             send_email.delay(
                 "Please confirm your email",
                 (
                     f"You have been registered as a member of {self.club.name}.\n"
-                    f" Please confirm your email by clicking on the following link:\n{link}"
+                    "Please confirm your email by clicking on the following"
+                    f' <a href="{link}">link</a>.\n'
                 ),
                 to=[self.email],
             )

@@ -1,24 +1,25 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import factory.fuzzy
 from clubs.models import Club, Team
 from competitions.models import (
     AgeLimit,
+    ApplicationStateEnum,
     Competition,
+    CompetitionApplication,
     CompetitionFeeTypeEnum,
     CompetitionTypeEnum,
     Division,
     Season,
 )
 from django.contrib.auth.models import User
+from django.utils import timezone
 from factory import SubFactory
 from members.models import Member, MemberSexEnum
-from pytest_factoryboy import register
-from tournaments.models import Tournament
+from tournaments.models import MemberAtTournament, TeamAtTournament, Tournament
 from users.models import Agent, AgentAtClub
 
 
-@register
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
@@ -30,7 +31,6 @@ class UserFactory(factory.django.DjangoModelFactory):
     is_staff = False
 
 
-@register
 class AgentFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Agent
@@ -39,7 +39,6 @@ class AgentFactory(factory.django.DjangoModelFactory):
     user = SubFactory(UserFactory)
 
 
-@register
 class ClubFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Club
@@ -49,9 +48,9 @@ class ClubFactory(factory.django.DjangoModelFactory):
     website = factory.Faker("url")
     city = factory.Faker("city")
     organization_name = factory.Faker("company")
+    identification_number = ""
 
 
-@register
 class TeamFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Team
@@ -61,7 +60,6 @@ class TeamFactory(factory.django.DjangoModelFactory):
     club = SubFactory(ClubFactory)
 
 
-@register
 class AgentAtClubFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = AgentAtClub
@@ -71,11 +69,11 @@ class AgentAtClubFactory(factory.django.DjangoModelFactory):
     invited_by = SubFactory(UserFactory)
 
 
-@register
 class MemberFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Member
 
+    club = SubFactory(ClubFactory)
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
     email = factory.Faker("email")
@@ -83,7 +81,6 @@ class MemberFactory(factory.django.DjangoModelFactory):
     sex = factory.fuzzy.FuzzyChoice(list(MemberSexEnum))
 
 
-@register
 class SeasonFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Season
@@ -96,13 +93,11 @@ class SeasonFactory(factory.django.DjangoModelFactory):
     age_reference_date = factory.LazyAttribute(lambda obj: f"{obj.name}-12-31")
 
 
-@register
 class DivisionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Division
 
 
-@register
 class AgeLimitFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = AgeLimit
@@ -112,7 +107,6 @@ class AgeLimitFactory(factory.django.DjangoModelFactory):
     m_max = f_max = 99
 
 
-@register
 class CompetitionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Competition
@@ -125,10 +119,9 @@ class CompetitionFactory(factory.django.DjangoModelFactory):
     type = factory.fuzzy.FuzzyChoice(list(CompetitionTypeEnum))
     fee_type = CompetitionFeeTypeEnum.REGULAR
     deposit = factory.Faker("random_int", min=1000, max=2000)
-    registration_deadline = factory.LazyFunction(lambda: datetime.now() + timedelta(days=2))
+    registration_deadline = factory.LazyFunction(lambda: timezone.now() + timedelta(days=2))
 
 
-@register
 class TournamentFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Tournament
@@ -138,4 +131,39 @@ class TournamentFactory(factory.django.DjangoModelFactory):
     start_date = factory.Faker("date_this_year")
     end_date = factory.LazyAttribute(lambda obj: obj.start_date + timedelta(days=2))
     location = factory.Faker("city")
-    rosters_deadline = factory.LazyFunction(lambda: datetime.now() + timedelta(days=1))
+    rosters_deadline = factory.LazyFunction(lambda: timezone.now() + timedelta(days=1))
+
+
+class CompetitionApplicationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = CompetitionApplication
+
+    team_name = factory.Faker("company")
+    competition = SubFactory(CompetitionFactory)
+    state = ApplicationStateEnum.ACCEPTED
+    registered_by = SubFactory(UserFactory)
+    team = SubFactory(TeamFactory)
+    team_name = factory.LazyAttribute(lambda obj: obj.team.club.name)
+
+
+class TeamAtTournamentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = TeamAtTournament
+
+    tournament = SubFactory(TournamentFactory)
+    application = SubFactory(CompetitionApplicationFactory)
+    final_placement = None
+    spirit_avg = None
+
+
+class MemberAtTournamentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = MemberAtTournament
+
+    tournament = SubFactory(TournamentFactory)
+    team_at_tournament = SubFactory(TeamAtTournamentFactory)
+    member = SubFactory(MemberFactory)
+    is_captain = False
+    is_spirit_captain = False
+    is_coach = False
+    jersey_number = 10

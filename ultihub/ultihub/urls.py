@@ -33,7 +33,7 @@ urlpatterns = [
     path("", include("core.urls")),
     path("accounts/", include("allauth.urls")),
     path("admin/", admin.site.urls, name="admin"),
-    path("api/", include("rest_api.urls")),
+    path("api/", include("api.urls")),
     path("club/", include("clubs.urls")),
     path("competitions/", include("competitions.urls")),
     path("django-rq/", include("django_rq.urls")),

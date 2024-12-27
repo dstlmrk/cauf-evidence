@@ -28,6 +28,7 @@ djangorestframework = "^3.15.2"
 django-countries = "^7.6.1"
 django-admin-rangefilter = "^0.13.2"
 fakeredis = "^2.26.2"
+django-filter = "^24.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest-django = "^4.9.0"
@@ -49,6 +50,7 @@ DJANGO_SETTINGS_MODULE = "ultihub.settings"
 pythonpath = ". ultihub"
 addopts = ["--import-mode=importlib",]
 python_files = ["test_*.py", "*_test.py"]
+filterwarnings = ["ignore::DeprecationWarning:rq.utils", "ignore:The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated."]
 
 [tool.ruff]
 line-length = 100
@@ -124,7 +126,7 @@ help = "Run unit tests (without checks)"
 sequence = [
 	"docker compose -f docker/compose.test.yaml up -d",
 	"python tests/wait_for_postgres.py",
-	"bash -c 'pytest --disable-warnings || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down; exit $EXIT_CODE'"
+	"bash -c 'pytest || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down --volumes; exit $EXIT_CODE'"
 ]
 envfile = "secrets/.env.test"
 
