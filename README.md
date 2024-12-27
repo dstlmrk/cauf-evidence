@@ -48,3 +48,40 @@ docker compose -f docker/compose.dev.yaml exec app python manage.py loaddata ini
 ```bash
 ./run-backup.sh mara 46.101.97.63
 ```
+
+# API
+
+This app offers API for a few cases. It is based on Django Rest Framework and uses token authentication.
+
+## Authentication
+
+All GET requests are public. For other requests, you need
+to authenticate via token in the header `Authorization=Token <token>`.
+
+For authentication, you need a user with a token. You can create him
+in administration and generate token via `python manage.py drf_create_token <username>`.
+Already created tokens are available at `/admin/authtoken/tokenproxy`.
+
+## Endpoints
+
+### /api/competitions
+
+-   [GET] Returns all competitions. No filter is available at this moment.
+
+### /api/clubs
+
+-   [GET] Returns all clubs. No filter is available at this moment.
+
+### /api/teams-at-tournament
+
+-   [GET] Returns all teams at tournament with theirs roster. Parameter `tournament_id` is required.
+
+### /api/team-at-tournament/\<int:pk>
+
+-   [GET] Returns team at tournament with its roster.
+-   [PATCH] Updates `final_placement` and `spirit_avg` fields.
+
+### /api/competition-application/\<int:pk>
+
+-   [GET] Returns competition application.
+-   [PATCH] Updates `final_placement` field.

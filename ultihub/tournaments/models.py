@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from core.models import AuditModel
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -7,6 +9,7 @@ class Tournament(AuditModel):
     competition = models.ForeignKey(
         "competitions.Competition",
         on_delete=models.PROTECT,
+        related_name="tournaments",
     )
     name = models.CharField(max_length=48)
     start_date = models.DateField()
@@ -26,6 +29,7 @@ class TeamAtTournament(AuditModel):
     tournament = models.ForeignKey(
         Tournament,
         on_delete=models.PROTECT,
+        related_name="teams",
     )
     application = models.ForeignKey(
         "competitions.CompetitionApplication",
@@ -41,7 +45,7 @@ class TeamAtTournament(AuditModel):
         decimal_places=3,
         null=True,
         blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(20)],
+        validators=[MinValueValidator(Decimal(0)), MaxValueValidator(Decimal(20))],
     )
 
     class Meta:
@@ -56,10 +60,12 @@ class MemberAtTournament(AuditModel):
     tournament = models.ForeignKey(
         Tournament,
         on_delete=models.PROTECT,
+        related_name="members",
     )
     team_at_tournament = models.ForeignKey(
         TeamAtTournament,
         on_delete=models.PROTECT,
+        related_name="members",
     )
     member = models.ForeignKey(
         "members.Member",

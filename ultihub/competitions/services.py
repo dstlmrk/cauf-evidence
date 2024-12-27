@@ -55,19 +55,17 @@ def get_competitions_qs_with_related_data(
         competitions_qs.select_related("age_limit", "season", "division")
         .prefetch_related(
             Prefetch(
-                "competitionapplication_set",
+                "applications",
                 queryset=CompetitionApplication.objects.select_related("team"),
-                to_attr="applications",
             ),
         )
         .prefetch_related(
             Prefetch(
-                "tournament_set",
+                "tournaments",
                 queryset=Tournament.objects.all().order_by("start_date", "name"),
-                to_attr="tournaments",
             ),
         )
-        .annotate(application_count=Count("competitionapplication"))
+        .annotate(application_count=Count("applications"))
         .exclude(is_for_national_teams=True)
         .order_by("-registration_deadline")
     )
@@ -79,17 +77,17 @@ def get_competitions_qs_with_related_data(
 
         competitions_qs = competitions_qs.annotate(
             club_application_count=Count(
-                "competitionapplication",
+                "applications",
                 filter=Q(
-                    competitionapplication__team__club_id=club_id,
+                    applications__team__club_id=club_id,
                 ),
             ),
             club_application_without_invoice_count=Count(
-                "competitionapplication",
+                "applications",
                 filter=Q(
-                    competitionapplication__invoice__isnull=True,
-                    competitionapplication__team__club_id=club_id,
-                    competitionapplication__state=ApplicationStateEnum.AWAITING_PAYMENT,
+                    applications__invoice__isnull=True,
+                    applications__team__club_id=club_id,
+                    applications__state=ApplicationStateEnum.AWAITING_PAYMENT,
                 ),
             ),
             has_awaiting_payment=Exists(

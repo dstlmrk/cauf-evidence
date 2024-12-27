@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 
 def validate_czech_birth_number(value: str) -> None:
@@ -24,7 +25,7 @@ def validate_czech_birth_number(value: str) -> None:
         if month > 70:
             month -= 70
 
-        current_year = datetime.now().year % 100
+        current_year = timezone.now().year % 100
         century = 1900 if year > current_year or len(value_cleaned) == 9 else 2000
 
         datetime(century + year, month, day)

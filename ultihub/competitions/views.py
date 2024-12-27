@@ -51,9 +51,8 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
     current_club = get_current_club(request)
     teams_with_applications = Team.objects.filter(club_id=current_club.id).prefetch_related(
         Prefetch(
-            "competition_application",
+            "applications",
             queryset=CompetitionApplication.objects.filter(competition_id=competition_id),
-            to_attr="applications",
         )
     )
 

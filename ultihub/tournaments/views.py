@@ -35,8 +35,8 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
                 "competition__age_limit",
             )
             .annotate(
-                team_count=Count("teamattournament", distinct=True),
-                member_count=Count("memberattournament", distinct=True),
+                team_count=Count("teams", distinct=True),
+                member_count=Count("members", distinct=True),
                 winner_team=Subquery(
                     TeamAtTournament.objects.filter(
                         tournament=OuterRef("pk"), final_placement=1
@@ -57,8 +57,8 @@ def tournament_detail_view(request: HttpRequest, tournament_id: int) -> HttpResp
             "now": timezone.now(),
             "tournament": Tournament.objects.select_related("competition")
             .annotate(
-                team_count=Count("teamattournament", distinct=True),
-                member_count=Count("memberattournament", distinct=True),
+                team_count=Count("teams", distinct=True),
+                member_count=Count("members", distinct=True),
             )
             .get(pk=tournament_id),
         },
@@ -238,7 +238,7 @@ def teams_table_view(request: HttpRequest, tournament_id: int) -> HttpResponse:
             "teams_at_tournament": (
                 TeamAtTournament.objects.filter(tournament_id=tournament_id)
                 .select_related("application", "application__team", "application__team__club")
-                .annotate(members_count_on_roster=Count("memberattournament"))
+                .annotate(members_count_on_roster=Count("members"))
                 .order_by("final_placement")
             ),
         },
