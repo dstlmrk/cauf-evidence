@@ -16,7 +16,7 @@ class InvoiceStateEnum(models.IntegerChoices):
 
 class InvoiceTypeEnum(models.IntegerChoices):
     COMPETITION_DEPOSIT = 1
-    ANNUAL_PLAYER_FEES = 2
+    SEASON_PLAYER_FEES = 2
 
 
 class Invoice(AuditModel):

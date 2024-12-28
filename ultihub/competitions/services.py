@@ -63,6 +63,7 @@ def get_competitions_qs_with_related_data(
             Prefetch(
                 "tournaments",
                 queryset=Tournament.objects.all().order_by("start_date", "name"),
+                to_attr="prefetched_tournaments",
             ),
         )
         .annotate(application_count=Count("applications"))

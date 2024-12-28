@@ -30,8 +30,8 @@
                     <th scope="col">Registration<br /><small class="text-muted">Deadline</small></th>
                     <th scope="col">Season</th>
                     <th scope="col">Competition</th>
-                    <th scope="col">Deposit<br />per team</th>
-                    <th scope="col">Season fee<br /><small class="text-muted">Tournament fee</small></th>
+                    <th scope="col">Deposit<br /><small>per team</small></th>
+                    <th scope="col">Fees</th>
                     <th scope="col" class="text-end"></th>
                 </tr>
             </thead>
@@ -65,8 +65,13 @@
                         </td>
                         <td>CZK {{ competition.deposit | floatformat:0 }}</td>
                         <td>
-                            CZK {{ competition.season_fee | floatformat:0 }}<br />
-                            <small class="text-muted"> CZK {{ competition.player_fee | floatformat:0 }} </small>
+                            <small class="text-muted"
+                                >Season fee: CZK {{ competition.season_fee | floatformat:0 }}</small
+                            >
+                            <br />
+                            <small class="text-muted"
+                                >Tournament fee: CZK {{ competition.player_fee | floatformat:0 }}</small
+                            >
                         </td>
                         <td class="fit text-end">
                             {% if request.session.club and competition.registration_deadline > now %}

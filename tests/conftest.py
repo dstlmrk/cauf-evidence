@@ -33,11 +33,3 @@ register(UserFactory)
 @pytest.fixture(scope="function", autouse=True)
 def enable_db_access_for_all_tests(db):
     pass
-
-
-@pytest.fixture
-def base_competition():
-    competition = CompetitionFactory()
-    TournamentFactory(competition=competition)
-    CompetitionApplicationFactory(competition=competition)
-    return competition

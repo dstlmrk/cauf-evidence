@@ -8,24 +8,35 @@
                     <th scope="col">Member</th>
                     <th scope="col">Birth date</th>
                     <th scope="col">Fee (CZK)</th>
+                    <th scope="col" class="fit pe-5 text-center">
+                        <div data-bs-toggle="tooltip" data-bs-title="Total regular / discounted tournaments">
+                            Total<br />R / D
+                        </div>
+                    </th>
                 </tr>
             </thead>
             <tbody>
-                {% for member in members %}
+                {% for member, fee in fees %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ member.first_name }} {{ member.last_name }}</td>
+                        <td>{{ member.full_name }}</td>
                         <td>{{ member.birth_date | date:'Y/m/d' }}</td>
-                        <td>500</td>
+                        <td>{{ fee.amount }}</td>
+                        <td>{{ fee.regular_tournaments | length }} / {{ fee.discounted_tournaments | length }}</td>
                     </tr>
                 {% endfor %}
                 <tr class="table-secondary">
                     <td></td>
-                    <td><b>Total</b></td>
                     <td></td>
-                    <td><b>4500</b></td>
+                    <td class="text-end"><b>Total</b></td>
+                    <td><b>{{ total_amount }}</b></td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    initializeTooltips();
+</script>
