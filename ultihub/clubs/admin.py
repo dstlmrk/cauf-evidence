@@ -9,7 +9,14 @@ from clubs.models import Club, ClubNotification, Team
 
 @admin.register(Club)
 class ClubAdmin(admin.ModelAdmin):
-    list_display = ("name", "short_name", "city", "organization_name", "identification_number")
+    list_display = (
+        "id",
+        "name",
+        "short_name",
+        "city",
+        "organization_name",
+        "identification_number",
+    )
     ordering = ("name",)
     add_form = CreateClubForm
 
@@ -36,12 +43,13 @@ class ClubAdmin(admin.ModelAdmin):
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ("name", "club__name", "is_primary", "is_active")
+    list_display = ("id", "name", "club__name", "is_primary", "is_active")
 
 
 @admin.register(ClubNotification)
 class ClubNotificationAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "created_at",
         "subject",
         "message",
@@ -49,7 +57,6 @@ class ClubNotificationAdmin(admin.ModelAdmin):
         "agent_at_club__agent__user__email",
         "agent_at_club__club__name",
     )
-    list_display_links = ("subject",)
 
     def get_queryset(self, request: HttpRequest) -> QuerySet:
         qs = super().get_queryset(request)

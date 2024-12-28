@@ -97,6 +97,8 @@ class DivisionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Division
 
+    name = factory.Faker("word")
+
 
 class AgeLimitFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -138,12 +140,11 @@ class CompetitionApplicationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = CompetitionApplication
 
-    team_name = factory.Faker("company")
+    team_name = factory.LazyAttribute(lambda obj: obj.team.club.name)
     competition = SubFactory(CompetitionFactory)
     state = ApplicationStateEnum.ACCEPTED
     registered_by = SubFactory(UserFactory)
     team = SubFactory(TeamFactory)
-    team_name = factory.LazyAttribute(lambda obj: obj.team.club.name)
 
 
 class TeamAtTournamentFactory(factory.django.DjangoModelFactory):

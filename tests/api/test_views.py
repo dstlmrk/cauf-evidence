@@ -13,9 +13,9 @@ from tests.factories import (
     CompetitionFactory,
     DivisionFactory,
     MemberAtTournamentFactory,
-    TeamAtTournamentFactory,
     TournamentFactory,
 )
+from tests.helpers import create_complete_competition
 
 
 @pytest.fixture
@@ -92,19 +92,19 @@ def test_get_clubs(api_client, club):
     ]
 
 
-def test_get_teams_at_tournament(api_client, base_competition):
+def test_get_teams_at_tournament(api_client):
     # Missing tournament_id parameter
     response = api_client.get(reverse("api:teams-at-tournament"))
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    tournament = base_competition.tournaments.first()
-    application = base_competition.applications.first()
+    complete_competition = create_complete_competition()
+    tournament = complete_competition["tournament"]
+    application = complete_competition["application"]
+    team_at_tournament = complete_competition["team_at_tournament"]
+
     member_at_tournament = MemberAtTournamentFactory(
         tournament=tournament,
-        team_at_tournament=TeamAtTournamentFactory(
-            tournament=tournament,
-            application=application,
-        ),
+        team_at_tournament=team_at_tournament,
     )
 
     response = api_client.get(reverse("api:teams-at-tournament"), {"tournament_id": tournament.id})

@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 @admin.register(Season)
 class SeasonAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "name",
         "discounted_fee",
         "regular_fee",
@@ -65,12 +66,12 @@ class SeasonAdmin(admin.ModelAdmin):
 
 @admin.register(Division)
 class DivisionAdmin(admin.ModelAdmin):
-    list_display = ("name", "is_female_allowed", "is_male_allowed")
+    list_display = ("id", "name", "is_female_allowed", "is_male_allowed")
 
 
 @admin.register(AgeLimit)
 class AgeLimitAdmin(admin.ModelAdmin):
-    list_display = ("name", "m_min", "m_max", "f_min", "f_max")
+    list_display = ("id", "name", "m_min", "m_max", "f_min", "f_max")
 
 
 class TournamentInline(admin.TabularInline):
@@ -93,9 +94,9 @@ class CompetitionApplicationInline(admin.TabularInline):
 
 @admin.register(Competition)
 class CompetitionAdmin(admin.ModelAdmin):
-    list_display_links = ("name",)
     list_filter = ("season", "division", "age_limit", "type")
     list_display = (
+        "id",
         "season",
         "age_limit",
         "name",
@@ -139,6 +140,7 @@ class SeasonFilter(admin.SimpleListFilter):
 @admin.register(CompetitionApplication)
 class CompetitionApplicationAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "competition__season",
         "competition",
         "team_name",
@@ -149,7 +151,6 @@ class CompetitionApplicationAdmin(admin.ModelAdmin):
     list_filter = (SeasonFilter, "competition", "state")
     ordering = ["-id"]
     show_facets = admin.ShowFacets.ALWAYS
-    list_display_links = ("team_name",)
 
     actions = ["approve", "decline", "add_teams_to_tournament"]
 

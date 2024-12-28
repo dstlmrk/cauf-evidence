@@ -63,7 +63,6 @@ class MemberAdmin(admin.ModelAdmin):
     )
     readonly_fields = ["email_confirmation_token", "has_email_confirmed", "participation_count"]
 
-    list_display_links = ("first_name", "last_name")
     actions = ["export_as_csv"]
     ordering = ["-id"]
     show_facets = admin.ShowFacets.ALWAYS

@@ -9,7 +9,7 @@ from users.models import Agent, NewAgentRequest
 
 @admin.register(NewAgentRequest)
 class NewAgentRequestAdmin(admin.ModelAdmin):
-    list_display = ("email", "is_staff", "is_superuser", "created_at", "processed_at")
+    list_display = ("id", "email", "is_staff", "is_superuser", "created_at", "processed_at")
     search_fields = ("email",)
     list_filter = ("is_staff",)
     ordering = ("-created_at",)
@@ -24,6 +24,6 @@ class NewAgentRequestAdmin(admin.ModelAdmin):
 
 @admin.register(Agent)
 class AgentAdmin(GuardedModelAdmin):
-    list_display = ("user__email",)
+    list_display = ("id", "user__email")
     search_fields = ("user__email",)
     ordering = ("-pk",)

@@ -12,6 +12,6 @@ class InvoiceRelatedObjectInline(admin.TabularInline):
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ("pk", "club__name", "state", "type", "amount")
+    list_display = ("id", "club__name", "state", "type", "amount")
     ordering = ("-created_at",)
     inlines = [InvoiceRelatedObjectInline]

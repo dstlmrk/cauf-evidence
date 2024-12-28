@@ -1,6 +1,8 @@
 import logging
+from decimal import Decimal
 
 from clubs.models import Club
+from clubs.service import notify_club
 from competitions.models import Season
 from core.helpers import create_csv
 from core.tasks import send_email
@@ -8,10 +10,9 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils import timezone
 from django_rq import job
-from members.models import Member
 
 from finance.models import InvoiceTypeEnum
-from finance.services import create_invoice
+from finance.services import calculate_season_fees, create_invoice
 
 logger = logging.getLogger(__name__)
 
@@ -20,11 +21,23 @@ logger = logging.getLogger(__name__)
 @transaction.atomic()
 def calculate_season_fees_for_check(user: User, season: Season) -> None:
     logger.info(f"Calculating fees (check) for season {season.name}")
-    # TODO: Prepare data properly
+
+    fees = calculate_season_fees(season)
+
     csv_data = create_csv(
-        header=["Member", "Club", "Amount"],
-        data=[["Jan Novak", "Prague Devils", "1000"]],
+        header=["Member", "Club", "Amount", "Regular tournaments", "Discounted tournaments"],
+        data=[
+            [
+                member.full_name,
+                member.club.name,
+                data.amount,
+                ", ".join(str(tournament.id) for tournament in data.regular_tournaments),
+                ", ".join(str(tournament.id) for tournament in data.discounted_tournaments),
+            ]
+            for member, data in fees.items()
+        ],
     )
+
     send_email.delay(
         "Fees calculation for check",
         (
@@ -40,13 +53,27 @@ def calculate_season_fees_for_check(user: User, season: Season) -> None:
 @transaction.atomic()
 def calculate_season_fees_and_generate_invoices(season: Season) -> None:
     logger.info(f"Calculating fees (hot) for season {season.name}")
+    clubs_to_notification = []
+
     clubs = Club.objects.all()
     for club in clubs:
-        # TODO: calculate amount properly
-        amount = season.regular_fee * Member.objects.filter(club=club).count()
-        create_invoice(
-            club.id, amount, InvoiceTypeEnum.ANNUAL_PLAYER_FEES, related_objects=[season]
-        )
+        fees = calculate_season_fees(season, club.id)
+        total_amount = Decimal(sum([fee.amount for fee in fees.values()]))
+        if total_amount > 0:
+            create_invoice(
+                club.id, total_amount, InvoiceTypeEnum.SEASON_PLAYER_FEES, related_objects=[season]
+            )
+            clubs_to_notification.append(club)
+
     season.invoices_generated_at = timezone.now()
     season.save()
-    # TODO: send notification to all clubs
+
+    for club in clubs_to_notification:
+        notify_club(
+            club=club,
+            subject="Season fees generated",
+            message=(
+                f"Season fees for the season {season.name}"
+                " have been generated. Check your invoices."
+            ),
+        )

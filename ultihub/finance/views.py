@@ -3,10 +3,9 @@ from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
-from members.models import Member
 
 from finance.forms import SeasonFeesCheckForm
-from finance.services import create_deposit_invoice
+from finance.services import calculate_season_fees, create_deposit_invoice
 
 
 @require_POST
@@ -20,15 +19,16 @@ def invoices(request: HttpRequest) -> HttpResponse:
 def season_fees_list_view(request: HttpRequest) -> HttpResponse:
     form = SeasonFeesCheckForm(request.POST)
     if form.is_valid():
-        members = Member.objects.filter(club_id=get_current_club(request).id)
+        club = get_current_club(request)
+        fees = calculate_season_fees(form.cleaned_data["season"], club.id)
         messages.success(request, "Season fees have been calculated")
         return render(
             request,
             "finance/partials/season_fees_list.html",
             {
                 "season": form.cleaned_data["season"],
-                "total_amount": 999,
-                "members": members,
+                "fees": fees.items(),
+                "total_amount": sum([fee.amount for fee in fees.values()]),
             },
         )
     else:
