@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
 
-from clients.fakturoid import fakturoid_client
 from clubs.models import Club
 from competitions.models import CompetitionApplication, CompetitionFeeTypeEnum, Season
 from django.contrib.contenttypes.models import ContentType
@@ -13,6 +12,7 @@ from django.db.models import Q
 from members.models import Member
 from tournaments.models import MemberAtTournament, Tournament
 
+from finance.clients.fakturoid import fakturoid_client
 from finance.models import Invoice, InvoiceRelatedObject, InvoiceStateEnum, InvoiceTypeEnum
 
 logger = logging.getLogger(__name__)
