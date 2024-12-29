@@ -43,6 +43,11 @@ class Club(AuditModel):
         validators=[validate_identification_number],
         help_text="Company identification number",
     )
+    fakturoid_subject_id = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        help_text="ID of the subject in Fakturoid. The club cannot be invoiced without this ID.",
+    )
 
     class Meta:
         permissions = (("manage_club", "Can manage club"),)

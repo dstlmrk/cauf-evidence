@@ -3,7 +3,6 @@
 {% block title %}<h1>Invoices</h1>{% endblock %}
 
 {% block content %}
-    {% load crispy_forms_tags %}
     <div class="row">
         <div class="col-md-12">
             {% if invoices %}
@@ -11,27 +10,54 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th scope="col">VS</th>
+                                <th scope="col">FID</th>
                                 <th scope="col">Created at</th>
                                 <th scope="col">Type</th>
                                 <th scope="col">State</th>
                                 <th scope="col">Amount (CZK)</th>
-                                <th scope="col">Download</th>
+                                <th scope="col">Link</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for invoice in invoices %}
                                 <tr>
-                                    <!-- TODO: Show VS or ID from 3rd -->
-                                    <th scope="row">202400{{ invoice.pk }}</th>
-                                    <td class="text-muted">{{ invoice.created_at | date:'d/m/Y H:i' }}</td>
-                                    <td>{{ invoice.get_type_display | upper }}</td>
-                                    <td>{{ invoice.get_state_display | upper }}</td>
-                                    <td>{{ invoice.amount }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-primary" disabled>
+                                        <b>{{ invoice.fakturoid_invoice_id|default:"N/A" }}</b>
+                                    </td>
+                                    <td>{{ invoice.created_at | date:'d/m/Y H:i' }}</td>
+                                    <td>{{ invoice.get_type_display | upper }}</td>
+
+                                    <td>
+                                        {% if invoice.state == 1 %}
+                                            <span class="badge text-bg-dark">
+                                                {{ invoice.get_state_display | upper }}
+                                            </span>
+                                        {% elif invoice.state == 2 %}
+                                            <span class="badge text-bg-danger">
+                                                {{ invoice.get_state_display | upper }}
+                                            </span>
+                                        {% elif invoice.state == 3 %}
+                                            <span class="badge text-bg-success">
+                                                {{ invoice.get_state_display | upper }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if invoice.fakturoid_total and invoice.fakturoid_total != invoice.amount %}
+                                            {{ invoice.fakturoid_total | floatformat:0 }}
+                                        {% else %}
+                                            {{ invoice.amount | floatformat:0 }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="fit">
+                                        <a
+                                            href="{{ invoice.fakturoid_public_html_url }}"
+                                            class="btn btn-primary {% if not invoice.fakturoid_public_html_url %}disabled{% endif %}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
                                             <i class="bi bi-file-earmark-pdf"></i>
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                             {% endfor %}

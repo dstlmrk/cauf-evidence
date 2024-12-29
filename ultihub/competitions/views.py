@@ -53,6 +53,7 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
         Prefetch(
             "applications",
             queryset=CompetitionApplication.objects.filter(competition_id=competition_id),
+            to_attr="prefetched_applications",
         )
     )
 
@@ -63,7 +64,7 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
                 team_id = int(checkbox_name.split("_")[1])
                 team = teams_with_applications.get(pk=team_id)
                 if team.club.id == current_club.id:
-                    if value and not team.applications:  # type: ignore
+                    if value and not team.prefetched_applications:  # type: ignore
                         CompetitionApplication.objects.create(
                             team_name=team.name,
                             competition_id=competition_id,

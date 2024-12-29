@@ -55,12 +55,6 @@ def get_competitions_qs_with_related_data(
         competitions_qs.select_related("age_limit", "season", "division")
         .prefetch_related(
             Prefetch(
-                "applications",
-                queryset=CompetitionApplication.objects.select_related("team"),
-            ),
-        )
-        .prefetch_related(
-            Prefetch(
                 "tournaments",
                 queryset=Tournament.objects.all().order_by("start_date", "name"),
                 to_attr="prefetched_tournaments",

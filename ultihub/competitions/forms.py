@@ -8,7 +8,7 @@ class RegistrationForm(forms.Form):
         teams_with_applications = kwargs.pop("teams_with_applications", [])
         super().__init__(*args, **kwargs)
         for team in teams_with_applications:
-            application = team.applications[0] if team.applications else None
+            application = team.prefetched_applications[0] if team.prefetched_applications else None
             self.fields[f"team_{team.pk}"] = forms.BooleanField(
                 label=application.team_name if application else team.name,
                 required=False,

@@ -3,7 +3,7 @@ from django.db.models import QuerySet
 from django.http import HttpRequest
 from users.services import assign_or_invite_agent_to_club
 
-from clubs.forms import CreateClubForm
+from clubs.forms import ClubAdminForm, CreateClubForm
 from clubs.models import Club, ClubNotification, Team
 
 
@@ -16,13 +16,12 @@ class ClubAdmin(admin.ModelAdmin):
         "city",
         "organization_name",
         "identification_number",
+        "fakturoid_subject_id",
     )
     ordering = ("name",)
-    add_form = CreateClubForm
 
     def get_form(self, request, obj=None, **kwargs):  # type: ignore
-        if obj is None:
-            kwargs["form"] = self.add_form
+        kwargs["form"] = CreateClubForm if obj is None else ClubAdminForm
         return super().get_form(request, obj, **kwargs)
 
     def save_model(self, request, obj, form, change):  # type: ignore

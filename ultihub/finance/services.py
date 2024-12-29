@@ -4,14 +4,16 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
 
+from clients.fakturoid import fakturoid_client
+from clubs.models import Club
 from competitions.models import CompetitionApplication, CompetitionFeeTypeEnum, Season
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
-from django.db.models import Q, Sum
+from django.db.models import Q
 from members.models import Member
 from tournaments.models import MemberAtTournament, Tournament
 
-from finance.models import Invoice, InvoiceRelatedObject, InvoiceTypeEnum
+from finance.models import Invoice, InvoiceRelatedObject, InvoiceStateEnum, InvoiceTypeEnum
 
 logger = logging.getLogger(__name__)
 
@@ -26,43 +28,80 @@ class SeasonFeeData:
     discounted_tournaments: list[Tournament]
 
 
+class NoSubjectIdError(Exception):
+    pass
+
+
 def create_invoice(
-    club_id: int, amount: Decimal, type_: InvoiceTypeEnum, related_objects: list[Any] | None = None
+    club: Club,
+    type_: InvoiceTypeEnum,
+    lines: list[tuple[str, Decimal]],
+    related_objects: list[Any] | None = None,
 ) -> Invoice:
-    invoice = Invoice.objects.create(club_id=club_id, amount=amount, type=type_)
+    """
+    Create an invoice in the system and send it to Fakturoid.
+    """
+    if not club.fakturoid_subject_id:
+        raise NoSubjectIdError
+
+    total = sum(amount for _, amount in lines)
+    invoice = Invoice.objects.create(club=club, type=type_, amount=total)
+
     for related_object in related_objects or []:
         InvoiceRelatedObject.objects.create(
             invoice=invoice,
             content_type=ContentType.objects.get_for_model(related_object),
             object_id=related_object.id,
         )
+
+    try:
+        data = fakturoid_client.create_invoice(club.fakturoid_subject_id, lines)
+
+    except Exception as ex:
+        logger.error(f"Failed to create invoice in Fakturoid: {ex}")
+    else:
+        Invoice.objects.filter(pk=invoice.pk).update(
+            fakturoid_invoice_id=data["invoice_id"],
+            fakturoid_total=data["total"],
+            fakturoid_status=data["status"],
+            fakturoid_public_html_url=data["public_html_url"],
+            state=InvoiceStateEnum.OPEN,
+        )
+
+    logger.info("Created invoice %s for club %s with total %s", invoice.pk, club.name, total)
+
     return invoice
 
 
 @transaction.atomic
-def create_deposit_invoice(club_id: int) -> None:
+def create_deposit_invoice(club: Club) -> None:
     """
-    Create an invoice for the total deposit of all competition applications
+    Create an invoice for all competition applications
     """
     applications_qs = (
         CompetitionApplication.objects.filter(
-            team__club=club_id,
+            team__club=club.id,
             invoice__isnull=True,
         )
         .select_related("competition")
         .select_for_update()
     )
 
-    total_deposit = applications_qs.aggregate(
-        total_deposit=Sum("competition__deposit"),
-    )["total_deposit"]
+    applications = list(applications_qs)
 
     invoice = create_invoice(
-        club_id,
-        total_deposit,
+        club,
         InvoiceTypeEnum.COMPETITION_DEPOSIT,
-        related_objects=[application for application in applications_qs],
+        lines=[
+            (
+                f"{str(application.competition)} - Záloha za {application.team_name}",
+                application.competition.deposit,
+            )
+            for application in applications
+        ],
+        related_objects=applications,
     )
+
     applications_qs.update(invoice=invoice)
 
 

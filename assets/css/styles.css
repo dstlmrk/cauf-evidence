@@ -45,7 +45,8 @@ body {
     border-color: #1c4ea2;
 }
 
-.btn-primary:disabled {
+.btn-primary:disabled,
+.btn-primary.disabled {
     background-color: #1c4ea2;
     border-color: #1c4ea2;
 }

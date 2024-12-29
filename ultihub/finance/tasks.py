@@ -55,13 +55,15 @@ def calculate_season_fees_and_generate_invoices(season: Season) -> None:
     logger.info(f"Calculating fees (hot) for season {season.name}")
     clubs_to_notification = []
 
-    clubs = Club.objects.all()
-    for club in clubs:
+    for club in Club.objects.filter(fakturoid_subject_id__isnull=False):
         fees = calculate_season_fees(season, club.id)
         total_amount = Decimal(sum([fee.amount for fee in fees.values()]))
         if total_amount > 0:
             create_invoice(
-                club.id, total_amount, InvoiceTypeEnum.SEASON_PLAYER_FEES, related_objects=[season]
+                club,
+                InvoiceTypeEnum.SEASON_PLAYER_FEES,
+                [(f"Poplatky za sezónu {season.name}", total_amount)],
+                related_objects=[season],
             )
             clubs_to_notification.append(club)
 
