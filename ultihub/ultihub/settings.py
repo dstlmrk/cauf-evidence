@@ -279,3 +279,10 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
     ],
 }
+
+# FAKTUROID -------------------------------------------------------------------
+FAKTUROID_CLIENT_ID = env.str("FAKTUROID_CLIENT_ID")
+FAKTUROID_CLIENT_SECRET = env.str("FAKTUROID_CLIENT_SECRET")
+FAKTUROID_SLUG = env.str("FAKTUROID_SLUG")
+FAKTUROID_BASE_URL = "https://app.fakturoid.cz/api/v3"
+FAKTUROID_USER_AGENT = "CAUF evidence (marek.dostal@frisbee.cz)"

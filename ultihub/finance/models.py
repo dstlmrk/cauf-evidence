@@ -8,10 +8,11 @@ from django.db import models
 
 
 class InvoiceStateEnum(models.IntegerChoices):
-    DRAFT = 1
-    SENT_TO_FAKTUROID = 2
-    PAID = 3
-    CANCELLED = 4
+    """Internal state of the invoice"""
+
+    DRAFT = 1  # Created in the system
+    OPEN = 2  # Sent to Fakturoid
+    PAID = 3  # Paid in Fakturoid
 
 
 class InvoiceTypeEnum(models.IntegerChoices):
@@ -35,6 +36,23 @@ class Invoice(AuditModel):
         max_digits=10,
         decimal_places=2,
         validators=[MinValueValidator(Decimal(0))],
+    )
+    fakturoid_invoice_id = models.IntegerField(
+        blank=True,
+        null=True,
+    )
+    fakturoid_total = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True,
+    )
+    fakturoid_status = models.CharField(
+        max_length=16,
+        blank=True,
+    )
+    fakturoid_public_html_url = models.URLField(
+        blank=True,
     )
 
     def __str__(self) -> str:

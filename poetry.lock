@@ -1496,6 +1496,21 @@ dev = ["build", "hatch"]
 doc = ["sphinx"]
 
 [[package]]
+name = "tenacity"
+version = "9.0.0"
+description = "Retry code until it succeeds"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "tenacity-9.0.0-py3-none-any.whl", hash = "sha256:93de0c98785b27fcf659856aa9f54bfbd399e29969b0621bc7f762bd441b4539"},
+    {file = "tenacity-9.0.0.tar.gz", hash = "sha256:807f37ca97d62aa361264d497b0e31e92b8027044942bfa756160d908320d73b"},
+]
+
+[package.extras]
+doc = ["reno", "sphinx"]
+test = ["pytest", "tornado (>=4.5)", "typeguard"]
+
+[[package]]
 name = "tomli"
 version = "2.2.1"
 description = "A lil' TOML parser"
@@ -1546,6 +1561,20 @@ files = [
     {file = "types_PyYAML-6.0.12.20241221-py3-none-any.whl", hash = "sha256:0657a4ff8411a030a2116a196e8e008ea679696b5b1a8e1a6aa8ebb737b34688"},
     {file = "types_pyyaml-6.0.12.20241221.tar.gz", hash = "sha256:4f149aa893ff6a46889a30af4c794b23833014c469cc57cbc3ad77498a58996f"},
 ]
+
+[[package]]
+name = "types-requests"
+version = "2.32.0.20241016"
+description = "Typing stubs for requests"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types-requests-2.32.0.20241016.tar.gz", hash = "sha256:0d9cad2f27515d0e3e3da7134a1b6f28fb97129d86b867f24d9c726452634d95"},
+    {file = "types_requests-2.32.0.20241016-py3-none-any.whl", hash = "sha256:4195d62d6d3e043a4eaaf08ff8a62184584d2e8684e9d2aa178c7915a7da3747"},
+]
+
+[package.dependencies]
+urllib3 = ">=2"
 
 [[package]]
 name = "typing-extensions"
@@ -1713,4 +1742,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12.5"
-content-hash = "98b2a614b38d8cdee97284a352ffcb49bb1d565975105122691b8c4bbe65f09f"
+content-hash = "fcecf8cb4b5cf49aa1e2cebfb355854d65655607876ba9eb2786653b22f995b4"

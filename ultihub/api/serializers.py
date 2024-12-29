@@ -22,9 +22,9 @@ class CompetitionSerializer(serializers.ModelSerializer):
     division = serializers.StringRelatedField()
     age_limit = serializers.StringRelatedField()
     season = serializers.StringRelatedField()
-    tournaments = TournamentSerializer(many=True, read_only=True)
+    tournaments = TournamentSerializer(many=True, read_only=True, source="prefetched_tournaments")
     accepted_applications = CompetitionApplicationSerializer(
-        many=True, read_only=True, source="applications"
+        many=True, read_only=True, source="prefetched_applications"
     )
 
     class Meta:
@@ -92,7 +92,7 @@ class MemberAtTournamentSerializer(serializers.ModelSerializer):
 
 
 class TeamAtTournamentSerializer(serializers.ModelSerializer):
-    members = MemberAtTournamentSerializer(many=True, read_only=True)
+    members = MemberAtTournamentSerializer(many=True, read_only=True, source="prefetched_members")
     team_name = serializers.CharField(source="application.team_name", read_only=True)
 
     class Meta:

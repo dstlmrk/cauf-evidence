@@ -29,6 +29,8 @@ django-countries = "^7.6.1"
 django-admin-rangefilter = "^0.13.2"
 fakeredis = "^2.26.2"
 django-filter = "^24.3"
+requests = "^2.32.3"
+tenacity = "^9.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest-django = "^4.9.0"
@@ -39,6 +41,7 @@ django-stubs = "^5.0.4"
 pre-commit = "^3.8.0"
 factory-boy = "^3.3.1"
 pytest-factoryboy = "^2.7.0"
+types-requests = "^2.32.0.20241016"
 
 [build-system]
 requires = ["poetry-core"]

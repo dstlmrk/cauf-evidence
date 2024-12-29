@@ -1,5 +1,6 @@
 from typing import Any
 
+from clients.fakturoid import NotFoundError, fakturoid_client
 from django import forms
 from django.core.exceptions import ValidationError
 from users.models import NewAgentRequest
@@ -44,7 +45,25 @@ class AddAgentForm(forms.Form):
     )
 
 
-class CreateClubForm(forms.ModelForm):
+class ClubAdminForm(forms.ModelForm):
+    class Meta:
+        model = Club
+        fields = "__all__"  # noqa: DJ007
+        widgets = {
+            "fakturoid_subject_id": forms.TextInput(),
+        }
+
+    def clean_fakturoid_subject_id(self) -> Any | None:
+        value = self.cleaned_data.get("fakturoid_subject_id")
+        if value and (not self.instance.pk or value != self.instance.fakturoid_subject_id):
+            try:
+                fakturoid_client.get_subject_detail(value)
+            except NotFoundError as ex:
+                raise ValidationError("Subject with this ID does not exist in Fakturoid.") from ex
+        return value
+
+
+class CreateClubForm(ClubAdminForm):
     primary_agent_email = forms.EmailField(
         required=False,  # temporary solution
         help_text="Must be Google account",
@@ -68,15 +87,3 @@ class CreateClubForm(forms.ModelForm):
             raise ValidationError(
                 {"name": "There is already an active team with this name"},
             )
-
-    class Meta:
-        model = Club
-        fields = (
-            "name",
-            "email",
-            "website",
-            "city",
-            "organization_name",
-            "identification_number",
-            "primary_agent_email",
-        )

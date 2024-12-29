@@ -160,7 +160,7 @@ class Competition(AuditModel):
         unique_together = ("name", "season", "type", "division", "age_limit")
 
     def __str__(self) -> str:
-        return f"{self.season}: {self.name} {self.division} {self.age_limit or ""}".strip()
+        return f"{self.name} {self.season} {self.division} {self.age_limit or ""}".strip()
 
     def season_fee(self) -> Decimal:
         if self.fee_type == CompetitionFeeTypeEnum.REGULAR:

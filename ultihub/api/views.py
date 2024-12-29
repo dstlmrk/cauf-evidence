@@ -33,10 +33,15 @@ class CompetitionsView(ListAPIView):
     queryset = (
         Competition.objects.select_related("age_limit", "season", "division")
         .prefetch_related(
-            Prefetch("tournaments", queryset=Tournament.objects.all()),
+            Prefetch(
+                "tournaments",
+                queryset=Tournament.objects.all(),
+                to_attr="prefetched_tournaments",
+            ),
             Prefetch(
                 "applications",
                 queryset=CompetitionApplication.objects.filter(state=ApplicationStateEnum.ACCEPTED),
+                to_attr="prefetched_applications",
             ),
         )
         .order_by("-pk")
@@ -65,6 +70,7 @@ class TeamsAtTournamentView(ListAPIView):
                 Prefetch(
                     "members",
                     queryset=MemberAtTournament.objects.select_related("member"),
+                    to_attr="prefetched_members",
                 )
             )
             .filter(tournament_id=tournament_id)
@@ -85,7 +91,13 @@ class HttpMethodPermissionsMixin:
 class TeamAtTournamentView(HttpMethodPermissionsMixin, APIView):
     def get(self, request: Request, pk: int) -> Response:
         try:
-            team = TeamAtTournament.objects.get(pk=pk)
+            team = TeamAtTournament.objects.prefetch_related(
+                Prefetch(
+                    "members",
+                    queryset=MemberAtTournament.objects.select_related("member"),
+                    to_attr="prefetched_members",
+                )
+            ).get(pk=pk)
         except TeamAtTournament.DoesNotExist:
             return Response(
                 {"error": "Team at tournament not found"}, status=status.HTTP_404_NOT_FOUND
