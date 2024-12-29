@@ -1,8 +1,8 @@
 from typing import Any
 
-from clients.fakturoid import NotFoundError, fakturoid_client
 from django import forms
 from django.core.exceptions import ValidationError
+from finance.clients.fakturoid import NotFoundError, fakturoid_client
 from users.models import NewAgentRequest
 
 from clubs.models import Club, Team
