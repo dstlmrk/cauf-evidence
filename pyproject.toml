@@ -31,6 +31,9 @@ fakeredis = "^2.26.2"
 django-filter = "^24.3"
 requests = "^2.32.3"
 tenacity = "^9.0.0"
+django-extensions = "^3.2.3"
+pyparsing = "^3.2.0"
+pydot = "^3.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest-django = "^4.9.0"

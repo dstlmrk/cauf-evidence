@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.sites",
     "django.contrib.staticfiles",
+    "django_extensions",
     "django_filters",
     "django_htmx",
     "django_rq",
