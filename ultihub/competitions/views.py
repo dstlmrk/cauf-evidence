@@ -5,13 +5,14 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Exists, OuterRef, Prefetch
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 
 from competitions.forms import RegistrationForm
 from competitions.models import (
     ApplicationStateEnum,
+    Competition,
     CompetitionApplication,
 )
 from competitions.services import get_competitions_qs_with_related_data
@@ -90,13 +91,16 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
 
 @require_GET
 def application_list(request: HttpRequest, competition_id: int) -> HttpResponse:
+    competition = get_object_or_404(Competition, pk=competition_id)
     return render(
         request,
         "competitions/partials/application_list.html",
         {
-            "applications": CompetitionApplication.objects.filter(
-                competition_id=competition_id
-            ).order_by("created_at"),
+            "now": timezone.now(),
+            "competition": competition,
+            "applications": CompetitionApplication.objects.filter(competition=competition).order_by(
+                "created_at"
+            ),
         },
     )
 
@@ -115,6 +119,23 @@ def competition_detail_view(request: HttpRequest, competition_id: int) -> HttpRe
             "now": timezone.now(),
         },
     )
+
+
+@login_required
+@require_POST
+def cancel_application_view(request: HttpRequest, application_id: int) -> HttpResponse:
+    now = timezone.now()
+    application = get_object_or_404(CompetitionApplication, pk=application_id)
+    if (
+        application.team.club.id == get_current_club(request).id
+        and application.competition.registration_deadline > now
+        and not application.invoice
+    ):
+        application.delete()
+        messages.success(request, "The application has been cancelled.")
+        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+    else:
+        raise PermissionDenied()
 
 
 @require_GET

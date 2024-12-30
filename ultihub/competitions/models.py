@@ -18,7 +18,6 @@ class ApplicationStateEnum(models.IntegerChoices):
     PAID = 2, "Paid"
     ACCEPTED = 3, "Accepted"
     DECLINED = 4, "Declined"
-    WITHDRAWN = 5, "Withdrawn"
 
 
 class CompetitionFeeTypeEnum(models.IntegerChoices):
@@ -160,7 +159,9 @@ class Competition(AuditModel):
         unique_together = ("name", "season", "type", "division", "age_limit")
 
     def __str__(self) -> str:
-        return f"{self.name} {self.season} {self.division} {self.age_limit or ""}".strip()
+        return (
+            f"{self.name} {self.season} {str(self.division).upper()} {self.age_limit or ""}".strip()
+        )
 
     def season_fee(self) -> Decimal:
         if self.fee_type == CompetitionFeeTypeEnum.REGULAR:

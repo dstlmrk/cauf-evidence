@@ -71,12 +71,6 @@ def get_competitions_qs_with_related_data(
         ).count()
 
         competitions_qs = competitions_qs.annotate(
-            club_application_count=Count(
-                "applications",
-                filter=Q(
-                    applications__team__club_id=club_id,
-                ),
-            ),
             club_application_without_invoice_count=Count(
                 "applications",
                 filter=Q(

@@ -16,17 +16,7 @@
                     <td>{{ team.spirit_avg | floatformat:1 }}</td>
                     <td>{{ team.application.team_name }}</td>
                     <td>{{ team.application.team.club.name }}</td>
-                    <td class="fit text-end">
-                        <button
-                            id="rosterButton-{{ team.id }}"
-                            class="btn btn-primary"
-                            hx-get="{% url 'tournaments:roster_dialog' team.id %}"
-                            hx-target="#dialog-lg"
-                        >
-                            Roster
-                            <span class="badge text-bg-secondary">{{ team.members_count_on_roster }}</span>
-                        </button>
-                    </td>
+                    <td class="fit text-end">{% include "tournaments/components/roster-button.html" %}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -41,15 +31,7 @@
                 <div>SOTG avg: {{ team.spirit_avg | floatformat:1 }}</div>
                 <div>Team: <b>{{ team.application.team_name }}</b></div>
                 <div>Club: {{ team.application.team.club.name }}</div>
-                <button
-                    id="rosterButton-{{ team.id }}"
-                    class="btn btn-primary mt-2 mb-1"
-                    hx-get="{% url 'tournaments:roster_dialog' team.id %}"
-                    hx-target="#dialog-lg"
-                >
-                    Roster
-                    <span class="badge text-bg-secondary">{{ team.members_count_on_roster }}</span>
-                </button>
+                <div class="mt-2 mb-1">{% include "tournaments/components/roster-button.html" %}</div>
             </div>
         {% endfor %}
     </div>

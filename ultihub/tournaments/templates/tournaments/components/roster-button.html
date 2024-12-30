@@ -1,0 +1,13 @@
+<button
+    id="rosterButton-{{ team.id }}"
+    {% if request.session.club.id == team.application.team.club_id and tournament.rosters_deadline > now %}
+        class="btn btn-success"
+    {% else %}
+        class="btn btn-primary"
+    {% endif %}
+    hx-get="{% url 'tournaments:roster_dialog' team.id %}"
+    hx-target="#dialog-lg"
+>
+    Roster
+    <span class="badge text-bg-light ms-1">{{ team.members_count_on_roster }}</span>
+</button>

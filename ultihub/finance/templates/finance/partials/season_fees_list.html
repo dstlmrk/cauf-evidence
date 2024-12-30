@@ -1,42 +1,58 @@
 <h2>Season {{ season.name }}</h2>
-<div class="card mt-3">
-    <div class="card-body">
-        <table class="table align-middle">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Member</th>
-                    <th scope="col">Birth date</th>
-                    <th scope="col">Fee (CZK)</th>
-                    <th scope="col" class="fit pe-5 text-center">
-                        <div data-bs-toggle="tooltip" data-bs-title="Total regular / discounted tournaments">
-                            Total<br />R / D
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for member, fee in fees %}
+<div class="d-none d-md-block">
+    <div class="card mt-3">
+        <div class="card-body">
+            <table class="table align-middle">
+                <thead>
                     <tr>
-                        <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ member.full_name }}</td>
-                        <td>{{ member.birth_date | date:'Y/m/d' }}</td>
-                        <td>{{ fee.amount }}</td>
-                        <td>{{ fee.regular_tournaments | length }} / {{ fee.discounted_tournaments | length }}</td>
+                        <th scope="col">#</th>
+                        <th scope="col">Member</th>
+                        <th scope="col">Birth date</th>
+                        <th scope="col">Fee (CZK)</th>
+                        <th scope="col" class="fit pe-5 text-center">
+                            <div data-bs-toggle="tooltip" data-bs-title="Total regular / discounted tournaments">
+                                Total<br />R / D
+                            </div>
+                        </th>
                     </tr>
-                {% endfor %}
-                <tr class="table-secondary">
-                    <td></td>
-                    <td></td>
-                    <td class="text-end"><b>Total</b></td>
-                    <td><b>{{ total_amount }}</b></td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for member, fee in fees %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ member.full_name }}</td>
+                            <td>{{ member.birth_date | date:'d/m/Y' }}</td>
+                            <td>{{ fee.amount }}</td>
+                            <td>{{ fee.regular_tournaments | length }} / {{ fee.discounted_tournaments | length }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="table-secondary">
+                        <td></td>
+                        <td></td>
+                        <td class="text-end"><b>Total</b></td>
+                        <td><b>{{ total_amount }}</b></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
+<div class="d-block d-md-none">
+    <p>Total amount: <b>CZK {{ total_amount }}</b></p>
+    <div class="list-group">
+        {% for member, fee in fees %}
+            <div class="list-group-item">
+                <div>Member: <b>{{ member.full_name }}</b></div>
+                <div>Birth date: {{ member.birth_date | date:'d/m/Y' }}</div>
+                <div>Fee: <b>CZK {{ fee.amount }}</b></div>
+                <div>Regular tournaments: {{ fee.regular_tournaments | length }}</div>
+                <div>Discounted tournaments: {{ fee.discounted_tournaments | length }}</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 <script>
     initializeTooltips();
 </script>

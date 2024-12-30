@@ -3,24 +3,71 @@
         <h5 class="modal-title"><i class="bi bi-people"></i> Roster: {{ team_at_tournament }}</h5>
     </div>
     <div class="modal-body">
-        <table class="table align-middle">
-            <thead>
-                <tr class="align-middle">
-                    <th scope="col">#</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Home club</th>
-                    <th scope="col">Birth year</th>
-                    <th scope="col">Added at</th>
-                    <th scope="col"></th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="d-none d-md-block">
+            <table class="table align-middle">
+                <thead>
+                    <tr class="align-middle">
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Home club</th>
+                        <th scope="col">Birth year</th>
+                        <th scope="col">Added at</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member_at_tournament in members_at_tournament %}
+                        {% with member_at_tournament.member as member %}
+                            <tr>
+                                <th>{{ member_at_tournament.jersey_number | default:"" }}</th>
+                                <td>
+                                    {{ member.citizenship.unicode_flag }} {{ member.full_name }}
+                                    {% if member_at_tournament.is_captain %}
+                                        (C)
+                                    {% endif %}
+                                    {% if member_at_tournament.is_spirit_captain %}
+                                        (SC)
+                                    {% endif %}
+                                    {% if member_at_tournament.is_coach %}
+                                        (COACH)
+                                    {% endif %}
+                                </td>
+                                <td>{{ member.club.name }}</td>
+                                <td>{{ member.birth_date | date:'Y' }}</td>
+                                <td>{{ member_at_tournament.created_at | date:'d/m/Y H:i' }}</td>
+                                <td class="fit text-end">
+                                    {% if request.session.club.id == member_at_tournament.team_at_tournament.application.team.club_id and team_at_tournament.tournament.rosters_deadline > now %}
+                                        <button
+                                            class="btn btn-primary"
+                                            hx-get="{% url 'tournaments:roster_dialog_update_form' member_at_tournament.id %}"
+                                            hx-target="#dialog"
+                                            data-bs-dismiss="modal"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            class="btn btn-danger"
+                                            hx-post="{% url 'tournaments:remove_member_from_roster' member_at_tournament.id %}"
+                                        >
+                                            Remove
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endwith %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-block d-md-none">
+            <div class="list-group">
                 {% for member_at_tournament in members_at_tournament %}
                     {% with member_at_tournament.member as member %}
-                        <tr>
-                            <th>{{ member_at_tournament.jersey_number | default:"" }}</th>
-                            <td>
-                                {{ member.citizenship.unicode_flag }} {{ member.full_name }}
+                        <div class="list-group-item">
+                            <div>Jersey number: {{ member_at_tournament.jersey_number | default:"" }}</div>
+                            <div>
+                                Member: {{ member.citizenship.unicode_flag }} <b>{{ member.full_name }}</b>
                                 {% if member_at_tournament.is_captain %}
                                     (C)
                                 {% endif %}
@@ -30,12 +77,13 @@
                                 {% if member_at_tournament.is_coach %}
                                     (COACH)
                                 {% endif %}
-                            </td>
-                            <td>{{ member.club.name }}</td>
-                            <td>{{ member.birth_date | date:'Y' }}</td>
-                            <td>{{ member_at_tournament.created_at | date:'Y/m/d H:i' }}</td>
-                            <td class="fit text-end">
-                                {% if request.session.club and request.session.club.id == member_at_tournament.team_at_tournament.application.team.club_id and team_at_tournament.tournament.rosters_deadline > now %}
+                            </div>
+                            <div>Club: {{ member.club.name }}</div>
+                            <div>Birth year: {{ member.birth_date | date:'Y' }}</div>
+                            <div>Added at: {{ member_at_tournament.created_at | date:'d/m/Y H:i' }}</div>
+
+                            {% if request.session.club.id == member_at_tournament.team_at_tournament.application.team.club_id and team_at_tournament.tournament.rosters_deadline > now %}
+                                <div class="mt-2 mb-1">
                                     <button
                                         class="btn btn-primary"
                                         hx-get="{% url 'tournaments:roster_dialog_update_form' member_at_tournament.id %}"
@@ -50,17 +98,17 @@
                                     >
                                         Remove
                                     </button>
-                                {% endif %}
-                            </td>
-                        </tr>
+                                </div>
+                            {% endif %}
+                        </div>
                     {% endwith %}
                 {% endfor %}
-            </tbody>
-        </table>
+            </div>
+        </div>
     </div>
     <div class="modal-footer d-flex w-100 justify-content-between">
         <div>
-            {% if request.session.club and request.session.club.id == team_at_tournament.application.team.club_id and team_at_tournament.tournament.rosters_deadline > now %}
+            {% if request.session.club.id == team_at_tournament.application.team.club_id and team_at_tournament.tournament.rosters_deadline > now %}
                 <button
                     class="btn btn-success"
                     hx-get="{% url 'tournaments:roster_dialog_add_form' team_at_tournament.id %}"

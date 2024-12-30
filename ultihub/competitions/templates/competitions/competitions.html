@@ -30,8 +30,8 @@
                     <th scope="col">Registration<br /><small class="text-muted">Deadline</small></th>
                     <th scope="col">Season</th>
                     <th scope="col">Competition</th>
-                    <th scope="col">Deposit<br /><small>per team</small></th>
-                    <th scope="col">Fees</th>
+                    <th scope="col">Deposit<br />per team</th>
+                    <th scope="col">Season fee</th>
                     <th scope="col" class="text-end"></th>
                 </tr>
             </thead>
@@ -64,71 +64,56 @@
                             {% endif %}
                         </td>
                         <td>CZK {{ competition.deposit | floatformat:0 }}</td>
-                        <td>
-                            <small class="text-muted"
-                                >Season fee: CZK {{ competition.season_fee | floatformat:0 }}</small
-                            >
-                            <br />
-                            <small class="text-muted"
-                                >Tournament fee: CZK {{ competition.player_fee | floatformat:0 }}</small
-                            >
-                        </td>
+                        <td>CZK {{ competition.season_fee | floatformat:0 }}</td>
                         <td class="fit text-end">
-                            {% if request.session.club and competition.registration_deadline > now %}
-                                <button
-                                    class="btn btn-success position-relative"
-                                    hx-get="{% url 'competitions:registration' competition.id %}"
-                                    hx-target="#dialog"
-                                >
-                                    Registration
-                                    {% if competition.club_application_without_invoice_count > 0 %}
-                                        <span
-                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                            style="z-index: 1050;"
-                                        >
-                                            {{ competition.club_application_without_invoice_count }}
-                                        </span>
-                                    {% endif %}
-                                </button>
-                            {% endif %}
-
-                            <button
-                                class="btn btn-primary"
-                                hx-get="{% url 'competitions:application_list' competition.id %}"
-                                hx-target="#dialog-lg"
-                            >
-                                Teams
-                                <span class="badge text-bg-secondary">{{ competition.application_count }}</span>
-                            </button>
-
-                            <button
-                                class="btn btn-primary"
-                                hx-get="{% url 'competitions:competition_detail' competition.id %}"
-                                hx-target="#dialog"
-                            >
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-                            <button
-                                class="btn btn-primary"
-                                hx-get="{% url 'competitions:competition_final_placements_dialog' competition.id %}"
-                                hx-target="#dialog"
-                                {% if not competition.has_final_placement %}
-                                    disabled
-                                {% endif %}
-                            >
-                                <i class="bi bi-trophy"></i>
-                            </button>
+                            {% include "competitions/components/competition-action-buttons.html" %}
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
     <div class="d-block d-md-none">
         <div class="list-group">
             {% for competition in competitions %}
-                {% include "clubs/components/competition-list-group-item.html" with competition=competition %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <div>
+                            <small class="text-muted">
+                                {{ competition.season }} • {{ competition.get_type_display | upper }}
+                            </small>
+                            <div>
+                                <b class="h5">{{ competition.name }}</b>
+                                <span style="position: relative; top: -3px;">
+                                    <span class="badge text-bg-primary text-bg-{{ competition.division | lower }}">
+                                        {{ competition.division | upper }}
+                                    </span>
+                                    {% if competition.age_limit %}
+                                        <span class="badge text-bg-primary"> {{ competition.age_limit | upper }} </span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            {% if competition.registration_deadline > now %}
+                                <span class="badge text-bg-success">OPEN</span>
+                            {% else %}
+                                <span class="badge text-bg-dark">CLOSED</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div>Registration deadline: {{ competition.registration_deadline | date:'d/m/Y H:i' }}</div>
+                    <div>
+                        Deposit: CZK {{ competition.deposit | floatformat:0 }}
+                        {% if competition.has_awaiting_payment %}
+                            <span style="position: relative; top: -2px;" class="badge text-bg-danger"
+                                >AWAITING PAYMENT</span
+                            >
+                        {% endif %}
+                    </div>
+                    <div>Season fee: CZK {{ competition.season_fee | floatformat:0 }}</div>
+                    <div class="mt-2 mb-1">{% include "competitions/components/competition-action-buttons.html" %}</div>
+                </div>
             {% endfor %}
         </div>
     </div>

@@ -1,67 +1,37 @@
 <div class="modal-content">
     <div class="modal-header">
         <h5 class="modal-title">
-            <span> <i class="bi bi-people-fill"></i> {{ competition.name }} </span>
-            <span class=" badge text-bg-primary text-bg-{{ competition.division | lower }}">
-                {{ competition.division | upper }}
-            </span>
-            {% if competition.age_limit %}
-                <span class="badge text-bg-primary"> {{ competition.age_limit | upper }} </span>
-            {% endif %}
+            <span> <i class="bi bi-people-fill"></i> {{ competition }}</span>
         </h5>
     </div>
     <div class="modal-body">
         <h5>General</h5>
-
+        <div>Registered teams: {{ competition.application_count }}</div>
+        <div>Deposit per team: CZK {{ competition.deposit }}</div>
+        <div>Player's season fee (tier): CZK {{ competition.season.discounted_fee }}</div>
+        <div>Player's fee at tournament: CZK {{ competition.season.fee_at_tournament }}</div>
         <div>
-            <i class="bi bi-people-fill"></i>
-            Total registered teams: <strong>{{ competition.application_count }}</strong>
-        </div>
-        {% if request.session.club %}
-            <div>
-                <i class="bi bi-shield-fill"></i> Your club's teams:
-                <strong>{{ competition.club_application_count }}</strong>
-                {% if competition.has_awaiting_payment %}
-                    <span class="badge text-bg-danger">AWAITING PAYMENT</span>
+            Registration deadline: {{ competition.registration_deadline | date:'d/m/Y H:i' }}
+            <span style="position: relative; top: -2px;">
+                {% if competition.registration_deadline > now %}
+                    <span class="badge text-bg-success">OPEN</span>
+                {% else %}
+                    <span class="badge text-bg-dark">CLOSED</span>
                 {% endif %}
-            </div>
-        {% endif %}
-        <div>
-            <i class="bi bi-person"></i> Player's season fee (tier):
-            <strong>CZK {{ competition.season.discounted_fee }}</strong>
+            </span>
         </div>
-        <div>
-            <i class="bi bi-person"></i> Player's fee at tournament:
-            <strong>CZK {{ competition.season.fee_at_tournament }}</strong>
-        </div>
-        <div>
-            <i class="bi bi-cash-coin"></i>
-            Deposit per team: <strong>CZK {{ competition.deposit }}</strong>
-        </div>
-        <div>
-            <i class="bi bi-clock"></i> Registration deadline:
-            <b>{{ competition.registration_deadline | date:'d/m/Y H:i' }}</b>
-            {% if competition.registration_deadline > now %}
-                <span class="badge text-bg-success">OPEN</span>
-            {% else %}
-                <span class="badge text-bg-dark">CLOSED</span>
-            {% endif %}
-        </div>
-
         <div class="mt-3">
             <h5>Tournaments</h5>
             {% for tournament in competition.prefetched_tournaments %}
                 <div class="mt-2">
-                    <i class="bi bi-calendar-check"></i> {{ tournament.name }}<br />
-                    <i class="bi bi-calendar-check invisible"></i>
-                    <small class="text-muted"
-                        >{{ tournament.start_date | date:'d/m' }} — {{ tournament.end_date | date:'d/m/Y' }},
-                        {{ tournament.location }}</small
-                    >
+                    {{ tournament.name }}<br />
+                    <small class="text-muted">
+                        {{ tournament.location }} • {{ tournament.start_date | date:'d/m/Y' }} -
+                        {{ tournament.end_date | date:'d/m/Y' }}
+                    </small>
                 </div>
             {% endfor %}
         </div>
-
         {% if competition.description %}
             <div class="mt-3">
                 <h5>Description</h5>
