@@ -1,12 +1,12 @@
-from core.helpers import get_current_club
+from core.helpers import get_current_club_or_none
 from django.http import HttpRequest
 
 from clubs.models import ClubNotification
 
 
 def notifications(request: HttpRequest) -> dict:
-    if request.user.is_authenticated:
-        club = get_current_club(request)
+    club = get_current_club_or_none(request)
+    if request.user.is_authenticated and club:
         new_notifications_count = ClubNotification.objects.filter(
             is_read=False,
             agent_at_club__agent_id=request.user.agent.id,
