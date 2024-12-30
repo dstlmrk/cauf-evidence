@@ -83,40 +83,49 @@
         <div class="list-group">
             {% for tournament in tournaments %}
                 <div class="list-group-item">
-                    <span class="text-muted"
-                        >{{ tournament.competition.season }} •
-                        {{ tournament.competition.get_type_display | upper }}</span
-                    ><br />
-                    <h2 class="mb-1">{{ tournament.name }}</h2>
-
-                    <h5 class="mb-1">
-                        <span class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
-                            >{{ tournament.competition.division | upper }}</span
-                        >
-                        {% if tournament.competition.age_limit %}
-                            <span class="badge text-bg-primary">{{ tournament.competition.age_limit | upper }}</span>
-                        {% endif %}
-                    </h5>
                     <div class="d-flex w-100 justify-content-between">
-                        <div class="mt-2 mb-1">
-                            <i class="bi bi-calendar-check"></i> {{ tournament.start_date }} -
-                            {{ tournament.end_date }}<br />
-                            <i class="bi bi-geo-alt-fill"></i> {{ tournament.location }}<br />
-                            <i class="bi bi-trophy-fill"></i> {{ tournament.competition.age_limit }}
-                            {{ tournament.competition.name }}
-                            {{ tournament.competition.division }} <br />
+                        <div>
+                            <small class="text-muted">
+                                {{ tournament.competition.season }} •
+                                {{ tournament.competition.get_type_display | upper }}
+                            </small>
+
+                            <div>
+                                <b>{{ tournament.competition.name }}</b>
+                                <span style="position: relative; top: -2px;">
+                                    <span
+                                        class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
+                                    >
+                                        {{ tournament.competition.division | upper }}
+                                    </span>
+                                    {% if tournament.competition.age_limit %}
+                                        <span class="badge text-bg-primary">
+                                            {{ tournament.competition.age_limit | upper }}
+                                        </span>
+                                    {% endif %}
+                                </span>
+                            </div>
                         </div>
-                        <div class="mb-2 d-none d-md-block" style="align-self: end;">
-                            <button type="button" class="btn btn-primary" disabled>
-                                <i class="bi bi-person-lines-fill"></i> Rosters
-                            </button>
+                        <div>
+                            {% if tournament.rosters_deadline > now %}
+                                <span class="badge text-bg-success">OPEN</span>
+                            {% else %}
+                                <span class="badge text-bg-dark">CLOSED</span>
+                            {% endif %}
                         </div>
                     </div>
-                    <div class="mb-3 mt-1 d-block d-md-none">
-                        <button type="button" class="btn btn-primary" disabled>
-                            <i class="bi bi-person-lines-fill"></i> Rosters
-                        </button>
+                    <a href="{% url 'tournaments:detail' tournament.id %}" class="text-primary h5">
+                        {{ tournament.name }}
+                    </a>
+                    <div>
+                        {{ tournament.location }} • {{ tournament.start_date | date:'d.m.Y' }} -
+                        {{ tournament.end_date | date:'d.m.Y' }}
                     </div>
+                    <div>Rosters deadline: {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}</div>
+                    <div>Total teams/members: {{ tournament.team_count }}/{{ tournament.member_count }}</div>
+                    {% if tournament.winner_team %}
+                        <div>Winner: {{ tournament.winner_team }}</div>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
