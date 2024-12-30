@@ -47,7 +47,7 @@ Temporarily, backups are managed manually. To create a backup,
 run the following command (it requires access to the server):
 
 ```bash
-./run-backup.sh mara 46.101.97.63
+./run-backup.sh <user> 46.101.97.63
 ```
 
 The backup is stored in the `backups` directory on your local machine.
