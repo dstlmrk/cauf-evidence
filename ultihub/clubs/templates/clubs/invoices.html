@@ -3,70 +3,116 @@
 {% block title %}<h1>Invoices</h1>{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-md-12">
-            {% if invoices %}
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead>
+    {% if invoices %}
+        <div class="d-none d-md-block">
+            <div class="table">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">FID</th>
+                            <th scope="col">Created at</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">State</th>
+                            <th scope="col">Amount (CZK)</th>
+                            <th scope="col">Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in invoices %}
                             <tr>
-                                <th scope="col">FID</th>
-                                <th scope="col">Created at</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">State</th>
-                                <th scope="col">Amount (CZK)</th>
-                                <th scope="col">Link</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for invoice in invoices %}
-                                <tr>
-                                    <td>
-                                        <b>{{ invoice.fakturoid_invoice_id|default:"N/A" }}</b>
-                                    </td>
-                                    <td>{{ invoice.created_at | date:'d/m/Y H:i' }}</td>
-                                    <td>{{ invoice.get_type_display | upper }}</td>
+                                <th>{{ invoice.fakturoid_invoice_id|default:"N/A" }}</th>
+                                <td>{{ invoice.created_at | date:'d/m/Y H:i' }}</td>
+                                <td>{{ invoice.get_type_display | upper }}</td>
 
-                                    <td>
+                                <td>
+                                    <span
                                         {% if invoice.state == 1 %}
-                                            <span class="badge text-bg-dark">
-                                                {{ invoice.get_state_display | upper }}
-                                            </span>
+                                            class="badge text-bg-dark"
                                         {% elif invoice.state == 2 %}
-                                            <span class="badge text-bg-danger">
-                                                {{ invoice.get_state_display | upper }}
-                                            </span>
+                                            class="badge text-bg-danger"
                                         {% elif invoice.state == 3 %}
-                                            <span class="badge text-bg-success">
-                                                {{ invoice.get_state_display | upper }}
-                                            </span>
+                                            class="badge text-bg-success"
                                         {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if invoice.fakturoid_total and invoice.fakturoid_total != invoice.amount %}
-                                            {{ invoice.fakturoid_total | floatformat:0 }}
-                                        {% else %}
-                                            {{ invoice.amount | floatformat:0 }}
-                                        {% endif %}
-                                    </td>
-                                    <td class="fit">
-                                        <a
-                                            href="{{ invoice.fakturoid_public_html_url }}"
-                                            class="btn btn-primary {% if not invoice.fakturoid_public_html_url %}disabled{% endif %}"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            <i class="bi bi-file-earmark-pdf"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <div class="alert alert-dark" role="alert">No invoices found.</div>
-            {% endif %}
+                                    >
+                                        {{ invoice.get_state_display | upper }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if invoice.fakturoid_total and invoice.fakturoid_total != invoice.amount %}
+                                        {{ invoice.fakturoid_total | floatformat:0 }}
+                                    {% else %}
+                                        {{ invoice.amount | floatformat:0 }}
+                                    {% endif %}
+                                </td>
+                                <td class="fit">
+                                    <a
+                                        href="{{ invoice.fakturoid_public_html_url }}"
+                                        class="btn btn-primary {% if not invoice.fakturoid_public_html_url %}disabled{% endif %}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+        <div class="d-block d-md-none">
+            <div class="list-group">
+                {% for invoice in invoices %}
+                    <div class="list-group-item">
+                        <div>FID: {{ invoice.fakturoid_invoice_id|default:"N/A" }}</div>
+                        <div>Created at: {{ invoice.created_at | date:'d/m/Y H:i' }}</div>
+                        <div>Type: {{ invoice.get_type_display | upper }}</div>
+                        <div>
+                            State:
+                            <span
+                                style="position: relative; top: -2px;"
+                                {% if invoice.state == 1 %}
+                                    class="badge text-bg-dark"
+                                {% elif invoice.state == 2 %}
+                                    class="badge text-bg-danger"
+                                {% elif invoice.state == 3 %}
+                                    class="badge text-bg-success"
+                                {% endif %}
+                            >
+                                {{ invoice.get_state_display | upper }}
+                            </span>
+                        </div>
+                        <div>
+                            Amount:
+                            <b
+                                >CZK
+                                {% if invoice.fakturoid_total and invoice.fakturoid_total != invoice.amount %}
+                                    {{ invoice.fakturoid_total | floatformat:0 }}
+                                {% else %}
+                                    {{ invoice.amount | floatformat:0 }}
+                                {% endif %}</b
+                            >
+                        </div>
+                        <div>
+                            Link:
+                            {% if invoice.fakturoid_public_html_url %}
+                                <a
+                                    class="text-primary"
+                                    href="{{ invoice.fakturoid_public_html_url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <i class="bi bi-box-arrow-up-right"></i> Here
+                                </a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-dark" role="alert">No invoices found.</div>
+    {% endif %}
 {% endblock %}

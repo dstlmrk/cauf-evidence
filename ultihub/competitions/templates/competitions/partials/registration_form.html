@@ -25,18 +25,16 @@
             <h5 class="modal-title"><i class="bi bi-person-plus-fill"></i> Registration</h5>
         </div>
         <div class="modal-body">
-            <div class="alert alert-primary d-flex align-items-center" role="alert">
-                <i class="bi bi-info-circle-fill me-3"></i>
+            <div class="alert alert-primary" role="alert">
                 <div>
-                    After registering, it is necessary to generate an invoice and complete the payment. The registration
-                    will not be finalized until the payment is received in the association’s account.
-                </div>
-            </div>
-            <div class="alert alert-warning d-flex align-items-center" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-3"></i>
-                <div>
-                    If you need to unregister an already registered team, please contact the association. This action
-                    cannot be completed in the application at this time.
+                    <p>
+                        After registering, it is necessary to generate an invoice and complete the payment. The
+                        registration will not be finalized until the payment is received in the association’s account.
+                    </p>
+                    <p class="mb-0">
+                        If you need to cancel the registration of an already invoiced team, please contact the
+                        association. This action cannot be completed in the application at this time.
+                    </p>
                 </div>
             </div>
             {% csrf_token %}

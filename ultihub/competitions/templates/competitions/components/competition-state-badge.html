@@ -1,0 +1,13 @@
+<span
+    {% if application.state == 1 %}
+        class="badge text-bg-danger"
+    {% elif application.state == 2 %}
+        class="badge text-bg-warning"
+    {% elif application.state == 3 %}
+        class="badge text-bg-success"
+    {% else %}
+        class="badge text-bg-danger"
+    {% endif %}
+>
+    {{ application.get_state_display | upper }}
+</span>

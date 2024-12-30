@@ -25,6 +25,11 @@ urlpatterns = [
         name="competition_detail",
     ),
     path(
+        "<int:application_id>/cancel",
+        views.cancel_application_view,
+        name="cancel_application",
+    ),
+    path(
         "<int:competition_id>/final-placements-dialog",
         views.competition_final_placements_dialog_view,
         name="competition_final_placements_dialog",

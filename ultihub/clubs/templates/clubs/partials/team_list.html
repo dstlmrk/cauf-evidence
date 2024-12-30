@@ -14,9 +14,6 @@
                 <tr style="height: 55px">
                     <th scope="row">{{ forloop.counter }}</th>
                     <td><b>{{ team.name }}</b></td>
-
-                    {#    {% include "partials/audit_info.html" with obj=team %}#}
-
                     <td>
                         {% if team.is_primary %}
                             <span class="badge bg-dark">Primary</span>
@@ -24,29 +21,7 @@
                             {{ team.description }}
                         {% endif %}
                     </td>
-                    <td class="fit">
-                        {% if not team.is_primary %}
-                            <div>
-                                <button
-                                    class="btn btn-primary"
-                                    hx-get="{% url 'clubs:edit_team' team.id %}"
-                                    hx-target="#dialog"
-                                >
-                                    Edit
-                                </button>
-
-                                <button
-                                    class="btn btn-danger"
-                                    hx-post="{% url 'clubs:remove_team' team.id %}"
-                                    hx-trigger="click"
-                                    hx-confirm="Do you really want to remove this team?"
-                                    hx-swap="none"
-                                >
-                                    Remove
-                                </button>
-                            </div>
-                        {% endif %}
-                    </td>
+                    <td class="fit">{% include 'clubs/components/team-action-buttons.html' %}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -57,31 +32,17 @@
     <div class="list-group">
         {% for team in teams %}
             <div class="list-group-item">
+                <div>Name: <b>{{ team.name }}</b></div>
                 <div>
-                    <h5>{{ team.name }}</h5>
-                    <p class="mb-1">{{ team.description }}</p>
-                    {% include "partials/audit_info.html" with obj=team %}
+                    Description:
+                    {% if team.is_primary %}
+                        <span class="badge bg-dark" style="position: relative; top: -2px;">Primary</span>
+                    {% else %}
+                        {{ team.description }}
+                    {% endif %}
                 </div>
-                {% if not team.is_primary %}
-                    <button class="btn btn-primary" hx-get="{% url 'clubs:edit_team' team.id %}" hx-target="#dialog">
-                        Edit
-                    </button>
-                    <button
-                        class="btn btn-danger my-2"
-                        hx-post="{% url 'clubs:remove_team' team.id %}"
-                        hx-trigger="click"
-                        hx-confirm="Do you really want to remove this team?"
-                        hx-vals='{"team_id": "{{ team.id }}"}'
-                        hx-swap="none"
-                    >
-                        Remove
-                    </button>
-                {% endif %}
+                {% include 'clubs/components/team-action-buttons.html' %}
             </div>
         {% endfor %}
     </div>
 </div>
-
-<script>
-    initializeTooltips();
-</script>

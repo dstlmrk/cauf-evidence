@@ -1,0 +1,13 @@
+<div class="d-flex align-items-center gap-1">
+    <button class="btn btn-success" hx-get="{% url 'members:add_member' %}" hx-target="#dialog-xl">
+        <i class="bi bi-plus"></i> Add member
+    </button>
+    <form
+        method="POST"
+        hx-post="{% url 'members:export_members_csv_for_nsa' %}"
+        hx-confirm="Are you sure? The file will be sent to your email."
+    >
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary"><i class="bi bi-file-earmark-arrow-down"></i> NSA export</button>
+    </form>
+</div>

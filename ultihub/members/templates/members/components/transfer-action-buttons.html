@@ -1,0 +1,12 @@
+{% if transfer.state == 1 %}
+    <form method="POST" hx-post="{% url 'members:change_transfer_state' %}" hx-confirm="Are you sure?">
+        {% csrf_token %}
+        <input type="hidden" name="transfer_id" value="{{ transfer.id }}" />
+        {% if transfer.approving_club.id == request.session.club.id %}
+            <button type="submit" class="btn btn-success" name="action" value="approve">Approve</button>
+            <button type="submit" class="btn btn-danger" name="action" value="reject">Reject</button>
+        {% elif transfer.requesting_club.id == request.session.club.id %}
+            <button type="submit" class="btn btn-danger" name="action" value="revoke">Revoke</button>
+        {% endif %}
+    </form>
+{% endif %}

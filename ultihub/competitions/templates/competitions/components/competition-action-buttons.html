@@ -1,0 +1,33 @@
+<button
+    {% if request.session.club and competition.registration_deadline > now %}
+        class="btn btn-success position-relative"
+    {% else %}
+        class="btn btn-primary position-relative"
+    {% endif %}
+    hx-get="{% url 'competitions:application_list' competition.id %}"
+    hx-target="#dialog-lg"
+>
+    Registrations
+    <span class="badge text-bg-light ms-1">{{ competition.application_count }}</span>
+    {% if competition.club_application_without_invoice_count > 0 %}
+        <span
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="z-index: 1050;"
+        >
+            {{ competition.club_application_without_invoice_count }}
+        </span>
+    {% endif %}
+</button>
+<button class="btn btn-primary" hx-get="{% url 'competitions:competition_detail' competition.id %}" hx-target="#dialog">
+    <i class="bi bi-info-circle"></i>
+</button>
+<button
+    class="btn btn-primary"
+    hx-get="{% url 'competitions:competition_final_placements_dialog' competition.id %}"
+    hx-target="#dialog"
+    {% if not competition.has_final_placement %}
+        disabled
+    {% endif %}
+>
+    <i class="bi bi-trophy"></i>
+</button>
