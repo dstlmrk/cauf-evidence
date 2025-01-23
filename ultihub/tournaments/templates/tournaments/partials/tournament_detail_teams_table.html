@@ -3,10 +3,10 @@
         <thead>
             <tr class="align-middle">
                 <th>Standing <i class="bi bi-arrow-up-short"></i></th>
-                <th>Seeding</th>
                 <th>SOTG avg</th>
                 <th>Team</th>
                 <th>Club</th>
+                <th>Seeding</th>
                 <th></th>
             </tr>
         </thead>
@@ -14,10 +14,10 @@
             {% for team in teams_at_tournament %}
                 <tr>
                     <td>{{ team.final_placement | default:"" }}</td>
-                    <td>{{ team.seeding | default:"" }}</td>
                     <td>{{ team.spirit_avg | floatformat:1 }}</td>
                     <td>{{ team.application.team_name }}</td>
                     <td>{{ team.application.team.club.name }}</td>
+                    <td>{{ team.seeding | default:"" }}</td>
                     <td class="fit text-end">{% include "tournaments/components/roster-button.html" %}</td>
                 </tr>
             {% endfor %}
@@ -30,10 +30,10 @@
         {% for team in teams_at_tournament %}
             <div class="list-group-item">
                 <div>Standing: {{ team.final_placement | default:"" }}</div>
-                <div>Seeding: {{ team.seeding | default:"" }}</div>
                 <div>SOTG avg: {{ team.spirit_avg | floatformat:1 }}</div>
                 <div>Team: <b>{{ team.application.team_name }}</b></div>
                 <div>Club: {{ team.application.team.club.name }}</div>
+                <div>Seeding: {{ team.seeding | default:"" }}</div>
                 <div class="mt-2 mb-1">{% include "tournaments/components/roster-button.html" %}</div>
             </div>
         {% endfor %}
