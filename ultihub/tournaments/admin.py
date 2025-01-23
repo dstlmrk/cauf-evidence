@@ -6,7 +6,7 @@ from tournaments.models import MemberAtTournament, TeamAtTournament, Tournament
 class TeamAtTournamentInline(admin.TabularInline):
     model = TeamAtTournament
     extra = 0
-    fields = ("team_name", "final_placement", "spirit_avg")
+    fields = ("team_name", "seeding", "final_placement", "spirit_avg")
     readonly_fields = ("team_name",)
 
     @admin.display(description="Team name")

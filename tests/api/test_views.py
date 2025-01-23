@@ -67,6 +67,11 @@ def test_get_competitions(api_client):
                 {
                     "id": application.id,
                     "team_name": "Veselá rota B",
+                    "team_id": application.team.id,
+                    "club": {
+                        "id": application.team.club.id,
+                        "name": application.team.club.name,
+                    },
                     "final_placement": None,
                 },
             ],
@@ -112,7 +117,11 @@ def test_get_teams_at_tournament(api_client):
     assert response.json() == [
         {
             "id": member_at_tournament.team_at_tournament.id,
+            "application_id": application.id,
+            "team_id": application.team_id,
+            "club_id": application.team.club_id,
             "team_name": application.team_name,
+            "seeding": team_at_tournament.seeding,
             "final_placement": None,
             "spirit_avg": None,
             "members": [
@@ -137,7 +146,11 @@ def test_get_team_at_tournament(api_client, team_at_tournament):
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "id": team_at_tournament.id,
+        "application_id": team_at_tournament.application.id,
+        "team_id": team_at_tournament.application.team_id,
+        "club_id": team_at_tournament.application.team.club_id,
         "team_name": team_at_tournament.application.team_name,
+        "seeding": team_at_tournament.seeding,
         "final_placement": None,
         "spirit_avg": None,
         "members": [],
@@ -168,7 +181,12 @@ def test_get_competition_application(api_client, competition_application):
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "id": competition_application.id,
+        "team_id": competition_application.team_id,
         "team_name": competition_application.team_name,
+        "club": {
+            "id": competition_application.team.club.id,
+            "name": competition_application.team.club.name,
+        },
         "final_placement": None,
     }
 

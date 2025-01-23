@@ -40,7 +40,9 @@ class CompetitionsView(ListAPIView):
             ),
             Prefetch(
                 "applications",
-                queryset=CompetitionApplication.objects.filter(state=ApplicationStateEnum.ACCEPTED),
+                queryset=CompetitionApplication.objects.select_related("team", "team__club").filter(
+                    state=ApplicationStateEnum.ACCEPTED
+                ),
                 to_attr="prefetched_applications",
             ),
         )
@@ -65,7 +67,7 @@ class TeamsAtTournamentView(ListAPIView):
             raise ValidationError({"tournament_id": "This parameter is required."})
 
         return (
-            TeamAtTournament.objects.select_related("application")
+            TeamAtTournament.objects.select_related("application", "application__team")
             .prefetch_related(
                 Prefetch(
                     "members",

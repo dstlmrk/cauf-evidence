@@ -69,7 +69,7 @@ Already created tokens are available at `/admin/authtoken/tokenproxy`.
 
 #### /api/competitions
 
--   `GET` Returns all competitions. No filter is available at this moment.
+-   `GET` Returns all competitions. Query parameter `season` is available (e.g. `?season=2025`).
 
 #### /api/clubs
 
