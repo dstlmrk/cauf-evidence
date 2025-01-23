@@ -31,6 +31,14 @@ def unassign_agent_from_club(agent: Agent, club: Club) -> None:
     remove_perm("manage_club", agent.user, club)
 
 
+def send_inviting_email(email: str, club: Club) -> None:
+    send_email.delay(
+        "Access to club granted",
+        f"You have been granted access to {club.name}. Check it out at https://evidence.frisbee.cz\n",
+        to=[email],
+    )
+
+
 def assign_or_invite_agent_to_club(
     email: str, club: Club, invited_by: User, is_primary: bool = False
 ) -> None:
@@ -51,11 +59,7 @@ def assign_or_invite_agent_to_club(
             is_primary=is_primary,
         )
 
-    send_email.delay(
-        "Access to club granted",
-        f"You have been granted access to {club.name}",
-        to=[email],
-    )
+    send_inviting_email(email, club)
 
 
 def unassign_or_cancel_agent_invite_from_club(email: str, club: Club) -> None:
