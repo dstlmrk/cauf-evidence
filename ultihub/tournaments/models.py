@@ -47,9 +47,17 @@ class TeamAtTournament(AuditModel):
         blank=True,
         validators=[MinValueValidator(Decimal(0)), MaxValueValidator(Decimal(20))],
     )
+    seeding = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1)],
+    )
 
     class Meta:
-        unique_together = ("tournament", "application")
+        unique_together = (
+            ("tournament", "application"),
+            ("tournament", "seeding"),
+        )
         app_label = "tournaments"
 
     def __str__(self) -> str:

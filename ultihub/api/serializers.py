@@ -5,6 +5,12 @@ from rest_framework import serializers
 from tournaments.models import MemberAtTournament, TeamAtTournament, Tournament
 
 
+class SimpleClubSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Club
+        fields = ["id", "name"]
+
+
 class TournamentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tournament
@@ -12,9 +18,11 @@ class TournamentSerializer(serializers.ModelSerializer):
 
 
 class CompetitionApplicationSerializer(serializers.ModelSerializer):
+    club = SimpleClubSerializer(source="team.club", read_only=True)
+
     class Meta:
         model = CompetitionApplication
-        fields = ["id", "team_name", "final_placement"]
+        fields = ["id", "team_name", "final_placement", "team_id", "club"]
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
@@ -94,10 +102,22 @@ class MemberAtTournamentSerializer(serializers.ModelSerializer):
 class TeamAtTournamentSerializer(serializers.ModelSerializer):
     members = MemberAtTournamentSerializer(many=True, read_only=True, source="prefetched_members")
     team_name = serializers.CharField(source="application.team_name", read_only=True)
+    team_id = serializers.IntegerField(source="application.team_id", read_only=True)
+    club_id = serializers.IntegerField(source="application.team.club_id", read_only=True)
 
     class Meta:
         model = TeamAtTournament
-        fields = ["id", "team_name", "final_placement", "spirit_avg", "members"]
+        fields = [
+            "id",
+            "application_id",
+            "team_id",
+            "club_id",
+            "team_name",
+            "seeding",
+            "final_placement",
+            "spirit_avg",
+            "members",
+        ]
 
     def get_team_name(self, obj: TeamAtTournament) -> str:
         return obj.application.team_name
