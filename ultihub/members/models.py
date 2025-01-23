@@ -194,8 +194,7 @@ class Member(AuditModel):
                 "Please confirm your email",
                 (
                     f"You have been registered as a member of {self.club.name}.\n"
-                    "Please confirm your email by clicking on the following"
-                    f' <a href="{link}">link</a>.\n'
+                    f"Please confirm your email by clicking on the following link: {link}\n"
                 ),
                 to=[self.email],
             )

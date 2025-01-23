@@ -5,11 +5,12 @@ from django.http import HttpRequest
 from guardian.admin import GuardedModelAdmin
 
 from users.models import Agent, NewAgentRequest
+from users.services import send_inviting_email
 
 
 @admin.register(NewAgentRequest)
 class NewAgentRequestAdmin(admin.ModelAdmin):
-    list_display = ("id", "email", "is_staff", "is_superuser", "created_at", "processed_at")
+    list_display = ("id", "email", "is_staff", "is_superuser", "created_at", "processed_at", "club")
     search_fields = ("email",)
     list_filter = ("is_staff",)
     ordering = ("-created_at",)
@@ -20,6 +21,11 @@ class NewAgentRequestAdmin(admin.ModelAdmin):
             return ("email", "is_staff", "is_superuser", "processed_at") + fields
         else:
             return fields
+
+    def save_model(self, request, obj, form, change):  # type: ignore
+        super().save_model(request, obj, form, change)
+        if not change:  # is new
+            send_inviting_email(obj.email, obj.club)
 
 
 @admin.register(Agent)

@@ -20,13 +20,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 {{ club_form.name|as_crispy_field }}
-                                {{ club_form.website|as_crispy_field }}
-                                {{ club_form.email|as_crispy_field }}
+                                {{ club_form.organization_name|as_crispy_field }}
+                                {{ club_form.identification_number|as_crispy_field }}
                             </div>
                             <div class="col-md-6">
                                 {{ club_form.city|as_crispy_field }}
-                                {{ club_form.organization_name|as_crispy_field }}
-                                {{ club_form.identification_number|as_crispy_field }}
+                                {{ club_form.website|as_crispy_field }}
+                                {{ club_form.email|as_crispy_field }}
                             </div>
                         </div>
                         <button type="submit" name="submit_club" class="btn btn-success" :disabled="!isModified">
