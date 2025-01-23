@@ -173,6 +173,12 @@ class CompetitionApplicationAdmin(admin.ModelAdmin):
             )
             return HttpResponseRedirect(request.get_full_path())
 
+        if queryset.values("competition").distinct().count() > 1:
+            self.message_user(
+                request, "Applications must be for the same competition", level=messages.ERROR
+            )
+            return HttpResponseRedirect(request.get_full_path())
+
         applications = ",".join(str(obj.id) for obj in queryset)
         return HttpResponseRedirect(f"add-teams-to-tournament/?ids={applications}")
 
