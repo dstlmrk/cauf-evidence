@@ -1,7 +1,7 @@
 from clubs.models import Club
 from competitions.models import ApplicationStateEnum, Competition, CompetitionApplication
 from django.db.models import Prefetch, QuerySet
-from django_filters.rest_framework import CharFilter, FilterSet
+from django_filters.rest_framework import CharFilter, DjangoFilterBackend, FilterSet
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
@@ -55,6 +55,8 @@ class CompetitionsView(ListAPIView):
 class ClubsView(ListAPIView):
     queryset = Club.objects.all()
     serializer_class = ClubSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["id"]
 
 
 class TeamsAtTournamentView(ListAPIView):
