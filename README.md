@@ -73,7 +73,7 @@ Already created tokens are available at `/admin/authtoken/tokenproxy`.
 
 #### /api/clubs
 
--   `GET` Returns all clubs. No filter is available at this moment.
+-   `GET` Returns all clubs. You can filter them by `id` (e.g. `?id=1`).
 
 #### /api/teams-at-tournament
 
