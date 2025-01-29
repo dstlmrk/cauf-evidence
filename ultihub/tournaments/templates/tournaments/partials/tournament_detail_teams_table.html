@@ -14,8 +14,8 @@
             {% for team in teams_at_tournament %}
                 <tr>
                     <td>{{ team.final_placement | default:"" }}</td>
-                    <td>{{ team.spirit_avg | floatformat:1 }}</td>
-                    <td>{{ team.application.team_name }}</td>
+                    <td>{{ team.spirit_avg | floatformat:2 }}</td>
+                    <td><b>{{ team.application.team_name }}</b></td>
                     <td>{{ team.application.team.club.name }}</td>
                     <td>{{ team.seeding | default:"" }}</td>
                     <td class="fit text-end">{% include "tournaments/components/roster-button.html" %}</td>
@@ -30,7 +30,7 @@
         {% for team in teams_at_tournament %}
             <div class="list-group-item">
                 <div>Standing: {{ team.final_placement | default:"" }}</div>
-                <div>SOTG avg: {{ team.spirit_avg | floatformat:1 }}</div>
+                <div>SOTG avg: {{ team.spirit_avg | floatformat:2 }}</div>
                 <div>Team: <b>{{ team.application.team_name }}</b></div>
                 <div>Club: {{ team.application.team.club.name }}</div>
                 <div>Seeding: {{ team.seeding | default:"" }}</div>
