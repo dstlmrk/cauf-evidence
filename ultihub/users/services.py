@@ -1,10 +1,15 @@
 from clubs.models import Club
 from core.tasks import send_email
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.db.models import QuerySet
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 
 from users.models import Agent, AgentAtClub, NewAgentRequest
+
+
+class NewAgentRequestAlreadyExistsError(IntegrityError):
+    pass
 
 
 def assign_agent_to_club(
@@ -31,10 +36,11 @@ def unassign_agent_from_club(agent: Agent, club: Club) -> None:
     remove_perm("manage_club", agent.user, club)
 
 
-def send_inviting_email(email: str, club: Club) -> None:
+def send_inviting_email(email: str, club: Club | None) -> None:
+    club_name = club.name if club else "ČAUF Evidence"
     send_email.delay(
         "Access to club granted",
-        f"You have been granted access to {club.name}. Check it out at https://evidence.frisbee.cz\n",
+        f"You have been granted access to {club_name}. Check it out at https://evidence.frisbee.cz\n",
         to=[email],
     )
 
@@ -50,14 +56,17 @@ def assign_or_invite_agent_to_club(
             return
         assign_agent_to_club(agent, club, invited_by, is_primary)
     else:
-        NewAgentRequest.objects.create(
-            email=email,
-            is_staff=False,
-            is_superuser=False,
-            club=club,
-            invited_by=invited_by,
-            is_primary=is_primary,
-        )
+        try:
+            NewAgentRequest.objects.create(
+                email=email,
+                is_staff=False,
+                is_superuser=False,
+                club=club,
+                invited_by=invited_by,
+                is_primary=is_primary,
+            )
+        except IntegrityError as ex:
+            raise NewAgentRequestAlreadyExistsError from ex
 
     send_inviting_email(email, club)
 

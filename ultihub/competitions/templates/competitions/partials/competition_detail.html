@@ -9,7 +9,7 @@
         <div>Registered teams: {{ competition.application_count }}</div>
         <div>Deposit per team: CZK {{ competition.deposit }}</div>
         <div>Player's season fee (tier): CZK {{ competition.season.discounted_fee }}</div>
-        <div>Player's fee at tournament: CZK {{ competition.season.fee_at_tournament }}</div>
+        <div>Player's fee at tournament: CZK {{ competition.fee_at_tournament }}</div>
         <div>
             Registration deadline: {{ competition.registration_deadline | date:'d/m/Y H:i' }}
             <span style="position: relative; top: -2px;">
