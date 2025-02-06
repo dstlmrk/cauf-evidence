@@ -1,12 +1,24 @@
 import logging
 
-from django.db.models import Count, Exists, OuterRef, Prefetch, Q, QuerySet
+from django.db.models import (
+    Case,
+    Count,
+    Exists,
+    IntegerField,
+    OuterRef,
+    Prefetch,
+    Q,
+    QuerySet,
+    Value,
+    When,
+)
 from tournaments.models import TeamAtTournament, Tournament
 
 from competitions.models import (
     ApplicationStateEnum,
     Competition,
     CompetitionApplication,
+    CompetitionFeeTypeEnum,
 )
 
 logger = logging.getLogger(__name__)
@@ -60,7 +72,17 @@ def get_competitions_qs_with_related_data(
                 to_attr="prefetched_tournaments",
             ),
         )
-        .annotate(application_count=Count("applications"))
+        .annotate(
+            application_count=Count("applications"),
+            fee_at_tournament=Case(
+                When(
+                    fee_type=CompetitionFeeTypeEnum.REGULAR,
+                    then="season__fee_at_tournament",
+                ),
+                default=Value(0),
+                output_field=IntegerField(),
+            ),
+        )
         .exclude(is_for_national_teams=True)
         .order_by("-registration_deadline")
     )

@@ -12,7 +12,11 @@ from finance.forms import SeasonFeesCheckForm
 from finance.models import Invoice
 from members.models import CoachLicence, Member, Transfer
 from users.models import AgentAtClub, NewAgentRequest
-from users.services import assign_or_invite_agent_to_club, unassign_or_cancel_agent_invite_from_club
+from users.services import (
+    NewAgentRequestAlreadyExistsError,
+    assign_or_invite_agent_to_club,
+    unassign_or_cancel_agent_invite_from_club,
+)
 
 from clubs.forms import AddAgentForm, ClubForm, TeamForm
 from clubs.models import Club, ClubNotification, Team
@@ -160,13 +164,23 @@ def add_agent(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = AddAgentForm(request.POST)
         if form.is_valid():
-            assign_or_invite_agent_to_club(
-                email=form.cleaned_data["email"],
-                club=get_object_or_404(Club, pk=get_club_id(request)),
-                invited_by=request.user,  # type: ignore
-            )
-            messages.success(request, "Agent added successfully.")
-            return HttpResponse(status=204, headers={"HX-Trigger": "agentListChanged"})
+            try:
+                assign_or_invite_agent_to_club(
+                    email=form.cleaned_data["email"],
+                    club=get_object_or_404(Club, pk=get_club_id(request)),
+                    invited_by=request.user,  # type: ignore
+                )
+                messages.success(request, "Agent added successfully.")
+                return HttpResponse(status=204, headers={"HX-Trigger": "agentListChanged"})
+            except NewAgentRequestAlreadyExistsError:
+                messages.error(
+                    request,
+                    (
+                        "The agent is already invited to the application."
+                        " He must complete it before the next invitation."
+                    ),
+                )
+                return HttpResponse(status=409)
     else:
         form = AddAgentForm()
     return render(request, "clubs/partials/add_agent_form.html", {"form": form})

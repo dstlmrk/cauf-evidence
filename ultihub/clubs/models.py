@@ -14,9 +14,9 @@ class Club(AuditModel):
         help_text="Only administrators can change this value",
     )
     short_name = models.CharField(
-        max_length=3,
+        max_length=4,
         blank=True,
-        help_text="Short name of the club (2-3 characters)",
+        help_text="Short name of the club (2-4 characters)",
         validators=[MinLengthValidator(2)],
     )
     email = models.EmailField(
