@@ -95,6 +95,9 @@ class Team(AuditModel):
         on_delete=models.PROTECT,
     )
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self) -> str:
         return f"<Team({self.pk}, name={self.name})>"
 

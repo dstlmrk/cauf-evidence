@@ -43,6 +43,7 @@ class ClubAdmin(admin.ModelAdmin):
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "club__name", "is_primary", "is_active")
+    ordering = ("club__name", "name")
 
 
 @admin.register(ClubNotification)
