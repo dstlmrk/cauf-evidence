@@ -8,7 +8,7 @@ from core.tasks import send_email
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import F, FloatField, Func, Manager, QuerySet, Value
+from django.db.models import F, FloatField, Func, Manager, Q, QuerySet, UniqueConstraint, Value
 from django_countries.fields import CountryField
 
 from members.validators import validate_czech_birth_number, validate_postal_code
@@ -125,8 +125,26 @@ class Member(AuditModel):
     default_jersey_number = models.IntegerField(
         null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(99)]
     )
+    original_id = models.CharField(
+        max_length=32,
+        blank=True,
+    )
 
     objects = MemberManager()
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=["original_id"],
+                name="unique_original_id_non_null",
+                condition=Q(original_id__isnull=False) & ~Q(original_id=""),
+            ),
+            UniqueConstraint(
+                fields=["birth_number"],
+                name="unique_birth_number_non_null",
+                condition=Q(birth_number__isnull=False) & ~Q(birth_number=""),
+            ),
+        ]
 
     @property
     def full_name(self) -> str:
