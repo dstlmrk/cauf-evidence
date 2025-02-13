@@ -113,6 +113,7 @@ class Member(AuditModel):
     )
     marketing_consent_given_at = models.DateTimeField(
         null=True,
+        blank=True,
     )
     is_active = models.BooleanField(
         default=True,

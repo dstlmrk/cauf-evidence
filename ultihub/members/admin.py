@@ -4,7 +4,7 @@ from typing import Any
 from django.contrib import admin
 from django.db.models import Exists, OuterRef, QuerySet
 from django.http import HttpRequest, HttpResponse
-from django.utils.timezone import now
+from django.utils.timezone import localtime, now
 from django_countries.fields import Country
 from rangefilter.filters import DateRangeFilterBuilder
 from tournaments.admin import MemberAtTournamentInline
@@ -118,7 +118,7 @@ class MemberAdmin(admin.ModelAdmin):
         ordering="created_at",
     )
     def _created_at(self, obj: Member) -> str:
-        return obj.created_at.strftime("%Y/%m/%d %H:%M")
+        return localtime(obj.created_at).strftime("%Y/%d/%m %H:%M")
 
     @admin.display(description="Marketing consent", boolean=True)
     def has_marketing_consent_given(self, obj: Member) -> bool:
