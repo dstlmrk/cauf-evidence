@@ -48,10 +48,12 @@ class CoachLicenceFilter(admin.SimpleListFilter):
 class MemberAdmin(admin.ModelAdmin):
     list_display = (
         "id",
+        "original_id",
         "club__name",
         "first_name",
         "last_name",
         "_birth_date",
+        "birth_number",
         "_sex",
         "_citizenship",
         "email",
@@ -68,7 +70,7 @@ class MemberAdmin(admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
     inlines = [MemberAtTournamentInline]
 
-    search_fields = ["first_name", "last_name", "email"]
+    search_fields = ["first_name", "last_name", "email", "birth_number", "original_id"]
     list_filter = [
         "sex",
         ("birth_date", DateRangeFilterBuilder()),

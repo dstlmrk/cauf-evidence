@@ -171,14 +171,14 @@ class Client:
 
 
 class Command(BaseCommand):
-    def _get_birth_number(self, player: dict, birth_date: str) -> str | None:
+    def _get_birth_number(self, player: dict, birth_date: str) -> str:
         if player.get("personal_identification_number"):
             birth_number = player["personal_identification_number"].replace("/", "")
             if _validate_birth_number(birth_date, birth_number):
                 return birth_number
-        return None
+        return ""
 
-    def _get_nationality(self, player: dict, valid_birth_number: str | None) -> str | None:
+    def _get_nationality(self, player: dict, valid_birth_number: str) -> str | None:
         if player.get("nationality"):
             return _iso3_to_iso2(player["nationality"]["iso_code"])
         elif valid_birth_number:
@@ -188,9 +188,11 @@ class Command(BaseCommand):
 
     def import_member(self, client: Client, player: dict) -> None:
         player_id = player["id"]
-        player_at_team = client.get("list/player_at_team", {"player_id": player_id}, _extend=True)[
-            0
-        ]
+        player_at_team = client.get(
+            "list/player_at_team",
+            {"player_id": player_id},
+            _extend=True,
+        )[0]
 
         club_id = CLUB_MAP[player_at_team["team"]["id"]]
         birth_date = player["birth_date"][:10]
@@ -204,6 +206,7 @@ class Command(BaseCommand):
             warnings.append("Invalid or missing birth number")
         if not nationality:  # OK
             warnings.append("Missing nationality")
+            nationality = "TV"  # Temporary value = Tuvalu
         if nationality != "CZ":  # OK
             address = client.get(f"player/{player_id}/address")
             warnings.append(f"Address check: {address}")
@@ -235,7 +238,12 @@ class Command(BaseCommand):
             self.stdout.write(f"Error: {ex} {player}")
             return None
 
-    def handle(self, *args: Any, **kwargs: Any) -> None:
+    def add_arguments(self, parser):  # type: ignore
+        parser.add_argument("--tournament", type=str, default="")
+
+    def handle(self, *args: Any, **options: Any) -> None:
+        selected_tournament_id = options["tournament"]
+
         client = Client()
         self.stdout.write(f"Logged with {client.token}")
 
@@ -245,7 +253,7 @@ class Command(BaseCommand):
 
         for tournament in client.get("/list/tournament", {"season_id": SEASON_ID}):
             tournament_id = tournament["id"]
-            if tournament_id != "284":
+            if tournament_id != selected_tournament_id:
                 continue
 
             self.stdout.write(
