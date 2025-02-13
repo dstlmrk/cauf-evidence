@@ -2,7 +2,7 @@ import logging
 from typing import Any
 
 from django.contrib import admin, messages
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import QuerySet, Subquery
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -205,9 +205,18 @@ class CompetitionApplicationAdmin(admin.ModelAdmin):
                     )
                     for application_id in application_ids
                 ]
-                created_instances = TeamAtTournament.objects.bulk_create(
-                    team_at_tournament_instances
-                )
+
+                try:
+                    created_instances = TeamAtTournament.objects.bulk_create(
+                        team_at_tournament_instances
+                    )
+                except IntegrityError:
+                    self.message_user(
+                        request,
+                        "Some applications have already been added to the tournament",
+                        level=messages.ERROR,
+                    )
+                    return HttpResponseRedirect(request.get_full_path())
 
                 logger.info(
                     "Applications %s (%s) added to tournament %s",

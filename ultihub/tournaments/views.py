@@ -239,7 +239,7 @@ def teams_table_view(request: HttpRequest, tournament_id: int) -> HttpResponse:
                 TeamAtTournament.objects.filter(tournament_id=tournament_id)
                 .select_related("application", "application__team", "application__team__club")
                 .annotate(members_count_on_roster=Count("members"))
-                .order_by("final_placement")
+                .order_by("final_placement", "seeding")
             ),
         },
     )
