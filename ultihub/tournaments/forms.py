@@ -6,6 +6,7 @@ from django.utils import timezone
 from members.models import MemberSexEnum
 
 from tournaments.models import MemberAtTournament
+from ultihub.settings import FF_EMAIL_VERIFICATION_REQUIRED
 
 
 class AddMemberToRosterForm(forms.Form):
@@ -24,7 +25,7 @@ class AddMemberToRosterForm(forms.Form):
                 raise ValidationError({"member_id": "The roster deadline has passed"})
 
             if self.member:
-                if not self.member.has_email_confirmed:
+                if FF_EMAIL_VERIFICATION_REQUIRED and not self.member.has_email_confirmed:
                     raise ValidationError({"member_id": "Member has not confirmed email"})
 
                 if (

@@ -199,6 +199,10 @@ class Command(BaseCommand):
         birth_number = self._get_birth_number(player, birth_date)
         nationality = self._get_nationality(player, birth_number)
 
+        self.stdout.write(
+            f"- {club_id}/{player_id} {player['first_name']} {player['last_name']} ({birth_date})"
+        )
+
         warnings = []
         if not club_id:  # KO
             warnings.append(f"Missing club {club_id}")
@@ -211,10 +215,7 @@ class Command(BaseCommand):
             address = client.get(f"player/{player_id}/address")
             warnings.append(f"Address check: {address}")
         if warnings:
-            self.stdout.write(
-                f"{player_id} {player['first_name']} {player['last_name']}:"
-                f" {', '.join(warnings)} {player}"
-            )
+            self.stdout.write(f"--- {', '.join(warnings)} {player}")
 
         created_at = timezone.make_aware(
             datetime.strptime(player["created_at"], "%Y-%m-%d %H:%M:%S"),

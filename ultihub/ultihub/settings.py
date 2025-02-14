@@ -25,6 +25,9 @@ if ENVIRONMENT == "prod":
     CSRF_TRUSTED_ORIGINS = [f"https://{APPLICATION_DOMAIN}"]
     sentry_sdk.init()
 
+# FEATURE FLAGS ---------------------------------------------------------------
+FF_EMAIL_VERIFICATION_REQUIRED = env.bool("FF_EMAIL_VERIFICATION_REQUIRED", True)
+
 # APPLICATION DEFINITION ------------------------------------------------------
 INSTALLED_APPS = [
     "api.apps.ApiConfig",
