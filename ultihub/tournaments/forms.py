@@ -6,7 +6,7 @@ from django.utils import timezone
 from members.models import MemberSexEnum
 
 from tournaments.models import MemberAtTournament
-from ultihub.settings import FF_EMAIL_VERIFICATION_REQUIRED
+from ultihub.settings import FF_EMAIL_VERIFICATION_REQUIRED, FF_MIN_AGE_VERIFICATION_REQUIRED
 
 
 class AddMemberToRosterForm(forms.Form):
@@ -54,7 +54,10 @@ class AddMemberToRosterForm(forms.Form):
 
                 if self.tournament.competition.age_limit:
                     if self.member.sex == MemberSexEnum.MALE and (
-                        self.member.age < self.tournament.competition.age_limit.m_min
+                        (
+                            FF_MIN_AGE_VERIFICATION_REQUIRED
+                            and self.member.age < self.tournament.competition.age_limit.m_min
+                        )
                         or self.member.age > self.tournament.competition.age_limit.m_max
                     ):
                         raise ValidationError(
@@ -62,7 +65,10 @@ class AddMemberToRosterForm(forms.Form):
                         )
 
                     if self.member.sex == MemberSexEnum.FEMALE and (
-                        self.member.age < self.tournament.competition.age_limit.f_min
+                        (
+                            FF_MIN_AGE_VERIFICATION_REQUIRED
+                            and self.member.age < self.tournament.competition.age_limit.f_min
+                        )
                         or self.member.age > self.tournament.competition.age_limit.f_max
                     ):
                         raise ValidationError(
@@ -70,7 +76,10 @@ class AddMemberToRosterForm(forms.Form):
                         )
 
                 else:
-                    if self.member.age < self.tournament.competition.season.min_allowed_age:
+                    if (
+                        FF_MIN_AGE_VERIFICATION_REQUIRED
+                        and self.member.age < self.tournament.competition.season.min_allowed_age
+                    ):
                         raise ValidationError(
                             {"member_id": "Member does not meet age requirements"}
                         )
