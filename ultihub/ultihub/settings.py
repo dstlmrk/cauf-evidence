@@ -27,6 +27,7 @@ if ENVIRONMENT == "prod":
 
 # FEATURE FLAGS ---------------------------------------------------------------
 FF_EMAIL_VERIFICATION_REQUIRED = env.bool("FF_EMAIL_VERIFICATION_REQUIRED", True)
+FF_MIN_AGE_VERIFICATION_REQUIRED = env.bool("FF_MIN_AGE_VERIFICATION_REQUIRED", True)
 
 # APPLICATION DEFINITION ------------------------------------------------------
 INSTALLED_APPS = [

@@ -271,13 +271,16 @@ class Command(BaseCommand):
                 "list/roster",
                 {"tournament_belongs_to_league_and_division_id": tournament_extra[0]["id"]},
             ):
-                self.stdout.write(
-                    f'-------------- {teams[roster["team_id"]]} {roster["name"]} --------------'
-                )
-
-                for player in client.get(
+                players = client.get(
                     "list/player_at_roster",
                     {"roster_id": roster["id"]},
                     _extend=True,
-                ):
+                )
+
+                self.stdout.write(
+                    f'-------------- {teams[roster["team_id"]]}'
+                    f' {roster["name"]} ({len(players)}) --------------'
+                )
+
+                for player in players:
                     self.import_member(client, player["player"])
