@@ -38,8 +38,16 @@
 
             <footer class="footer mt-auto py-3 text-center">
                 <div class="container">
-                    <span class="text-muted">© 2025</span>
-                    {# <span class="text-muted">© 2025 | {{ release_datetime }}</span> #}
+                    <div class="d-none d-md-block">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>{% include 'core/partials/footer_base_info.html' %}</div>
+                            <div>{% include 'core/partials/footer_nsa_info.html' %}</div>
+                        </div>
+                    </div>
+                    <div class="d-block d-md-none">
+                        <div>{% include 'core/partials/footer_base_info.html' %}</div>
+                        <div class="mt-3">{% include 'core/partials/footer_nsa_info.html' %}</div>
+                    </div>
                 </div>
             </footer>
 

@@ -96,7 +96,6 @@ jobs:
               -e 's|__LETSENCRYPT_EMAIL__|${{ secrets.LETSENCRYPT_EMAIL }}|g' \
               -e 's|__DATADOG_API_KEY__|${{ secrets.DATADOG_API_KEY }}|g' \
               -e 's|__DATABASE_PASSWORD__|${{ secrets.DATABASE_PASSWORD }}|g' \
-              -e "s|__RELEASE_DATETIME__|$(TZ=Europe/Prague date '+%d/%m/%y %H:%M')|g" \
               /home/mara/ultihub/docker-compose.yaml
       - name: Pull, down and up the docker-compose
         uses: appleboy/ssh-action@v1.0.3

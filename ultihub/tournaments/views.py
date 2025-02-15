@@ -125,14 +125,16 @@ def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int
                     club=member.club,
                     subject="Roster announcement",
                     message=(
-                        'Your player {} has been added to {}\'s roster at <a href="{}">{}</a>.'
+                        "Your player {} has been registered on the roster"
+                        " of another club for this tournament: {} ({}).\n"
+                        "Link: {}"
                     ).format(
                         member.full_name,
+                        tournament.name,
                         team_at_tournament.application.team_name,
                         request.build_absolute_uri(
                             reverse("tournaments:detail", args=(tournament.pk,))
                         ),
-                        tournament.name,
                     ),
                 )
 
