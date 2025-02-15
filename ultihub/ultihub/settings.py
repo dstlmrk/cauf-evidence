@@ -13,7 +13,6 @@ ENVIRONMENT = env.str("ENVIRONMENT")
 SECRET_KEY = env.str("SECRET_KEY")
 APPLICATION_DOMAIN = env.str("APPLICATION_DOMAIN")
 ALLOWED_HOSTS = [APPLICATION_DOMAIN]
-RELEASE_DATETIME = env.str("RELEASE_DATETIME", "DD/MM/YY HH:MM")
 FORMS_URLFIELD_ASSUME_HTTPS = True
 ORIGINAL_EVIDENCE_LOGIN = env.str("ORIGINAL_EVIDENCE_LOGIN")
 ORIGINAL_EVIDENCE_PASSWORD = env.str("ORIGINAL_EVIDENCE_PASSWORD")
@@ -87,7 +86,6 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "core.context_processors.app_version_processor",
                 "clubs.context_processors.notifications",
                 "users.context_processors.user_managed_clubs",
             ],

@@ -21,7 +21,6 @@ services:
       DD_SERVICE: ultihub
       DD_AGENT_HOST: dd-agent
       DD_LOGS_INJECTION: true
-      RELEASE_DATETIME: __RELEASE_DATETIME__
     env_file:
       - ./.env.prod
     labels:
