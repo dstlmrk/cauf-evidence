@@ -22,20 +22,32 @@ class MemberForm(forms.ModelForm):
             "house_number",
             "postal_code",
             "email",
+            "legal_guardian_email",
+            "legal_guardian_first_name",
+            "legal_guardian_last_name",
             "default_jersey_number",
             "is_active",
         ]
         widgets = {
-            "birth_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+            "birth_date": forms.DateInput(
+                attrs={"type": "date", "x-model": "birthDate"}, format="%Y-%m-%d"
+            ),
+            "birth_number": forms.TextInput(attrs={"x-model": "birthNumber"}),
+            "citizenship": forms.Select(attrs={"x-model": "citizenship"}),
+            "sex": forms.Select(attrs={"x-model": "sex"}),
         }
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.fields["birth_number"].label = "Birth number*"
         self.fields["birth_number"].help_text = ""
-        self.fields["email"].required = True
+
+    def clean_birth_number(self) -> str | None:
+        if birth_number := self.cleaned_data.get("birth_number"):
+            return birth_number.replace("/", "")
+        return birth_number
 
     def clean(self) -> dict[str, Any]:
+        # TODO: Add validation for birth_number and birth_date + legal guardian data
         cleaned_data = super().clean() or {}
         if cleaned_data.get("citizenship") == "CZ":
             if not cleaned_data.get("birth_number"):
