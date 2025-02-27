@@ -22,37 +22,30 @@ class MemberForm(forms.ModelForm):
             "house_number",
             "postal_code",
             "email",
+            "legal_guardian_email",
+            "legal_guardian_first_name",
+            "legal_guardian_last_name",
             "default_jersey_number",
             "is_active",
         ]
         widgets = {
-            "birth_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
+            "birth_date": forms.DateInput(
+                attrs={"type": "date", "x-model": "birthDate", "x-ref": "birthDate"},
+                format="%Y-%m-%d",
+            ),
+            "birth_number": forms.TextInput(attrs={"x-model": "birthNumber"}),
+            "citizenship": forms.Select(attrs={"x-model": "citizenship"}),
+            "sex": forms.Select(attrs={"x-model": "sex"}),
         }
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.fields["birth_number"].label = "Birth number*"
         self.fields["birth_number"].help_text = ""
-        self.fields["email"].required = True
 
-    def clean(self) -> dict[str, Any]:
-        cleaned_data = super().clean() or {}
-        if cleaned_data.get("citizenship") == "CZ":
-            if not cleaned_data.get("birth_number"):
-                self.add_error("birth_number", "This field is required for Czech citizens.")
-        else:
-            city = cleaned_data.get("city")
-            house_number = cleaned_data.get("house_number")
-            postal_code = cleaned_data.get("postal_code")
-            if city or house_number or postal_code:
-                error_msg = "This field is required if an address is provided."
-                if not city:
-                    self.add_error("city", error_msg)
-                if not house_number:
-                    self.add_error("house_number", error_msg)
-                if not postal_code:
-                    self.add_error("postal_code", error_msg)
-        return cleaned_data
+    def clean_birth_number(self) -> str | None:
+        if birth_number := self.cleaned_data.get("birth_number"):
+            return birth_number.replace("/", "")
+        return birth_number
 
 
 class MemberConfirmEmailForm(forms.Form):

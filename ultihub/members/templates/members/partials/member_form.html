@@ -1,26 +1,7 @@
 {% load crispy_forms_tags %}
-<div
-    x-data="{
-        isFormValid: false,
-        isFormChanged: false,
-        initialData: {}
-    }"
-    x-init="
-        isFormValid = $refs.form.checkValidity();
-        initialData = Object.fromEntries(new FormData($refs.form).entries());
-    "
->
-    <form
-        hx-post="{{ request.path }}"
-        class="modal-content"
-        x-ref="form"
-        @input="
-            isFormValid = $refs.form.checkValidity();
-            const currentData = Object.fromEntries(new FormData($refs.form).entries());
-            isFormChanged = JSON.stringify(currentData) !== JSON.stringify(initialData);
-        "
-        novalidate
-    >
+
+<div x-data="memberForm()">
+    <form hx-post="{{ request.path }}" class="modal-content" x-ref="form" novalidate>
         {% csrf_token %}
         <div class="modal-header">
             <h5 class="modal-title">
@@ -31,46 +12,89 @@
                 {% endif %}
             </h5>
         </div>
-
         <div class="modal-body">
             {% csrf_token %}
-
-            <div class="row">
-                <div class="col-md-6">
-                    {{ form.first_name|as_crispy_field }}
-                    {{ form.last_name|as_crispy_field }}
-                    {{ form.email|as_crispy_field }}
-                    {{ form.default_jersey_number|as_crispy_field }}
-                    {{ form.sex|as_crispy_field }}
-                    {{ form.is_active|as_crispy_field }}
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="bi bi-person me-2"></i>
+                    <b class="flex-grow-1">Personal information</b>
                 </div>
-                <div class="col-md-6">
-                    {{ form.birth_date|as_crispy_field }}
-                    {{ form.citizenship|as_crispy_field }}
-                    <div id="birth-number-fields" hidden>{{ form.birth_number|as_crispy_field }}</div>
-                    <div id="address-fields" hidden>
-                        <div class="alert alert-primary d-flex align-items-center" role="alert">
-                            <i class="bi bi-arrow-down-circle me-3"></i>
-                            <div>
-                                Czech address registered with the Foreigners’ Police. Leave blank if the foreigner
-                                resides permanently outside the Czech Republic.
-                            </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">{{ form.first_name|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.last_name|as_crispy_field }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">{{ form.citizenship|as_crispy_field }}</div>
+                        <div class="col-md-6 disabled-for-cz">{{ form.sex|as_crispy_field }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 disabled-for-foreigners">{{ form.birth_number|as_crispy_field }}</div>
+                        <div class="col-md-6 disabled-for-cz">{{ form.birth_date|as_crispy_field }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header d-flex align-items-center">
+                    <i class="bi bi-shield-fill me-2"></i>
+                    <b class="flex-grow-1">Membership details</b>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">{{ form.default_jersey_number|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.is_active|as_crispy_field }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header d-xl-flex align-items-center">
+                    <i class="bi bi-envelope me-2"></i>
+                    <b class="flex-grow-1 me-2 me-xl-0">Contact information</b>
+                    <small class="text-muted">
+                        For members under 15 years old, the consent link for personal data processing will be sent to
+                        the legal guardian's email.
+                    </small>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 regular-email">{{ form.email|as_crispy_field }}</div>
+                        <div class="col-md-6 legal-guardian-field">{{ form.legal_guardian_email|as_crispy_field }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 legal-guardian-field">
+                            {{ form.legal_guardian_first_name|as_crispy_field }}
                         </div>
-                        {{ form.street|as_crispy_field }}
-                        {{ form.city|as_crispy_field }}
-                        {{ form.house_number|as_crispy_field }}
-                        {{ form.postal_code|as_crispy_field }}
+                        <div class="col-md-6 legal-guardian-field">
+                            {{ form.legal_guardian_last_name|as_crispy_field }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header d-xl-flex align-items-center">
+                    <i class="bi bi-house-door me-2"></i>
+                    <b class="flex-grow-1 me-2 me-xl-0">Residential address</b>
+                    <small class="text-muted">
+                        If the member is a foreigner permanently residing in the Czech Republic, it is mandatory to
+                        provide a Czech address.
+                    </small>
+                </div>
+                <div class="card-body" x-ref="addressContainer">
+                    <div class="row">
+                        <div class="col-md-6 disabled-for-cz">{{ form.street|as_crispy_field }}</div>
+                        <div class="col-md-6 disabled-for-cz">{{ form.house_number|as_crispy_field }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 disabled-for-cz">{{ form.city|as_crispy_field }}</div>
+                        <div class="col-md-6 disabled-for-cz">{{ form.postal_code|as_crispy_field }}</div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-success" :disabled="!isFormValid || !isFormChanged">Submit</button>
+            <button type="submit" class="btn btn-success">Submit</button>
         </div>
     </form>
 </div>
-
-<script>
-    listenCitizenship();
-</script>

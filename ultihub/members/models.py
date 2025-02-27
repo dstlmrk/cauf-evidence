@@ -11,7 +11,13 @@ from django.db import models
 from django.db.models import F, FloatField, Func, Manager, Q, QuerySet, UniqueConstraint, Value
 from django_countries.fields import CountryField
 
-from members.validators import validate_czech_birth_number, validate_postal_code
+from members.validators import (
+    is_at_least_15,
+    is_valid_birth_date_with_id,
+    validate_czech_birth_number,
+    validate_postal_code,
+)
+from ultihub.settings import FF_EMAIL_REQUIRED
 
 logger = logging.getLogger(__name__)
 
@@ -102,14 +108,25 @@ class Member(AuditModel):
     )
     email = models.EmailField(
         blank=True,
-        help_text="Member has to confirm this email",
+    )
+    legal_guardian_email = models.EmailField(
+        blank=True,
+    )
+    legal_guardian_first_name = models.CharField(
+        max_length=32,
+        blank=True,
+    )
+    legal_guardian_last_name = models.CharField(
+        max_length=32,
+        blank=True,
     )
     email_confirmation_token = models.UUIDField(
         null=True,
         editable=False,
     )
-    has_email_confirmed = models.BooleanField(
-        default=False,
+    email_confirmed_at = models.DateTimeField(
+        null=True,
+        blank=True,
     )
     marketing_consent_given_at = models.DateTimeField(
         null=True,
@@ -151,55 +168,89 @@ class Member(AuditModel):
     def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
+    @property
+    def legal_guardian_full_name(self) -> str:
+        return f"{self.legal_guardian_first_name} {self.legal_guardian_last_name}".strip()
+
+    @property
+    def address(self) -> str:
+        if not self.street:
+            return ""
+        return f"{self.street} {self.house_number}, {self.postal_code} {self.city}, Czech Republic"
+
     def __str__(self) -> str:
         return f"{self.full_name} ({self.club.short_name or self.club.name})"
 
     def clean(self) -> None:
-        if self.citizenship == "CZ" and not self.birth_number:
-            raise ValidationError({"birth_number": "Birth number is required for czech citizens."})
-        if self.citizenship != "CZ" and (self.city or self.house_number or self.postal_code):
-            error_msg = "This field is required if an address is provided."
-            if not self.city:
-                raise ValidationError({"city": error_msg})
-            if not self.house_number:
-                raise ValidationError({"house_number": error_msg})
-            if not self.postal_code:
-                raise ValidationError({"postal_code": error_msg})
+        errors = {}
+
+        if self.citizenship == "CZ":
+            if self.birth_number:
+                if not is_valid_birth_date_with_id(self.birth_date, self.birth_number):
+                    errors["birth_number"] = "Invalid birth number or birth date"
+            else:
+                errors["birth_number"] = "Birth number is required for czech citizens"
+
+            for field in ["street", "city", "house_number", "postal_code"]:
+                if getattr(self, field):
+                    errors[field] = "This field is required only for non-czech citizens"
+
+        else:
+            if self.street or self.city or self.house_number or self.postal_code:
+                for field in ["street", "city", "house_number", "postal_code"]:
+                    if not getattr(self, field):
+                        errors[field] = "This field is required if an address is provided"
+
         if self.email and Member.objects.filter(email=self.email).exclude(pk=self.pk).exists():
-            raise ValidationError({"email": "Member with this email already exists."})
+            errors["email"] = "Member with this email already exists"
+
+        if is_at_least_15(self.birth_date):
+            if FF_EMAIL_REQUIRED and not self.email:
+                errors["email"] = "This field is required"
+        else:
+            error_msg = "This field is required for children under 15"
+            if FF_EMAIL_REQUIRED and not self.legal_guardian_email:
+                errors["legal_guardian_email"] = error_msg
+            for field in ["legal_guardian_first_name", "legal_guardian_last_name"]:
+                if not getattr(self, field):
+                    errors[field] = error_msg
         if (
             self.birth_number
             and Member.objects.filter(birth_number=self.birth_number).exclude(pk=self.pk).exists()
         ):
-            raise ValidationError({"birth_number": "Member with this birth number already exists."})
+            errors["birth_number"] = "Member with this birth number already exists"
         if (
             self.email_confirmation_token
             and Member.objects.filter(email_confirmation_token=self.email_confirmation_token)
             .exclude(pk=self.pk)
             .exists()
         ):
-            raise ValidationError(
-                {
-                    "email_confirmation_token": (
-                        "Member with this email confirmation token already exists."
-                    )
-                }
+            errors["email_confirmation_token"] = (
+                "Member with this email confirmation token already exists"
             )
+
+        if errors:
+            raise ValidationError(errors)
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         send_token = False
 
+        email_field_name = "email" if is_at_least_15(self.birth_date) else "legal_guardian_email"
+        email = getattr(self, email_field_name)
+
         if self.pk:
-            old_email = Member.objects.filter(pk=self.pk).values_list("email", flat=True).first()
-            if self.email != old_email:
+            old_email = (
+                Member.objects.filter(pk=self.pk).values_list(email_field_name, flat=True).first()
+            )
+            if email != old_email:
                 self.has_email_confirmed = False
-                if self.email:
+                if email:
                     self.email_confirmation_token = uuid.uuid4()
                     send_token = True
                 else:
                     self.email_confirmation_token = None
         else:
-            if self.email:
+            if email:
                 self.email_confirmation_token = uuid.uuid4()
                 send_token = True
 
