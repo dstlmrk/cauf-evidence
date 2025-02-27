@@ -42,6 +42,8 @@ def add_member(request: HttpRequest) -> HttpResponse:
             form.save()
             messages.success(request, "Confirmation email sent")
             return HttpResponse(status=204, headers={"HX-Trigger": "memberListChanged"})
+        else:
+            messages.error(request, "Member not created")
     else:
         form = MemberForm()
     return render(request, "members/partials/member_form.html", {"form": form})
@@ -56,6 +58,8 @@ def edit_member(request: HttpRequest, member_id: int) -> HttpResponse:
             form.save()
             messages.success(request, "Member updated successfully.")
             return HttpResponse(status=204, headers={"HX-Trigger": "memberListChanged"})
+        else:
+            messages.error(request, "Member not updated")
     else:
         form = MemberForm(instance=member)
     return render(request, "members/partials/member_form.html", {"form": form})

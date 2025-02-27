@@ -102,14 +102,26 @@ class Member(AuditModel):
     )
     email = models.EmailField(
         blank=True,
-        help_text="Member has to confirm this email",
+    )
+    legal_guardian_email = models.EmailField(
+        blank=True,
+    )
+    legal_guardian_first_name = models.CharField(
+        max_length=32,
+        blank=True,
+    )
+    legal_guardian_last_name = models.CharField(
+        max_length=32,
+        blank=True,
+        verbose_name="Last name of legal guardian",
     )
     email_confirmation_token = models.UUIDField(
         null=True,
         editable=False,
     )
-    has_email_confirmed = models.BooleanField(
-        default=False,
+    email_confirmed_at = models.DateTimeField(
+        null=True,
+        blank=True,
     )
     marketing_consent_given_at = models.DateTimeField(
         null=True,

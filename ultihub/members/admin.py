@@ -63,7 +63,7 @@ class MemberAdmin(admin.ModelAdmin):
         "_created_at",
         "participation_count",
     )
-    readonly_fields = ["email_confirmation_token", "has_email_confirmed", "participation_count"]
+    readonly_fields = ["email_confirmation_token", "email_confirmed_at", "participation_count"]
 
     actions = ["export_as_csv"]
     ordering = ["-id"]
@@ -132,7 +132,7 @@ class MemberAdmin(admin.ModelAdmin):
 
     @admin.display(description="Confirmed email", boolean=True)
     def _has_email_confirmed(self, obj: Member) -> bool:
-        return obj.has_email_confirmed
+        return bool(obj.email_confirmed_at)
 
     def _sex(self, obj: Member) -> str:
         return "F" if obj.sex == MemberSexEnum.FEMALE else "M"
@@ -153,7 +153,7 @@ class MemberAdmin(admin.ModelAdmin):
             "city",
             "house_number",
             "postal_code",
-            "has_email_confirmed",
+            "email_confirmed_at",
             "marketing_consent_given_at",
             "has_coach_licence",
             "participation_count",
@@ -181,7 +181,7 @@ class MemberAdmin(admin.ModelAdmin):
                     obj.city,
                     obj.house_number,
                     obj.postal_code,
-                    obj.has_email_confirmed,
+                    obj.email_confirmed_at,
                     obj.marketing_consent_given_at,
                     obj.has_coach_licence,
                     self.member_participation[obj.id],
