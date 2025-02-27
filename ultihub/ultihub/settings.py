@@ -25,6 +25,7 @@ if ENVIRONMENT == "prod":
     sentry_sdk.init()
 
 # FEATURE FLAGS ---------------------------------------------------------------
+FF_EMAIL_REQUIRED = env.bool("FF_EMAIL_REQUIRED", True)
 FF_EMAIL_VERIFICATION_REQUIRED = env.bool("FF_EMAIL_VERIFICATION_REQUIRED", True)
 FF_MIN_AGE_VERIFICATION_REQUIRED = env.bool("FF_MIN_AGE_VERIFICATION_REQUIRED", True)
 
