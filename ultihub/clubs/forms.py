@@ -59,7 +59,8 @@ class ClubAdminForm(forms.ModelForm):
         value = self.cleaned_data.get("fakturoid_subject_id")
         if value and (not self.instance.pk or value != self.instance.fakturoid_subject_id):
             try:
-                fakturoid_client.get_subject_detail(value)
+                subject_data = fakturoid_client.get_subject_detail(value)
+                self.instance._fakturoid_subject_name = subject_data["name"]
             except NotFoundError as ex:
                 raise ValidationError("Subject with this ID does not exist in Fakturoid.") from ex
         return value

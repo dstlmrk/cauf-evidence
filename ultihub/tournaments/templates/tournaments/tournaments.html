@@ -27,7 +27,7 @@
                 {% for tournament in tournaments %}
                     <tr>
                         <td>
-                            {% if tournament.rosters_deadline > now %}
+                            {% if tournament.has_open_rosters %}
                                 <span class="badge text-bg-success">OPEN</span>
                             {% else %}
                                 <span class="badge text-bg-dark">CLOSED</span>
@@ -105,7 +105,7 @@
                             </div>
                         </div>
                         <div>
-                            {% if tournament.rosters_deadline > now %}
+                            {% if tournament.has_open_rosters %}
                                 <span class="badge text-bg-success">OPEN</span>
                             {% else %}
                                 <span class="badge text-bg-dark">CLOSED</span>

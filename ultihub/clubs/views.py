@@ -20,6 +20,7 @@ from users.services import (
 
 from clubs.forms import AddAgentForm, ClubForm, TeamForm
 from clubs.models import Club, ClubNotification, Team
+from ultihub.settings import FF_TEAM_MANAGEMENT_ENABLED, FF_TRANSFERS_ENABLED
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ def invoices(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def transfers(request: HttpRequest) -> HttpResponse:
+def transfers_view(request: HttpRequest) -> HttpResponse:
     current_club = get_current_club(request)
     return render(
         request,
@@ -42,7 +43,8 @@ def transfers(request: HttpRequest) -> HttpResponse:
         {
             "transfers": Transfer.objects.filter(
                 Q(source_club__id=current_club.id) | Q(target_club__id=current_club.id)
-            )
+            ),
+            "FF_TRANSFERS_ENABLED": FF_TRANSFERS_ENABLED,
         },
     )
 
@@ -82,8 +84,14 @@ def member_list(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def teams(request: HttpRequest) -> HttpResponse:
-    return render(request, "clubs/teams.html")
+def teams_view(request: HttpRequest) -> HttpResponse:
+    return render(
+        request,
+        "clubs/teams.html",
+        {
+            "FF_TEAM_MANAGEMENT_ENABLED": FF_TEAM_MANAGEMENT_ENABLED,
+        },
+    )
 
 
 @login_required
@@ -125,11 +133,14 @@ def remove_team(request: HttpRequest, team_id: int) -> HttpResponse:
 
 
 @login_required
-def team_list(request: HttpRequest) -> HttpResponse:
+def team_list_view(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "clubs/partials/team_list.html",
-        {"teams": Team.objects.filter(club_id=get_club_id(request), is_active=True)},
+        {
+            "teams": Team.objects.filter(club_id=get_club_id(request), is_active=True),
+            "FF_TEAM_MANAGEMENT_ENABLED": FF_TEAM_MANAGEMENT_ENABLED,
+        },
     )
 
 

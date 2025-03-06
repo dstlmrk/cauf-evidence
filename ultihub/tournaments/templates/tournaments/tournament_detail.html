@@ -25,7 +25,7 @@
     <div>
         Rosters deadline: {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}
         <span style="position: relative; top: -2px;">
-            {% if tournament.rosters_deadline > now %}
+            {% if tournament.has_open_rosters %}
                 <span class="badge text-bg-success">OPEN</span>
             {% else %}
                 <span class="badge text-bg-dark">CLOSED</span>

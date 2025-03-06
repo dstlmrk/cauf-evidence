@@ -6,7 +6,9 @@
                 <th scope="col">#</th>
                 <th scope="col">Team name</th>
                 <th scope="col">Description</th>
-                <th scope="col" class="fit">Action</th>
+                {% if FF_TEAM_MANAGEMENT_ENABLED %}
+                    <th scope="col" class="fit">Action</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -21,7 +23,9 @@
                             {{ team.description }}
                         {% endif %}
                     </td>
-                    <td class="fit">{% include 'clubs/components/team-action-buttons.html' %}</td>
+                    {% if FF_TEAM_MANAGEMENT_ENABLED %}
+                        <td class="fit">{% include 'clubs/components/team-action-buttons.html' %}</td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>

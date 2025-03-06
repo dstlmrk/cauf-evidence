@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.http import HttpRequest
 from users.services import assign_or_invite_agent_to_club
@@ -38,6 +38,9 @@ class ClubAdmin(admin.ModelAdmin):
                     email=primary_agent_email,
                     invited_by=request.user,
                 )
+        if hasattr(obj, "_fakturoid_subject_name"):
+            msg = f'The club was paired with "{obj._fakturoid_subject_name}" in Fakturoid'
+            self.message_user(request, msg, messages.SUCCESS)
 
 
 @admin.register(Team)

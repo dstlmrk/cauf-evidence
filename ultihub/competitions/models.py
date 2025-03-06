@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils import timezone
 
 
 class CompetitionTypeEnum(models.IntegerChoices):
@@ -162,6 +163,10 @@ class Competition(AuditModel):
         return (
             f"{self.name} {self.season} {str(self.division).upper()} {self.age_limit or ""}".strip()
         )
+
+    @property
+    def has_open_registration(self) -> bool:
+        return self.registration_deadline > timezone.now()
 
     def season_fee(self) -> Decimal:
         if self.fee_type == CompetitionFeeTypeEnum.REGULAR:

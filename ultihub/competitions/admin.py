@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+from clubs.models import Club
 from django.contrib import admin, messages
 from django.db import IntegrityError, transaction
 from django.db.models import QuerySet, Subquery
@@ -62,6 +63,13 @@ class SeasonAdmin(admin.ModelAdmin):
                 )
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)
+
+    def change_view(self, request: HttpRequest, object_id: str, form_url="", extra_context=None):  # type: ignore
+        extra_context = extra_context or {}
+        extra_context["clubs_without_subject_id"] = Club.objects.filter(
+            fakturoid_subject_id__isnull=True
+        )
+        return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
 
 @admin.register(Division)
