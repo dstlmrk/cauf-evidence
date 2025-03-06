@@ -1,5 +1,5 @@
 from clubs.models import Club
-from competitions.models import ApplicationStateEnum, Competition, CompetitionApplication
+from competitions.models import ApplicationStateEnum, Competition, CompetitionApplication, Season
 from django.db.models import Prefetch, QuerySet
 from django_filters.rest_framework import CharFilter, DjangoFilterBackend, FilterSet
 from rest_framework import status
@@ -16,6 +16,7 @@ from .serializers import (
     CompetitionApplicationSerializer,
     CompetitionApplicationUpdateSerializer,
     CompetitionSerializer,
+    SeasonSerializer,
     TeamAtTournamentSerializer,
     TeamAtTournamentUpdateSerializer,
 )
@@ -151,3 +152,8 @@ class CompetitionApplicationView(HttpMethodPermissionsMixin, APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SeasonsView(ListAPIView):
+    queryset = Season.objects.all()
+    serializer_class = SeasonSerializer
