@@ -6,8 +6,15 @@
         <input type="submit" value="Calculate season fees (for check)" name="_check-fees" />
         <input type="submit" value="Generate invoices (irreversible)" name="_generate-invoices" />
     </div>
-    <div>
-        <b>Warning:</b> The second action will not generate invoices for clubs that do not have FAKTUROID_SUBJECT_ID
-        set.
-    </div>
+    {% if clubs_without_subject_id %}
+        <div>
+            <b>Warning:</b> The second action will not generate invoices for clubs that do not have FAKTUROID_SUBJECT_ID
+            set:
+            <ul>
+                {% for club in clubs_without_subject_id %}
+                    <li>{{ club.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 {% endblock %}

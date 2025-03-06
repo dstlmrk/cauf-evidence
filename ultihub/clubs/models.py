@@ -47,6 +47,7 @@ class Club(AuditModel):
         blank=True,
         null=True,
         help_text="ID of the subject in Fakturoid. The club cannot be invoiced without this ID.",
+        unique=True,
     )
 
     class Meta:
@@ -94,9 +95,6 @@ class Team(AuditModel):
         Club,
         on_delete=models.PROTECT,
     )
-
-    class Meta:
-        ordering = ["name"]
 
     def __str__(self) -> str:
         return f"<Team({self.pk}, name={self.name})>"

@@ -1,6 +1,6 @@
 <button
     id="rosterButton-{{ team.id }}"
-    {% if request.session.club.id == team.application.team.club_id and tournament.rosters_deadline > now %}
+    {% if request.session.club.id == team.application.team.club_id and tournament.has_open_rosters %}
         class="btn btn-success"
     {% else %}
         class="btn btn-primary"

@@ -3,13 +3,21 @@
 {% block title %}<h1>Transfers</h1>{% endblock %}
 
 {% block buttons %}
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestTransferModal">
-        <i class="bi bi-envelope-plus"></i> Request transfer
-    </button>
+    {% if FF_TRANSFERS_ENABLED %}
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestTransferModal">
+            <i class="bi bi-envelope-plus"></i> Request transfer
+        </button>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
     {% load crispy_forms_tags %}
+
+    {% if not FF_TRANSFERS_ENABLED %}
+        <div class="alert alert-warning " role="alert">
+            <i class="bi bi-exclamation-octagon-fill me-1"></i> Transfers are currently <b>disabled</b>.
+        </div>
+    {% endif %}
 
     <div class="modal fade" id="requestTransferModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -145,6 +153,8 @@
             </div>
         </div>
     {% else %}
-        <div class="alert alert-dark" role="alert">No transfers found.</div>
+        <div class="alert alert-primary" role="alert">
+            <i class="bi bi-info-circle-fill me-1"></i> No transfers found.
+        </div>
     {% endif %}
 {% endblock %}

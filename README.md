@@ -89,6 +89,10 @@ Already created tokens are available at `/admin/authtoken/tokenproxy`.
 -   `GET` Returns competition application.
 -   `PATCH` Updates `final_placement` field.
 
+#### /api/seasons
+
+-   `GET` Returns all seasons.
+
 ## Database schema
 
 This image includes all business related tables and their relations.

@@ -13,7 +13,7 @@
         <div>
             Registration deadline: {{ competition.registration_deadline | date:'d/m/Y H:i' }}
             <span style="position: relative; top: -2px;">
-                {% if competition.registration_deadline > now %}
+                {% if competition.has_open_registration %}
                     <span class="badge text-bg-success">OPEN</span>
                 {% else %}
                     <span class="badge text-bg-dark">CLOSED</span>

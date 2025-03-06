@@ -3,6 +3,7 @@ from decimal import Decimal
 from core.models import AuditModel
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils import timezone
 
 
 class Tournament(AuditModel):
@@ -23,6 +24,10 @@ class Tournament(AuditModel):
 
     def __str__(self) -> str:
         return f"{self.name} ({self.competition})"
+
+    @property
+    def has_open_rosters(self) -> bool:
+        return self.rosters_deadline > timezone.now()
 
 
 class TeamAtTournament(AuditModel):

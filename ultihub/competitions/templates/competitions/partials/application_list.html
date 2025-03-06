@@ -8,8 +8,8 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
+                        <th scope="col">Team name</th>
                         <th scope="col">Club</th>
-                        <th scope="col">Name</th>
                         <th scope="col">State</th>
                         <th scope="col">Registration time</th>
                         <th></th>
@@ -18,13 +18,13 @@
                 <tbody>
                     {% for application in applications %}
                         <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ application.team.club.name }}</td>
-                            <th scope="row">{{ application.team_name }}</th>
+                            <th>{{ forloop.counter }}</th>
+                            <td>{{ application.team_name }}</td>
+                            <td class="text-muted">{{ application.team.club.name }}</td>
                             <td>{% include "competitions/components/competition-state-badge.html" %}</td>
                             <td>{{ application.created_at | date:"d/m/Y H:i" }}</td>
                             <td class="fit">
-                                {% if request.session.club and competition.registration_deadline > now and not application.invoice %}
+                                {% if request.session.club.id == application.team.club.id and competition.has_open_registration and not application.invoice %}
                                     <div>
                                         <button
                                             class="btn btn-danger"
@@ -46,8 +46,8 @@
             <ul class="list-group">
                 {% for application in applications %}
                     <div class="list-group-item">
-                        <div>Club: {{ application.team.club.name }}</div>
                         <div>Name: <b>{{ application.team_name }}</b></div>
+                        <div>Club: {{ application.team.club.name }}</div>
                         <div>
                             State:
                             <span style="position: relative; top: -2px;">
@@ -56,7 +56,7 @@
                         </div>
                         <div>Registration time: {{ application.created_at | date:"d/m/Y H:i" }}</div>
                         <div>
-                            {% if request.session.club and competition.registration_deadline > now and not application.invoice %}
+                            {% if request.session.club.id == application.team.club.id and competition.has_open_registration and not application.invoice %}
                                 <div class="mt-2 mb-1">
                                     <button
                                         class="btn btn-danger"
@@ -74,7 +74,7 @@
     </div>
     <div class="modal-footer d-flex w-100 justify-content-between">
         <div>
-            {% if request.session.club and competition.registration_deadline > now %}
+            {% if request.session.club and competition.has_open_registration %}
                 <button
                     class="btn btn-success position-relative"
                     hx-get="{% url 'competitions:registration' competition.id %}"

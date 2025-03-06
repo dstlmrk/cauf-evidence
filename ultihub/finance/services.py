@@ -94,7 +94,7 @@ def create_deposit_invoice(club: Club) -> None:
         InvoiceTypeEnum.COMPETITION_DEPOSIT,
         lines=[
             (
-                f"{str(application.competition)} - Záloha za {application.team_name}",
+                f"{str(application.competition)} - Startovné za {application.team_name}",
                 application.competition.deposit,
             )
             for application in applications

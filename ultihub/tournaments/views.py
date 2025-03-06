@@ -9,7 +9,6 @@ from django.db.models import Count, OuterRef, Subquery
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 from members.models import Member
 
@@ -27,7 +26,6 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
         request,
         "tournaments/tournaments.html",
         {
-            "now": timezone.now(),
             "tournaments": Tournament.objects.select_related(
                 "competition",
                 "competition__season",
@@ -43,7 +41,7 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
                     ).values("application__team_name")[:1]
                 ),
             )
-            .order_by("-start_date", "name"),
+            .order_by("-start_date", "competition__division", "name"),
         },
     )
 
@@ -54,7 +52,6 @@ def tournament_detail_view(request: HttpRequest, tournament_id: int) -> HttpResp
         request,
         "tournaments/tournament_detail.html",
         {
-            "now": timezone.now(),
             "tournament": Tournament.objects.select_related("competition")
             .annotate(
                 team_count=Count("teams", distinct=True),
@@ -72,7 +69,6 @@ def roster_dialog_view(request: HttpRequest, team_at_tournament_id: int) -> Http
         request,
         "tournaments/partials/roster_dialog.html",
         {
-            "now": timezone.now(),
             "team_at_tournament": team_at_tournament,
             "members_at_tournament": MemberAtTournament.objects.select_related("member").filter(
                 team_at_tournament_id=team_at_tournament.id
@@ -174,7 +170,7 @@ def roster_dialog_update_form_view(
     if request.method == "POST":
         form = UpdateMemberToRosterForm(request.POST, instance=member_at_tournament)
 
-        if member_at_tournament.tournament.rosters_deadline < timezone.now():
+        if not member_at_tournament.tournament.has_open_rosters:
             messages.error(request, "The roster deadline has passed")
             return HttpResponse(status=400)
 
@@ -208,12 +204,12 @@ def remove_member_from_roster_view(
     if current_club.id != member_at_tournament.team_at_tournament.application.team.club_id:
         raise PermissionDenied()
 
-    if member_at_tournament.tournament.rosters_deadline < timezone.now():
+    if not member_at_tournament.tournament.has_open_rosters:
         messages.error(request, "The roster deadline has passed")
         return HttpResponse(status=400)
 
-    messages.success(request, "Member removed successfully")
     member_at_tournament.delete()
+    messages.success(request, "Member removed successfully")
 
     response = render(
         request,
@@ -235,7 +231,6 @@ def teams_table_view(request: HttpRequest, tournament_id: int) -> HttpResponse:
         request,
         "tournaments/partials/tournament_detail_teams_table.html",
         {
-            "now": timezone.now(),
             "tournament": Tournament.objects.select_related("competition").get(pk=tournament_id),
             "teams_at_tournament": (
                 TeamAtTournament.objects.filter(tournament_id=tournament_id)

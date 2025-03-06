@@ -3,23 +3,28 @@
 {% block title %}<h1>Teams</h1>{% endblock %}
 
 {% block buttons %}
-    <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_team' %}" hx-target="#dialog">
-        <i class="bi bi-plus"></i> Create team
-    </button>
+    {% if FF_TEAM_MANAGEMENT_ENABLED %}
+        <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_team' %}" hx-target="#dialog">
+            <i class="bi bi-plus"></i> Create team
+        </button>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
     {% load crispy_forms_tags %}
     <div class="row">
         <div class="col-md-12">
-            <div class="alert alert-primary " role="alert">
-                <p>
-                    Additional teams are suitable if you want to register your B team for a tournament or if you
-                    occasionally want to register your club under a different name.
-                </p>
-                <p class="mb-0">For example, your junior’s team might have a different name than the others, etc.</p>
+            <div class="alert alert-light " role="alert">
+                <i class="bi bi-question-circle-fill me-1"></i>
+                Additional teams are suitable if you want to register your B team for a tournament or if you
+                occasionally want to register your club under a different name. For example, your junior’s team might
+                have a different name than the others, etc.
             </div>
-
+            {% if not FF_TEAM_MANAGEMENT_ENABLED %}
+                <div class="alert alert-warning " role="alert">
+                    <i class="bi bi-exclamation-octagon-fill me-1"></i> Teams management is currently <b>disabled</b>.
+                </div>
+            {% endif %}
             <div
                 hx-trigger="load, teamListChanged from:body"
                 hx-get="{% url 'clubs:team_list' %}"

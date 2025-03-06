@@ -39,7 +39,7 @@
                 {% for competition in competitions %}
                     <tr>
                         <td class="fit pe-5">
-                            {% if competition.registration_deadline > now %}
+                            {% if competition.has_open_registration %}
                                 <span class="badge text-bg-success">OPEN</span>
                                 {% if competition.has_awaiting_payment %}
                                     <span class="badge text-bg-danger">AWAITING PAYMENT</span>
@@ -95,7 +95,7 @@
                             </div>
                         </div>
                         <div>
-                            {% if competition.registration_deadline > now %}
+                            {% if competition.has_open_registration %}
                                 <span class="badge text-bg-success">OPEN</span>
                             {% else %}
                                 <span class="badge text-bg-dark">CLOSED</span>

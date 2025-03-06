@@ -36,7 +36,7 @@
                                 <td>{{ member.birth_date | date:'Y' }}</td>
                                 <td>{{ member_at_tournament.created_at | date:'d/m/Y H:i' }}</td>
                                 <td class="fit text-end">
-                                    {% if request.session.club.id == member_at_tournament.team_at_tournament.application.team.club_id and team_at_tournament.tournament.rosters_deadline > now %}
+                                    {% if request.session.club.id == member_at_tournament.team_at_tournament.application.team.club_id and team_at_tournament.tournament.has_open_rosters %}
                                         <button
                                             class="btn btn-primary"
                                             hx-get="{% url 'tournaments:roster_dialog_update_form' member_at_tournament.id %}"
@@ -82,7 +82,7 @@
                             <div>Birth year: {{ member.birth_date | date:'Y' }}</div>
                             <div>Added at: {{ member_at_tournament.created_at | date:'d/m/Y H:i' }}</div>
 
-                            {% if request.session.club.id == member_at_tournament.team_at_tournament.application.team.club_id and team_at_tournament.tournament.rosters_deadline > now %}
+                            {% if request.session.club.id == member_at_tournament.team_at_tournament.application.team.club_id and team_at_tournament.tournament.has_open_rosters %}
                                 <div class="mt-2 mb-1">
                                     <button
                                         class="btn btn-primary"
@@ -108,7 +108,7 @@
     </div>
     <div class="modal-footer d-flex w-100 justify-content-between">
         <div>
-            {% if request.session.club.id == team_at_tournament.application.team.club_id and team_at_tournament.tournament.rosters_deadline > now %}
+            {% if request.session.club.id == team_at_tournament.application.team.club_id and team_at_tournament.tournament.has_open_rosters %}
                 <button
                     class="btn btn-success"
                     hx-get="{% url 'tournaments:roster_dialog_add_form' team_at_tournament.id %}"
