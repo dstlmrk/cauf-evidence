@@ -1,4 +1,5 @@
 from datetime import timedelta
+from decimal import Decimal
 
 import factory.fuzzy
 from clubs.models import Club, Team
@@ -85,10 +86,10 @@ class SeasonFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Season
 
-    name = 2025
-    discounted_fee = 200
-    regular_fee = 600
-    fee_at_tournament = 60
+    name = "2025"
+    discounted_fee = Decimal(200)
+    regular_fee = Decimal(600)
+    fee_at_tournament = Decimal(60)
     min_allowed_age = 14
     age_reference_date = factory.LazyAttribute(lambda obj: f"{obj.name}-12-31")
 

@@ -1,5 +1,5 @@
 from clubs.models import Club
-from competitions.models import Competition, CompetitionApplication
+from competitions.models import Competition, CompetitionApplication, Season
 from members.models import Member
 from rest_framework import serializers
 from tournaments.models import MemberAtTournament, TeamAtTournament, Tournament
@@ -148,3 +148,18 @@ class CompetitionApplicationUpdateSerializer(serializers.ModelSerializer):
         if value < 1:
             raise serializers.ValidationError("Final placement must be a positive integer.")
         return value
+
+
+class SeasonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Season
+        fields = [
+            "id",
+            "name",
+            "discounted_fee",
+            "regular_fee",
+            "fee_at_tournament",
+            "invoices_generated_at",
+            "min_allowed_age",
+            "age_reference_date",
+        ]

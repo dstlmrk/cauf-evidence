@@ -4,6 +4,7 @@ from api.views import (
     ClubsView,
     CompetitionApplicationView,
     CompetitionsView,
+    SeasonsView,
     TeamAtTournamentView,
     TeamsAtTournamentView,
 )
@@ -35,5 +36,10 @@ urlpatterns = [
         "competition-application/<int:pk>",
         CompetitionApplicationView.as_view(),
         name="competition-application",
+    ),
+    path(
+        "seasons",
+        SeasonsView.as_view(),
+        name="seasons",
     ),
 ]

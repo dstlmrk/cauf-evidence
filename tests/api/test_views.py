@@ -207,3 +207,20 @@ def test_patch_competition_application(api_token, api_client, competition_applic
 
     competition_application = CompetitionApplication.objects.get(pk=competition_application.pk)
     assert competition_application.final_placement == 98
+
+
+def test_get_seasons(api_client, season):
+    response = api_client.get(reverse("api:seasons"))
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == [
+        {
+            "id": season.id,
+            "name": season.name,
+            "discounted_fee": f"{season.discounted_fee:.2f}",
+            "regular_fee": f"{season.regular_fee:.2f}",
+            "fee_at_tournament": f"{season.fee_at_tournament:.2f}",
+            "invoices_generated_at": season.invoices_generated_at,
+            "min_allowed_age": season.min_allowed_age,
+            "age_reference_date": season.age_reference_date,
+        },
+    ]
