@@ -93,7 +93,7 @@ class AgeLimit(AuditModel):
     m_max = models.PositiveSmallIntegerField(
         default=99,
         validators=[MaxValueValidator(99)],
-        verbose_name="Maximum age for women",
+        verbose_name="Maximum age for men",
         help_text="Maximum age allowed (inclusive) for men",
     )
     f_min = models.PositiveSmallIntegerField(

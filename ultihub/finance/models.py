@@ -13,6 +13,7 @@ class InvoiceStateEnum(models.IntegerChoices):
     DRAFT = 1  # Created in the system
     OPEN = 2  # Sent to Fakturoid
     PAID = 3  # Paid in Fakturoid
+    CANCELED = 4  # Canceled in Fakturoid
 
 
 class InvoiceTypeEnum(models.IntegerChoices):
@@ -32,14 +33,18 @@ class Invoice(AuditModel):
     type = models.IntegerField(
         choices=InvoiceTypeEnum.choices,
     )
-    amount = models.DecimalField(
+    original_amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         validators=[MinValueValidator(Decimal(0))],
     )
+    lines = models.JSONField(
+        default=list,
+    )
     fakturoid_invoice_id = models.IntegerField(
         blank=True,
         null=True,
+        unique=True,
     )
     fakturoid_total = models.DecimalField(
         max_digits=10,
@@ -57,6 +62,10 @@ class Invoice(AuditModel):
 
     def __str__(self) -> str:
         return f"<Invoice({self.pk}, amount={self.amount})>"
+
+    @property
+    def amount(self) -> Decimal:
+        return self.fakturoid_total if self.fakturoid_total is not None else self.original_amount
 
 
 class InvoiceRelatedObject(AuditModel):
