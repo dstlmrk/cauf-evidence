@@ -12,7 +12,7 @@ from django.db.models import Q
 from members.models import Member
 from tournaments.models import MemberAtTournament, Tournament
 
-from finance.clients.fakturoid import fakturoid_client
+from finance.clients.fakturoid import UnexpectedResponse, fakturoid_client
 from finance.models import Invoice, InvoiceRelatedObject, InvoiceStateEnum, InvoiceTypeEnum
 
 logger = logging.getLogger(__name__)
@@ -32,6 +32,26 @@ class NoSubjectIdError(Exception):
     pass
 
 
+def create_invoice_in_fakturoid_and_save_data(invoice: Invoice) -> None:
+    if not invoice.club.fakturoid_subject_id:
+        raise NoSubjectIdError
+
+    try:
+        data = fakturoid_client.create_invoice(
+            subject_id=invoice.club.fakturoid_subject_id,
+            lines=invoice.lines,
+        )
+    except UnexpectedResponse as ex:
+        logger.error(f"Failed to create invoice in Fakturoid: {ex}")
+    else:
+        invoice.fakturoid_invoice_id = data["invoice_id"]
+        invoice.fakturoid_total = data["total"]
+        invoice.fakturoid_status = data["status"]
+        invoice.fakturoid_public_html_url = data["public_html_url"]
+        invoice.state = InvoiceStateEnum.OPEN
+        invoice.save()
+
+
 def create_invoice(
     club: Club,
     type_: InvoiceTypeEnum,
@@ -41,11 +61,16 @@ def create_invoice(
     """
     Create an invoice in the system and send it to Fakturoid.
     """
-    if not club.fakturoid_subject_id:
-        raise NoSubjectIdError
+    # For cases when we need to try to create invoice in Fakturoid again (after a failure)
+    serialized_lines = [{"name": name, "unit_price": amount} for name, amount in lines]
+    original_amount = sum(amount for _, amount in lines)
 
-    total = sum(amount for _, amount in lines)
-    invoice = Invoice.objects.create(club=club, type=type_, amount=total)
+    invoice = Invoice.objects.create(
+        club=club,
+        type=type_,
+        original_amount=original_amount,
+        lines=serialized_lines,
+    )
 
     for related_object in related_objects or []:
         InvoiceRelatedObject.objects.create(
@@ -54,21 +79,11 @@ def create_invoice(
             object_id=related_object.id,
         )
 
-    try:
-        data = fakturoid_client.create_invoice(club.fakturoid_subject_id, lines)
+    create_invoice_in_fakturoid_and_save_data(invoice)
 
-    except Exception as ex:
-        logger.error(f"Failed to create invoice in Fakturoid: {ex}")
-    else:
-        Invoice.objects.filter(pk=invoice.pk).update(
-            fakturoid_invoice_id=data["invoice_id"],
-            fakturoid_total=data["total"],
-            fakturoid_status=data["status"],
-            fakturoid_public_html_url=data["public_html_url"],
-            state=InvoiceStateEnum.OPEN,
-        )
-
-    logger.info("Created invoice %s for club %s with total %s", invoice.pk, club.name, total)
+    logger.info(
+        "Created invoice %s for club %s with total %s", invoice.pk, club.name, invoice.amount
+    )
 
     return invoice
 

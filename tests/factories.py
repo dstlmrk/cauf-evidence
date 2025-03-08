@@ -16,6 +16,7 @@ from competitions.models import (
 from django.contrib.auth.models import User
 from django.utils import timezone
 from factory import SubFactory
+from finance.models import Invoice, InvoiceTypeEnum
 from members.models import Member, MemberSexEnum
 from tournaments.models import MemberAtTournament, TeamAtTournament, Tournament
 from users.models import Agent, AgentAtClub
@@ -50,6 +51,7 @@ class ClubFactory(factory.django.DjangoModelFactory):
     city = factory.Faker("city")
     organization_name = factory.Faker("company")
     identification_number = ""
+    fakturoid_subject_id = None
 
 
 class TeamFactory(factory.django.DjangoModelFactory):
@@ -169,3 +171,12 @@ class MemberAtTournamentFactory(factory.django.DjangoModelFactory):
     is_spirit_captain = False
     is_coach = False
     jersey_number = 10
+
+
+class InvoiceFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Invoice
+
+    club = SubFactory(ClubFactory)
+    type = InvoiceTypeEnum.COMPETITION_DEPOSIT
+    original_amount = Decimal(2000)

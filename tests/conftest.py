@@ -8,6 +8,7 @@ from tests.factories import (
     CompetitionApplicationFactory,
     CompetitionFactory,
     DivisionFactory,
+    InvoiceFactory,
     MemberFactory,
     SeasonFactory,
     TeamAtTournamentFactory,
@@ -22,6 +23,7 @@ register(ClubFactory)
 register(CompetitionApplicationFactory)
 register(CompetitionFactory)
 register(DivisionFactory)
+register(InvoiceFactory)
 register(MemberFactory)
 register(SeasonFactory)
 register(TeamAtTournamentFactory)

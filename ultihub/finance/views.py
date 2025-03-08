@@ -6,19 +6,21 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
 from finance.forms import SeasonFeesCheckForm
-from finance.services import NoSubjectIdError, calculate_season_fees, create_deposit_invoice
+from finance.services import calculate_season_fees, create_deposit_invoice
 
 
 @require_POST
 def invoices(request: HttpRequest) -> HttpResponse:
     club = get_object_or_404(Club, pk=get_current_club(request).id)
-    try:
+
+    if club.fakturoid_subject_id:
         create_deposit_invoice(club)
         messages.success(request, "The request has been successfully sent. Check your invoices.")
-    except NoSubjectIdError:
+    else:
         messages.error(
             request, "Your club has no financial settings. Please contact the administrator."
         )
+
     return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
 

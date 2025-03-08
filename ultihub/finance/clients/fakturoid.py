@@ -1,5 +1,5 @@
 import logging
-from decimal import Decimal
+from typing import Any
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -78,7 +78,7 @@ class FakturoidClient:
     def post(self, url: str, json: dict) -> requests.Response:
         return self._retry_request("post", url, json)
 
-    def create_invoice(self, subject_id: int, lines: list[tuple[str, Decimal]]) -> dict:
+    def create_invoice(self, subject_id: int, lines: list[dict[str, Any]]) -> dict:
         """
         Create an invoice for the given subject with the given text and price.
 
@@ -88,7 +88,7 @@ class FakturoidClient:
             FAKTUROID_BASE_URL + f"/accounts/{self.slug}/invoices.json",
             {
                 "subject_id": subject_id,
-                "lines": [{"name": text, "unit_price": str(price)} for text, price in lines],
+                "lines": lines,
                 "tags": ["created-by-evidence"],
             },
         )
@@ -144,7 +144,7 @@ class FakturoidClient:
 
 
 class FakturoidFakeClient:
-    def create_invoice(self, subject_id: int, lines: list[tuple[str, Decimal]]) -> dict:
+    def create_invoice(self, subject_id: int, lines: list[dict[str, Any]]) -> dict:
         return {"invoice_id": 1, "status": "open", "total": 100, "public_html_url": ""}
 
     def get_invoice_status(self, invoice_id: int) -> str:

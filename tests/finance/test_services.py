@@ -1,8 +1,94 @@
+from unittest.mock import patch
+
+import pytest
 from competitions.models import CompetitionFeeTypeEnum, Season
-from finance.services import SeasonFeeData, calculate_season_fees
+from finance.clients.fakturoid import UnexpectedResponse
+from finance.models import InvoiceRelatedObject, InvoiceStateEnum, InvoiceTypeEnum
+from finance.services import (
+    SeasonFeeData,
+    calculate_season_fees,
+    create_invoice,
+    create_invoice_in_fakturoid_and_save_data,
+)
 
 from tests.factories import MemberAtTournamentFactory, SeasonFactory
 from tests.helpers import create_complete_competition
+
+
+@pytest.mark.parametrize("club__fakturoid_subject_id", [999])
+def test_create_invoice(club, competition):
+    with patch("finance.clients.fakturoid.fakturoid_client.create_invoice") as mock_create_invoice:
+        mock_create_invoice.return_value = {
+            "invoice_id": 1,
+            "status": "open",
+            "total": 200,
+            "public_html_url": "https://example.com/invoice",
+        }
+        invoice = create_invoice(
+            club=club,
+            type_=InvoiceTypeEnum.COMPETITION_DEPOSIT,
+            lines=(("First line", 100), ("Second line", 100)),
+            related_objects=[competition],
+        )
+
+        assert invoice.club == club
+        assert invoice.type == InvoiceTypeEnum.COMPETITION_DEPOSIT
+        assert invoice.original_amount == 200
+        assert invoice.lines == [
+            {"name": "First line", "unit_price": 100},
+            {"name": "Second line", "unit_price": 100},
+        ]
+
+        assert InvoiceRelatedObject.objects.filter(invoice=invoice).count() == 1
+
+        assert invoice.fakturoid_invoice_id == 1
+        assert invoice.fakturoid_total == 200
+        assert invoice.fakturoid_status == "open"
+        assert invoice.fakturoid_public_html_url == "https://example.com/invoice"
+        assert invoice.state == InvoiceStateEnum.OPEN
+
+
+@pytest.mark.parametrize("club__fakturoid_subject_id", [999])
+def test_create_invoice_is_able_to_resend_invoice_to_fakturoid(club, competition):
+    with patch("finance.clients.fakturoid.fakturoid_client.create_invoice") as mock_create_invoice:
+        mock_create_invoice.side_effect = [
+            UnexpectedResponse(),
+            {
+                "invoice_id": 1,
+                "status": "open",
+                "total": 200,
+                "public_html_url": "https://example.com/invoice",
+            },
+        ]
+
+        invoice = create_invoice(
+            club=club,
+            type_=InvoiceTypeEnum.COMPETITION_DEPOSIT,
+            lines=(("First line", 100), ("Second line", 100)),
+            related_objects=[competition],
+        )
+
+        assert invoice.club == club
+        assert invoice.type == InvoiceTypeEnum.COMPETITION_DEPOSIT
+        assert invoice.original_amount == 200
+        assert invoice.lines == [
+            {"name": "First line", "unit_price": 100},
+            {"name": "Second line", "unit_price": 100},
+        ]
+
+        assert InvoiceRelatedObject.objects.filter(invoice=invoice).count() == 1
+
+        assert invoice.state == InvoiceStateEnum.DRAFT
+        assert invoice.fakturoid_invoice_id is None
+
+        # the logic in the command resend_invoices_to_fakturoid
+        create_invoice_in_fakturoid_and_save_data(invoice)
+
+        assert invoice.fakturoid_invoice_id == 1
+        assert invoice.fakturoid_total == 200
+        assert invoice.fakturoid_status == "open"
+        assert invoice.fakturoid_public_html_url == "https://example.com/invoice"
+        assert invoice.state == InvoiceStateEnum.OPEN
 
 
 def test_calculate_season_fees():
