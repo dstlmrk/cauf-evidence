@@ -12,7 +12,7 @@
             hx-trigger="click"
             hx-confirm="Are you sure you don’t want to register any more teams for now? It’s always better to have fewer invoices than more. 🙂"
             hx-swap="none"
-            {% if not club_application_without_invoice_total %}disabled{% endif %}
+            {% if not club_application_without_invoice_total or is_unset_fakturoid_id %}disabled{% endif %}
         >
             <i class="bi bi-receipt-cutoff"></i> Confirm registration
             <span class="position-absolute top-0 translate-middle badge rounded-pill bg-dark">
@@ -23,6 +23,14 @@
 {% endblock %}
 
 {% block content %}
+
+    {% if is_unset_fakturoid_id %}
+        <div class="alert alert-warning " role="alert">
+            <i class="bi bi-exclamation-octagon-fill me-1"></i> Your club has no financial settings. You are not allowed
+            to register any teams. Please <b>contact the administrator</b>.
+        </div>
+    {% endif %}
+
     <div class="d-none d-md-block">
         <table class="table align-middle">
             <thead>

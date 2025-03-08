@@ -37,13 +37,7 @@
                                         {{ invoice.get_state_display | upper }}
                                     </span>
                                 </td>
-                                <td>
-                                    {% if invoice.fakturoid_total and invoice.fakturoid_total != invoice.amount %}
-                                        {{ invoice.fakturoid_total | floatformat:0 }}
-                                    {% else %}
-                                        {{ invoice.amount | floatformat:0 }}
-                                    {% endif %}
-                                </td>
+                                <td>{{ invoice.amount | floatformat:0 }}</td>
                                 <td class="fit">
                                     <a
                                         href="{{ invoice.fakturoid_public_html_url }}"
@@ -82,17 +76,7 @@
                                 {{ invoice.get_state_display | upper }}
                             </span>
                         </div>
-                        <div>
-                            Amount:
-                            <b
-                                >CZK
-                                {% if invoice.fakturoid_total and invoice.fakturoid_total != invoice.amount %}
-                                    {{ invoice.fakturoid_total | floatformat:0 }}
-                                {% else %}
-                                    {{ invoice.amount | floatformat:0 }}
-                                {% endif %}</b
-                            >
-                        </div>
+                        <div>Amount: <b>CZK {{ invoice.amount | floatformat:0 }}</b></div>
                         <div>
                             Link:
                             {% if invoice.fakturoid_public_html_url %}

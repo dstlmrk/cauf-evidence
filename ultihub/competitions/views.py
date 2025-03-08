@@ -1,4 +1,6 @@
-from clubs.models import Team
+from typing import Any
+
+from clubs.models import Club, Team
 from core.helpers import get_current_club, get_current_club_or_none
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -18,18 +20,21 @@ from competitions.services import get_competitions_qs_with_related_data
 
 
 def competitions(request: HttpRequest) -> HttpResponse:
-    club = get_current_club_or_none(request)
-    context = {}
+    session_club = get_current_club_or_none(request)
+    club = Club.objects.get(id=session_club.id) if session_club else None
+
+    context: dict[str, Any] = {}
 
     if club:
         context["club_application_without_invoice_total"] = CompetitionApplication.objects.filter(
-            team__club=club.id, invoice__isnull=True, state=ApplicationStateEnum.AWAITING_PAYMENT
+            team__club=club, invoice__isnull=True, state=ApplicationStateEnum.AWAITING_PAYMENT
         ).count()
 
     return render(
         request,
         "competitions/competitions.html",
         context={
+            "is_unset_fakturoid_id": bool(club and not club.fakturoid_subject_id),
             "competitions": get_competitions_qs_with_related_data(
                 club_id=club.id if club else None
             ).annotate(

@@ -80,6 +80,7 @@ class DivisionAdmin(admin.ModelAdmin):
 @admin.register(AgeLimit)
 class AgeLimitAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "m_min", "m_max", "f_min", "f_max")
+    change_form_template = "admin/age_limit_change_form.html"
 
 
 class TournamentInline(admin.TabularInline):

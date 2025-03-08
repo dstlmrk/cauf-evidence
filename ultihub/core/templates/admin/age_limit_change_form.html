@@ -1,0 +1,9 @@
+{% extends 'admin/change_form.html' %}
+
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+    <div>
+        <b>Info:</b> Age is usually calculated as of December 31 of the given year. Please check your season settings to
+        be sure, as it may vary for specific seasons.
+    </div>
+{% endblock %}
