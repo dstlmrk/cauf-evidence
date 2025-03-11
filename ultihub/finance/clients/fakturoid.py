@@ -1,4 +1,5 @@
 import logging
+from decimal import Decimal
 from typing import Any, Literal
 
 import requests
@@ -110,7 +111,7 @@ class FakturoidClient:
                 f"Error while creating invoice: {response.status_code}, {response.json()}"
             )
 
-    def get_invoice_status(self, invoice_id: int) -> InvoiceStatus:
+    def get_invoice_status_and_total(self, invoice_id: int) -> tuple[InvoiceStatus, Decimal]:
         """
         Return the status of the invoice with the given ID.
         Possible values are: open, sent, overdue, paid, cancelled, uncollectible.
@@ -122,7 +123,8 @@ class FakturoidClient:
         )
 
         if response.status_code == 200:
-            return response.json()["status"]
+            data = response.json()
+            return data["status"], Decimal(data["total"])
         else:
             raise UnexpectedResponse(
                 f"Error while getting invoice status: {response.status_code}, {response.json()}"
@@ -149,8 +151,8 @@ class FakturoidFakeClient:
     def create_invoice(self, subject_id: int, lines: list[dict[str, Any]]) -> dict:
         return {"invoice_id": 1, "status": "open", "total": 100, "public_html_url": ""}
 
-    def get_invoice_status(self, invoice_id: int) -> InvoiceStatus:
-        return "open"
+    def get_invoice_status_and_total(self, invoice_id: int) -> tuple[InvoiceStatus, Decimal]:
+        return "open", Decimal(100)
 
     def get_subject_detail(self, subject_id: int) -> dict:
         return {}
