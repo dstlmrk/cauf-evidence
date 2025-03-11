@@ -62,7 +62,7 @@ def create_invoice(
     Create an invoice in the system and send it to Fakturoid.
     """
     # For cases when we need to try to create invoice in Fakturoid again (after a failure)
-    serialized_lines = [{"name": name, "unit_price": amount} for name, amount in lines]
+    serialized_lines = [{"name": name, "unit_price": f"{amount:.2f}"} for name, amount in lines]
     original_amount = sum(amount for _, amount in lines)
 
     invoice = Invoice.objects.create(
