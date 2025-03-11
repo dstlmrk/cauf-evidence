@@ -160,9 +160,8 @@ class Competition(AuditModel):
         unique_together = ("name", "season", "type", "division", "age_limit")
 
     def __str__(self) -> str:
-        return (
-            f"{self.name} {self.season} {str(self.division).upper()} {self.age_limit or ""}".strip()
-        )
+        name = f"BEACH {self.name}" if self.type == CompetitionTypeEnum.BEACH else self.name
+        return f"{name} {self.season} {str(self.division).upper()} {self.age_limit or ""}".strip()
 
     @property
     def has_open_registration(self) -> bool:

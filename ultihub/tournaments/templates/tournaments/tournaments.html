@@ -8,6 +8,7 @@
         <table class="table align-middle">
             <thead>
                 <tr class="align-middle">
+                    <th scope="col"></th>
                     <th scope="col">Rosters<br /><small class="text-muted">Deadline</small></th>
                     <th scope="col">Season</th>
                     <th scope="col">Competition</th>
@@ -20,12 +21,22 @@
                     <th scope="col" class="fit pe-5 text-center">
                         <div data-bs-toggle="tooltip" data-bs-title="Total teams / members">Total<br />T / M</div>
                     </th>
-                    <th scope="col">Winner</th>
+                    <th scope="col">Winner<br /><small class="text-muted">SOTG</small></th>
                 </tr>
             </thead>
             <tbody>
                 {% for tournament in tournaments %}
                     <tr>
+                        <td>
+                            {% if tournament.includes_my_club_team %}
+                                <i
+                                    class="bi bi-check"
+                                    style="color: green;"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="Your club has a team in this tournament"
+                                ></i>
+                            {% endif %}
+                        </td>
                         <td>
                             {% if tournament.has_open_rosters %}
                                 <span class="badge text-bg-success">OPEN</span>
@@ -69,7 +80,8 @@
                         </td>
                         <td>
                             {% if tournament.winner_team %}
-                                {{ tournament.winner_team }}
+                                {{ tournament.winner_team }}<br />
+                                <small class="text-muted">{{ tournament.sotg_winner_team }}</small>
                             {% endif %}
                         </td>
                     </tr>
@@ -80,7 +92,9 @@
     <div class="d-block d-md-none">
         <div class="list-group">
             {% for tournament in tournaments %}
-                <div class="list-group-item">
+                <div
+                    class="list-group-item {% if tournament.includes_my_club_team %}list-group-item-success{% endif %} text-black"
+                >
                     <div class="d-flex w-100 justify-content-between">
                         <div>
                             <small class="text-muted">
@@ -123,6 +137,9 @@
                     <div>Total teams/members: {{ tournament.team_count }}/{{ tournament.member_count }}</div>
                     {% if tournament.winner_team %}
                         <div>Winner: {{ tournament.winner_team }}</div>
+                    {% endif %}
+                    {% if tournament.sotg_winner_team %}
+                        <div>Spirit: {{ tournament.sotg_winner_team }}</div>
                     {% endif %}
                 </div>
             {% endfor %}

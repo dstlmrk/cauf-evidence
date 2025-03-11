@@ -22,7 +22,7 @@
                             {% elif application.final_placement == 3 %}
                                 🥉
                             {% else %}
-                                {{ application.final_placement }}
+                                {{ application.final_placement | default:"" }}
                             {% endif %}
                         </th>
                         <td>{{ application.team_name }}</td>

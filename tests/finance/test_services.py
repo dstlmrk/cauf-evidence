@@ -16,7 +16,7 @@ from tests.helpers import create_complete_competition
 
 
 @pytest.mark.parametrize("club__fakturoid_subject_id", [999])
-def test_create_invoice(club, competition):
+def test_create_invoice(club, competition_application):
     with patch("finance.clients.fakturoid.fakturoid_client.create_invoice") as mock_create_invoice:
         mock_create_invoice.return_value = {
             "invoice_id": 1,
@@ -28,7 +28,7 @@ def test_create_invoice(club, competition):
             club=club,
             type_=InvoiceTypeEnum.COMPETITION_DEPOSIT,
             lines=(("First line", 100), ("Second line", 100)),
-            related_objects=[competition],
+            related_objects=[competition_application],
         )
 
         assert invoice.club == club
@@ -49,7 +49,7 @@ def test_create_invoice(club, competition):
 
 
 @pytest.mark.parametrize("club__fakturoid_subject_id", [999])
-def test_create_invoice_is_able_to_resend_invoice_to_fakturoid(club, competition):
+def test_create_invoice_is_able_to_resend_invoice_to_fakturoid(club, competition_application):
     with patch("finance.clients.fakturoid.fakturoid_client.create_invoice") as mock_create_invoice:
         mock_create_invoice.side_effect = [
             UnexpectedResponse(),
@@ -65,7 +65,7 @@ def test_create_invoice_is_able_to_resend_invoice_to_fakturoid(club, competition
             club=club,
             type_=InvoiceTypeEnum.COMPETITION_DEPOSIT,
             lines=(("First line", 100), ("Second line", 100)),
-            related_objects=[competition],
+            related_objects=[competition_application],
         )
 
         assert invoice.club == club

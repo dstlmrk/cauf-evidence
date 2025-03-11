@@ -9,21 +9,18 @@ document.body.addEventListener("showRosterDialog", (event) => {
 });
 
 function birthNumberToDate(birthNumber) {
-    let birthNumberStr = birthNumber.toString();
-    birthNumberStr = birthNumberStr.replace("/", "");
-
-    let year = parseInt(birthNumberStr.substring(0, 2), 10);
-    let month = parseInt(birthNumberStr.substring(2, 4), 10);
-    let day = parseInt(birthNumberStr.substring(4, 6), 10);
+    let year = parseInt(birthNumber.substring(0, 2), 10);
+    let month = parseInt(birthNumber.substring(2, 4), 10);
+    let day = parseInt(birthNumber.substring(4, 6), 10);
 
     if (month > 50) {
         month -= 50;
     }
 
     let fullYear;
-    if (birthNumberStr.length === 9) {
+    if (birthNumber.length === 9) {
         fullYear = 1900 + year;
-    } else if (birthNumberStr.length === 10) {
+    } else if (birthNumber.length === 10) {
         fullYear = year < 54 ? 2000 + year : 1900 + year;
     } else {
         fullYear = 1900 + year;
@@ -56,8 +53,7 @@ function isOlderThan15(birthDateStr) {
 }
 
 function detectSex(birthNumber) {
-    let birthNumberStr = birthNumber.toString().replace("/", "");
-    let month = parseInt(birthNumberStr.substring(2, 4), 10);
+    let month = parseInt(birthNumber.substring(2, 4), 10);
     return month > 50 ? 1 : 2; // 1 = female
 }
 
@@ -119,9 +115,10 @@ function memberForm() {
                 });
         },
         handleBirthNumber(value) {
-            if (value.length === 10) {
-                this.birthDate = birthNumberToDate(value);
-                this.sex = detectSex(value);
+            if (value.length === 10 || value.length === 11) {
+                let birthNumber = value.toString().replace("/", "");
+                this.birthDate = birthNumberToDate(birthNumber);
+                this.sex = detectSex(birthNumber);
                 this.handleBirthDate(this.birthDate);
             }
         },
