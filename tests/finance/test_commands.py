@@ -1,4 +1,5 @@
 from datetime import timedelta
+from decimal import Decimal
 from unittest.mock import patch
 
 import pytest
@@ -61,13 +62,14 @@ def test_command_check_invoices_in_fakturoid_should_work_properly(
     invoice.save()
 
     with patch(
-        "finance.clients.fakturoid.fakturoid_client.get_invoice_status"
-    ) as mock_get_invoice_status:
-        mock_get_invoice_status.return_value = status
+        "finance.clients.fakturoid.fakturoid_client.get_invoice_status_and_total"
+    ) as mock_get_invoice_status_and_total:
+        mock_get_invoice_status_and_total.return_value = status, Decimal("100.1")
         call_command("check_invoices_in_fakturoid")
         invoice.refresh_from_db()
         assert invoice.state == expected_invoice_state
         assert invoice.fakturoid_status == status
+        assert invoice.fakturoid_total == Decimal("100.1")
 
     competition_application.refresh_from_db()
     assert competition_application.state == expected_application_state
