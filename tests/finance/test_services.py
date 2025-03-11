@@ -35,8 +35,8 @@ def test_create_invoice(club, competition):
         assert invoice.type == InvoiceTypeEnum.COMPETITION_DEPOSIT
         assert invoice.original_amount == 200
         assert invoice.lines == [
-            {"name": "First line", "unit_price": 100},
-            {"name": "Second line", "unit_price": 100},
+            {"name": "First line", "unit_price": "100.00"},
+            {"name": "Second line", "unit_price": "100.00"},
         ]
 
         assert InvoiceRelatedObject.objects.filter(invoice=invoice).count() == 1
@@ -72,8 +72,8 @@ def test_create_invoice_is_able_to_resend_invoice_to_fakturoid(club, competition
         assert invoice.type == InvoiceTypeEnum.COMPETITION_DEPOSIT
         assert invoice.original_amount == 200
         assert invoice.lines == [
-            {"name": "First line", "unit_price": 100},
-            {"name": "Second line", "unit_price": 100},
+            {"name": "First line", "unit_price": "100.00"},
+            {"name": "Second line", "unit_price": "100.00"},
         ]
 
         assert InvoiceRelatedObject.objects.filter(invoice=invoice).count() == 1
