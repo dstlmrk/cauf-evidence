@@ -1,11 +1,11 @@
 import json
 
 from clubs.service import notify_club
-from core.helpers import get_current_club
+from core.helpers import get_current_club, get_current_club_or_none
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, OuterRef, Subquery
+from django.db.models import BooleanField, Count, Exists, F, OuterRef, Subquery, Value
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -22,6 +22,7 @@ from tournaments.models import (
 
 @require_GET
 def tournaments_view(request: HttpRequest) -> HttpResponse:
+    club = get_current_club_or_none(request)
     return render(
         request,
         "tournaments/tournaments.html",
@@ -40,6 +41,18 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
                         tournament=OuterRef("pk"), final_placement=1
                     ).values("application__team_name")[:1]
                 ),
+                sotg_winner_team=Subquery(
+                    TeamAtTournament.objects.filter(tournament=OuterRef("pk"))
+                    .order_by(F("spirit_avg").desc(nulls_last=True), "final_placement")
+                    .values("application__team_name")[:1]
+                ),
+                includes_my_club_team=Exists(
+                    TeamAtTournament.objects.filter(
+                        tournament=OuterRef("pk"), application__team__club_id=club.id
+                    )
+                )
+                if club
+                else Value(False, output_field=BooleanField()),
             )
             .order_by("-start_date", "competition__division", "name"),
         },

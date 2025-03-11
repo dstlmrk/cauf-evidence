@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, Literal
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -13,6 +13,8 @@ from ultihub.settings import (
     FAKTUROID_SLUG,
     FAKTUROID_USER_AGENT,
 )
+
+type InvoiceStatus = Literal["open", "sent", "overdue", "paid", "cancelled", "uncollectible"]
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +110,7 @@ class FakturoidClient:
                 f"Error while creating invoice: {response.status_code}, {response.json()}"
             )
 
-    def get_invoice_status(self, invoice_id: int) -> str:
+    def get_invoice_status(self, invoice_id: int) -> InvoiceStatus:
         """
         Return the status of the invoice with the given ID.
         Possible values are: open, sent, overdue, paid, cancelled, uncollectible.
@@ -147,7 +149,7 @@ class FakturoidFakeClient:
     def create_invoice(self, subject_id: int, lines: list[dict[str, Any]]) -> dict:
         return {"invoice_id": 1, "status": "open", "total": 100, "public_html_url": ""}
 
-    def get_invoice_status(self, invoice_id: int) -> str:
+    def get_invoice_status(self, invoice_id: int) -> InvoiceStatus:
         return "open"
 
     def get_subject_detail(self, subject_id: int) -> dict:

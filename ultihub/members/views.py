@@ -40,7 +40,10 @@ def add_member(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             form.instance.club_id = get_current_club(request).id
             form.save()
-            messages.success(request, "Confirmation email sent")
+            if form.instance.email or form.instance.legal_guardian_email:
+                messages.success(request, "Confirmation email sent")
+            else:
+                messages.success(request, "Member created successfully")
             return HttpResponse(status=204, headers={"HX-Trigger": "memberListChanged"})
         else:
             messages.error(request, "Member not created")

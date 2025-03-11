@@ -5,7 +5,12 @@ from decimal import Decimal
 from typing import Any
 
 from clubs.models import Club
-from competitions.models import CompetitionApplication, CompetitionFeeTypeEnum, Season
+from competitions.models import (
+    ApplicationStateEnum,
+    CompetitionApplication,
+    CompetitionFeeTypeEnum,
+    Season,
+)
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.models import Q
@@ -95,6 +100,7 @@ def create_deposit_invoice(club: Club) -> None:
     """
     applications_qs = (
         CompetitionApplication.objects.filter(
+            state=ApplicationStateEnum.AWAITING_PAYMENT,
             team__club=club.id,
             invoice__isnull=True,
         )
