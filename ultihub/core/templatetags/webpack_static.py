@@ -23,4 +23,6 @@ def webpack_static(filename: str) -> str:
         except FileNotFoundError:
             _manifest_cache = {}
 
-    return _manifest_cache.get(filename, filename)
+    hashed_filename = _manifest_cache.get(filename, filename)
+    print(_manifest_cache)  # noqa
+    return f"{settings.STATIC_URL}dist/{hashed_filename}"
