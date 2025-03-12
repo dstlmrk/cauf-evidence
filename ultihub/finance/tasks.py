@@ -75,7 +75,7 @@ def calculate_season_fees_and_generate_invoices(season: Season) -> None:
             club=club,
             subject="Season fees generated",
             message=(
-                f"Season fees for the season {season.name}"
+                f"Season fees for the season <b>{season.name}</b>"
                 " have been generated. Check your invoices."
             ),
         )

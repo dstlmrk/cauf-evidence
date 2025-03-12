@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.http import HttpRequest
 from guardian.admin import GuardedModelAdmin
 
-from users.models import Agent, NewAgentRequest
+from users.models import Agent, AgentAtClub, NewAgentRequest
 from users.services import send_inviting_email
 
 
@@ -33,3 +33,8 @@ class AgentAdmin(GuardedModelAdmin):
     list_display = ("id", "user__email")
     search_fields = ("user__email",)
     ordering = ("-pk",)
+
+
+@admin.register(AgentAtClub)
+class AgentAtClubAdmin(admin.ModelAdmin):
+    list_display = ("id", "agent__user__email", "club", "is_primary", "is_active", "invited_by")
