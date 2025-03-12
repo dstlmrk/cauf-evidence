@@ -39,7 +39,7 @@ def create_transfer_request(
     notify_club(
         club=approving_club,
         subject="Transfer request",
-        message=f"You have been requested to approve the transfer of {member.full_name}.",
+        message=f"You have been requested to approve the transfer of <b>{member.full_name}</b>.",
     )
 
 
@@ -58,7 +58,7 @@ def approve_transfer(agent: Agent, transfer: Transfer) -> None:
     notify_club(
         club=transfer.requesting_club,
         subject="Transfer approved",
-        message=f"Your request to transfer {transfer.member.full_name} has been approved.",
+        message=f"Your request to transfer <b>{transfer.member.full_name}</b> has been approved.",
     )
 
 
@@ -72,7 +72,9 @@ def revoke_transfer(transfer: Transfer) -> None:
     notify_club(
         club=transfer.approving_club,
         subject="Transfer revoked",
-        message=f"The transfer of {transfer.member.full_name} has been revoked by requester.",
+        message=(
+            f"The transfer of <b>{transfer.member.full_name}</b> has been revoked by requester."
+        ),
     )
 
 
@@ -86,7 +88,9 @@ def reject_transfer(transfer: Transfer) -> None:
     notify_club(
         club=transfer.requesting_club,
         subject="Transfer rejected",
-        message=f"The transfer of {transfer.member.full_name} has been rejected by approver.",
+        message=(
+            f"The transfer of <b>{transfer.member.full_name}</b> has been rejected by approver."
+        ),
     )
 
 
