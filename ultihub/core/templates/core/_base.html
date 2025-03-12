@@ -1,13 +1,14 @@
 <!doctype html>
 <html lang="en">
     {% load static %}
+    {% load webpack_static %}
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
         <title>Evidence ČAUF</title>
-        <link href="{% static 'dist/bundle.css' %}" rel="stylesheet" />
-        <script defer src="{% static 'dist/bundle.js' %}"></script>
+        <link href="{% webpack_static 'bundle.css' %}" rel="stylesheet" />
+        <script defer src="{% webpack_static 'bundle.js' %}"></script>
     </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <!-- Placeholder for the modal -->
