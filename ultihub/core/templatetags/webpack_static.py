@@ -1,4 +1,5 @@
 import json
+import logging
 from pathlib import Path
 
 from django import template
@@ -6,6 +7,8 @@ from django.conf import settings
 
 register = template.Library()
 _manifest_cache = None
+
+logger = logging.getLogger(__name__)
 
 
 @register.simple_tag
@@ -24,5 +27,6 @@ def webpack_static(filename: str) -> str:
             _manifest_cache = {}
 
     hashed_filename = _manifest_cache.get(filename, filename)
-    print(_manifest_cache)  # noqa
-    return f"{settings.STATIC_URL}dist/{hashed_filename}"
+    logger.info(_manifest_cache)
+    return hashed_filename
+    # return f"{settings.STATIC_URL}dist/{hashed_filename}"

@@ -13,6 +13,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "static/dist"),
         filename: "bundle.[contenthash].js",
+        publicPath: "/static/dist/",
         clean: true, // delete old builds
     },
     plugins: [
@@ -21,7 +22,7 @@ module.exports = {
         }),
         new WebpackManifestPlugin({
             fileName: "manifest.json",
-            publicPath: "/static/dist",
+            publicPath: "/static/dist/",
         }),
         new webpack.ProvidePlugin({
             bootstrap: "bootstrap",
