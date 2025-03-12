@@ -2,18 +2,26 @@
 
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const webpack = require("webpack");
 
 module.exports = {
     mode: "production",
-    entry: "./assets/js/main.js",
+    entry: {
+        bundle: "./assets/js/main.js",
+    },
     output: {
         path: path.resolve(__dirname, "static/dist"),
-        filename: "bundle.js",
+        filename: "bundle.[contenthash].js",
+        clean: true, // delete old builds
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: "bundle.css",
+            filename: "bundle.[contenthash].css",
+        }),
+        new WebpackManifestPlugin({
+            fileName: "manifest.json",
+            publicPath: "/static/dist",
         }),
         new webpack.ProvidePlugin({
             bootstrap: "bootstrap",
