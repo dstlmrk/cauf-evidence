@@ -31,7 +31,8 @@ dependencies = [
     "django-extensions>=3.2.3",
     "pyparsing>=3.2.0",
     "pydot>=3.0.3",
-    "pycountry>=24.6.1"
+    "pycountry>=24.6.1",
+    "rq-scheduler (>=0.14.0,<0.15.0)"
 ]
 
 [tool.poetry.group.dev.dependencies]

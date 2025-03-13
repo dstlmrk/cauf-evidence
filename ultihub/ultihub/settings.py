@@ -245,6 +245,7 @@ EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
 # REDIS QUEUE -----------------------------------------------------------------
+RQ_SHOW_ADMIN_LINK = True
 RQ_QUEUES = {
     "default": {
         "URL": "redis://redis:6379/0",
