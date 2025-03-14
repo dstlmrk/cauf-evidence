@@ -142,7 +142,7 @@ def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int
                         request.build_absolute_uri(
                             reverse("tournaments:detail", args=(tournament.pk,))
                         ),
-                        tournament.name,
+                        tournament,
                     ),
                 )
 
