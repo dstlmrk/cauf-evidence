@@ -1,40 +1,38 @@
 [project]
-requires-python = ">=3.12.5"
-
-[tool.poetry]
 name = "ultihub"
 version = "0.1.0"
 description = "An app for ultimate frisbee national association and clubs to manage memberships, fees, transfers, and other administrative tasks efficiently."
-authors = ["Marek Dostál <dstlmrk@gmail.com>"]
+authors = [{ name = "Marek Dostál", email = "dstlmrk@gmail.com" }]
 readme = "README.md"
+requires-python = ">=3.12.5,<4.0"
 
-[tool.poetry.dependencies]
-python = "^3.12.5"
-django = "^5.1.7"
-gunicorn = "^23.0.0"
-django-environ = "^0.11.2"
-psycopg2-binary = "^2.9.9"
-sentry-sdk = {extras = ["django"], version = "^2.14.0"}
-ddtrace = "^2.12.0"
-python-json-logger = "^2.0.7"
-django-allauth = {extras = ["socialaccount"], version = "^64.2.1"}
-django-htmx = "^1.19.0"
-django-debug-toolbar = "^4.4.6"
-django-crispy-forms = "^2.3"
-crispy-bootstrap5 = "^2024.10"
-django-guardian = "^2.4.0"
-django-rq = "^2.10.2"
-djangorestframework = "^3.15.2"
-django-countries = "^7.6.1"
-django-admin-rangefilter = "^0.13.2"
-fakeredis = "^2.26.2"
-django-filter = "^24.3"
-requests = "^2.32.3"
-tenacity = "^9.0.0"
-django-extensions = "^3.2.3"
-pyparsing = "^3.2.0"
-pydot = "^3.0.3"
-pycountry = "^24.6.1"
+dependencies = [
+    "django>=5.1.7",
+    "gunicorn>=23.0.0",
+    "django-environ>=0.11.2",
+    "psycopg2-binary>=2.9.9",
+    "sentry-sdk[django]>=2.14.0",
+    "ddtrace>=2.12.0",
+    "python-json-logger>=2.0.7",
+    "django-allauth[socialaccount]>=64.2.1",
+    "django-htmx>=1.19.0",
+    "django-debug-toolbar>=4.4.6",
+    "django-crispy-forms>=2.3",
+    "crispy-bootstrap5>=2024.10",
+    "django-guardian>=2.4.0",
+    "django-rq>=2.10.2",
+    "djangorestframework>=3.15.2",
+    "django-countries>=7.6.1",
+    "django-admin-rangefilter>=0.13.2",
+    "fakeredis>=2.26.2",
+    "django-filter>=24.3",
+    "requests>=2.32.3",
+    "tenacity>=9.0.0",
+    "django-extensions>=3.2.3",
+    "pyparsing>=3.2.0",
+    "pydot>=3.0.3",
+    "pycountry>=24.6.1"
+]
 
 [tool.poetry.group.dev.dependencies]
 pytest-django = "^4.9.0"
@@ -55,9 +53,12 @@ build-backend = "poetry.core.masonry.api"
 django_find_project = false
 DJANGO_SETTINGS_MODULE = "ultihub.settings"
 pythonpath = ". ultihub"
-addopts = ["--import-mode=importlib",]
+addopts = ["--import-mode=importlib"]
 python_files = ["test_*.py", "*_test.py"]
-filterwarnings = ["ignore::DeprecationWarning:rq.utils", "ignore:The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated."]
+filterwarnings = [
+  "ignore::DeprecationWarning:rq.utils",
+  "ignore:The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated."
+]
 
 [tool.ruff]
 line-length = 100
@@ -101,9 +102,9 @@ _stop-dev = "docker compose -f docker/compose.dev.yaml down"
 [tool.poe.tasks.format]
 help = "Run formating tools on the code base"
 sequence = [
-	"ruff check --select I001,F401 --fix-only .",
-	"ruff format .",
-	"npx prettier --write .",
+  "ruff check --select I001,F401 --fix-only .",
+  "ruff format .",
+  "npx prettier --write ."
 ]
 
 [tool.poe.tasks.lint]
@@ -112,14 +113,17 @@ cmd = "ruff check --no-fix --quiet --output-format=concise --force-exclude ."
 
 [tool.poe.tasks.style]
 help = "Validate code style"
-sequence = ["ruff check --no-fix --select I001 .", "ruff format --check --diff ."]
+sequence = [
+  "ruff check --no-fix --select I001 .",
+  "ruff format --check --diff ."
+]
 
 [tool.poe.tasks.migrations-check]
 help = "Check migrations"
 sequence = [
-	"docker compose -f docker/compose.test.yaml up -d",
-	"python tests/wait_for_postgres.py",
-	"bash -c 'poetry run python ultihub/manage.py makemigrations --check --dry-run || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down; exit $EXIT_CODE'"
+  "docker compose -f docker/compose.test.yaml up -d",
+  "python tests/wait_for_postgres.py",
+  "bash -c 'poetry run python ultihub/manage.py makemigrations --check --dry-run || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down; exit $EXIT_CODE'"
 ]
 envfile = "secrets/.env.test"
 
@@ -131,9 +135,9 @@ envfile = "secrets/.env.test"
 [tool.poe.tasks.test]
 help = "Run unit tests (without checks)"
 sequence = [
-	"docker compose -f docker/compose.test.yaml up -d",
-	"python tests/wait_for_postgres.py",
-	"bash -c 'pytest || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down --volumes; exit $EXIT_CODE'"
+  "docker compose -f docker/compose.test.yaml up -d",
+  "python tests/wait_for_postgres.py",
+  "bash -c 'pytest || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down --volumes; exit $EXIT_CODE'"
 ]
 envfile = "secrets/.env.test"
 
@@ -143,7 +147,7 @@ cmd = "docker compose -f docker/compose.dev.yaml exec app python manage.py migra
 
 [tool.poe.tasks.makemigrations]
 help = "Make migrations"
-cmd ="docker compose -f docker/compose.dev.yaml exec app python manage.py makemigrations"
+cmd = "docker compose -f docker/compose.dev.yaml exec app python manage.py makemigrations"
 
 [tool.poe.tasks.shell]
 help = "Run a shell"
