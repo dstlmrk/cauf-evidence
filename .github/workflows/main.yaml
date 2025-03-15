@@ -62,22 +62,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v45
-        with:
-          files: |
-            docker/compose.prod.yaml
-            nginx-proxy/**
-            .github/workflows/main.yaml
+      # - name: Get changed files
+      #   id: changed-files
+      #   uses: tj-actions/changed-files@v45
+      #   with:
+      #     files: |
+      #       docker/compose.prod.yaml
+      #       nginx-proxy/**
+      #       .github/workflows/main.yaml
       - name: Rename docker-compose file
-        if: steps.changed-files.outputs.any_changed == 'true'
+        # if: steps.changed-files.outputs.any_changed == 'true'
         run: mv docker/compose.prod.yaml docker-compose.yaml
       - name: Rename docker-compose file
-        if: steps.changed-files.outputs.any_changed == 'true'
+        # if: steps.changed-files.outputs.any_changed == 'true'
         run: mv nginx-proxy/redirect.conf redirect.conf
       - name: Copy docker-compose file
-        if: steps.changed-files.outputs.any_changed == 'true'
+        # if: steps.changed-files.outputs.any_changed == 'true'
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
