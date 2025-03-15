@@ -1,0 +1,95 @@
+{% extends "core/base.html" %}
+{% load humanize %}
+
+{% block title %}<h1>Často kladené dotazy</h1>{% endblock %}
+
+{% block content %}
+    <h2>1) Jaký je rozdíl mezi turnaji a soutěžemi?</h2>
+    <p>
+        Soutěž představuje celou sérii turnajů. Například soutěž HMČR 2025 OPEN zahrnovala celkem 6 turnajů – 3
+        regionální kvalifikační a 3 finálové (první až třetí liga).
+    </p>
+    <p>
+        Důležité: Finále 1. ligy v kategorii open je samostatný turnaj (a soutěž), který se liší od finále 1. ligy v
+        kategorii women, i když se mohou konat současně na stejném místě.
+    </p>
+
+    <h2>2) Jaký je rozdíl mezi kluby a týmy?</h2>
+    <p>
+        Klub reprezentuje váš oddíl a obvykle disponuje fakturačními údaji (často právní subjekt s IČO). Je odpovědný za
+        úhradu startovného, správu členů a další administrativu. Jeden klub může registrovat libovolný počet týmů do
+        soutěží. Týmy většinou sdílejí název s klubem, avšak s dodatečným označením (např. B, C), nebo mohou mít
+        specifický název. Příkladem je tým Brblava, který hraje pouze open beach, ačkoliv spadá pod klub Left Overs.
+    </p>
+
+    <h2>3) Jak se mohu přihlásit do evidence?</h2>
+    <p>
+        Každý klub má minimálně jeden primární účet, pomocí něhož se přihlašuje do evidence. Do aplikace lze přidat
+        další účty, jejichž správu zajišťuje příslušný klub. Jeden účet může mít navíc přístup k více klubům.
+    </p>
+    <p>Všechny emailové adresy musí být propojeny s Google účtem – prozatím je to jediná dostupná metoda přihlášení.</p>
+
+    <h2>4) Proč je povinné uvádět emailovou adresu u členů?</h2>
+    <p>
+        Emailová adresa slouží k potvrzení souhlasu se zpracováním osobních údajů. U členů mladších 15 let je vyžadován
+        souhlas zákonného zástupce.
+    </p>
+
+    <h2>5) Jak je to s adresou u cizinců?</h2>
+    <p>
+        Asociace je povinna evidovat adresy všech cizinců, kteří dlouhodobě pobývají v ČR, což přináší další výhody při
+        spolupráci s NSA. U cizinců pobývajících v ČR jen krátkodobě (například na turnaji) není zadání adresy povinné.
+    </p>
+
+    <h2>6) Jak mohu přihlásit svůj tým do soutěže?</h2>
+    <p>
+        Registrace probíhá jako nákup přes eshop. Nejprve si vyberete soutěže, do kterých chcete svůj tým přihlásit,
+        poté všechny registrace potvrdíte jediným kliknutím. Systém automaticky vygeneruje fakturu, kterou naleznete v
+        sekci <b>Club &gt; Invoices</b>. Zaplacená faktura se v systému označí jako uhrazená nejpozději druhý den po
+        připsání platby na účet.
+    </p>
+    <p>Po zaplacení faktury (stav PAID) se přihlášky schvalují asociací (stav ACCEPTED).</p>
+
+    <h2>7) Jak se vyplňuje soupiska?</h2>
+    <p>
+        Jakmile je váš tým přiřazen k turnaji – což může chvíli trvat, protože asociace týmy řadí do regionů nebo lig
+        podle předchozích výsledků – stačí kliknout na dostupnou soupisku a začít ji vyplňovat. Vyhledávání hráčů
+        automaticky nabízí členy vašeho klubu. Po zadání několika znaků se vyhledává napříč všemi klubu. Pokud přidáte
+        hráče z jiného klubu, jeho domácímu klubu bude zaslána informativní notifikace.
+    </p>
+
+    <h2>8) Co mám dělat, pokud nenajdu potřebného hráče v seznamu?</h2>
+    <p>
+        Do importu ze staré evidence byli zařazeni pouze hráči, kteří hráli v zimě 2024/2025. Proto může být nutné
+        některé hráče přidat ručně. Pokud se domníváte, že jde o kmenového hráče z jiného klubu, neváhejte jej přidat –
+        situaci pak vyřešíte přestupem.
+    </p>
+
+    <h2>9) Jak fungují přestupy hráčů?</h2>
+    <p>
+        Přestupy umožňují přesun hráčů mezi kluby. Pokud váš hráč odejde do jiného klubu a vy s ním již nechcete nadále
+        spolupracovat ani platit roční poplatky, můžete zahájit přestup. Tento proces se obvykle realizuje před koncem
+        sezóny, kdy se blíží úhrada sezónních poplatků. Přestup lze odvolat až do jeho potvrzení nebo zamítnutí druhou
+        stranou, kdy tým, jenž o přestup žádal, může požadavek schválit nebo zamítnout.
+    </p>
+
+    <h2>10) Proč je evidence v angličtině a bude k dispozici i v češtině?</h2>
+    <p>
+        Systém byl vyvíjen v angličtině s ohledem na jeho univerzálnost. V budoucnu plánujeme přidat také českou verzi.
+    </p>
+
+    <h2>
+        11) Jak dlouho bude fungovat stará evidence na
+        <a href="https://evidence.czechultimate.cz/">evidence.czechultimate.cz</a>?
+    </h2>
+    <p>
+        Ve staré evidenci již nejsou přidávány nové turnaje, nicméně data vašich oddílů si můžete prohlížet minimálně do
+        konce roku 2025.
+    </p>
+
+    <h2>12) Jak spolu funguje evidence a <a href="https://vysledky.frisbee.cz/">vysledky.frisbee.cz</a>?</h2>
+    <p>
+        Oboustraně. Po vypršení termínů na zadávání soupisek jsou předána data do skórovací aplikace (nově i s čísly
+        dresů). Naopak po skončení turnaje jsou výsledky (pořadí a SOTG) zapsány do evidence.
+    </p>
+{% endblock %}
