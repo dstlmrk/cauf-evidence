@@ -4,6 +4,7 @@
     {% load socialaccount %}
     {% url 'competitions:competitions' as competitions_url %}
     {% url 'tournaments:tournaments' as tournaments_url %}
+    {% url 'faq' as faq_url %}
     <button
         class="navbar-toggler"
         type="button"
@@ -79,6 +80,11 @@
                     class="nav-link {% if request.path == competitions_url %}active{% endif %}"
                     href="{{ competitions_url }}"
                     ><i class="bi bi-trophy-fill"></i> Competitions</a
+                >
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.path == faq_url %}active{% endif %}" href="{{ faq_url }}"
+                    ><i class="bi bi-question-circle-fill"></i> FAQ</a
                 >
             </li>
         </ul>
