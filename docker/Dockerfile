@@ -9,7 +9,7 @@ RUN npm install
 COPY assets /app/assets
 RUN npm run build
 
-FROM python:3.13.2-slim AS python-builder
+FROM python:3.12.5-slim AS python-builder
 
 RUN pip install --no-cache-dir poetry==2.1.1
 
@@ -26,7 +26,7 @@ RUN touch README.md
 
 RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev --no-root
 
-FROM python:3.13.2-slim AS runtime
+FROM python:3.12.5-slim AS runtime
 
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH"
