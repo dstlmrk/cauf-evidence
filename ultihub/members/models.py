@@ -178,6 +178,10 @@ class Member(AuditModel):
             return ""
         return f"{self.street} {self.house_number}, {self.postal_code} {self.city}, Czech Republic"
 
+    @property
+    def has_email_confirmed(self) -> bool:
+        return bool(self.email_confirmed_at)
+
     def __str__(self) -> str:
         return f"{self.full_name} ({self.club.short_name or self.club.name})"
 
@@ -243,7 +247,7 @@ class Member(AuditModel):
                 Member.objects.filter(pk=self.pk).values_list(email_field_name, flat=True).first()
             )
             if email != old_email:
-                self.has_email_confirmed = False
+                self.email_confirmed_at = None
                 if email:
                     self.email_confirmation_token = uuid.uuid4()
                     send_token = True
