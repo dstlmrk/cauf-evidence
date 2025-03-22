@@ -83,9 +83,9 @@ def roster_dialog_view(request: HttpRequest, team_at_tournament_id: int) -> Http
         "tournaments/partials/roster_dialog.html",
         {
             "team_at_tournament": team_at_tournament,
-            "members_at_tournament": MemberAtTournament.objects.select_related("member").filter(
-                team_at_tournament_id=team_at_tournament.id
-            ),
+            "members_at_tournament": MemberAtTournament.objects.select_related("member")
+            .filter(team_at_tournament_id=team_at_tournament.id)
+            .order_by("created_at"),
         },
     )
 

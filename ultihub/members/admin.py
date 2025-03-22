@@ -132,7 +132,7 @@ class MemberAdmin(admin.ModelAdmin):
 
     @admin.display(description="Confirmed email", boolean=True)
     def _has_email_confirmed(self, obj: Member) -> bool:
-        return bool(obj.email_confirmed_at)
+        return obj.has_email_confirmed
 
     def _sex(self, obj: Member) -> str:
         return "F" if obj.sex == MemberSexEnum.FEMALE else "M"

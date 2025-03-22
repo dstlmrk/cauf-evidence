@@ -27,7 +27,13 @@
                         >{% if member.has_coach_licence %}YES{% else %}NO{% endif %}</a
                     >
                 </td>
-                <td>{% if member.has_email_confirmed %}YES{% else %}NO{% endif %}</td>
+                <td>
+                    {% if member.has_email_confirmed %}
+                        <i class="bi bi-check-circle-fill" style="color: green;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle" style="color: red;"></i>
+                    {% endif %}
+                </td>
                 <td>{% if member.is_active %}YES{% else %}NO{% endif %}</td>
                 <td>
                     <button

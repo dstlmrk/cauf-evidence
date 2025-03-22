@@ -82,11 +82,12 @@ def confirm_email(request: HttpRequest, token: UUID) -> HttpResponse:
     member = get_object_or_404(Member, email_confirmation_token=token)
     if request.method == "POST":
         form = MemberConfirmEmailForm(request.POST, member=member)
+        current_time = now()
         if form.is_valid():
-            member.has_email_confirmed = True
+            member.email_confirmed_at = current_time
             member.email_confirmation_token = None
             if form.cleaned_data.get("marketing_consent"):
-                member.marketing_consent_given_at = now()
+                member.marketing_consent_given_at = current_time
             member.save()
             messages.success(request, "You have confirmed your email")
             return HttpResponse(status=204, headers={"HX-Redirect": reverse("home")})
