@@ -38,3 +38,8 @@ class AgentAdmin(GuardedModelAdmin):
 @admin.register(AgentAtClub)
 class AgentAtClubAdmin(admin.ModelAdmin):
     list_display = ("id", "agent__user__email", "club", "is_primary", "is_active", "invited_by")
+
+    def save_model(self, request, obj, form, change):  # type: ignore
+        super().save_model(request, obj, form, change)
+        if not change:  # is new
+            send_inviting_email(obj.agent.user.email, obj.club)

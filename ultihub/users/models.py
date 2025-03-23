@@ -32,7 +32,7 @@ class Agent(AuditModel):
     )
 
     def __str__(self) -> str:
-        return f"<Agent({self.pk})>"
+        return f"<Agent({self.user.email})>"
 
 
 class AgentAtClub(AuditModel):
