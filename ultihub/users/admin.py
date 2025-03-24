@@ -3,6 +3,7 @@ from typing import Any
 from django.contrib import admin
 from django.http import HttpRequest
 from guardian.admin import GuardedModelAdmin
+from guardian.shortcuts import assign_perm
 
 from users.models import Agent, AgentAtClub, NewAgentRequest
 from users.services import send_inviting_email
@@ -43,3 +44,4 @@ class AgentAtClubAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
         if not change:  # is new
             send_inviting_email(obj.agent.user.email, obj.club)
+            assign_perm("manage_club", obj.agent.user, obj.club)
