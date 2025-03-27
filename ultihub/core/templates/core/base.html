@@ -147,7 +147,7 @@
                     >
                         {% static 'user_default.svg' as fallback_image %}
                         <img
-                            src="{{ user.agent.picture_urls|default:fallback_image }}"
+                            src="{{ user.agent.picture_url|default:fallback_image }}"
                             alt="mdo"
                             class="rounded-circle"
                         />
