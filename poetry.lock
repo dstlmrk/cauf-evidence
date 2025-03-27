@@ -840,6 +840,24 @@ testing = ["coverage", "eventlet", "gevent", "pytest", "pytest-cov"]
 tornado = ["tornado (>=0.2)"]
 
 [[package]]
+name = "huey"
+version = "2.5.3"
+description = "huey, a little task queue"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "huey-2.5.3.tar.gz", hash = "sha256:089fc72b97fd26a513f15b09925c56fad6abe4a699a1f0e902170b37e85163c7"},
+]
+
+[package.dependencies]
+redis = {version = ">=3.0.0", optional = true, markers = "extra == \"redis\""}
+
+[package.extras]
+backends = ["redis (>=3.0.0)"]
+redis = ["redis (>=3.0.0)"]
+
+[[package]]
 name = "identify"
 version = "2.6.9"
 description = "File identification library for Python"
@@ -1906,4 +1924,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12.5,<4.0"
-content-hash = "cc019aeed5ad63644be88467223a5dcb04641bd861178a01a908a9edba2f541b"
+content-hash = "f17336f0f00ef52cedb21a4776e2fe2cc99dc7dc8f13efa9b1a9b6d84673647b"

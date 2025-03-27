@@ -4,10 +4,10 @@ from unittest.mock import patch
 
 import pytest
 from competitions.models import ApplicationStateEnum
-from django.core.management import call_command
 from django.utils import timezone
 from finance.models import InvoiceStateEnum, InvoiceTypeEnum
 from finance.services import create_invoice
+from finance.tasks import check_fakturoid_invoices, resend_invoices_to_fakturoid
 
 from tests.factories import InvoiceFactory
 
@@ -19,7 +19,7 @@ def test_command_resend_invoices_to_fakturoid_should_work_properly(club):
     invoice.save()
 
     assert invoice.state == InvoiceStateEnum.DRAFT
-    call_command("resend_invoices_to_fakturoid")
+    resend_invoices_to_fakturoid()
     invoice.refresh_from_db()
     assert invoice.state == InvoiceStateEnum.OPEN
     assert invoice.fakturoid_status == "open"
@@ -34,7 +34,7 @@ def test_command_resend_invoices_to_fakturoid_should_not_resend_invoices_younger
     invoice.save()
 
     assert invoice.state == InvoiceStateEnum.DRAFT
-    call_command("resend_invoices_to_fakturoid")
+    resend_invoices_to_fakturoid()
     invoice.refresh_from_db()
     assert invoice.state == InvoiceStateEnum.DRAFT
     assert invoice.fakturoid_status == ""
@@ -65,7 +65,7 @@ def test_command_check_invoices_in_fakturoid_should_work_properly(
         "finance.clients.fakturoid.fakturoid_client.get_invoice_status_and_total"
     ) as mock_get_invoice_status_and_total:
         mock_get_invoice_status_and_total.return_value = status, Decimal("100.1")
-        call_command("check_invoices_in_fakturoid")
+        check_fakturoid_invoices()
         invoice.refresh_from_db()
         assert invoice.state == expected_invoice_state
         assert invoice.fakturoid_status == status

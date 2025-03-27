@@ -1,20 +1,95 @@
 import logging
+from datetime import timedelta
 from decimal import Decimal
 
 from clubs.models import Club
 from clubs.service import notify_club
-from competitions.models import Season
+from competitions.models import ApplicationStateEnum, CompetitionApplication, Season
 from core.helpers import create_csv
 from core.tasks import send_email
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.utils import timezone
 from django_rq import job
+from huey import crontab
+from huey.contrib.djhuey import db_periodic_task
 
-from finance.models import InvoiceTypeEnum
-from finance.services import calculate_season_fees, create_invoice
+from finance.clients.fakturoid import InvoiceStatus, fakturoid_client
+from finance.models import Invoice, InvoiceStateEnum, InvoiceTypeEnum
+from finance.services import (
+    calculate_season_fees,
+    create_invoice,
+    create_invoice_in_fakturoid_and_save_data,
+)
 
 logger = logging.getLogger(__name__)
+
+
+@db_periodic_task(crontab(minute="*"))
+def task_test() -> None:
+    logger.info("Test log")
+
+
+@transaction.atomic
+def _update_invoice(invoice: Invoice, status: InvoiceStatus, total: Decimal) -> None:
+    if invoice.fakturoid_status != status:
+        invoice.fakturoid_status = status
+
+        if status == "paid":
+            invoice.state = InvoiceStateEnum.PAID
+
+            if invoice.type == InvoiceTypeEnum.COMPETITION_DEPOSIT:
+                CompetitionApplication.objects.filter(
+                    id__in=invoice.related_objects.filter(
+                        content_type_id=ContentType.objects.get_for_model(CompetitionApplication).id
+                    ).values_list("object_id", flat=True),
+                    state=ApplicationStateEnum.AWAITING_PAYMENT,
+                ).update(state=ApplicationStateEnum.PAID)
+            logger.info("Invoice %s was paid", invoice.id)
+
+        elif status in ("cancelled", "uncollectible"):
+            invoice.state = InvoiceStateEnum.CANCELED
+            logger.info("Invoice %s was canceled", invoice.id)
+
+    if invoice.fakturoid_total != total:
+        invoice.fakturoid_total = total
+        logger.info("Invoice %s total was updated to %s", invoice.id, total)
+
+    invoice.save()
+
+
+@db_periodic_task(crontab(minute="*", hour="*"))
+def check_fakturoid_invoices() -> None:
+    """
+    Periodic task to check invoices in Fakturoid.
+    """
+    logger.info("Start regular check of invoices in Fakturoid")
+
+    for invoice in Invoice.objects.filter(
+        state=InvoiceStateEnum.OPEN,
+        created_at__gte=timezone.now() - timedelta(days=90),
+    ):
+        status, total = fakturoid_client.get_invoice_status_and_total(
+            invoice_id=invoice.fakturoid_invoice_id  # type: ignore
+        )
+        if status in ("paid", "cancelled", "uncollectible") or invoice.fakturoid_total != total:
+            _update_invoice(invoice, status, total)
+
+    logger.info("End regular check of invoices in Fakturoid")
+
+
+@db_periodic_task(crontab(minute="*/15", hour="*"))
+def resend_invoices_to_fakturoid() -> None:
+    logger.info("Start trying to resend invoices to Fakturoid")
+
+    for invoice in Invoice.objects.filter(
+        state=InvoiceStateEnum.DRAFT,
+        created_at__lte=timezone.now() - timedelta(seconds=60),
+    ):
+        create_invoice_in_fakturoid_and_save_data(invoice)
+
+    logger.info("End trying to resend invoices to Fakturoid")
 
 
 @job

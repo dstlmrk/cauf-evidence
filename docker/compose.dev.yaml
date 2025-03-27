@@ -30,6 +30,19 @@ services:
     environment:
       PYTHONUNBUFFERED: true
 
+  huey-worker:
+    image: ultihub
+    restart: always
+    entrypoint: ["/app/ultihub/manage.py", "run_huey"]
+    volumes:
+      - ../ultihub/:/app/ultihub
+    depends_on:
+      - redis
+    env_file:
+      - ../secrets/.env.dev
+    environment:
+      PYTHONUNBUFFERED: true
+
   redis:
     image: redis:alpine
     restart: always
