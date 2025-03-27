@@ -28,6 +28,15 @@ class ClubForm(forms.ModelForm):
         if self.instance.short_name:
             self.initial["name"] = f"{self.instance.name} ({self.instance.short_name})"  # type: ignore
 
+    def clean_name(self) -> str:
+        return self.instance.name
+
+    def clean_organization_name(self) -> str:
+        return self.instance.organization_name
+
+    def clean_identification_number(self) -> str:
+        return self.instance.identification_number
+
 
 class TeamForm(forms.ModelForm):
     class Meta:
