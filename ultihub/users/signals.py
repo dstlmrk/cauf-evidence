@@ -12,7 +12,7 @@ from users.services import assign_agent_to_club, get_user_managed_clubs
 @receiver(user_logged_in)
 def check_allowed_user(sender: type, request: HttpRequest, user: User, **kwargs: dict) -> None:
     social_account = SocialAccount.objects.get(user=user, provider="google")
-    google_picture = social_account.get_avatar_url()
+    google_picture = social_account.get_avatar_url() or ""
     try:
         if user.agent.picture_url != google_picture:
             user.agent.picture_url = google_picture
