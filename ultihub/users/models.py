@@ -25,7 +25,7 @@ class NewAgentRequest(AuditModel):
 
 
 class Agent(AuditModel):
-    picture_url = models.URLField()
+    picture_url = models.URLField(blank=True)
     user = models.OneToOneField(User, on_delete=models.PROTECT, related_name="agent")
     has_email_notifications_enabled = models.BooleanField(
         default=True, verbose_name="Email notifications enabled"

@@ -1,4 +1,5 @@
 {% extends "core/_base.html" %}
+{% load static %}
 
 {% block navbar %}
     {% load socialaccount %}
@@ -144,7 +145,12 @@
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                     >
-                        <img src="{{ user.agent.picture_url }}" alt="mdo" class="rounded-circle" />
+                        {% static 'user_default.svg' as fallback_image %}
+                        <img
+                            src="{{ user.agent.picture_urls|default:fallback_image }}"
+                            alt="mdo"
+                            class="rounded-circle"
+                        />
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
