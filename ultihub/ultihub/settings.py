@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django_extensions",
+    "huey.contrib.djhuey",
     "django_filters",
     "django_htmx",
     "django_rq",
@@ -277,6 +278,19 @@ if ENVIRONMENT == "test":
         )
 
     django_rq.queues.get_redis_connection = get_fake_connection
+
+# HUEY SETTINGS ---------------------------------------------------------------
+HUEY = {
+    "huey_class": "huey.RedisHuey",
+    "name": DATABASES["default"]["NAME"],
+    "immediate": ENVIRONMENT == "test",  # run synchronously in tests
+    "connection": {
+        "host": "redis",
+    },
+    "consumer": {
+        "workers": 1,  # there is still low traffic, so we can use only one worker
+    },
+}
 
 # REST FRAMEWORK --------------------------------------------------------------
 REST_FRAMEWORK = {
