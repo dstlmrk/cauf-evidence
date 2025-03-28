@@ -10,6 +10,7 @@ function initializeMembersTable() {
                 { targets: 0, type: "num", className: "text-center" },
                 { targets: 2, className: "text-start" },
                 { targets: 4, searchable: true },
+                { targets: 6, className: "text-start" },
                 { targets: 8, orderable: false },
             ],
         });

@@ -4,6 +4,8 @@ from pathlib import Path
 from django import template
 from django.conf import settings
 
+from ultihub.settings import ENVIRONMENT
+
 register = template.Library()
 _manifest_cache = None
 
@@ -16,7 +18,10 @@ def webpack_static(filename: str) -> str:
     """
     global _manifest_cache
     if _manifest_cache is None:
-        manifest_path = Path(settings.STATIC_ROOT) / "dist" / "manifest.json"
+        if ENVIRONMENT == "prod":
+            manifest_path = Path(settings.STATIC_ROOT) / "dist" / "manifest.json"
+        else:
+            manifest_path = Path(settings.BASE_DIR) / "static" / "dist" / "manifest.json"
         try:
             with manifest_path.open("r", encoding="utf-8") as f:
                 _manifest_cache = json.load(f)

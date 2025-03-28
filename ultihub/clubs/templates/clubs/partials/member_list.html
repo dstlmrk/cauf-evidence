@@ -27,7 +27,7 @@
                         >{% if member.has_coach_licence %}YES{% else %}NO{% endif %}</a
                     >
                 </td>
-                <td>
+                <td data-order="{% if member.has_email_confirmed %}1{% else %}0{% endif %}">
                     {% if member.has_email_confirmed %}
                         <i class="bi bi-check-circle-fill" style="color: green;"></i>
                     {% else %}

@@ -3,12 +3,14 @@ import uuid
 from datetime import date
 from typing import Any
 
+from core.fields import ValidatedEmailField
 from core.models import AuditModel
 from core.tasks import send_email
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, FloatField, Func, Manager, Q, QuerySet, UniqueConstraint, Value
+from django.template.loader import render_to_string
 from django_countries.fields import CountryField
 
 from members.validators import (
@@ -106,10 +108,10 @@ class Member(AuditModel):
         blank=True,
         validators=[validate_postal_code],
     )
-    email = models.EmailField(
+    email = ValidatedEmailField(
         blank=True,
     )
-    legal_guardian_email = models.EmailField(
+    legal_guardian_email = ValidatedEmailField(
         blank=True,
     )
     legal_guardian_first_name = models.CharField(
@@ -239,7 +241,8 @@ class Member(AuditModel):
     def save(self, *args: Any, **kwargs: Any) -> None:
         send_token = False
 
-        email_field_name = "email" if is_at_least_15(self.birth_date) else "legal_guardian_email"
+        is_child = not is_at_least_15(self.birth_date)
+        email_field_name = "legal_guardian_email" if is_child else "email"
         email = getattr(self, email_field_name)
 
         if self.pk:
@@ -261,20 +264,18 @@ class Member(AuditModel):
         super().save(*args, **kwargs)
 
         if send_token:
-            link = (
-                f"https://evidence.frisbee.cz/members/confirm-email/{self.email_confirmation_token}"
+            link = "https://evidence.frisbee.cz/members/confirm-email/{}"
+            html_content = render_to_string(
+                "emails/confirm_email.html",
+                {
+                    "club_name": self.club.name,
+                    "link": link.format(self.email_confirmation_token),
+                    "is_child": is_child,
+                },
             )
-            send_email.delay(
-                "Please confirm your email",
-                (
-                    f"You have been registered as a member of {self.club.name}.\n"
-                    f"Please confirm your email by clicking on the following link: {link}\n"
-                ),
-                to=[self.email],
-            )
-            logger.info(
-                "Confirmation token %s sent to %s", self.email_confirmation_token, self.email
-            )
+
+            send_email.delay("Please confirm your email", html_content, to=[email])
+            logger.info("Confirmation token %s sent to %s", self.email_confirmation_token, email)
 
 
 class CoachLicence(AuditModel):
