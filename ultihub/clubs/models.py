@@ -47,7 +47,6 @@ class Club(AuditModel):
         blank=True,
         null=True,
         help_text="ID of the subject in Fakturoid. The club cannot be invoiced without this ID.",
-        unique=True,
     )
 
     class Meta:
