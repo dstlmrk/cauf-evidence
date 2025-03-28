@@ -1,10 +1,11 @@
+from core.fields import ValidatedEmailField
 from core.models import AuditModel
 from django.contrib.auth.models import User
 from django.db import models
 
 
 class NewAgentRequest(AuditModel):
-    email = models.EmailField(unique=True)
+    email = ValidatedEmailField(unique=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_primary = models.BooleanField(default=False)

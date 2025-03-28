@@ -1,5 +1,6 @@
 from typing import Any
 
+from core.fields import ValidatedEmailField
 from core.models import AuditModel
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
@@ -19,7 +20,7 @@ class Club(AuditModel):
         help_text="Short name of the club (2-4 characters)",
         validators=[MinLengthValidator(2)],
     )
-    email = models.EmailField(
+    email = ValidatedEmailField(
         blank=True,
         help_text="Contact email of the club",
     )

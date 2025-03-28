@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="cs">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Potvrzení e-mailu</title>
+    </head>
+    <body>
+        <b>CZ:</b>
+        <p>Byl(a) jste zaregistrován(a) jako člen klubu <strong>{{ club_name }}</strong>.</p>
+        <p>Pro potvrzení své e-mailové adresy klikněte na následující odkaz:</p>
+        <p><a href="{{ link }}">{{ link }}</a></p>
+
+        {% if is_child %}
+            <p><strong>Tento e-mail je určen zákonnému zástupci dítěte mladšího 15 let.</strong></p>
+        {% endif %}
+
+        <hr />
+
+        <b>EN:</b>
+        <p>You have been registered as a member of <strong>{{ club_name }}</strong>.</p>
+        <p>To confirm your email address, please click the following link:</p>
+        <p><a href="{{ link }}">{{ link }}</a></p>
+
+        {% if is_child %}
+            <p><strong>This email is intended for the legal guardian of a child under 15 years of age.</strong></p>
+        {% endif %}
+    </body>
+</html>
