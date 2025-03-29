@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Any
 
 import environ
 import sentry_sdk
@@ -61,7 +60,6 @@ INSTALLED_APPS = [
     "huey.contrib.djhuey",
     "django_filters",
     "django_htmx",
-    "django_rq",
     "guardian",
     "rangefilter",
     "rest_framework",
@@ -244,40 +242,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-
-# REDIS QUEUE -----------------------------------------------------------------
-RQ_QUEUES = {
-    "default": {
-        "URL": "redis://redis:6379/0",
-        "DEFAULT_TIMEOUT": 360,
-    }
-}
-
-if ENVIRONMENT == "test":
-    import django_rq
-
-    # Configuration to pretend there is a Redis service available.
-    # Set up the connection before RQ Django reads the settings.
-    # The connection must be the same because in fakeredis connections
-    # do not share the state. Therefore, we define a singleton object to reuse it.
-    def get_fake_connection(config: dict[str, Any], strict: bool) -> Any:
-        from fakeredis import FakeRedis, FakeStrictRedis
-
-        redis_cls = FakeStrictRedis if strict else FakeRedis
-        if "URL" in config:
-            return redis_cls.from_url(
-                config["URL"],
-                db=config.get("DB"),
-            )
-        return redis_cls(
-            host=config["HOST"],
-            port=config["PORT"],
-            db=config.get("DB", 0),
-            username=config.get("USERNAME"),
-            password=config.get("PASSWORD"),
-        )
-
-    django_rq.queues.get_redis_connection = get_fake_connection
 
 # HUEY SETTINGS ---------------------------------------------------------------
 HUEY = {

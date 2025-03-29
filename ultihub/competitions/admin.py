@@ -48,7 +48,7 @@ class SeasonAdmin(admin.ModelAdmin):
 
     def response_change(self, request: HttpRequest, obj: Season) -> HttpResponse:
         if "_check-fees" in request.POST:
-            calculate_season_fees_for_check.delay(request.user, obj)
+            calculate_season_fees_for_check(request.user, obj)
             self.message_user(
                 request, "Fees calculation (for check) started. Check you email for results."
             )
@@ -57,7 +57,7 @@ class SeasonAdmin(admin.ModelAdmin):
             if self.has_generated_invoices(obj):
                 self.message_user(request, "Invoices are already generated.", level=messages.ERROR)
             else:
-                calculate_season_fees_and_generate_invoices.delay(obj)
+                calculate_season_fees_and_generate_invoices(obj)
                 self.message_user(
                     request, "It's going to take a while. All clubs will be notified."
                 )

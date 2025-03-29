@@ -30,13 +30,12 @@ services:
     container_name: worker
     image: dstlmrk/ultihub
     restart: always
-    entrypoint: ["/app/ultihub/manage.py", "rqworker", "default"]
+    entrypoint: ["/app/ultihub/manage.py", "run_huey", "-q"]
     depends_on:
       - redis
       - dd-agent
     networks:
       - database
-      - monitored
     environment:
       DD_SERVICE: ultihub-worker
       DD_AGENT_HOST: dd-agent
@@ -45,25 +44,6 @@ services:
       - ./.env.prod
     labels:
       com.datadoghq.ad.logs: '[{"source": "python", "service": "ultihub-worker"}]'
-
-  huey-worker:
-    container_name: huey-worker
-    image: dstlmrk/ultihub
-    restart: always
-    entrypoint: ["/app/ultihub/manage.py", "run_huey", "-q"]
-    depends_on:
-      - redis
-      - dd-agent
-    networks:
-      - database
-    environment:
-      DD_SERVICE: ultihub-huey-worker
-      DD_AGENT_HOST: dd-agent
-      DD_LOGS_INJECTION: true
-    env_file:
-      - ./.env.prod
-    labels:
-      com.datadoghq.ad.logs: '[{"source": "python", "service": "ultihub-huey-worker"}]'
 
   redis:
     container_name: redis

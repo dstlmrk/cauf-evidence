@@ -7,7 +7,7 @@ from users.services import assign_or_invite_agent_to_club, unassign_or_cancel_ag
 from tests.factories import AgentAtClubFactory
 
 
-@patch("core.tasks.send_email.delay")
+@patch("users.services.send_email")
 def test_assigning_and_unassigning_agent_to_club(mocked_task, agent, club, user):
     # assign
     assert not agent.user.has_perm("manage_club", club)
@@ -28,7 +28,7 @@ def test_assigning_and_unassigning_agent_to_club(mocked_task, agent, club, user)
     assert not agent_at_club.is_active
 
 
-@patch("core.tasks.send_email.delay")
+@patch("users.services.send_email")
 def test_inviting_and_invite_canceling_agent_to_club(mocked_task, club, user):
     # invite
     assign_or_invite_agent_to_club(email="new@email.cz", club=club, invited_by=user)

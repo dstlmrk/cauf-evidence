@@ -20,7 +20,6 @@ dependencies = [
     "django-crispy-forms>=2.3",
     "crispy-bootstrap5>=2024.10",
     "django-guardian>=2.4.0",
-    "django-rq>=2.10.2",
     "djangorestframework>=3.15.2",
     "django-countries>=7.6.1",
     "django-admin-rangefilter>=0.13.2",

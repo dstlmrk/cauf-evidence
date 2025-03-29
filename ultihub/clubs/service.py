@@ -20,4 +20,4 @@ def notify_club(club: Club, subject: str, message: str) -> None:
         )
 
     for agent_at_club in club_agents.filter(agent__has_email_notifications_enabled=True):
-        send_email.delay(subject, message, to=[agent_at_club.agent.user.email])
+        send_email(subject, message, to=[agent_at_club.agent.user.email])
