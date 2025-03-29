@@ -26,11 +26,6 @@ from finance.services import (
 logger = logging.getLogger(__name__)
 
 
-@db_periodic_task(crontab(minute="*"))
-def task_test() -> None:
-    logger.info("Test log")
-
-
 @transaction.atomic
 def _update_invoice(invoice: Invoice, status: InvoiceStatus, total: Decimal) -> None:
     if invoice.fakturoid_status != status:
@@ -59,7 +54,7 @@ def _update_invoice(invoice: Invoice, status: InvoiceStatus, total: Decimal) -> 
     invoice.save()
 
 
-@db_periodic_task(crontab(minute="*", hour="*"))
+@db_periodic_task(crontab(minute="0", hour="5/17"))
 def check_fakturoid_invoices() -> None:
     """
     Periodic task to check invoices in Fakturoid.
