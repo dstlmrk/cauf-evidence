@@ -26,10 +26,26 @@ class NewAgentRequest(AuditModel):
 
 
 class Agent(AuditModel):
-    picture_url = models.URLField(blank=True)
-    user = models.OneToOneField(User, on_delete=models.PROTECT, related_name="agent")
+    picture_url = models.URLField(
+        blank=True,
+    )
+    user = models.OneToOneField(
+        User,
+        on_delete=models.PROTECT,
+        related_name="agent",
+    )
     has_email_notifications_enabled = models.BooleanField(
-        default=True, verbose_name="Email notifications enabled"
+        default=True,
+        verbose_name="Email notifications enabled",
+        help_text="If disabled, no emails will be sent",
+    )
+    has_guest_players_notifications_enabled = models.BooleanField(
+        default=True,
+        verbose_name="Guest players notifications enabled",
+    )
+    has_roster_reminders_enabled = models.BooleanField(
+        default=True,
+        verbose_name="Roster reminders enabled",
     )
 
     def __str__(self) -> str:
