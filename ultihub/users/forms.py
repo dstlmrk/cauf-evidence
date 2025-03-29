@@ -8,4 +8,6 @@ class AgentForm(forms.ModelForm):
         model = Agent
         fields = [
             "has_email_notifications_enabled",
+            "has_guest_players_notifications_enabled",
+            "has_roster_reminders_enabled",
         ]
