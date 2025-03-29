@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "crispy_bootstrap5",
     "crispy_forms",
+    "dbbackup",
     "ddtrace.contrib.django",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -115,6 +116,12 @@ DATABASES = {
         "PORT": "5432",
     }
 }
+
+# DBBACKUP SETTINGS -----------------------------------------------------------
+DBBACKUP_STORAGE = "storages.backends.dropbox.DropBoxStorage"
+DROPBOX_APP_KEY = env.str("DROPBOX_APP_KEY")
+DROPBOX_APP_SECRET = env.str("DROPBOX_APP_SECRET")
+DROPBOX_OAUTH2_REFRESH_TOKEN = env.str("DROPBOX_OAUTH2_REFRESH_TOKEN")
 
 # AUTHENTICATION ---------------------------------------------------------------
 SITE_ID = 1
