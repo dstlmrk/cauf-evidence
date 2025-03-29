@@ -1,14 +1,14 @@
 import logging
 
 from django.core.mail import EmailMessage
-from django_rq import job
+from huey.contrib.djhuey import task
 
 from ultihub.settings import ENVIRONMENT
 
 logger = logging.getLogger(__name__)
 
 
-@job
+@task()
 def send_email(subject: str, body: str, to: list[str], csv_data: str | None = None) -> None:
     if ENVIRONMENT in ["prod"]:
         logger.info("Sending email to %s", to)

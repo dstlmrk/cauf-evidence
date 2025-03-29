@@ -36,7 +36,6 @@ urlpatterns = [
     path("api/", include("api.urls")),
     path("club/", include("clubs.urls")),
     path("competitions/", include("competitions.urls")),
-    path("django-rq/", include("django_rq.urls")),
     path("finance/", include("finance.urls")),
     path("members/", include("members.urls")),
     path("tournaments/", include("tournaments.urls")),

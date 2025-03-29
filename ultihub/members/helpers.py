@@ -180,7 +180,7 @@ def export_members_to_csv_for_nsa(agent: Agent, club: SessionClub) -> None:
         data=data,
     )
 
-    send_email.delay(
+    send_email(
         "NSA export",
         f"Hi. Here is the CSV export of all members in {club.name} for NSA.",
         to=[agent.user.email],

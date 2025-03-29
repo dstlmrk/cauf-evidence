@@ -274,7 +274,7 @@ class Member(AuditModel):
                 },
             )
 
-            send_email.delay("Please confirm your email", html_content, to=[email])
+            send_email("Please confirm your email", html_content, to=[email])
             logger.info("Confirmation token %s sent to %s", self.email_confirmation_token, email)
 
 

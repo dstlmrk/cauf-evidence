@@ -38,7 +38,7 @@ def unassign_agent_from_club(agent: Agent, club: Club) -> None:
 
 def send_inviting_email(email: str, club: Club | None) -> None:
     club_name = club.name if club else "ČAUF Evidence"
-    send_email.delay(
+    send_email(
         "Access to club granted",
         f"You have been granted access to {club_name}. Check it out at https://evidence.frisbee.cz\n",
         to=[email],
@@ -86,7 +86,7 @@ def unassign_or_cancel_agent_invite_from_club(email: str, club: Club) -> None:
     else:
         NewAgentRequest.objects.filter(email=email, club=club, processed_at__isnull=True).delete()
 
-    send_email.delay(
+    send_email(
         "Access to club revoked",
         f"Your access to {club.name} has been revoked",
         to=[email],

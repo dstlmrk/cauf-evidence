@@ -11,9 +11,8 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.utils import timezone
-from django_rq import job
 from huey import crontab
-from huey.contrib.djhuey import db_periodic_task
+from huey.contrib.djhuey import db_periodic_task, db_task
 
 from finance.clients.fakturoid import InvoiceStatus, fakturoid_client
 from finance.models import Invoice, InvoiceStateEnum, InvoiceTypeEnum
@@ -87,7 +86,7 @@ def resend_invoices_to_fakturoid() -> None:
     logger.info("End trying to resend invoices to Fakturoid")
 
 
-@job
+@db_task()
 @transaction.atomic()
 def calculate_season_fees_for_check(user: User, season: Season) -> None:
     logger.info(f"Calculating fees (check) for season {season.name}")
@@ -108,7 +107,7 @@ def calculate_season_fees_for_check(user: User, season: Season) -> None:
         ],
     )
 
-    send_email.delay(
+    send_email(
         "Fees calculation for check",
         (
             f"Hi. We have calculated fees for the season {season.name}."
@@ -119,7 +118,7 @@ def calculate_season_fees_for_check(user: User, season: Season) -> None:
     )
 
 
-@job
+@db_task()
 @transaction.atomic()
 def calculate_season_fees_and_generate_invoices(season: Season) -> None:
     logger.info(f"Calculating fees (hot) for season {season.name}")

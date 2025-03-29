@@ -20,20 +20,7 @@ services:
   worker:
     image: ultihub
     restart: always
-    entrypoint: ["/app/ultihub/manage.py", "rqworker", "default"]
-    volumes:
-      - ../ultihub/:/app/ultihub
-    depends_on:
-      - redis
-    env_file:
-      - ../secrets/.env.dev
-    environment:
-      PYTHONUNBUFFERED: true
-
-  huey-worker:
-    image: ultihub
-    restart: always
-    entrypoint: ["/app/ultihub/manage.py", "run_huey"]
+    entrypoint: ["/app/ultihub/manage.py", "run_huey", "-q"]
     volumes:
       - ../ultihub/:/app/ultihub
     depends_on:
