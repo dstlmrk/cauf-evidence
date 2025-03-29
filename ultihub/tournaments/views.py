@@ -78,7 +78,7 @@ def tournament_detail_view(request: HttpRequest, tournament_id: int) -> HttpResp
 @require_GET
 def roster_dialog_view(request: HttpRequest, team_at_tournament_id: int) -> HttpResponse:
     team_at_tournament = get_object_or_404(TeamAtTournament, pk=team_at_tournament_id)
-    return render(
+    response = render(
         request,
         "tournaments/partials/roster_dialog.html",
         {
@@ -88,6 +88,8 @@ def roster_dialog_view(request: HttpRequest, team_at_tournament_id: int) -> Http
             .order_by("created_at"),
         },
     )
+    response["HX-Replace-Url"] = f"?roster={team_at_tournament.id}"
+    return response
 
 
 @login_required
@@ -141,7 +143,8 @@ def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int
                         team_at_tournament.application.team_name,
                         request.build_absolute_uri(
                             reverse("tournaments:detail", args=(tournament.pk,))
-                        ),
+                        )
+                        + f"?roster={team_at_tournament.id}",
                         tournament,
                     ),
                 )

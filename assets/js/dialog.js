@@ -19,6 +19,11 @@ function initializeModal(modalId, dialogId) {
     // Remove dialog content after hiding
     document.getElementById(modalId).addEventListener("hidden.bs.modal", () => {
         document.getElementById(dialogId).innerHTML = "";
+
+        // Remove GET param from URL
+        const url = new URL(window.location);
+        url.searchParams.delete("roster");
+        history.replaceState({}, "", url);
     });
 }
 
