@@ -9,7 +9,7 @@ Below is a high-level overview of the project's components:
 
 -   **Containerized Architecture**: The entire application is structured as Docker images managed with `docker-compose`.
 -   **Backend**: Developed with the latest versions of Python and Django.
--   **Database**: PostgreSQL serves as the database, ~with automated backups to S3 for data security and redundancy~.
+-   **Database**: PostgreSQL serves as the database, with automated backups to Dropbox for data security and redundancy.
 -   **Frontend**:
     -   Primarily server-rendered.
     -   Dynamic elements implemented using Alpine.js and HTMX.
@@ -43,14 +43,8 @@ The app is hosted on Digital Ocean VPS on `46.101.97.63` and it is accessible vi
 
 #### Backup
 
-Temporarily, backups are managed manually. To create a backup,
-run the following command (it requires access to the server):
-
-```bash
-./run-backup.sh <user> 46.101.97.63
-```
-
-The backup is stored in the `backups` directory on your local machine.
+The app is backed up every day at 3:00 AM. The backup is stored in the Dropbox.
+It uses [Django Database Backup](https://django-dbbackup.readthedocs.io/en/stable/index.html).
 
 ## API
 
