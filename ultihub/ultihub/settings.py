@@ -17,11 +17,14 @@ ORIGINAL_EVIDENCE_LOGIN = env.str("ORIGINAL_EVIDENCE_LOGIN")
 ORIGINAL_EVIDENCE_PASSWORD = env.str("ORIGINAL_EVIDENCE_PASSWORD")
 
 if ENVIRONMENT == "prod":
+    BASE_URL = "https://evidence.frisbee.cz"
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     CSRF_TRUSTED_ORIGINS = [f"https://{APPLICATION_DOMAIN}"]
     sentry_sdk.init()
+else:
+    BASE_URL = "http://localhost:8000"
 
 # FEATURE FLAGS ---------------------------------------------------------------
 FF_EMAIL_REQUIRED = env.bool("FF_EMAIL_REQUIRED", True)
@@ -55,7 +58,6 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "django.contrib.messages",
     "django.contrib.sessions",
-    "django.contrib.sites",
     "django.contrib.staticfiles",
     "django_extensions",
     "huey.contrib.djhuey",

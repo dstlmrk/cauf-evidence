@@ -2,11 +2,27 @@ document.addEventListener("alpine:init", () => {
     Alpine.data("memberSearch", window.memberSearch);
 });
 
-document.body.addEventListener("showRosterDialog", (event) => {
-    const { teamAtTournamentId } = event.detail;
+function openModal(teamAtTournamentId) {
     const rosterButton = document.getElementById(`rosterButton-${teamAtTournamentId}`);
-    rosterButton.click();
+    if (rosterButton) {
+        rosterButton.click();
+    }
+}
+
+document.body.addEventListener("showRosterDialog", (event) => {
+    // This event is triggered when a roster dialog is requested to be shown from the server
+    const { teamAtTournamentId } = event.detail;
+    openModal(teamAtTournamentId);
 });
+
+function initOpenModalFromUrl() {
+    // Check if the URL contains a query parameter "roster" and show the corresponding modal
+    const params = new URLSearchParams(window.location.search);
+    const teamAtTournamentId = params.get("roster");
+    if (teamAtTournamentId) {
+        openModal(teamAtTournamentId);
+    }
+}
 
 function birthNumberToDate(birthNumber) {
     let year = parseInt(birthNumber.substring(0, 2), 10);
@@ -140,3 +156,4 @@ function memberForm() {
 }
 
 window.memberForm = memberForm;
+window.initOpenModalFromUrl = initOpenModalFromUrl;

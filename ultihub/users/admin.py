@@ -31,7 +31,7 @@ class NewAgentRequestAdmin(admin.ModelAdmin):
 
 @admin.register(Agent)
 class AgentAdmin(GuardedModelAdmin):
-    list_display = ("id", "user__email")
+    list_display = ("id", "user__email", "has_email_notifications_enabled")
     search_fields = ("user__email",)
     ordering = ("-pk",)
 

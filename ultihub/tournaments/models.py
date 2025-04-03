@@ -17,6 +17,7 @@ class Tournament(AuditModel):
     end_date = models.DateField()
     location = models.CharField(max_length=128)
     rosters_deadline = models.DateTimeField()
+    are_reminders_sent = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ("competition", "name")
