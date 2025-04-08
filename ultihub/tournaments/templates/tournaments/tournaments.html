@@ -138,7 +138,7 @@
                     {% if tournament.winner_team %}
                         <div>Winner: {{ tournament.winner_team }}</div>
                     {% endif %}
-                    {% if tournament.sotg_winner_team %}
+                    {% if tournament.winner_team and tournament.sotg_winner_team %}
                         <div>Spirit: {{ tournament.sotg_winner_team }}</div>
                     {% endif %}
                 </div>
