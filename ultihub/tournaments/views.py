@@ -1,4 +1,5 @@
 import json
+import logging
 
 from clubs.service import notify_club
 from core.helpers import get_current_club, get_current_club_or_none
@@ -18,6 +19,8 @@ from tournaments.models import (
     TeamAtTournament,
     Tournament,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @require_GET
@@ -221,6 +224,12 @@ def remove_member_from_roster_view(
         return HttpResponse(status=400)
 
     member_at_tournament.delete()
+    logger.info(
+        "Member removed from roster; member=%s, team=%s, tournament=%s",
+        member_at_tournament.member,
+        member_at_tournament.team_at_tournament,
+        member_at_tournament.tournament,
+    )
     messages.success(request, "Member removed successfully")
 
     response = render(
