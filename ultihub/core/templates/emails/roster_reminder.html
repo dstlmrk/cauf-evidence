@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="cs">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Upozornění na soupisky / Roster Reminder</title>
+    </head>
+    <body>
+        <b>CZ:</b>
+        <p><strong>Pozor!</strong> Blíží se termín pro vyplnění soupisky. Máš ji opravdu kompletní?</p>
+        <p>Zkontroluj si přihlášené týmy:</p>
+
+        <ul>
+            {% for entry in rosters %}
+                <li>
+                    Tým: <strong>{{ entry.team_name }}</strong><br />
+                    Turnaj: <strong>{{ entry.tournament_name }}</strong><br />
+                    Hráčů na soupisce: <strong>{{ entry.roster_count }}</strong><br />
+                    Deadline soupisky: <strong>{{ entry.deadline|date:"j. n. Y H:i" }}</strong><br />
+                    <a href="{{ entry.roster_link }}">Zobrazit soupisku</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <hr />
+
+        <b>EN:</b>
+        <p><strong>Heads up!</strong> The roster deadline is approaching. Is everything ready?</p>
+        <p>Please review your registered teams:</p>
+
+        <ul>
+            {% for entry in rosters %}
+                <li>
+                    Team: <strong>{{ entry.team_name }}</strong><br />
+                    Tournament: <strong>{{ entry.tournament_name }}</strong><br />
+                    Players on roster: <strong>{{ entry.roster_count }}</strong><br />
+                    Roster deadline: <strong>{{ entry.deadline|date:"F j, Y H:i" }}</strong><br />
+                    <a href="{{ entry.roster_link }}">View roster</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
