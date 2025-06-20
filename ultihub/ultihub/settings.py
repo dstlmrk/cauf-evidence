@@ -159,8 +159,11 @@ USE_TZ = True
 # STATIC FILES ----------------------------------------------------------------
 STATIC_URL = "static/"
 STATIC_ROOT = Path("/app/static")
+WEBPACK_DIST_DIR = Path(STATIC_ROOT) / "dist"
+
 if ENVIRONMENT == "dev":
     STATICFILES_DIRS = [BASE_DIR / "static"]
+    WEBPACK_DIST_DIR = Path(BASE_DIR) / "static" / "dist"
 
 # DJANGO ----------------------------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

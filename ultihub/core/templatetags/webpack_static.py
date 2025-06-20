@@ -17,11 +17,8 @@ def webpack_static(filename: str) -> str:
     If the file is not found in the manifest, return the original.
     """
     global _manifest_cache
-    if _manifest_cache is None:
-        if ENVIRONMENT == "prod":
-            manifest_path = Path(settings.STATIC_ROOT) / "dist" / "manifest.json"
-        else:
-            manifest_path = Path(settings.BASE_DIR) / "static" / "dist" / "manifest.json"
+    if _manifest_cache is None or ENVIRONMENT == "dev":  # type: ignore[unreachable]
+        manifest_path = Path(settings.WEBPACK_DIST_DIR) / "manifest.json"
         try:
             with manifest_path.open("r", encoding="utf-8") as f:
                 _manifest_cache = json.load(f)

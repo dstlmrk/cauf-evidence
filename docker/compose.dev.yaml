@@ -48,5 +48,16 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: ultihub
 
+  webpack:
+    image: node:24-alpine
+    working_dir: /app
+    volumes:
+      - ../assets/:/app/assets/
+      - ../static/:/app/static/
+      - ../package.json:/app/package.json
+      - ../package-lock.json:/app/package-lock.json
+      - ../webpack.config.js:/app/webpack.config.js
+    command: ["sh", "-c", "npm ci && npm run watch"]
+
 volumes:
   postgres_data:
