@@ -8,6 +8,7 @@
         x-model="query"
         @input.debounce.300ms="search()"
         @focus="onFocus()"
+        @blur="onBlur()"
         @keydown.arrow-down.prevent="moveDown()"
         @keydown.arrow-up.prevent="moveUp()"
         @keydown.enter.prevent="selectHighlighted()"
