@@ -28,6 +28,14 @@ window.memberSearch = function (tournament_id) {
             }
         },
 
+        onBlur() {
+            // Use setTimeout to allow click events on the dropdown to fire first
+            setTimeout(() => {
+                this.showResults = false;
+                this.highlightedIndex = -1;
+            }, 150);
+        },
+
         moveDown() {
             if (this.highlightedIndex < this.results.length - 1) {
                 this.highlightedIndex++;
