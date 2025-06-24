@@ -5,6 +5,9 @@ from clubs.models import ClubNotification
 
 
 def notifications(request: HttpRequest) -> dict:
+    if request.path.startswith("/admin/"):
+        return {}
+
     club = get_current_club_or_none(request)
     if request.user.is_authenticated and club:
         new_notifications_count = ClubNotification.objects.filter(

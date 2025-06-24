@@ -54,6 +54,10 @@ class Club(AuditModel):
         permissions = (("manage_club", "Can manage club"),)
 
     def __str__(self) -> str:
+        return self.short_name_or_name
+
+    @property
+    def short_name_or_name(self) -> str:
         return self.short_name or self.name
 
     def clean(self) -> None:
