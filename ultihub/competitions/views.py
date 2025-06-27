@@ -10,11 +10,16 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET, require_POST
 
+from competitions.filters import CompetitionFilterSet
 from competitions.forms import RegistrationForm
 from competitions.models import (
+    AgeLimit,
     ApplicationStateEnum,
     Competition,
     CompetitionApplication,
+    CompetitionTypeEnum,
+    Division,
+    Season,
 )
 from competitions.services import get_competitions_qs_with_related_data
 
@@ -30,14 +35,25 @@ def competitions(request: HttpRequest) -> HttpResponse:
             team__club=club, invoice__isnull=True, state=ApplicationStateEnum.AWAITING_PAYMENT
         ).count()
 
+    # Get filter options
+    seasons = Season.objects.all().order_by("-name")
+    competition_types = CompetitionTypeEnum.choices
+    divisions = Division.objects.all().order_by("name")
+    age_limits = AgeLimit.objects.all().order_by("name")
+
+    # Build queryset with filters
+    competitions_qs = get_competitions_qs_with_related_data(club_id=club.id if club else None)
+
+    # Apply filters using FilterSet
+    filter_set = CompetitionFilterSet(request.GET, queryset=competitions_qs)
+    competitions_qs = filter_set.qs
+
     return render(
         request,
         "competitions/competitions.html",
         context={
             "is_unset_fakturoid_id": bool(club and not club.fakturoid_subject_id),
-            "competitions": get_competitions_qs_with_related_data(
-                club_id=club.id if club else None
-            ).annotate(
+            "competitions": competitions_qs.annotate(
                 has_final_placement=Exists(
                     CompetitionApplication.objects.filter(
                         competition_id=OuterRef("pk"),
@@ -45,6 +61,10 @@ def competitions(request: HttpRequest) -> HttpResponse:
                     )
                 )
             ),
+            "seasons": seasons,
+            "competition_types": competition_types,
+            "divisions": divisions,
+            "age_limits": age_limits,
             **context,
         },
     )

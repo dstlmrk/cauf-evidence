@@ -4,145 +4,157 @@
 {% block title %}<h1>Tournaments</h1>{% endblock %}
 
 {% block content %}
-    <div class="d-none d-md-block">
-        <table class="table align-middle">
-            <thead>
-                <tr class="align-middle">
-                    <th scope="col"></th>
-                    <th scope="col">Rosters<br /><small class="text-muted">Deadline</small></th>
-                    <th scope="col">Season</th>
-                    <th scope="col">Competition</th>
-                    <th scope="col">Tournament<br /><small class="text-muted">Location</small></th>
-                    <th scope="col">
-                        Start date <i class="bi bi-arrow-down-short"></i>
-                        <br />
-                        <small class="text-muted">End date</small>
-                    </th>
-                    <th scope="col" class="fit pe-5 text-center">
-                        <div data-bs-toggle="tooltip" data-bs-title="Total teams / members">Total<br />T / M</div>
-                    </th>
-                    <th scope="col">Winner<br /><small class="text-muted">SOTG</small></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tournament in tournaments %}
-                    <tr>
-                        <td>
-                            {% if tournament.includes_my_club_team %}
-                                <i
-                                    class="bi bi-check"
-                                    style="color: green;"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-title="Your club has a team in this tournament"
-                                ></i>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if tournament.has_open_rosters %}
-                                <span class="badge text-bg-success">OPEN</span>
-                            {% else %}
-                                <span class="badge text-bg-dark">CLOSED</span>
-                            {% endif %}
-                            <br />
-                            <small class="text-muted">{{ tournament.rosters_deadline | date:'d/m/Y H:i' }}</small>
-                        </td>
-                        <td>
-                            {{ tournament.competition.season }}<br />
-                            <small class="text-muted"> {{ tournament.competition.get_type_display | upper }} </small>
-                        </td>
-                        <td>
-                            {{ tournament.competition.name }}<br />
-                            <span class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
-                                >{{ tournament.competition.division | upper }}</span
-                            >
-                            {% if tournament.competition.age_limit %}
-                                <span class="badge text-bg-primary"
-                                    >{{ tournament.competition.age_limit | upper }}</span
-                                >
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{% url 'tournaments:detail' tournament.id %}" class="text-primary">
-                                {{ tournament.name }}
-                            </a>
-                            <br />
-                            <small class="text-muted">{{ tournament.location }}</small>
-                        </td>
-                        <td>
-                            {{ tournament.start_date | date:'d.m.Y' }}<br />
-                            <small class="text-muted">{{ tournament.end_date | date:'d.m.Y' }}</small>
-                        </td>
-                        <td>
-                            {% if tournament.team_count %}
-                                {{ tournament.team_count }}
-                                / {{ tournament.member_count }}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if tournament.winner_team %}
-                                {{ tournament.winner_team }}<br />
-                                <small class="text-muted">{{ tournament.sotg_winner_team }}</small>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="d-block d-md-none">
-        <div class="list-group">
-            {% for tournament in tournaments %}
-                <div
-                    class="list-group-item {% if tournament.includes_my_club_team %}list-group-item-success{% endif %} text-black"
-                >
-                    <div class="d-flex w-100 justify-content-between">
-                        <div>
-                            <small class="text-muted">
-                                {{ tournament.competition.season }} •
-                                {{ tournament.competition.get_type_display | upper }}
-                            </small>
+    <!-- Filters -->
+    {% include "core/partials/competition_filters.html" %}
 
-                            <div>
-                                <b>{{ tournament.competition.name }}</b>
-                                <span style="position: relative; top: -2px;">
-                                    <span
-                                        class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
+    {% if tournaments %}
+        <div class="d-none d-md-block">
+            <table class="table align-middle">
+                <thead>
+                    <tr class="align-middle">
+                        <th scope="col"></th>
+                        <th scope="col">Rosters<br /><small class="text-muted">Deadline</small></th>
+                        <th scope="col">Season</th>
+                        <th scope="col">Competition</th>
+                        <th scope="col">Tournament<br /><small class="text-muted">Location</small></th>
+                        <th scope="col">
+                            Start date <i class="bi bi-arrow-down-short"></i>
+                            <br />
+                            <small class="text-muted">End date</small>
+                        </th>
+                        <th scope="col" class="fit pe-5 text-center">
+                            <div data-bs-toggle="tooltip" data-bs-title="Total teams / members">Total<br />T / M</div>
+                        </th>
+                        <th scope="col">Winner<br /><small class="text-muted">SOTG</small></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tournament in tournaments %}
+                        <tr>
+                            <td>
+                                {% if tournament.includes_my_club_team %}
+                                    <i
+                                        class="bi bi-check"
+                                        style="color: green;"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-title="Your club has a team in this tournament"
+                                    ></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if tournament.has_open_rosters %}
+                                    <span class="badge text-bg-success">OPEN</span>
+                                {% else %}
+                                    <span class="badge text-bg-dark">CLOSED</span>
+                                {% endif %}
+                                <br />
+                                <small class="text-muted">{{ tournament.rosters_deadline | date:'d/m/Y H:i' }}</small>
+                            </td>
+                            <td>
+                                {{ tournament.competition.season }}<br />
+                                <small class="text-muted">
+                                    {{ tournament.competition.get_type_display | upper }}
+                                </small>
+                            </td>
+                            <td>
+                                {{ tournament.competition.name }}<br />
+                                <span
+                                    class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
+                                    >{{ tournament.competition.division | upper }}</span
+                                >
+                                {% if tournament.competition.age_limit %}
+                                    <span class="badge text-bg-primary"
+                                        >{{ tournament.competition.age_limit | upper }}</span
                                     >
-                                        {{ tournament.competition.division | upper }}
-                                    </span>
-                                    {% if tournament.competition.age_limit %}
-                                        <span class="badge text-bg-primary">
-                                            {{ tournament.competition.age_limit | upper }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'tournaments:detail' tournament.id %}" class="text-primary">
+                                    {{ tournament.name }}
+                                </a>
+                                <br />
+                                <small class="text-muted">{{ tournament.location }}</small>
+                            </td>
+                            <td>
+                                {{ tournament.start_date | date:'d.m.Y' }}<br />
+                                <small class="text-muted">{{ tournament.end_date | date:'d.m.Y' }}</small>
+                            </td>
+                            <td>
+                                {% if tournament.team_count %}
+                                    {{ tournament.team_count }}
+                                    / {{ tournament.member_count }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if tournament.winner_team %}
+                                    {{ tournament.winner_team }}<br />
+                                    <small class="text-muted">{{ tournament.sotg_winner_team }}</small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-block d-md-none">
+            <div class="list-group">
+                {% for tournament in tournaments %}
+                    <div
+                        class="list-group-item {% if tournament.includes_my_club_team %}list-group-item-success{% endif %} text-black"
+                    >
+                        <div class="d-flex w-100 justify-content-between">
+                            <div>
+                                <small class="text-muted">
+                                    {{ tournament.competition.season }} •
+                                    {{ tournament.competition.get_type_display | upper }}
+                                </small>
+
+                                <div>
+                                    <b>{{ tournament.competition.name }}</b>
+                                    <span style="position: relative; top: -2px;">
+                                        <span
+                                            class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
+                                        >
+                                            {{ tournament.competition.division | upper }}
                                         </span>
-                                    {% endif %}
-                                </span>
+                                        {% if tournament.competition.age_limit %}
+                                            <span class="badge text-bg-primary">
+                                                {{ tournament.competition.age_limit | upper }}
+                                            </span>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                {% if tournament.has_open_rosters %}
+                                    <span class="badge text-bg-success">OPEN</span>
+                                {% else %}
+                                    <span class="badge text-bg-dark">CLOSED</span>
+                                {% endif %}
                             </div>
                         </div>
+                        <a href="{% url 'tournaments:detail' tournament.id %}" class="text-primary h5">
+                            {{ tournament.name }}
+                        </a>
                         <div>
-                            {% if tournament.has_open_rosters %}
-                                <span class="badge text-bg-success">OPEN</span>
-                            {% else %}
-                                <span class="badge text-bg-dark">CLOSED</span>
-                            {% endif %}
+                            {{ tournament.location }} • {{ tournament.start_date | date:'d.m.Y' }} -
+                            {{ tournament.end_date | date:'d.m.Y' }}
                         </div>
+                        <div>Rosters deadline: {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}</div>
+                        <div>Total teams/members: {{ tournament.team_count }}/{{ tournament.member_count }}</div>
+                        {% if tournament.winner_team %}
+                            <div>Winner: {{ tournament.winner_team }}</div>
+                        {% endif %}
+                        {% if tournament.winner_team and tournament.sotg_winner_team %}
+                            <div>Spirit: {{ tournament.sotg_winner_team }}</div>
+                        {% endif %}
                     </div>
-                    <a href="{% url 'tournaments:detail' tournament.id %}" class="text-primary h5">
-                        {{ tournament.name }}
-                    </a>
-                    <div>
-                        {{ tournament.location }} • {{ tournament.start_date | date:'d.m.Y' }} -
-                        {{ tournament.end_date | date:'d.m.Y' }}
-                    </div>
-                    <div>Rosters deadline: {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}</div>
-                    <div>Total teams/members: {{ tournament.team_count }}/{{ tournament.member_count }}</div>
-                    {% if tournament.winner_team %}
-                        <div>Winner: {{ tournament.winner_team }}</div>
-                    {% endif %}
-                    {% if tournament.winner_team and tournament.sotg_winner_team %}
-                        <div>Spirit: {{ tournament.sotg_winner_team }}</div>
-                    {% endif %}
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
-    </div>
+    {% else %}
+        <div class="alert alert-primary" role="alert">
+            <i class="bi bi-info-circle-fill me-1"></i> No tournaments found.
+        </div>
+    {% endif %}
 {% endblock %}
