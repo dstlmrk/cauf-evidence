@@ -13,6 +13,11 @@ from tournaments.admin import MemberAtTournamentInline
 from members.models import CoachLicence, Member, MemberSexEnum
 
 
+class CoachLicenceInline(admin.TabularInline):
+    model = CoachLicence
+    extra = 0
+
+
 class CitizenshipFilter(admin.SimpleListFilter):
     title = "Citizenship"
     parameter_name = "citizenship"
@@ -86,7 +91,10 @@ class MemberAdmin(admin.ModelAdmin):
     actions = ["export_as_csv"]
     ordering = ["-id"]
     show_facets = admin.ShowFacets.ALWAYS
-    inlines = [MemberAtTournamentInline]
+    inlines = [
+        CoachLicenceInline,
+        MemberAtTournamentInline,
+    ]
 
     search_fields = ["first_name", "last_name", "email", "birth_number", "original_id"]
     list_filter = [
