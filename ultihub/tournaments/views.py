@@ -2,6 +2,8 @@ import json
 import logging
 
 from clubs.service import notify_club
+from competitions.filters import TournamentFilterSet
+from competitions.models import AgeLimit, CompetitionTypeEnum, Division, Season
 from core.helpers import get_current_club, get_current_club_or_none
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -26,38 +28,55 @@ logger = logging.getLogger(__name__)
 @require_GET
 def tournaments_view(request: HttpRequest) -> HttpResponse:
     club = get_current_club_or_none(request)
+
+    seasons = Season.objects.all().order_by("-name")
+    competition_types = CompetitionTypeEnum.choices
+    divisions = Division.objects.all().order_by("name")
+    age_limits = AgeLimit.objects.all().order_by("name")
+
+    # Build queryset with filters
+    queryset = Tournament.objects.select_related(
+        "competition",
+        "competition__season",
+        "competition__division",
+        "competition__age_limit",
+    )
+
+    # Apply filters using FilterSet
+    filter_set = TournamentFilterSet(request.GET, queryset=queryset)
+    queryset = filter_set.qs
+
+    tournaments = queryset.annotate(
+        team_count=Count("teams", distinct=True),
+        member_count=Count("members", distinct=True),
+        winner_team=Subquery(
+            TeamAtTournament.objects.filter(tournament=OuterRef("pk"), final_placement=1).values(
+                "application__team_name"
+            )[:1]
+        ),
+        sotg_winner_team=Subquery(
+            TeamAtTournament.objects.filter(tournament=OuterRef("pk"))
+            .order_by(F("spirit_avg").desc(nulls_last=True), "final_placement")
+            .values("application__team_name")[:1]
+        ),
+        includes_my_club_team=Exists(
+            TeamAtTournament.objects.filter(
+                tournament=OuterRef("pk"), application__team__club_id=club.id
+            )
+        )
+        if club
+        else Value(False, output_field=BooleanField()),
+    ).order_by("-start_date", "competition__division", "name")
+
     return render(
         request,
         "tournaments/tournaments.html",
         {
-            "tournaments": Tournament.objects.select_related(
-                "competition",
-                "competition__season",
-                "competition__division",
-                "competition__age_limit",
-            )
-            .annotate(
-                team_count=Count("teams", distinct=True),
-                member_count=Count("members", distinct=True),
-                winner_team=Subquery(
-                    TeamAtTournament.objects.filter(
-                        tournament=OuterRef("pk"), final_placement=1
-                    ).values("application__team_name")[:1]
-                ),
-                sotg_winner_team=Subquery(
-                    TeamAtTournament.objects.filter(tournament=OuterRef("pk"))
-                    .order_by(F("spirit_avg").desc(nulls_last=True), "final_placement")
-                    .values("application__team_name")[:1]
-                ),
-                includes_my_club_team=Exists(
-                    TeamAtTournament.objects.filter(
-                        tournament=OuterRef("pk"), application__team__club_id=club.id
-                    )
-                )
-                if club
-                else Value(False, output_field=BooleanField()),
-            )
-            .order_by("-start_date", "competition__division", "name"),
+            "tournaments": tournaments,
+            "seasons": seasons,
+            "competition_types": competition_types,
+            "divisions": divisions,
+            "age_limits": age_limits,
         },
     )
 

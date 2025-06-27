@@ -1,0 +1,67 @@
+{% load humanize %}
+
+<div class="row mb-3">
+    <div class="col-12">
+        <form method="get" class="row g-2">
+            <!-- Season filter -->
+            <div class="col-md-3 col-6">
+                <select class="form-select" id="season" name="season" onchange="this.form.submit()">
+                    <option value="">All seasons</option>
+                    {% for season in seasons %}
+                        <option
+                            value="{{ season.id }}"
+                            {% if request.GET.season == season.id|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ season.name | upper }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Competition type filter -->
+            <div class="col-md-3 col-6">
+                <select class="form-select" id="type" name="type" onchange="this.form.submit()">
+                    <option value="">All types</option>
+                    {% for type_value, type_label in competition_types %}
+                        <option
+                            value="{{ type_value }}"
+                            {% if request.GET.type == type_value|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ type_label | upper }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Division filter -->
+            <div class="col-md-3 col-6">
+                <select class="form-select" id="division" name="division" onchange="this.form.submit()">
+                    <option value="">All divisions</option>
+                    {% for division in divisions %}
+                        <option
+                            value="{{ division.id }}"
+                            {% if request.GET.division == division.id|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ division.name | upper }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Age limit filter -->
+            <div class="col-md-3 col-6">
+                <select class="form-select" id="age_limit" name="age_limit" onchange="this.form.submit()">
+                    <option value="">No age limits</option>
+                    {% for age_limit in age_limits %}
+                        <option
+                            value="{{ age_limit.id }}"
+                            {% if request.GET.age_limit == age_limit.id|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ age_limit.name | upper }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
