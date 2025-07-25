@@ -294,7 +294,7 @@ class CoachLicence(AuditModel):
     )
 
     def clean(self) -> None:
-        if self.valid_from > self.valid_to:
+        if self.valid_from and self.valid_to and self.valid_from > self.valid_to:
             raise ValidationError(
                 {"valid_to": "Valid to date must be greater than valid from date."}
             )
