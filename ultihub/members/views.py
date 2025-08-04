@@ -2,6 +2,7 @@ import logging
 from uuid import UUID
 
 from clubs.models import Club
+from competitions.models import Season
 from core.helpers import get_current_club
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -23,12 +24,12 @@ from members.forms import (
 from members.helpers import (
     approve_transfer,
     create_transfer_request,
-    export_members_to_csv_for_nsa,
     reject_transfer,
     revoke_transfer,
 )
 from members.models import CoachLicence, Member, Transfer
 from members.services import search as search_service
+from members.tasks import generate_nsa_export
 
 logger = logging.getLogger(__name__)
 
@@ -210,15 +211,13 @@ def change_transfer_state_view(request: HttpRequest) -> HttpResponse:
 @login_required
 @require_POST
 def export_members_csv_for_nsa_view(request: HttpRequest) -> HttpResponse:
-    export_members_to_csv_for_nsa(
-        agent=request.user.agent,  # type: ignore
-        club=get_current_club(request),
+    generate_nsa_export(
+        user=request.user,
+        season=Season.objects.last(),
+        club=Club.objects.get(id=get_current_club(request).id),
     )
     messages.success(
         request,
-        (
-            "The process of exporting members to NSA has started."
-            " The file will be sent to your email."
-        ),
+        "The process of exporting members has started. The file will be sent to your email.",
     )
     return HttpResponse(status=204)

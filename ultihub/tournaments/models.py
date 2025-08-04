@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from core.models import AuditModel
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
@@ -21,6 +22,15 @@ class Tournament(AuditModel):
     class Meta:
         unique_together = ("competition", "name")
         app_label = "tournaments"
+
+    def clean(self) -> None:
+        super().clean()
+        if self.start_date > self.end_date:
+            raise ValidationError({"start_date": "Start date cannot be after end date"})
+        if (self.end_date - self.start_date).days > 10:
+            raise ValidationError(
+                {"end_date": "Difference between start and end date cannot be more than 10 days"}
+            )
 
     def __str__(self) -> str:
         return f"{self.name} ({self.competition})"

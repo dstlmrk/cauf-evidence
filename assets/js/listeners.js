@@ -10,6 +10,22 @@ document.body.addEventListener("showRosterDialog", (event) => {
     rosterButton.click();
 });
 
+function waitForElement(selector, callback, maxTries = 20, interval = 100) {
+    let tries = 0;
+
+    const timer = setInterval(() => {
+        const el = document.querySelector(selector);
+        if (el) {
+            clearInterval(timer);
+            callback();
+        } else if (tries >= maxTries) {
+            clearInterval(timer);
+            console.warn(`Element ${selector} not found after ${maxTries} attempts.`);
+        }
+        tries++;
+    }, interval);
+}
+
 // Utility functions for birth number processing
 class BirthNumberUtils {
     static toDate(birthNumber) {
@@ -82,7 +98,6 @@ function memberForm() {
             this.loadInitialData();
             this.setupEventListeners();
             this.setupWatchers();
-            this.setupMutationObserver();
         },
 
         // Form setup
@@ -106,21 +121,21 @@ function memberForm() {
             this.birthDate = this.initialData.birth_date;
             this.birthNumber = this.initialData.birth_number;
 
-            // Apply field states after DOM is ready
-            this.$nextTick(() => {
-                this.applyFieldStates();
+            waitForElement("#id_citizenship", () => {
+                this.handleCitizenship(this.citizenship);
+                this.handleBirthNumber(this.birthNumber);
             });
         },
 
         // Setup event listeners
         setupEventListeners() {
-            // Birth date blur event
+            // Birthdate blur event
             if (this.$refs.birthDate) {
                 this.$refs.birthDate.addEventListener("blur", () => {
                     this.handleBirthDate(this.birthDate);
                 });
 
-                // Set empty value if birth date is empty
+                // Set empty value if birthdate is empty
                 if (this.birthDate === "") {
                     this.$refs.birthDate.value = this.birthDate;
                 }
@@ -136,39 +151,6 @@ function memberForm() {
             this.$watch("birthNumber", (value) => {
                 this.handleBirthNumber(value);
             });
-        },
-
-        // Setup mutation observer for form re-renders
-        setupMutationObserver() {
-            const observer = new MutationObserver((mutations) => {
-                let shouldReapply = false;
-
-                mutations.forEach((mutation) => {
-                    if (mutation.type === "childList" || mutation.type === "attributes") {
-                        shouldReapply = true;
-                    }
-                });
-
-                if (shouldReapply) {
-                    this.$nextTick(() => {
-                        this.applyFieldStates();
-                    });
-                }
-            });
-
-            // Observe form for changes
-            observer.observe(this.$refs.form, {
-                childList: true,
-                subtree: true,
-                attributes: true,
-                attributeFilter: ["class", "style"],
-            });
-        },
-
-        // Apply all field states
-        applyFieldStates() {
-            this.handleCitizenship(this.citizenship);
-            this.handleBirthDate(this.birthDate);
         },
 
         // Handle citizenship changes
@@ -199,12 +181,13 @@ function memberForm() {
             if (value.length === 10 || value.length === 11) {
                 let birthNumber = value.toString().replace("/", "");
                 this.birthDate = BirthNumberUtils.toDate(birthNumber);
+                this.$refs.birthDate.value = this.birthDate;
                 this.sex = BirthNumberUtils.detectSex(birthNumber);
                 this.handleBirthDate(this.birthDate);
             }
         },
 
-        // Handle birth date changes
+        // Handle birthdate changes
         handleBirthDate(value) {
             // Handle legal guardian fields (disabled for people 15+)
             this.$refs.form.querySelectorAll(".legal-guardian-field input").forEach((input) => {

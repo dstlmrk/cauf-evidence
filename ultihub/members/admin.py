@@ -9,7 +9,6 @@ from django_countries.fields import Country
 from rangefilter.filters import DateRangeFilterBuilder
 from tournaments.admin import MemberAtTournamentInline
 
-# from members.helpers import get_member_participation_counts_for_last_season
 from members.models import CoachLicence, Member, MemberSexEnum
 
 

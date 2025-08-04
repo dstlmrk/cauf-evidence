@@ -12,6 +12,7 @@ from finance.tasks import (
     calculate_season_fees_and_generate_invoices,
     calculate_season_fees_for_check,
 )
+from members.tasks import generate_nsa_export
 from tournaments.models import TeamAtTournament, Tournament
 
 from competitions.forms import AddTeamsToTournamentForm
@@ -47,6 +48,12 @@ class SeasonAdmin(admin.ModelAdmin):
     has_generated_invoices.boolean = True  # type: ignore
 
     def response_change(self, request: HttpRequest, obj: Season) -> HttpResponse:
+        if "_generate-nsa-export" in request.POST:
+            generate_nsa_export(request.user, obj, None)
+            self.message_user(
+                request, "The NSA export is being generated. Check your email for results."
+            )
+            return HttpResponseRedirect(".")
         if "_check-fees" in request.POST:
             calculate_season_fees_for_check(request.user, obj)
             self.message_user(

@@ -1,5 +1,6 @@
 import logging
 
+from competitions.models import Season
 from core.helpers import get_club_id, get_current_club
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -54,7 +55,10 @@ def members(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "clubs/members.html",
-        {"any_member_exists": Member.objects.filter(club_id=get_club_id(request)).exists()},
+        {
+            "any_member_exists": Member.objects.filter(club_id=get_club_id(request)).exists(),
+            "last_season": Season.objects.last(),
+        },
     )
 
 
