@@ -53,7 +53,7 @@ def _update_invoice(invoice: Invoice, status: InvoiceStatus, total: Decimal) -> 
     invoice.save()
 
 
-@db_periodic_task(crontab(minute="0", hour="5/17"))
+@db_periodic_task(crontab(minute="0", hour="5,17"))
 def check_fakturoid_invoices() -> None:
     """
     Periodic task to check invoices in Fakturoid.
@@ -62,7 +62,7 @@ def check_fakturoid_invoices() -> None:
 
     for invoice in Invoice.objects.filter(
         state=InvoiceStateEnum.OPEN,
-        created_at__gte=timezone.now() - timedelta(days=90),
+        created_at__gte=timezone.now() - timedelta(days=180),
     ):
         status, total = fakturoid_client.get_invoice_status_and_total(
             invoice_id=invoice.fakturoid_invoice_id  # type: ignore
