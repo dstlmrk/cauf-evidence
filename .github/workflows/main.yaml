@@ -19,7 +19,7 @@ jobs:
         check: [test, lint, style, type, migrations-check]
     steps:
       - uses: actions/checkout@v4
-      - run: pipx install poetry==2.1.1
+      - run: pipx install poetry==2.1.4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
