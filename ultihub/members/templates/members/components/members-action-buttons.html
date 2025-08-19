@@ -2,12 +2,7 @@
     <button class="btn btn-success" hx-get="{% url 'members:add_member' %}" hx-target="#dialog-xl">
         <i class="bi bi-plus"></i> Create member
     </button>
-    <form
-        method="POST"
-        hx-post="{% url 'members:export_members_csv_for_nsa' %}"
-        hx-confirm="Are you sure that you want to export members for {{ last_season.name }} season? This will send a CSV file to your email."
-    >
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary"><i class="bi bi-envelope"></i> Send export to my email</button>
-    </form>
+    <button class="btn btn-primary" hx-get="{% url 'members:nsa_export_modal' %}" hx-target="#dialog">
+        <i class="bi bi-box-arrow-up"></i> NSA Export
+    </button>
 </div>

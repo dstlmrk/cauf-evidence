@@ -1,4 +1,5 @@
 import logging
+from typing import cast
 from uuid import UUID
 
 from clubs.models import Club
@@ -209,15 +210,37 @@ def change_transfer_state_view(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+@require_GET
+def nsa_export_modal_view(request: HttpRequest) -> HttpResponse:
+    seasons = Season.objects.all().order_by("-name")
+    last_season = Season.objects.last()
+    return render(
+        request,
+        "members/partials/nsa_export_modal.html",
+        {"seasons": seasons, "last_season": last_season},
+    )
+
+
+@login_required
 @require_POST
 def export_members_csv_for_nsa_view(request: HttpRequest) -> HttpResponse:
+    season_id = request.POST.get("season_id")
+
+    if season_id:
+        season = get_object_or_404(Season, pk=season_id)
+    else:
+        season = cast(Season, Season.objects.last())
+
     generate_nsa_export(
         user=request.user,
-        season=Season.objects.last(),
+        season=season,
         club=Club.objects.get(id=get_current_club(request).id),
     )
     messages.success(
         request,
-        "The process of exporting members has started. The file will be sent to your email.",
+        (
+            f"The process of exporting members for {season.name} season has started."
+            " The file will be sent to your email."
+        ),
     )
     return HttpResponse(status=204)
