@@ -71,7 +71,7 @@ def generate_nsa_export(user: User, season: Season, club: Club | None) -> None:
                 "1" if member.has_coach_licence else "0",
                 member.earliest_coach_licence_date if member.has_coach_licence else "",
                 "98.3",
-                "69345368",  # member.club.identification_number
+                member.club.identification_number,
             ]
         )
 
