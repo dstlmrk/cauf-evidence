@@ -6,8 +6,10 @@ services:
       - 8000
     restart: always
     depends_on:
-      - db
-      - dd-agent
+      db:
+        condition: service_started
+      dd-agent:
+        condition: service_healthy
     networks:
       - reverse-proxy
       - database
@@ -32,8 +34,10 @@ services:
     restart: always
     entrypoint: ["/app/ultihub/manage.py", "run_huey", "-q"]
     depends_on:
-      - redis
-      - dd-agent
+      redis:
+        condition: service_started
+      dd-agent:
+        condition: service_healthy
     networks:
       - database
     environment:
@@ -126,6 +130,12 @@ services:
       - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
       - /opt/datadog-agent/run:/opt/datadog-agent/run:rw
     mem_limit: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "agent health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
 volumes:
   certs:
