@@ -103,13 +103,26 @@ def search(request: HttpRequest) -> JsonResponse:
     current_club = get_current_club(request)
     query = request.GET.get("q", "").strip()
     tournament_id = request.GET.get("tournament_id")
+    member_id = request.GET.get("member_id")
 
     if tournament_id == "null":
         tournament = None
     else:
         tournament = get_object_or_404(Tournament, pk=tournament_id)
 
-    logger.info(f"Searching for members with query: {query}, tournament_id: {tournament_id}")
+    logger.info(
+        f"Searching for members with query: {query},"
+        f" tournament_id: {tournament_id}, member_id: {member_id}"
+    )
+
+    if member_id:
+        # If member_id is provided, return that specific member
+        try:
+            members = [Member.objects.select_related("club").get(pk=member_id)]
+        except Member.DoesNotExist:
+            members = []
+    else:
+        members = search_service(query, current_club.id, tournament)
 
     return JsonResponse(
         {
@@ -125,7 +138,7 @@ def search(request: HttpRequest) -> JsonResponse:
                     "default_jersey_number": member.default_jersey_number,
                     "flag": member.citizenship.unicode_flag,
                 }
-                for member in search_service(query, current_club.id, tournament)
+                for member in members
             ]
         }
     )

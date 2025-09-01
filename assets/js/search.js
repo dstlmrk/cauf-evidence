@@ -21,6 +21,28 @@ window.memberSearch = function (tournament_id) {
             }
         },
 
+        // Load member info if member_id input has value (for error states)
+        async loadPreselectedMember() {
+            const memberIdInput = document.querySelector("#id_member_id");
+            if (memberIdInput && memberIdInput.value) {
+                try {
+                    const response = await fetch(
+                        `/members/search?member_id=${memberIdInput.value}&tournament_id=${this.tournament_id}`
+                    );
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.results && data.results.length > 0) {
+                            const member = data.results[0];
+                            this.selectedMember = member;
+                            this.query = member.full_name + " (" + member.birth_year + ")";
+                        }
+                    }
+                } catch (error) {
+                    console.log("Could not load preselected member:", error);
+                }
+            }
+        },
+
         onFocus() {
             this.showResults = true;
             if (this.tournament_id) {
@@ -57,7 +79,9 @@ window.memberSearch = function (tournament_id) {
                 this.results = [];
                 this.showResults = false;
                 this.selectedMember = {};
-                await this.fetchForm();
+                if (!this.tournament_id) {
+                    await this.fetchForm();
+                }
                 return;
             }
 
