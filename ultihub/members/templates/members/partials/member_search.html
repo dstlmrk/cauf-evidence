@@ -1,4 +1,8 @@
-<div x-data="memberSearch({{ tournament_id|default:'null' }})" style="position: relative;">
+<div
+    x-data="memberSearch({{ tournament_id|default:'null' }})"
+    x-init="await loadPreselectedMember()"
+    style="position: relative;"
+>
     <label class="mb-2">Member*</label>
     <input
         id="id_member_search"
@@ -7,6 +11,7 @@
         placeholder="Search members..."
         x-model="query"
         @input.debounce.300ms="search()"
+        @input="if (!$event.target.value) document.querySelector('#id_member_id').value = ''; document.querySelector('.form-error-msg')?.remove()"
         @focus="onFocus()"
         @blur="onBlur()"
         @keydown.arrow-down.prevent="moveDown()"
