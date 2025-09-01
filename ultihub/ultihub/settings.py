@@ -3,6 +3,7 @@ from pathlib import Path
 import environ
 import sentry_sdk
 from django.contrib import messages
+from sentry_sdk.integrations.django import DjangoIntegration
 
 env = environ.Env()
 
@@ -21,7 +22,12 @@ if ENVIRONMENT == "prod":
     SESSION_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     CSRF_TRUSTED_ORIGINS = [f"https://{APPLICATION_DOMAIN}"]
-    sentry_sdk.init()
+    sentry_sdk.init(
+        integrations=[
+            DjangoIntegration(),
+        ],
+        send_default_pii=True,
+    )
 
 # FEATURE FLAGS ---------------------------------------------------------------
 FF_EMAIL_REQUIRED = env.bool("FF_EMAIL_REQUIRED", True)

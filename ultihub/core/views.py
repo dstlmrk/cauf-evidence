@@ -11,3 +11,8 @@ def homepage_view(request: HttpRequest) -> HttpResponse:
 @require_GET
 def faq_view(request: HttpRequest) -> HttpResponse:
     return render(request, "core/faq.html")
+
+
+@require_GET
+def privacy_policy_view(request: HttpRequest) -> HttpResponse:
+    return render(request, "core/privacy-policy.html")
