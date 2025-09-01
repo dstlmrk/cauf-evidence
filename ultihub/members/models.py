@@ -210,7 +210,7 @@ class Member(AuditModel):
         if self.email and Member.objects.filter(email=self.email).exclude(pk=self.pk).exists():
             errors["email"] = "Member with this email already exists"
 
-        if is_at_least_15(self.birth_date):
+        if self.birth_date and not is_at_least_15(self.birth_date):
             if FF_EMAIL_REQUIRED and not self.email:
                 errors["email"] = "This field is required"
         else:
