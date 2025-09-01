@@ -7,7 +7,7 @@ readme = "README.md"
 requires-python = ">=3.12.5,<4.0"
 
 dependencies = [
-    "django>=5.1.7",
+    "django>=5.1.9",
     "gunicorn>=23.0.0",
     "django-environ>=0.11.2",
     "psycopg2-binary>=2.9.9",
@@ -25,12 +25,14 @@ dependencies = [
     "django-admin-rangefilter>=0.13.2",
     "fakeredis>=2.26.2",
     "django-filter>=24.3",
-    "requests>=2.32.3",
+    "requests>=2.32.5",
+    "urllib3>=2.2.3",
     "tenacity>=9.0.0",
     "django-extensions>=3.2.3",
     "pyparsing>=3.2.0",
     "pydot>=3.0.3",
     "pycountry>=24.6.1",
+    "protobuf>=5.28.2",
     "huey[redis] (>=2.5.3,<3.0.0)",
     "django-dbbackup (>=4.2.1,<5.0.0)",
     "django-storages[dropbox] (>=1.14.5,<2.0.0)",
