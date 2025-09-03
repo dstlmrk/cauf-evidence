@@ -210,16 +210,17 @@ class Member(AuditModel):
         if self.email and Member.objects.filter(email=self.email).exclude(pk=self.pk).exists():
             errors["email"] = "Member with this email already exists"
 
-        if self.birth_date and not is_at_least_15(self.birth_date):
-            if FF_EMAIL_REQUIRED and not self.email:
-                errors["email"] = "This field is required"
-        else:
-            error_msg = "This field is required for children under 15"
-            if FF_EMAIL_REQUIRED and not self.legal_guardian_email:
-                errors["legal_guardian_email"] = error_msg
-            for field in ["legal_guardian_first_name", "legal_guardian_last_name"]:
-                if not getattr(self, field):
-                    errors[field] = error_msg
+        if self.birth_date:
+            if is_at_least_15(self.birth_date):
+                if FF_EMAIL_REQUIRED and not self.email:
+                    errors["email"] = "This field is required"
+            else:
+                error_msg = "This field is required for children under 15"
+                if FF_EMAIL_REQUIRED and not self.legal_guardian_email:
+                    errors["legal_guardian_email"] = error_msg
+                for field in ["legal_guardian_first_name", "legal_guardian_last_name"]:
+                    if not getattr(self, field):
+                        errors[field] = error_msg
         if (
             self.birth_number
             and Member.objects.filter(birth_number=self.birth_number).exclude(pk=self.pk).exists()
