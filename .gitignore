@@ -167,3 +167,6 @@ node_modules/
 
 # Ignore .dot files
 *.dot
+
+CLAUDE.md
+.claude/

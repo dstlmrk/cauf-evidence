@@ -51,6 +51,7 @@ def assign_or_invite_agent_to_club(
     """
     Assign agent to club and invite him if he doesn't have an account in the app
     """
+    email = email.lower()
     if agent := Agent.objects.filter(user__email=email).first():
         if agent.user.has_perm("manage_club", club):
             return
@@ -75,6 +76,7 @@ def unassign_or_cancel_agent_invite_from_club(email: str, club: Club) -> None:
     """
     Unassign agent from club or cancel pending invite
     """
+    email = email.lower()
     agent_at_club = AgentAtClub.objects.filter(agent__user__email=email, club=club).first()
 
     if agent_at_club:
