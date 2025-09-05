@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def pre_social_login(self, request: HttpRequest, sociallogin: SocialLogin) -> None:
-        google_email = sociallogin.account.extra_data.get("email")
+        google_email = sociallogin.account.extra_data.get("email").lower()
         try:
             Agent.objects.filter(user__email=google_email, user__is_active=True).get()
             logger.info("User %s has logged in", google_email)

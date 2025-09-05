@@ -1,6 +1,7 @@
 from allauth.account.signals import user_logged_in
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth.models import User
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.http import HttpRequest
 from django.utils import timezone
@@ -19,7 +20,7 @@ def check_allowed_user(sender: type, request: HttpRequest, user: User, **kwargs:
             user.agent.save()
     except Agent.DoesNotExist:
         new_agent_request = NewAgentRequest.objects.filter(
-            email=user.email, processed_at=None
+            email=user.email.lower(), processed_at=None
         ).get()
         user.agent = Agent.objects.create(user=user, picture_url=google_picture)
         user.is_staff = new_agent_request.is_staff
@@ -41,3 +42,12 @@ def check_allowed_user(sender: type, request: HttpRequest, user: User, **kwargs:
         request.session["club"] = {"id": club.id, "name": club.name}
     else:
         request.session["club"] = None
+
+
+@receiver(pre_save, sender=User)
+def normalize_user_email(sender: type, instance: User, **kwargs: dict) -> None:
+    """
+    Normalize email to lowercase when saving User instance
+    """
+    if instance.email:
+        instance.email = instance.email.lower()
