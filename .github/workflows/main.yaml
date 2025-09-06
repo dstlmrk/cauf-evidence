@@ -37,7 +37,7 @@ jobs:
   # --------------------------------------------------------------------------------
   build-and-release:
     name: Build and release 🏗️
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/main'
     needs: [qa-check, prettier-check]
     runs-on: ubuntu-latest
     steps:
@@ -57,7 +57,7 @@ jobs:
   # --------------------------------------------------------------------------------
   deployment:
     name: Deployment 🚀
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/main'
     needs: build-and-release
     runs-on: ubuntu-latest
     steps:
@@ -112,7 +112,7 @@ jobs:
   # --------------------------------------------------------------------------------
   healthcheck:
     name: Healthcheck ✅
-    if: github.ref == 'refs/heads/main' && always()
+    # if: github.ref == 'refs/heads/main' && always()
     needs: deployment
     runs-on: ubuntu-latest
     steps:
