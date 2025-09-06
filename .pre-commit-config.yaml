@@ -4,18 +4,18 @@ repos:
     hooks:
       - id: lint
         name: lint
-        entry: poetry run poe lint
+        entry: uv run poe lint
         language: system
         types: [file, python]
       - id: style
         name: style
-        entry: poetry run poe style
+        entry: uv run poe style
         pass_filenames: false
         language: system
         types: [file, python]
       - id: type
         name: type
-        entry: poetry run poe type
+        entry: uv run poe type
         pass_filenames: false
         language: system
         types: [file, python]

@@ -278,8 +278,8 @@ class Command(BaseCommand):
                 )
 
                 self.stdout.write(
-                    f'-------------- {teams[roster["team_id"]]}'
-                    f' {roster["name"]} ({len(players)}) --------------'
+                    f"-------------- {teams[roster['team_id']]}"
+                    f" {roster['name']} ({len(players)}) --------------"
                 )
 
                 for player in players:

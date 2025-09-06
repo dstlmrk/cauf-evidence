@@ -11,20 +11,20 @@ RUN npm run build
 
 FROM python:3.12.5-slim AS python-builder
 
-RUN pip install --no-cache-dir poetry==2.1.1
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_VIRTUALENVS_CREATE=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy
 
 WORKDIR /app
-COPY ../pyproject.toml ../poetry.lock ./
+COPY ../pyproject.toml ../uv.lock ./
 
-# Poetry will complain if a README.md is not found
+# hatchling requires README.md to exist
 RUN touch README.md
 
-RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev --no-root
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
 FROM python:3.12.5-slim AS runtime
 
