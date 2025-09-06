@@ -180,7 +180,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "json": {
-            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "()": "pythonjsonlogger.json.JsonFormatter",
             "format": (
                 "%(asctime)s %(levelname)s %(message)s %(name)s"
                 " %(dd.service)s %(dd.env)s %(dd.version)s %(dd.trace_id)s %(dd.span_id)s"

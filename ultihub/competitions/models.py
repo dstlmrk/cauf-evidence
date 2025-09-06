@@ -161,7 +161,7 @@ class Competition(AuditModel):
 
     def __str__(self) -> str:
         name = f"BEACH {self.name}" if self.type == CompetitionTypeEnum.BEACH else self.name
-        return f"{name} {self.season} {str(self.division).upper()} {self.age_limit or ""}".strip()
+        return f"{name} {self.season} {str(self.division).upper()} {self.age_limit or ''}".strip()
 
     @property
     def has_open_registration(self) -> bool:

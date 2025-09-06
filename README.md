@@ -132,14 +132,14 @@ docker compose -f docker/compose.dev.yaml exec app python manage.py loaddata ini
 
 App is prepared with initial data, and you can access it on `localhost:8000`.
 
-For another useful commands what you could need you need to install `poetry`.
-Then check all possible options in output of `poetry run poe help` command.
+For another useful commands what you could need you need to install `uv`.
+Then check all possible options in output of `uv run poe help` command.
 
 For better development experience, you need install pre-commit hooks and prettier:
 
 ```bash
 # Install pre-commit for better development experience
-poetry run pre-commit install
+uv run pre-commit install
 
 # Prettier needs to be installed via npm (install node via brew)
 npm install
@@ -148,14 +148,17 @@ npm install
 ### Don't forget
 
 ```bash
-# Install dependencies without app itself
-poetry install --no-root
+# Install dependencies including dev group
+uv sync --group dev
 
-# Update lock file without updating dependencies
-poetry lock --no-update
+# Update lock file
+uv lock
 
-# Install new package
-poetry add package
+# Add new package
+uv add package
+
+# Add dev dependency
+uv add --group dev package
 
 # Build new js/css bundles
 npm run build

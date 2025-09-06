@@ -12,7 +12,7 @@ dependencies = [
     "django-environ>=0.11.2",
     "psycopg2-binary>=2.9.9",
     "sentry-sdk[django]>=2.14.0",
-    "ddtrace>=2.12.0",
+    "ddtrace>=2.12.0,<3.0",
     "python-json-logger>=2.0.7",
     "django-allauth[socialaccount]>=64.2.1",
     "django-htmx>=1.19.0",
@@ -38,20 +38,25 @@ dependencies = [
     "django-storages[dropbox] (>=1.14.5,<2.0.0)",
 ]
 
-[tool.poetry.group.dev.dependencies]
-pytest-django = "^4.9.0"
-ruff = "^0.6.3"
-poethepoet = "^0.28.0"
-mypy = "^1.11.2"
-django-stubs = "^5.0.4"
-pre-commit = "^3.8.0"
-factory-boy = "^3.3.1"
-pytest-factoryboy = "^2.7.0"
-types-requests = "^2.32.0.20241016"
+[dependency-groups]
+dev = [
+    "pytest-django>=4.9.0",
+    "ruff>=0.6.3",
+    "poethepoet>=0.28.0",
+    "mypy>=1.11.2",
+    "django-stubs>=5.0.4",
+    "pre-commit>=3.8.0",
+    "factory-boy>=3.3.1",
+    "pytest-factoryboy>=2.7.0",
+    "types-requests>=2.32.0.20241016",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["ultihub"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 django_find_project = false
@@ -127,7 +132,7 @@ help = "Check migrations"
 sequence = [
   "docker compose -f docker/compose.test.yaml up -d",
   "python tests/wait_for_postgres.py",
-  "bash -c 'poetry run python ultihub/manage.py makemigrations --check --dry-run || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down; exit $EXIT_CODE'"
+  "bash -c 'uv run python ultihub/manage.py makemigrations --check --dry-run || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down; exit $EXIT_CODE'"
 ]
 envfile = "secrets/.env.test"
 

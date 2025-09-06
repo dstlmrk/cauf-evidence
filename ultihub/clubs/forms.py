@@ -26,7 +26,7 @@ class ClubForm(forms.ModelForm):
         self.fields["organization_name"].disabled = True
         self.fields["identification_number"].disabled = True
         if self.instance.short_name:
-            self.initial["name"] = f"{self.instance.name} ({self.instance.short_name})"  # type: ignore
+            self.initial["name"] = f"{self.instance.name} ({self.instance.short_name})"
 
     def clean_name(self) -> str:
         return self.instance.name
