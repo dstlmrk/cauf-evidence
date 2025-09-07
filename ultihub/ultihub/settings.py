@@ -1,5 +1,7 @@
 from pathlib import Path
 
+# Import ddtrace auto-instrumentation at the top level
+import ddtrace.auto  # noqa
 import environ
 import sentry_sdk
 from django.contrib import messages
@@ -54,7 +56,6 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "crispy_forms",
     "dbbackup",
-    "ddtrace.contrib.django",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -136,7 +137,7 @@ LOGIN_REDIRECT_URL = "/"
 ACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_ADAPTER = "users.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_ONLY = True
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
