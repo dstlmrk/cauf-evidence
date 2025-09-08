@@ -10,10 +10,6 @@ services:
         condition: service_started
       dd-agent:
         condition: service_healthy
-    networks:
-      - reverse-proxy
-      - database
-      - monitored
     volumes:
       - static:/app/static
     environment:
@@ -38,8 +34,6 @@ services:
         condition: service_started
       dd-agent:
         condition: service_healthy
-    networks:
-      - database
     environment:
       DD_SERVICE: ultihub-worker
       DD_AGENT_HOST: dd-agent
@@ -55,9 +49,6 @@ services:
     restart: always
     expose:
       - 6379
-    networks:
-      - database
-      - monitored
     volumes:
       - redis_data:/data
 
@@ -65,8 +56,6 @@ services:
     container_name: db
     image: postgres:16.4-alpine
     restart: always
-    networks:
-      - database
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -81,8 +70,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    networks:
-      - reverse-proxy
     volumes:
       - ./redirect.conf:/etc/nginx/conf.d/redirect.conf:ro
       - ./vhostd.conf:/etc/nginx/vhost.d/default:ro
@@ -99,8 +86,6 @@ services:
       DEFAULT_EMAIL: __LETSENCRYPT_EMAIL__
       ACME_CA_URI: https://acme-v02.api.letsencrypt.org/directory
       NGINX_PROXY_CONTAINER: nginx-proxy
-    networks:
-      - reverse-proxy
     volumes:
       - acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -114,8 +99,6 @@ services:
     container_name: dd-agent
     image: datadog/agent:7.57.1
     restart: always
-    networks:
-      - monitored
     environment:
       DD_API_KEY: __DATADOG_API_KEY__
       DD_SITE: datadoghq.eu
@@ -145,8 +128,3 @@ volumes:
   postgres_data:
   static:
   redis_data:
-
-networks:
-  reverse-proxy:
-  database:
-  monitored:
