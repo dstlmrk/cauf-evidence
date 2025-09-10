@@ -1,13 +1,15 @@
 from pathlib import Path
 
-# Import ddtrace auto-instrumentation at the top level
-import ddtrace.auto  # noqa
 import environ
 import sentry_sdk
 from django.contrib import messages
 from sentry_sdk.integrations.django import DjangoIntegration
 
 env = environ.Env()
+
+# Import ddtrace auto-instrumentation only in production
+if env.str("ENVIRONMENT", default="dev") == "prod":
+    import ddtrace.auto  # noqa
 
 # BASE SETTINGS ---------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent

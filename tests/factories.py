@@ -17,7 +17,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from factory import SubFactory
 from finance.models import Invoice, InvoiceTypeEnum
-from members.models import Member, MemberSexEnum
+from members.models import Member, MemberSexEnum, Transfer, TransferStateEnum
 from tournaments.models import MemberAtTournament, TeamAtTournament, Tournament
 from users.models import Agent, AgentAtClub
 
@@ -180,3 +180,16 @@ class InvoiceFactory(factory.django.DjangoModelFactory):
     club = SubFactory(ClubFactory)
     type = InvoiceTypeEnum.COMPETITION_DEPOSIT
     original_amount = Decimal(2000)
+
+
+class TransferFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Transfer
+
+    member = SubFactory(MemberFactory)
+    state = TransferStateEnum.REQUESTED
+    source_club = factory.LazyAttribute(lambda obj: obj.member.club)
+    target_club = SubFactory(ClubFactory)
+    requesting_club = factory.LazyAttribute(lambda obj: obj.source_club)
+    approving_club = factory.LazyAttribute(lambda obj: obj.target_club)
+    requested_by = SubFactory(AgentFactory)
