@@ -153,6 +153,13 @@
                         />
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
+                        {% if user.is_staff %}
+                            <li>
+                                <a class="dropdown-item" href="/admin/">
+                                    <i class="bi-shield-fill-exclamation"></i> Administration
+                                </a>
+                            </li>
+                        {% endif %}
                         <li>
                             <a class="dropdown-item" href="{% url 'users:profile' %}">
                                 <i class="bi-person-fill"></i> Profile

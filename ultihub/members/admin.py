@@ -1,6 +1,7 @@
 import csv
 from typing import Any
 
+from core.admin import ReadOnlyModelAdmin
 from django.contrib import admin
 from django.db.models import Exists, OuterRef, QuerySet
 from django.http import HttpRequest, HttpResponse
@@ -9,7 +10,8 @@ from django_countries.fields import Country
 from rangefilter.filters import DateRangeFilterBuilder
 from tournaments.admin import MemberAtTournamentInline
 
-from members.models import CoachLicence, Member, MemberSexEnum
+from members.helpers import approve_transfer
+from members.models import CoachLicence, Member, MemberSexEnum, Transfer, TransferStateEnum
 
 
 class CoachLicenceInline(admin.TabularInline):
@@ -243,3 +245,54 @@ class CoachLicenceAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         qs = qs.select_related("member", "member__club")
         return qs
+
+
+@admin.register(Transfer)
+class TransferAdmin(ReadOnlyModelAdmin):
+    list_display = (
+        "id",
+        "transfer",
+        "member_full_name",
+        "state",
+        "approved_at",
+    )
+    list_filter = ["state", "created_at"]
+    actions = ["approve_transfers"]
+
+    @admin.display(description="Member")
+    def member_full_name(self, obj: Transfer) -> str:
+        return obj.member.full_name
+
+    @admin.display(description="Transfer")
+    def transfer(self, obj: Transfer) -> str:
+        return f"{obj.source_club} → {obj.target_club}"
+
+    @admin.action(description="Approve selected transfers")
+    def approve_transfers(self, request: HttpRequest, queryset: QuerySet) -> None:
+        approved_count = 0
+        for transfer in queryset.filter(state=TransferStateEnum.REQUESTED):
+            try:
+                approve_transfer(agent=request.user.agent, transfer=transfer)  # type: ignore[union-attr]
+                approved_count += 1
+            except Exception as e:
+                self.message_user(
+                    request, f"Error approving transfer {transfer.id}: {str(e)}", level="ERROR"
+                )
+
+        if approved_count > 0:
+            self.message_user(request, f"{approved_count} transfers were approved.")
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
+        return (
+            super()
+            .get_queryset(request)
+            .select_related(
+                "member",
+                "source_club",
+                "target_club",
+                "requesting_club",
+                "approving_club",
+                "requested_by",
+                "approved_by",
+            )
+        )
