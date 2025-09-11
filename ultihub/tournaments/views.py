@@ -137,7 +137,9 @@ def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int
             .get(pk=request.POST["member_id"])
         )
         form = AddMemberToRosterForm(
-            request.POST, tournament=team_at_tournament.tournament, member=member
+            request.POST,
+            member=member,
+            team_at_tournament=team_at_tournament,
         )
 
         if form.is_valid():

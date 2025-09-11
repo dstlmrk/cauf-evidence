@@ -221,6 +221,6 @@ def test_get_seasons(api_client, season):
             "fee_at_tournament": f"{season.fee_at_tournament:.2f}",
             "invoices_generated_at": season.invoices_generated_at,
             "min_allowed_age": season.min_allowed_age,
-            "age_reference_date": season.age_reference_date,
+            "age_reference_date": season.age_reference_date.isoformat(),
         },
     ]
