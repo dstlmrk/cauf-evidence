@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 import factory.fuzzy
@@ -87,13 +87,16 @@ class MemberFactory(factory.django.DjangoModelFactory):
 class SeasonFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Season
+        django_get_or_create = ("name",)
 
     name = "2025"
     discounted_fee = Decimal(200)
     regular_fee = Decimal(600)
     fee_at_tournament = Decimal(60)
     min_allowed_age = 14
-    age_reference_date = factory.LazyAttribute(lambda obj: f"{obj.name}-12-31")
+    age_reference_date = factory.LazyAttribute(
+        lambda obj: datetime.strptime(f"{obj.name}-12-31", "%Y-%m-%d").date()
+    )
 
 
 class DivisionFactory(factory.django.DjangoModelFactory):
@@ -101,6 +104,8 @@ class DivisionFactory(factory.django.DjangoModelFactory):
         model = Division
 
     name = factory.Faker("word")
+    is_female_allowed = True
+    is_male_allowed = True
 
 
 class AgeLimitFactory(factory.django.DjangoModelFactory):
