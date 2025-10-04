@@ -4,6 +4,8 @@ from io import StringIO
 
 from django.http import HttpRequest
 
+from core.models import AppSettings
+
 
 @dataclass
 class SessionClub:
@@ -24,6 +26,10 @@ def get_current_club_or_none(request: HttpRequest) -> SessionClub | None:
         return get_current_club(request)
     except TypeError:
         return None
+
+
+def get_app_settings() -> AppSettings:
+    return AppSettings.get_solo()
 
 
 def create_csv(header: list[str], data: list[list]) -> str:

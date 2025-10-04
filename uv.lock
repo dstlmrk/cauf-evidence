@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.12.5, <4.0"
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -367,6 +367,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/84/d4/1709593b01799c29c8d5a6f72973d787c8b881b0f8e2767b9e913fe2c688/django_htmx-1.23.2.tar.gz", hash = "sha256:65a8c8825fcae983b94aedce26af96a70717ab185d55cdb8a7a4bb68863ab079", size = 64415, upload-time = "2025-06-27T14:09:32.539Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3c/84/d5b29c102743abd61e1852b619263c8938b8516c71a138f4053114270743/django_htmx-1.23.2-py3-none-any.whl", hash = "sha256:c288fe92bdcfa7c2ed9665d6d23cc55c6693a7cc8d22cf0a01e1e38318874030", size = 61503, upload-time = "2025-06-27T14:09:31.272Z" },
+]
+
+[[package]]
+name = "django-solo"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/98/69/c550d3bf82c7b4e75295b2e13c41b8f15c8d63b9379ee7ce2f7b7615f919/django_solo-2.4.0.tar.gz", hash = "sha256:ec92dc00aec75034a3f93b3a85152e57c4b03d7987f8cfd0ea8a47cc6e3c2084", size = 13571, upload-time = "2024-10-19T13:09:09.971Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c3/3a/c5332bb9d3d58e2b6b7ed2a4c09ea2b0b1a8e3c5fe9d8169c0867922b6f4/django_solo-2.4.0-py3-none-any.whl", hash = "sha256:62e9c7d929620a61848515839833750ca142840051595cf5c8e617dcefc9e5cf", size = 16862, upload-time = "2024-10-19T13:09:08.465Z" },
 ]
 
 [[package]]
@@ -1100,6 +1112,7 @@ dependencies = [
     { name = "django-filter" },
     { name = "django-guardian" },
     { name = "django-htmx" },
+    { name = "django-solo" },
     { name = "django-storages", extra = ["dropbox"] },
     { name = "djangorestframework" },
     { name = "fakeredis" },
@@ -1146,6 +1159,7 @@ requires-dist = [
     { name = "django-filter", specifier = ">=24.3" },
     { name = "django-guardian", specifier = ">=2.4.0" },
     { name = "django-htmx", specifier = ">=1.19.0" },
+    { name = "django-solo", specifier = ">=2.4.0" },
     { name = "django-storages", extras = ["dropbox"], specifier = ">=1.14.5,<2.0.0" },
     { name = "djangorestframework", specifier = ">=3.15.2" },
     { name = "fakeredis", specifier = ">=2.26.2" },

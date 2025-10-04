@@ -4,6 +4,7 @@ from datetime import date
 from typing import Any
 
 from core.fields import ValidatedEmailField
+from core.helpers import get_app_settings
 from core.models import AuditModel
 from core.tasks import send_email
 from django.core.exceptions import ValidationError
@@ -19,7 +20,6 @@ from members.validators import (
     validate_czech_birth_number,
     validate_postal_code,
 )
-from ultihub.settings import FF_EMAIL_REQUIRED
 
 logger = logging.getLogger(__name__)
 
@@ -189,6 +189,7 @@ class Member(AuditModel):
 
     def clean(self) -> None:
         errors = {}
+        app_settings = get_app_settings()
 
         if self.citizenship == "CZ":
             if self.birth_number:
@@ -212,11 +213,11 @@ class Member(AuditModel):
 
         if self.birth_date:
             if is_at_least_15(self.birth_date):
-                if FF_EMAIL_REQUIRED and not self.email:
+                if app_settings.email_required and not self.email:
                     errors["email"] = "This field is required"
             else:
                 error_msg = "This field is required for children under 15"
-                if FF_EMAIL_REQUIRED and not self.legal_guardian_email:
+                if app_settings.email_required and not self.legal_guardian_email:
                     errors["legal_guardian_email"] = error_msg
                 for field in ["legal_guardian_first_name", "legal_guardian_last_name"]:
                     if not getattr(self, field):

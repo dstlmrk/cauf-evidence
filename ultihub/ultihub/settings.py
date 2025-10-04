@@ -33,13 +33,6 @@ if ENVIRONMENT == "prod":
         send_default_pii=True,
     )
 
-# FEATURE FLAGS ---------------------------------------------------------------
-FF_EMAIL_REQUIRED = env.bool("FF_EMAIL_REQUIRED", True)
-FF_EMAIL_VERIFICATION_REQUIRED = env.bool("FF_EMAIL_VERIFICATION_REQUIRED", True)
-FF_MIN_AGE_VERIFICATION_REQUIRED = env.bool("FF_MIN_AGE_VERIFICATION_REQUIRED", True)
-FF_TEAM_MANAGEMENT_ENABLED = env.bool("FF_TEAM_MANAGEMENT_ENABLED", True)
-FF_TRANSFERS_ENABLED = env.bool("FF_TRANSFERS_ENABLED", True)
-
 # APPLICATION DEFINITION ------------------------------------------------------
 INSTALLED_APPS = [
     "api.apps.ApiConfig",
@@ -51,6 +44,7 @@ INSTALLED_APPS = [
     "tournaments.apps.TournamentsConfig",
     "users.apps.UsersConfig",
     # 3rd party
+    "solo",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -100,6 +94,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "clubs.context_processors.notifications",
                 "users.context_processors.user_managed_clubs",
+                "core.context_processors.app_settings",
             ],
         },
     },

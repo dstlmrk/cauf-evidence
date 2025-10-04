@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import cast
 
 from clubs.service import notify_club
 from competitions.filters import TournamentFilterSet
@@ -131,18 +132,14 @@ def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int
         raise PermissionDenied()
 
     if request.method == "POST":
-        member = (
-            Member.objects.select_related("club")
-            .annotate_age(team_at_tournament.tournament.competition.season.age_reference_date)  # type: ignore
-            .get(pk=request.POST["member_id"])
-        )
         form = AddMemberToRosterForm(
             request.POST,
-            member=member,
             team_at_tournament=team_at_tournament,
         )
 
         if form.is_valid():
+            # Use validated member from form (already loaded with age annotation)
+            member = cast(Member, form.validated_member)
             MemberAtTournament.objects.create(
                 tournament_id=team_at_tournament.tournament_id,
                 team_at_tournament_id=team_at_tournament.id,

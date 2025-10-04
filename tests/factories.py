@@ -80,7 +80,7 @@ class MemberFactory(factory.django.DjangoModelFactory):
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
     email = factory.Faker("email")
-    birth_date = factory.Faker("date_of_birth")
+    birth_date = factory.Faker("date_of_birth", minimum_age=20, maximum_age=30)
     sex = factory.fuzzy.FuzzyChoice(list(MemberSexEnum))
 
 

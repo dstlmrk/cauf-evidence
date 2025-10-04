@@ -1,48 +1,62 @@
 from typing import Any
 
+from core.helpers import get_app_settings
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from members.models import MemberSexEnum
+from members.models import Member, MemberSexEnum
 
 from tournaments.models import MemberAtTournament
-from ultihub.settings import FF_EMAIL_VERIFICATION_REQUIRED, FF_MIN_AGE_VERIFICATION_REQUIRED
 
 
 class AddMemberToRosterForm(forms.Form):
     member_id = forms.IntegerField(widget=forms.HiddenInput())
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.member = kwargs.pop("member", None)
         self.team_at_tournament = kwargs.pop("team_at_tournament", None)
+        self.validated_member: Member | None = None  # Store validated member to avoid re-fetching
         super().__init__(*args, **kwargs)
 
-    def clean(self) -> dict[str, Any] | None:
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
+        if cleaned_data is None:
+            return {}
 
-        if self.team_at_tournament:
+        app_settings = get_app_settings()
+
+        if self.team_at_tournament and cleaned_data.get("member_id"):
             tournament = self.team_at_tournament.tournament
             if tournament.rosters_deadline < timezone.now():
                 raise ValidationError({"member_id": "The roster deadline has passed"})
 
-            if self.member:
-                if FF_EMAIL_VERIFICATION_REQUIRED and not self.member.has_email_confirmed:
+            # Load member with age annotation for efficient age validation
+            member = (
+                Member.objects.get_queryset()
+                .annotate_age(tournament.competition.season.age_reference_date)
+                .get(pk=cleaned_data["member_id"])
+            )
+
+            # Store for later use to avoid re-fetching
+            self.validated_member = member
+
+            if member:
+                if app_settings.email_verification_required and not member.has_email_confirmed:
                     raise ValidationError({"member_id": "Member has not confirmed email"})
 
                 if (
-                    self.member.sex == MemberSexEnum.MALE
+                    member.sex == MemberSexEnum.MALE
                     and not tournament.competition.division.is_male_allowed
                 ):
                     raise ValidationError({"member_id": "Men are not allowed in this division"})
 
                 if (
-                    self.member.sex == MemberSexEnum.FEMALE
+                    member.sex == MemberSexEnum.FEMALE
                     and not tournament.competition.division.is_female_allowed
                 ):
                     raise ValidationError({"member_id": "Women are not allowed in this division"})
 
                 if roster_record := MemberAtTournament.objects.filter(
-                    tournament_id=tournament.id, member_id=self.member.id
+                    tournament_id=tournament.id, member_id=member.id
                 ).first():
                     raise ValidationError(
                         {
@@ -54,23 +68,23 @@ class AddMemberToRosterForm(forms.Form):
                     )
 
                 if tournament.competition.age_limit:
-                    if self.member.sex == MemberSexEnum.MALE and (
+                    if member.sex == MemberSexEnum.MALE and (
                         (
-                            FF_MIN_AGE_VERIFICATION_REQUIRED
-                            and self.member.age < tournament.competition.age_limit.m_min
+                            app_settings.min_age_verification_required
+                            and member.age < tournament.competition.age_limit.m_min
                         )
-                        or self.member.age > tournament.competition.age_limit.m_max
+                        or member.age > tournament.competition.age_limit.m_max
                     ):
                         raise ValidationError(
                             {"member_id": "Member does not meet age requirements"}
                         )
 
-                    if self.member.sex == MemberSexEnum.FEMALE and (
+                    if member.sex == MemberSexEnum.FEMALE and (
                         (
-                            FF_MIN_AGE_VERIFICATION_REQUIRED
-                            and self.member.age < tournament.competition.age_limit.f_min
+                            app_settings.min_age_verification_required
+                            and member.age < tournament.competition.age_limit.f_min
                         )
-                        or self.member.age > tournament.competition.age_limit.f_max
+                        or member.age > tournament.competition.age_limit.f_max
                     ):
                         raise ValidationError(
                             {"member_id": "Member does not meet age requirements"}
@@ -78,8 +92,8 @@ class AddMemberToRosterForm(forms.Form):
 
                 else:
                     if (
-                        FF_MIN_AGE_VERIFICATION_REQUIRED
-                        and self.member.age < tournament.competition.season.min_allowed_age
+                        app_settings.min_age_verification_required
+                        and member.age < tournament.competition.season.min_allowed_age
                     ):
                         raise ValidationError(
                             {"member_id": "Member does not meet age requirements"}
@@ -95,7 +109,7 @@ class AddMemberToRosterForm(forms.Form):
                 foreign_count = len(current_roster) - czech_count
 
                 # Add the new member to counts
-                if self.member.citizenship == "CZ":
+                if member.citizenship == "CZ":
                     czech_count += 1
                 else:
                     foreign_count += 1

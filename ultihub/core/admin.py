@@ -2,6 +2,9 @@ from typing import Any
 
 from django.contrib import admin
 from django.http import HttpRequest
+from solo.admin import SingletonModelAdmin
+
+from core.models import AppSettings
 
 
 class ReadOnlyModelAdmin(admin.ModelAdmin):
@@ -15,3 +18,8 @@ class ReadOnlyModelAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request: HttpRequest, obj: Any | None = None) -> bool:
         return False
+
+
+@admin.register(AppSettings)
+class AppSettingsAdmin(SingletonModelAdmin):
+    pass
