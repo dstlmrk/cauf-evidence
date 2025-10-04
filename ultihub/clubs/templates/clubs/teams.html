@@ -3,7 +3,7 @@
 {% block title %}<h1>Teams</h1>{% endblock %}
 
 {% block buttons %}
-    {% if FF_TEAM_MANAGEMENT_ENABLED %}
+    {% if app_settings.team_management_enabled %}
         <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_team' %}" hx-target="#dialog">
             <i class="bi bi-plus"></i> Create team
         </button>
@@ -20,7 +20,7 @@
                 occasionally want to register your club under a different name. For example, your junior’s team might
                 have a different name than the others, etc.
             </div>
-            {% if not FF_TEAM_MANAGEMENT_ENABLED %}
+            {% if not app_settings.team_management_enabled %}
                 <div class="alert alert-warning " role="alert">
                     <i class="bi bi-exclamation-octagon-fill me-1"></i> Teams management is currently <b>disabled</b>.
                 </div>

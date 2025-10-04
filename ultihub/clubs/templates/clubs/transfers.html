@@ -3,7 +3,7 @@
 {% block title %}<h1>Transfers</h1>{% endblock %}
 
 {% block buttons %}
-    {% if FF_TRANSFERS_ENABLED %}
+    {% if app_settings.transfers_enabled %}
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestTransferModal">
             <i class="bi bi-envelope-plus"></i> Request transfer
         </button>
@@ -13,7 +13,7 @@
 {% block content %}
     {% load crispy_forms_tags %}
 
-    {% if not FF_TRANSFERS_ENABLED %}
+    {% if not app_settings.transfers_enabled %}
         <div class="alert alert-warning " role="alert">
             <i class="bi bi-exclamation-octagon-fill me-1"></i> Transfers are currently <b>disabled</b>.
         </div>

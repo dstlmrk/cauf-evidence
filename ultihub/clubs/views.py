@@ -21,7 +21,6 @@ from users.services import (
 
 from clubs.forms import AddAgentForm, ClubForm, TeamForm
 from clubs.models import Club, ClubNotification, Team
-from ultihub.settings import FF_TEAM_MANAGEMENT_ENABLED, FF_TRANSFERS_ENABLED
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +44,6 @@ def transfers_view(request: HttpRequest) -> HttpResponse:
             "transfers": Transfer.objects.filter(
                 Q(source_club__id=current_club.id) | Q(target_club__id=current_club.id)
             ),
-            "FF_TRANSFERS_ENABLED": FF_TRANSFERS_ENABLED,
         },
     )
 
@@ -92,9 +90,6 @@ def teams_view(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "clubs/teams.html",
-        {
-            "FF_TEAM_MANAGEMENT_ENABLED": FF_TEAM_MANAGEMENT_ENABLED,
-        },
     )
 
 
@@ -143,7 +138,6 @@ def team_list_view(request: HttpRequest) -> HttpResponse:
         "clubs/partials/team_list.html",
         {
             "teams": Team.objects.filter(club_id=get_club_id(request), is_active=True),
-            "FF_TEAM_MANAGEMENT_ENABLED": FF_TEAM_MANAGEMENT_ENABLED,
         },
     )
 
