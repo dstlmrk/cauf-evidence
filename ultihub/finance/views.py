@@ -36,7 +36,7 @@ def season_fees_list_view(request: HttpRequest) -> HttpResponse:
             "finance/partials/season_fees_list.html",
             {
                 "season": form.cleaned_data["season"],
-                "fees": fees.items(),
+                "fees": sorted(fees.items(), key=lambda x: x[0].full_name),
                 "total_amount": sum([fee.amount for fee in fees.values()]),
             },
         )
