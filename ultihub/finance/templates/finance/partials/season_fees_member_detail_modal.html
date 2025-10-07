@@ -1,0 +1,66 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-person"></i> {{ member.full_name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        {% if tournaments %}
+            <div class="d-none d-md-block">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Tournament</th>
+                            <th scope="col">Team</th>
+                            <th scope="col">Fee Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in tournaments %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ item.tournament }}</td>
+                                <td>{{ item.team_name }}</td>
+                                <td>
+                                    {% if item.fee_type == 1 %}
+                                        <span class="badge bg-success">Free</span>
+                                    {% elif item.fee_type == 2 %}
+                                        <span class="badge bg-success">Discounted</span>
+                                    {% elif item.fee_type == 3 %}
+                                        <span class="badge bg-dark">Regular</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-block d-md-none">
+                <div class="list-group">
+                    {% for item in tournaments %}
+                        <div class="list-group-item">
+                            <div><b>{{ item.tournament }}</b></div>
+                            <div>Team: {{ item.team_name }}</div>
+                            <div>
+                                Fee:
+                                {% if item.fee_type == 1 %}
+                                    <span class="badge bg-success">Free</span>
+                                {% elif item.fee_type == 2 %}
+                                    <span class="badge bg-success">Discounted</span>
+                                {% elif item.fee_type == 3 %}
+                                    <span class="badge bg-dark">Regular</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <p class="text-muted">No tournaments found for this member in this season.</p>
+        {% endif %}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+</div>
