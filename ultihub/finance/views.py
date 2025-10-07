@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
+from members.models import Member
+from tournaments.models import MemberAtTournament
 
 from finance.forms import SeasonFeesCheckForm
 from finance.services import calculate_season_fees, create_deposit_invoice
@@ -43,3 +45,48 @@ def season_fees_list_view(request: HttpRequest) -> HttpResponse:
     else:
         messages.error(request, "Something went wrong")
         return HttpResponse(status=400)
+
+
+@require_POST
+def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
+    from competitions.models import Season
+
+    member_id = request.POST.get("member_id", "")
+    season_id = request.POST.get("season_id", "")
+
+    member = get_object_or_404(Member, pk=member_id)
+    season = get_object_or_404(Season, pk=season_id)
+
+    # Get all tournaments for this member in this season
+    members_at_tournaments = (
+        MemberAtTournament.objects.filter(
+            member=member,
+            tournament__competition__season=season,
+        )
+        .select_related(
+            "tournament",
+            "tournament__competition",
+            "team_at_tournament__application",
+        )
+        .order_by("-tournament__start_date")
+    )
+
+    tournaments_data = []
+    for mat in members_at_tournaments:
+        tournaments_data.append(
+            {
+                "tournament": mat.tournament,
+                "team_name": mat.team_at_tournament.application.team_name,
+                "fee_type": mat.tournament.competition.fee_type,
+            }
+        )
+
+    return render(
+        request,
+        "finance/partials/season_fees_member_detail_modal.html",
+        {
+            "member": member,
+            "season": season,
+            "tournaments": tournaments_data,
+        },
+    )
