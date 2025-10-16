@@ -54,7 +54,8 @@ class TeamAtTournamentAdmin(admin.ModelAdmin):
 class MemberAtTournamentAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "tournament",
+        "tournament__name",
+        "tournament__competition",
         "team_at_tournament__application__team_name",
         "member",
         "is_captain",
@@ -62,5 +63,14 @@ class MemberAtTournamentAdmin(admin.ModelAdmin):
         "jersey_number",
     )
 
-    list_filter = ("is_captain", "is_coach")
+    list_filter = ("tournament__competition__season", "is_captain", "is_coach")
+    search_fields = (
+        "member__first_name",
+        "member__last_name",
+        "member__email",
+        "member__birth_number",
+        "team_at_tournament__application__team_name",
+        "tournament__name",
+        "tournament__competition__name",
+    )
     show_facets = admin.ShowFacets.ALWAYS
