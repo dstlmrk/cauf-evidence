@@ -1,17 +1,25 @@
+from decimal import Decimal
 from unittest.mock import patch
 
 import pytest
-from competitions.models import CompetitionFeeTypeEnum, Season
+from competitions.models import ApplicationStateEnum, CompetitionFeeTypeEnum, Season
 from finance.clients.fakturoid import UnexpectedResponse
-from finance.models import InvoiceRelatedObject, InvoiceStateEnum, InvoiceTypeEnum
+from finance.models import Invoice, InvoiceRelatedObject, InvoiceStateEnum, InvoiceTypeEnum
 from finance.services import (
     SeasonFeeData,
     calculate_season_fees,
+    create_deposit_invoice,
     create_invoice,
     create_invoice_in_fakturoid_and_save_data,
 )
 
-from tests.factories import MemberAtTournamentFactory, SeasonFactory
+from tests.factories import (
+    CompetitionApplicationFactory,
+    CompetitionFactory,
+    MemberAtTournamentFactory,
+    SeasonFactory,
+    TeamFactory,
+)
 from tests.helpers import create_complete_competition
 
 
@@ -176,3 +184,94 @@ def test_calculate_season_fees():
             [],
         )
     }
+
+
+@pytest.mark.parametrize("club__fakturoid_subject_id", [999])
+def test_create_deposit_invoice_with_zero_deposit(club):
+    """Test that no invoice is created when all applications have deposit = 0"""
+    competition = CompetitionFactory(deposit=Decimal("0"))
+    team = TeamFactory(club=club)
+    CompetitionApplicationFactory(
+        competition=competition,
+        team=team,
+        state=ApplicationStateEnum.AWAITING_PAYMENT,
+        invoice=None,
+    )
+
+    with patch("finance.clients.fakturoid.fakturoid_client.create_invoice"):
+        result = create_deposit_invoice(club)
+
+    assert result is False
+    assert Invoice.objects.count() == 0
+
+
+@pytest.mark.parametrize("club__fakturoid_subject_id", [999])
+def test_create_deposit_invoice_with_positive_deposit(club):
+    """Test that invoice is created when applications have deposit > 0"""
+    competition = CompetitionFactory(deposit=Decimal("500"))
+    team = TeamFactory(club=club)
+    application = CompetitionApplicationFactory(
+        competition=competition,
+        team=team,
+        state=ApplicationStateEnum.AWAITING_PAYMENT,
+        invoice=None,
+    )
+
+    with patch("finance.clients.fakturoid.fakturoid_client.create_invoice") as mock_create_invoice:
+        mock_create_invoice.return_value = {
+            "invoice_id": 1,
+            "status": "open",
+            "total": 500,
+            "public_html_url": "https://example.com/invoice",
+        }
+        result = create_deposit_invoice(club)
+
+    assert result is True
+    assert Invoice.objects.count() == 1
+    invoice = Invoice.objects.first()
+    assert invoice.original_amount == 500
+    application.refresh_from_db()
+    assert application.invoice == invoice
+
+
+@pytest.mark.parametrize("club__fakturoid_subject_id", [999])
+def test_create_deposit_invoice_with_mixed_deposits(club):
+    """Test that only applications with deposit > 0 are included in invoice"""
+    competition_with_deposit = CompetitionFactory(deposit=Decimal("500"))
+    competition_without_deposit = CompetitionFactory(deposit=Decimal("0"))
+    team = TeamFactory(club=club)
+
+    app_with_deposit = CompetitionApplicationFactory(
+        competition=competition_with_deposit,
+        team=team,
+        state=ApplicationStateEnum.AWAITING_PAYMENT,
+        invoice=None,
+    )
+    app_without_deposit = CompetitionApplicationFactory(
+        competition=competition_without_deposit,
+        team=team,
+        state=ApplicationStateEnum.AWAITING_PAYMENT,
+        invoice=None,
+    )
+
+    with patch("finance.clients.fakturoid.fakturoid_client.create_invoice") as mock_create_invoice:
+        mock_create_invoice.return_value = {
+            "invoice_id": 1,
+            "status": "open",
+            "total": 500,
+            "public_html_url": "https://example.com/invoice",
+        }
+        result = create_deposit_invoice(club)
+
+    assert result is True
+    assert Invoice.objects.count() == 1
+    invoice = Invoice.objects.first()
+    assert invoice.original_amount == 500
+
+    app_with_deposit.refresh_from_db()
+    app_without_deposit.refresh_from_db()
+
+    # Application with deposit should have invoice
+    assert app_with_deposit.invoice == invoice
+    # Application without deposit should not have invoice
+    assert app_without_deposit.invoice is None
