@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "competitions.apps.CompetitionsConfig",
     "core.apps.CoreConfig",
     "finance.apps.FinanceConfig",
+    "international_tournaments.apps.InternationalTournamentsConfig",
     "members.apps.MembersConfig",
     "tournaments.apps.TournamentsConfig",
     "users.apps.UsersConfig",

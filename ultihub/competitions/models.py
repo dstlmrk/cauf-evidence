@@ -7,24 +7,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 
-
-class CompetitionTypeEnum(models.IntegerChoices):
-    OUTDOOR = 1, "Outdoor"
-    INDOOR = 2, "Indoor"
-    BEACH = 3, "Beach"
-
-
-class ApplicationStateEnum(models.IntegerChoices):
-    AWAITING_PAYMENT = 1, "Awaiting Payment"
-    PAID = 2, "Paid"
-    ACCEPTED = 3, "Accepted"
-    DECLINED = 4, "Declined"
-
-
-class CompetitionFeeTypeEnum(models.IntegerChoices):
-    FREE = 1, "Free"
-    DISCOUNTED = 2, "Discounted"
-    REGULAR = 3, "Regular"
+from competitions.enums import ApplicationStateEnum, CompetitionFeeTypeEnum, EnvironmentEnum
 
 
 class Season(AuditModel):
@@ -135,11 +118,8 @@ class Competition(AuditModel):
         blank=True,
         on_delete=models.PROTECT,
     )
-    is_for_national_teams = models.BooleanField(
-        default=False,
-    )
-    type = models.IntegerField(
-        choices=CompetitionTypeEnum.choices,
+    environment = models.IntegerField(
+        choices=EnvironmentEnum.choices,
     )
     fee_type = models.IntegerField(
         choices=CompetitionFeeTypeEnum.choices,
@@ -157,10 +137,10 @@ class Competition(AuditModel):
     )
 
     class Meta:
-        unique_together = ("name", "season", "type", "division", "age_limit")
+        unique_together = ("name", "season", "environment", "division", "age_limit")
 
     def __str__(self) -> str:
-        name = f"BEACH {self.name}" if self.type == CompetitionTypeEnum.BEACH else self.name
+        name = f"BEACH {self.name}" if self.environment == EnvironmentEnum.BEACH else self.name
         return f"{name} {self.season} {str(self.division).upper()} {self.age_limit or ''}".strip()
 
     @property

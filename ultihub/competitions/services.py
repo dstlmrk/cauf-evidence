@@ -83,7 +83,6 @@ def get_competitions_qs_with_related_data(
                 output_field=IntegerField(),
             ),
         )
-        .exclude(is_for_national_teams=True)
         .order_by("-registration_deadline")
     )
 

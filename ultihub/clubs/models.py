@@ -101,7 +101,7 @@ class Team(AuditModel):
     )
 
     def __str__(self) -> str:
-        return f"<Team({self.pk}, name={self.name})>"
+        return f"{self.name} ({self.pk})"
 
     def clean(self) -> None:
         if (

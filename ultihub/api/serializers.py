@@ -26,7 +26,7 @@ class CompetitionApplicationSerializer(serializers.ModelSerializer):
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
-    type = serializers.SerializerMethodField()
+    environment = serializers.SerializerMethodField()
     division = serializers.StringRelatedField()
     age_limit = serializers.StringRelatedField()
     season = serializers.StringRelatedField()
@@ -40,7 +40,7 @@ class CompetitionSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
-            "type",
+            "environment",
             "division",
             "age_limit",
             "season",
@@ -48,8 +48,8 @@ class CompetitionSerializer(serializers.ModelSerializer):
             "accepted_applications",
         ]
 
-    def get_type(self, obj: Competition) -> str:
-        return obj.get_type_display()
+    def get_environment(self, obj: Competition) -> str:
+        return obj.get_environment_display()
 
     def get_division(self, obj: Competition) -> str:
         return obj.division.name

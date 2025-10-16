@@ -66,7 +66,7 @@
                             </td>
                             <td>
                                 {{ competition.season }}<br />
-                                <small class="text-muted">{{ competition.get_type_display | upper }}</small>
+                                <small class="text-muted">{{ competition.get_environment_display | upper }}</small>
                             </td>
                             <td>
                                 {{ competition.name }}<br />
@@ -94,7 +94,7 @@
                         <div class="d-flex w-100 justify-content-between">
                             <div>
                                 <small class="text-muted">
-                                    {{ competition.season }} • {{ competition.get_type_display | upper }}
+                                    {{ competition.season }} • {{ competition.get_environment_display | upper }}
                                 </small>
                                 <div>
                                     <b class="h5">{{ competition.name }}</b>
