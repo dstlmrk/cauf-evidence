@@ -64,6 +64,7 @@ Already created tokens are available at `/admin/authtoken/tokenproxy`.
 #### /api/competitions
 
 -   `GET` Returns all competitions. Query parameter `season` is available (e.g. `?season=2025`).
+-   **Note**: The field `type` was renamed to `environment` in the response. The API now returns `environment` field instead of `type`.
 
 #### /api/clubs
 

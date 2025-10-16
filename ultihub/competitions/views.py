@@ -11,14 +11,13 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET, require_POST
 
+from competitions.enums import ApplicationStateEnum, EnvironmentEnum
 from competitions.filters import CompetitionFilterSet
 from competitions.forms import RegistrationForm
 from competitions.models import (
     AgeLimit,
-    ApplicationStateEnum,
     Competition,
     CompetitionApplication,
-    CompetitionTypeEnum,
     Division,
     Season,
 )
@@ -35,12 +34,6 @@ def competitions(request: HttpRequest) -> HttpResponse:
         context["club_application_without_invoice_total"] = CompetitionApplication.objects.filter(
             team__club=club, invoice__isnull=True, state=ApplicationStateEnum.AWAITING_PAYMENT
         ).count()
-
-    # Get filter options
-    seasons = Season.objects.all().order_by("-name")
-    competition_types = CompetitionTypeEnum.choices
-    divisions = Division.objects.all().order_by("name")
-    age_limits = AgeLimit.objects.all().order_by("name")
 
     # Build queryset with filters
     competitions_qs = get_competitions_qs_with_related_data(club_id=club.id if club else None)
@@ -62,10 +55,10 @@ def competitions(request: HttpRequest) -> HttpResponse:
                     )
                 )
             ),
-            "seasons": seasons,
-            "competition_types": competition_types,
-            "divisions": divisions,
-            "age_limits": age_limits,
+            "seasons": Season.objects.all().order_by("-name"),
+            "environments": EnvironmentEnum.choices,
+            "divisions": Division.objects.all().order_by("name"),
+            "age_limits": AgeLimit.objects.all().order_by("name"),
             **context,
         },
     )

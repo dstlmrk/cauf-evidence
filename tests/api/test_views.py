@@ -1,7 +1,8 @@
 from decimal import Decimal
 
 import pytest
-from competitions.models import CompetitionApplication, CompetitionTypeEnum
+from competitions.enums import EnvironmentEnum
+from competitions.models import CompetitionApplication
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -31,7 +32,7 @@ def api_token(user):
 def test_get_competitions(api_client):
     competition = CompetitionFactory(
         name="HMČR",
-        type=CompetitionTypeEnum.OUTDOOR,
+        environment=EnvironmentEnum.OUTDOOR,
         division=DivisionFactory(name="Open"),
     )
     tournament = TournamentFactory(
@@ -50,7 +51,7 @@ def test_get_competitions(api_client):
         {
             "id": competition.id,
             "name": "HMČR",
-            "type": "Outdoor",
+            "environment": "Outdoor",
             "division": "Open",
             "age_limit": None,
             "season": "2025",

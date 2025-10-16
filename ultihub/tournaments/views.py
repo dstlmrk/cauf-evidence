@@ -3,8 +3,9 @@ import logging
 from typing import cast
 
 from clubs.service import notify_club
+from competitions.enums import EnvironmentEnum
 from competitions.filters import TournamentFilterSet
-from competitions.models import AgeLimit, CompetitionTypeEnum, Division, Season
+from competitions.models import AgeLimit, Division, Season
 from core.helpers import get_current_club, get_current_club_or_none
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -29,11 +30,6 @@ logger = logging.getLogger(__name__)
 @require_GET
 def tournaments_view(request: HttpRequest) -> HttpResponse:
     club = get_current_club_or_none(request)
-
-    seasons = Season.objects.all().order_by("-name")
-    competition_types = CompetitionTypeEnum.choices
-    divisions = Division.objects.all().order_by("name")
-    age_limits = AgeLimit.objects.all().order_by("name")
 
     # Build queryset with filters
     queryset = Tournament.objects.select_related(
@@ -74,10 +70,10 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
         "tournaments/tournaments.html",
         {
             "tournaments": tournaments,
-            "seasons": seasons,
-            "competition_types": competition_types,
-            "divisions": divisions,
-            "age_limits": age_limits,
+            "seasons": Season.objects.all().order_by("-name"),
+            "environments": EnvironmentEnum.choices,
+            "divisions": Division.objects.all().order_by("name"),
+            "age_limits": AgeLimit.objects.all().order_by("name"),
         },
     )
 

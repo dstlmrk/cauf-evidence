@@ -3,13 +3,11 @@ from decimal import Decimal
 
 import factory.fuzzy
 from clubs.models import Club, Team
+from competitions.enums import ApplicationStateEnum, CompetitionFeeTypeEnum, EnvironmentEnum
 from competitions.models import (
     AgeLimit,
-    ApplicationStateEnum,
     Competition,
     CompetitionApplication,
-    CompetitionFeeTypeEnum,
-    CompetitionTypeEnum,
     Division,
     Season,
 )
@@ -125,8 +123,7 @@ class CompetitionFactory(factory.django.DjangoModelFactory):
     season = SubFactory(SeasonFactory)
     division = SubFactory(DivisionFactory)
     age_limit = None
-    is_for_national_teams = False
-    type = factory.fuzzy.FuzzyChoice(list(CompetitionTypeEnum))
+    environment = factory.fuzzy.FuzzyChoice(list(EnvironmentEnum))
     fee_type = CompetitionFeeTypeEnum.REGULAR
     deposit = factory.Faker("random_int", min=1000, max=2000)
     registration_deadline = factory.LazyFunction(lambda: timezone.now() + timedelta(days=2))

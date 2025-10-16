@@ -18,16 +18,16 @@
                 </select>
             </div>
 
-            <!-- Competition type filter -->
+            <!-- Environment filter -->
             <div class="col-md-3 col-6">
-                <select class="form-select" id="type" name="type" onchange="this.form.submit()">
-                    <option value="">All types</option>
-                    {% for type_value, type_label in competition_types %}
+                <select class="form-select" id="environment" name="environment" onchange="this.form.submit()">
+                    <option value="">All environments</option>
+                    {% for env_value, env_label in environments %}
                         <option
-                            value="{{ type_value }}"
-                            {% if request.GET.type == type_value|stringformat:"s" %}selected{% endif %}
+                            value="{{ env_value }}"
+                            {% if request.GET.environment == env_value|stringformat:"s" %}selected{% endif %}
                         >
-                            {{ type_label | upper }}
+                            {{ env_label | upper }}
                         </option>
                     {% endfor %}
                 </select>

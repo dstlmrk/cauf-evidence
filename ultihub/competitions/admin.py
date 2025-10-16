@@ -15,10 +15,10 @@ from finance.tasks import (
 from members.tasks import generate_nsa_export
 from tournaments.models import TeamAtTournament, Tournament
 
+from competitions.enums import ApplicationStateEnum
 from competitions.forms import AddTeamsToTournamentForm
 from competitions.models import (
     AgeLimit,
-    ApplicationStateEnum,
     Competition,
     CompetitionApplication,
     Division,
@@ -110,14 +110,14 @@ class CompetitionApplicationInline(admin.TabularInline):
 
 @admin.register(Competition)
 class CompetitionAdmin(admin.ModelAdmin):
-    list_filter = ("season", "division", "age_limit", "type")
+    list_filter = ("season", "division", "age_limit", "environment")
     list_display = (
         "id",
         "season",
         "age_limit",
         "name",
         "division",
-        "type",
+        "environment",
         "fee_type",
         "registration_deadline",
     )
@@ -126,9 +126,8 @@ class CompetitionAdmin(admin.ModelAdmin):
         "age_limit",
         "name",
         "division",
-        "type",
+        "environment",
         "fee_type",
-        "is_for_national_teams",
         "registration_deadline",
         "deposit",
         "description",
@@ -260,8 +259,8 @@ class CompetitionApplicationAdmin(admin.ModelAdmin):
             },
         )
 
-    def competition_type(self, obj: CompetitionApplication) -> str:
-        return obj.competition.get_type_display()
+    def competition_environment(self, obj: CompetitionApplication) -> str:
+        return obj.competition.get_environment_display()
 
     @transaction.atomic
     @admin.display(description="Approve selected applications")
