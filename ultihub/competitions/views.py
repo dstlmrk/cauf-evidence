@@ -5,6 +5,7 @@ from core.helpers import get_current_club, get_current_club_or_none
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.db.models import Exists, OuterRef, Prefetch
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -71,6 +72,7 @@ def competitions(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+@transaction.atomic
 def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
     current_club = get_current_club(request)
     teams_with_applications = Team.objects.filter(club_id=current_club.id).prefetch_related(
@@ -84,6 +86,7 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
     if request.method == "POST":
         form = RegistrationForm(request.POST, teams_with_applications=teams_with_applications)
         if form.is_valid():
+            competition = get_object_or_404(Competition, pk=competition_id)
             for checkbox_name, value in form.cleaned_data.items():
                 team_id = int(checkbox_name.split("_")[1])
                 team = teams_with_applications.get(pk=team_id)
@@ -94,6 +97,11 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
                             competition_id=competition_id,
                             team=team,
                             registered_by=request.user,  # type: ignore
+                            state=(
+                                ApplicationStateEnum.PAID
+                                if competition.deposit == 0
+                                else ApplicationStateEnum.AWAITING_PAYMENT
+                            ),
                         )
                 else:
                     raise PermissionDenied()
@@ -101,9 +109,8 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
             messages.success(
                 request,
                 (
-                    "Your team has been registered for the tournament."
-                    " To finalize the registration, please generate"
-                    " an invoice and complete the payment."
+                    "Your team has been registered for the tournament. "
+                    "To finalize the registration, please confirm it above."
                 ),
             )
             return HttpResponse(status=204, headers={"HX-Refresh": "true"})

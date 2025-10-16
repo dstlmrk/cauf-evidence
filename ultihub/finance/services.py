@@ -94,15 +94,17 @@ def create_invoice(
 
 
 @transaction.atomic
-def create_deposit_invoice(club: Club) -> None:
+def create_deposit_invoice(club: Club) -> bool:
     """
-    Create an invoice for all competition applications
+    Create an invoice for all competition applications.
+    Returns False if there were no applications with deposit > 0.
     """
     applications_qs = (
         CompetitionApplication.objects.filter(
             state=ApplicationStateEnum.AWAITING_PAYMENT,
             team__club=club.id,
             invoice__isnull=True,
+            competition__deposit__gt=0,
         )
         .select_related("competition")
         .select_for_update()
@@ -110,20 +112,23 @@ def create_deposit_invoice(club: Club) -> None:
 
     applications = list(applications_qs)
 
-    invoice = create_invoice(
-        club,
-        InvoiceTypeEnum.COMPETITION_DEPOSIT,
-        lines=[
-            (
-                f"{str(application.competition)} - Startovné za {application.team_name}",
-                application.competition.deposit,
-            )
-            for application in applications
-        ],
-        related_objects=applications,
-    )
-
-    applications_qs.update(invoice=invoice)
+    if applications:
+        invoice = create_invoice(
+            club,
+            InvoiceTypeEnum.COMPETITION_DEPOSIT,
+            lines=[
+                (
+                    f"{str(application.competition)} - Startovné za {application.team_name}",
+                    application.competition.deposit,
+                )
+                for application in applications
+            ],
+            related_objects=applications,
+        )
+        applications_qs.update(invoice=invoice)
+        return True
+    else:
+        return False
 
 
 def calculate_season_fees(

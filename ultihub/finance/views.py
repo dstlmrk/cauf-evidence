@@ -16,8 +16,11 @@ def invoices(request: HttpRequest) -> HttpResponse:
     club = get_object_or_404(Club, pk=get_current_club(request).id)
 
     if club.fakturoid_subject_id:
-        create_deposit_invoice(club)
-        messages.success(request, "The request has been successfully sent. Check your invoices.")
+        invoice_created = create_deposit_invoice(club)
+        message = "The request has been successfully sent."
+        if invoice_created:
+            message += " Check your invoices."
+        messages.success(request, message)
     else:
         messages.error(
             request, "Your club has no financial settings. Please contact the administrator."
