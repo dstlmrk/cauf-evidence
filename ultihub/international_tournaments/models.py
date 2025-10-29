@@ -70,6 +70,16 @@ class TeamAtInternationalTournament(AuditModel):
         max_length=48,
         help_text="Team name at the time of participation (for historical purposes)",
     )
+    final_placement = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="Final placement at the tournament",
+    )
+    total_teams = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="Total number of teams at the tournament in this division",
+    )
 
     class Meta:
         unique_together = ("tournament", "team", "age_limit", "division")
@@ -77,3 +87,15 @@ class TeamAtInternationalTournament(AuditModel):
 
     def __str__(self) -> str:
         return f"{self.team_name} at {self.tournament}"
+
+    def clean(self) -> None:
+        super().clean()
+        if self.final_placement and self.total_teams:
+            if self.final_placement > self.total_teams:
+                raise ValidationError(
+                    {"final_placement": "Final placement cannot be greater than total teams"}
+                )
+            if self.final_placement < 1:
+                raise ValidationError({"final_placement": "Final placement must be at least 1"})
+        if self.total_teams and self.total_teams < 1:
+            raise ValidationError({"total_teams": "Total teams must be at least 1"})
