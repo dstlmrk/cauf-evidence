@@ -5,6 +5,7 @@
     {% load socialaccount %}
     {% url 'competitions:competitions' as competitions_url %}
     {% url 'tournaments:tournaments' as tournaments_url %}
+    {% url 'international_tournaments:international_tournaments' as international_tournaments_url %}
     {% url 'faq' as faq_url %}
     <button
         class="navbar-toggler"
@@ -69,12 +70,28 @@
                     </ul>
                 </li>
             {% endif %}
-            <li class="nav-item">
+            <li class="nav-item dropdown">
                 <a
-                    class="nav-link {% if request.path == tournaments_url %}active{% endif %}"
-                    href="{{ tournaments_url }}"
-                    ><i class="bi bi-fire"></i> Tournaments</a
+                    class="nav-link dropdown-toggle {% if "/tournaments/" in request.path or "/international-tournaments/" in request.path %}active{% endif %}"
+                    href="#"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
                 >
+                    <i class="bi bi-fire"></i> Tournaments
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" href="{{ tournaments_url }}"
+                            ><i class="bi bi-house-fill"></i> Domestic</a
+                        >
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ international_tournaments_url }}"
+                            ><i class="bi bi-globe-americas"></i> International</a
+                        >
+                    </li>
+                </ul>
             </li>
             <li class="nav-item">
                 <a

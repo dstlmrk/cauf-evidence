@@ -1,0 +1,172 @@
+{% extends "core/base.html" %}
+{% load humanize %}
+
+{% block title %}<h1>International tournaments</h1>{% endblock %}
+
+{% block content %}
+    <!-- Filters -->
+    {% include "international_tournaments/partials/filters.html" %}
+
+    {% if tournaments %}
+        <div class="d-none d-md-block">
+            <table class="table align-middle">
+                <thead>
+                    <tr class="align-middle">
+                        <th scope="col"></th>
+                        <th scope="col">Season</th>
+                        <th scope="col">Tournament<br /><small class="text-muted">Type</small></th>
+                        <th scope="col">Location<br /><small class="text-muted">Date</small></th>
+                        <th scope="col">Czech teams</th>
+                        <th scope="col">Placement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tournament in tournaments %}
+                        {% if tournament.team_participations.all %}
+                            {% for participation in tournament.team_participations.all %}
+                                <tr>
+                                    {% if forloop.first %}
+                                        <td rowspan="{{ tournament.team_participations.all|length }}">
+                                            {% if tournament.includes_my_club_team %}
+                                                <i
+                                                    class="bi bi-check"
+                                                    style="color: green;"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-title="Your club has a team in this tournament"
+                                                ></i>
+                                            {% endif %}
+                                        </td>
+                                        <td rowspan="{{ tournament.team_participations.all|length }}">
+                                            {{ tournament.season }}<br />
+                                            <small class="text-muted">
+                                                {{ tournament.get_environment_display | upper }}
+                                            </small>
+                                        </td>
+                                        <td rowspan="{{ tournament.team_participations.all|length }}">
+                                            <strong>{{ tournament.name }}</strong>
+                                            <br />
+                                            <span class="badge text-bg-primary">
+                                                {{ tournament.get_type_display | upper }}
+                                            </span>
+                                        </td>
+                                        <td rowspan="{{ tournament.team_participations.all|length }}">
+                                            {{ tournament.city }}, {{ tournament.country.name }}
+                                            {{ tournament.country.unicode_flag }}
+                                            <br />
+                                            <small class="text-muted"
+                                                >{{ tournament.date_from | date:'d.m' }}.–{{ tournament.date_to | date:'d.m.Y' }}</small
+                                            >
+                                        </td>
+                                    {% endif %}
+                                    <td>
+                                        <span
+                                            class="badge text-bg-primary text-bg-{{ participation.division.name | lower }}"
+                                        >
+                                            {{ participation.division.name | upper }}
+                                        </span>
+                                        {% if participation.age_limit %}
+                                            <span class="badge text-bg-primary">
+                                                {{ participation.age_limit.name | upper }}
+                                            </span>
+                                        {% endif %}
+                                        {{ participation.team_name }}
+                                    </td>
+                                    <td class="text-start">
+                                        {% if participation.final_placement and participation.total_teams %}
+                                            {{ participation.final_placement|ordinal }}
+                                            from {{ participation.total_teams }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td>
+                                    {% if tournament.includes_my_club_team %}
+                                        <i
+                                            class="bi bi-check"
+                                            style="color: green;"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-title="Your club has a team in this tournament"
+                                        ></i>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ tournament.season }}<br />
+                                    <small class="text-muted"> {{ tournament.get_environment_display | upper }} </small>
+                                </td>
+                                <td>
+                                    <strong>{{ tournament.name }}</strong>
+                                    <br />
+                                    <span class="badge text-bg-primary">
+                                        {{ tournament.get_type_display | upper }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {{ tournament.city }}, {{ tournament.country.name }}
+                                    {{ tournament.country.unicode_flag }}
+                                    <br />
+                                    <small class="text-muted"
+                                        >{{ tournament.date_from | date:'d.m' }}.–{{ tournament.date_to | date:'d.m.Y' }}</small
+                                    >
+                                </td>
+                                <td colspan="2"></td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="d-block d-md-none">
+            <div class="list-group">
+                {% for tournament in tournaments %}
+                    <div
+                        class="list-group-item {% if tournament.includes_my_club_team %}list-group-item-success{% endif %} text-black"
+                    >
+                        <div class="d-flex w-100 justify-content-between">
+                            <small class="text-muted">
+                                {{ tournament.season }} • {{ tournament.get_environment_display | upper }} •
+                                {{ tournament.get_type_display | upper }}
+                            </small>
+                        </div>
+                        <div class="h3 mb-0">{{ tournament.name }}</div>
+                        <div>
+                            {{ tournament.city }}, {{ tournament.country.name }} {{ tournament.country.unicode_flag }} •
+                            {{ tournament.date_from | date:'d.m' }}.–{{ tournament.date_to | date:'d.m.Y' }}
+                        </div>
+                        {% if tournament.team_participations.all %}
+                            <div class="mt-2">
+                                {% for participation in tournament.team_participations.all %}
+                                    <div class="{% if not forloop.last %}mb-1 pb-1 border-bottom{% endif %}">
+                                        <span
+                                            class="badge text-bg-primary text-bg-{{ participation.division.name | lower }}"
+                                        >
+                                            {{ participation.division.name | upper }}
+                                        </span>
+                                        {% if participation.age_limit %}
+                                            <span class="badge text-bg-primary">
+                                                {{ participation.age_limit.name | upper }}
+                                            </span>
+                                        {% endif %}
+                                        {{ participation.team_name }}
+                                        {% if participation.final_placement and participation.total_teams %}
+                                            <small class="text-muted"
+                                                >({{ participation.final_placement|ordinal }}/{{ participation.total_teams }})</small
+                                            >
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="mt-2 text-muted">No teams registered yet.</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-primary" role="alert">
+            <i class="bi bi-info-circle-fill me-1"></i> No international tournaments found.
+        </div>
+    {% endif %}
+{% endblock %}

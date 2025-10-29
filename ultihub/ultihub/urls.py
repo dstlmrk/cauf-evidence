@@ -36,6 +36,7 @@ urlpatterns = [
     path("club/", include("clubs.urls")),
     path("competitions/", include("competitions.urls")),
     path("finance/", include("finance.urls")),
+    path("international-tournaments/", include("international_tournaments.urls")),
     path("members/", include("members.urls")),
     path("tournaments/", include("tournaments.urls")),
     path("users/", include("users.urls")),
