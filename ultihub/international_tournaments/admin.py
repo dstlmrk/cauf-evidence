@@ -6,7 +6,7 @@ from international_tournaments.models import InternationalTournament, TeamAtInte
 class TeamAtInternationalTournamentInline(admin.TabularInline):
     model = TeamAtInternationalTournament
     extra = 1
-    fields = ("team", "age_limit", "division")
+    fields = ("team", "age_limit", "division", "final_placement", "total_teams")
     autocomplete_fields = ["team"]
 
 
@@ -60,6 +60,8 @@ class TeamAtInternationalTournamentAdmin(admin.ModelAdmin):
         "team_name",
         "age_limit",
         "division",
+        "final_placement",
+        "total_teams",
     )
     list_filter = ("tournament", "age_limit", "division")
     search_fields = ("team_name", "team__name", "tournament__name")
