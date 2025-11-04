@@ -287,3 +287,7 @@ FAKTUROID_CLIENT_SECRET = env.str("FAKTUROID_CLIENT_SECRET")
 FAKTUROID_SLUG = env.str("FAKTUROID_SLUG")
 FAKTUROID_BASE_URL = "https://app.fakturoid.cz/api/v3"
 FAKTUROID_USER_AGENT = "CAUF evidence (marek.dostal@frisbee.cz)"
+
+# APPLICATION SETTINGS --------------------------------------------------------
+# National team club ID for international tournament roster management
+NATIONAL_TEAM_CLUB_ID = env.int("NATIONAL_TEAM_CLUB_ID", default=33)

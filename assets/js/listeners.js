@@ -6,8 +6,17 @@ document.addEventListener("alpine:init", () => {
 // Event listener for roster dialog
 document.body.addEventListener("showRosterDialog", (event) => {
     const { teamAtTournamentId } = event.detail;
+    // Try button first (domestic tournaments)
     const rosterButton = document.getElementById(`rosterButton-${teamAtTournamentId}`);
-    rosterButton.click();
+    if (rosterButton) {
+        rosterButton.click();
+        return;
+    }
+    // If not found, try link (international tournaments)
+    const rosterLink = document.querySelector(`a[data-team-at-tournament-id="${teamAtTournamentId}"]`);
+    if (rosterLink) {
+        rosterLink.click();
+    }
 });
 
 function waitForElement(selector, callback, maxTries = 20, interval = 100) {
