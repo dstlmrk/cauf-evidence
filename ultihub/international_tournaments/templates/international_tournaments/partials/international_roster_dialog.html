@@ -6,13 +6,15 @@
             <div>
                 <h5 class="modal-title mb-0">
                     <i class="bi bi-people"></i> Roster:
-                    <span class="badge text-bg-primary text-bg-{{ team_at_tournament.division.name|lower }}">
-                        {{ team_at_tournament.division.name|upper }}
+                    <span style="position: relative; top: -2px;">
+                        <span class="badge text-bg-primary text-bg-{{ team_at_tournament.division.name|lower }}">
+                            {{ team_at_tournament.division.name|upper }}
+                        </span>
+                        {% if team_at_tournament.age_limit %}
+                            <span class="badge text-bg-primary"> {{ team_at_tournament.age_limit.name|upper }} </span>
+                        {% endif %}
                     </span>
-                    {% if team_at_tournament.age_limit %}
-                        <span class="badge text-bg-primary"> {{ team_at_tournament.age_limit.name|upper }} </span>
-                    {% endif %}
-                    {{ team_at_tournament.team_name }}
+                    {{ team_at_tournament.team_name }} ({{ members_at_tournament|length }} members)
                 </h5>
                 <small class="text-muted">{{ team_at_tournament.tournament.name }}</small>
             </div>

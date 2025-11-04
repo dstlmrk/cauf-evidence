@@ -10,7 +10,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db.models import BooleanField, Count, Exists, OuterRef, Prefetch, Q, Value
+from django.db.models import BooleanField, Count, Exists, F, OuterRef, Prefetch, Q, Value
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET, require_POST
@@ -139,7 +139,7 @@ def international_roster_dialog_view(
                 "member", "member__club"
             )
             .filter(team_at_tournament_id=team_at_tournament.id)
-            .order_by("created_at"),
+            .order_by(F("jersey_number").asc(nulls_last=True)),
         },
     )
 
@@ -258,7 +258,9 @@ def remove_member_from_international_roster_view(
             "team_at_tournament": team_at_tournament,
             "members_at_tournament": MemberAtInternationalTournament.objects.select_related(
                 "member", "member__club"
-            ).filter(team_at_tournament_id=team_at_tournament.id),
+            )
+            .filter(team_at_tournament_id=team_at_tournament.id)
+            .order_by(F("jersey_number").asc(nulls_last=True)),
         },
     )
     response["HX-Trigger"] = "teamsListChanged"
