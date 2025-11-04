@@ -16,8 +16,11 @@ from finance.services import (
 from tests.factories import (
     CompetitionApplicationFactory,
     CompetitionFactory,
+    InternationalTournamentFactory,
+    MemberAtInternationalTournamentFactory,
     MemberAtTournamentFactory,
     SeasonFactory,
+    TeamAtInternationalTournamentFactory,
     TeamFactory,
 )
 from tests.helpers import create_complete_competition
@@ -275,3 +278,101 @@ def test_create_deposit_invoice_with_mixed_deposits(club):
     assert app_with_deposit.invoice == invoice
     # Application without deposit should not have invoice
     assert app_without_deposit.invoice is None
+
+
+def test_calculate_season_fees_with_international_tournaments():
+    """Test that international tournaments are included in season fees calculation"""
+    season = SeasonFactory()
+
+    # Create domestic tournament
+    regular_complete_competition = create_complete_competition(
+        season=season,
+        fee_type=CompetitionFeeTypeEnum.REGULAR,
+    )
+
+    # Create international tournaments with different fee types
+    regular_international_tournament = InternationalTournamentFactory(
+        season=season,
+        fee_type=CompetitionFeeTypeEnum.REGULAR,
+    )
+    discounted_international_tournament = InternationalTournamentFactory(
+        season=season,
+        fee_type=CompetitionFeeTypeEnum.DISCOUNTED,
+    )
+    free_international_tournament = InternationalTournamentFactory(
+        season=season,
+        fee_type=CompetitionFeeTypeEnum.FREE,
+    )
+
+    # Create team participations for international tournaments
+    regular_team_at_int_tournament = TeamAtInternationalTournamentFactory(
+        tournament=regular_international_tournament
+    )
+    discounted_team_at_int_tournament = TeamAtInternationalTournamentFactory(
+        tournament=discounted_international_tournament
+    )
+    free_team_at_int_tournament = TeamAtInternationalTournamentFactory(
+        tournament=free_international_tournament
+    )
+
+    # Create members at domestic tournament
+    member_1 = MemberAtTournamentFactory(
+        tournament=regular_complete_competition["tournament"],
+        team_at_tournament=regular_complete_competition["team_at_tournament"],
+    ).member
+
+    # Create members at international tournaments
+    member_2 = MemberAtInternationalTournamentFactory(
+        tournament=regular_international_tournament,
+        team_at_tournament=regular_team_at_int_tournament,
+    ).member
+    member_3 = MemberAtInternationalTournamentFactory(
+        tournament=discounted_international_tournament,
+        team_at_tournament=discounted_team_at_int_tournament,
+    ).member
+    member_4 = MemberAtInternationalTournamentFactory(
+        tournament=free_international_tournament,
+        team_at_tournament=free_team_at_int_tournament,
+    ).member
+
+    # Calculate fees
+    results = calculate_season_fees(season)
+
+    # Should only include members with regular or discounted fees (not free)
+    assert len(results) == 3
+
+    # Member 1 played in domestic regular tournament
+    assert member_1 in results
+    assert results[member_1].amount == season.regular_fee
+    assert regular_complete_competition["tournament"] in results[member_1].regular_tournaments
+    assert len(results[member_1].discounted_tournaments) == 0
+
+    # Member 2 played in international regular tournament
+    assert member_2 in results
+    assert results[member_2].amount == season.regular_fee
+    assert regular_international_tournament in results[member_2].regular_tournaments
+    assert len(results[member_2].discounted_tournaments) == 0
+
+    # Member 3 played in international discounted tournament
+    assert member_3 in results
+    assert results[member_3].amount == season.discounted_fee
+    assert len(results[member_3].regular_tournaments) == 0
+    assert discounted_international_tournament in results[member_3].discounted_tournaments
+
+    # Member 4 played in free tournament, should not be included
+    assert member_4 not in results
+
+    # Test that member playing in both domestic and international tournaments gets correct fee
+    MemberAtInternationalTournamentFactory(
+        tournament=discounted_international_tournament,
+        team_at_tournament=discounted_team_at_int_tournament,
+        member=member_1,
+    )
+
+    results = calculate_season_fees(season)
+    assert len(results) == 3
+    # Member 1 now has both regular (domestic) and discounted (international) tournaments
+    # Should be charged regular fee (higher priority)
+    assert results[member_1].amount == season.regular_fee
+    assert regular_complete_competition["tournament"] in results[member_1].regular_tournaments
+    assert discounted_international_tournament in results[member_1].discounted_tournaments
