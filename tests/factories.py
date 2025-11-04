@@ -15,6 +15,12 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from factory import SubFactory
 from finance.models import Invoice, InvoiceTypeEnum
+from international_tournaments.enums import InternationalTournamentTypeEnum
+from international_tournaments.models import (
+    InternationalTournament,
+    MemberAtInternationalTournament,
+    TeamAtInternationalTournament,
+)
 from members.models import Member, MemberSexEnum, Transfer, TransferStateEnum
 from tournaments.models import MemberAtTournament, TeamAtTournament, Tournament
 from users.models import Agent, AgentAtClub
@@ -195,3 +201,42 @@ class TransferFactory(factory.django.DjangoModelFactory):
     requesting_club = factory.LazyAttribute(lambda obj: obj.source_club)
     approving_club = factory.LazyAttribute(lambda obj: obj.target_club)
     requested_by = SubFactory(AgentFactory)
+
+
+class InternationalTournamentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = InternationalTournament
+
+    name = factory.Faker("company")
+    season = SubFactory(SeasonFactory)
+    date_from = factory.Faker("date_this_year")
+    date_to = factory.LazyAttribute(lambda obj: obj.date_from + timedelta(days=3))
+    city = factory.Faker("city")
+    country = "CZ"
+    type = InternationalTournamentTypeEnum.NATIONAL_TEAM
+    environment = factory.fuzzy.FuzzyChoice(list(EnvironmentEnum))
+    fee_type = CompetitionFeeTypeEnum.REGULAR
+
+
+class TeamAtInternationalTournamentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = TeamAtInternationalTournament
+
+    tournament = SubFactory(InternationalTournamentFactory)
+    team = SubFactory(TeamFactory)
+    age_limit = None
+    division = SubFactory(DivisionFactory)
+    team_name = factory.LazyAttribute(lambda obj: obj.team.name)
+
+
+class MemberAtInternationalTournamentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = MemberAtInternationalTournament
+
+    tournament = factory.LazyAttribute(lambda obj: obj.team_at_tournament.tournament)
+    team_at_tournament = SubFactory(TeamAtInternationalTournamentFactory)
+    member = SubFactory(MemberFactory)
+    is_captain = False
+    is_spirit_captain = False
+    is_coach = False
+    jersey_number = 10

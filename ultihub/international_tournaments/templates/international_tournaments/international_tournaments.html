@@ -69,7 +69,16 @@
                                                 {{ participation.age_limit.name | upper }}
                                             </span>
                                         {% endif %}
-                                        {{ participation.team_name }}
+                                        <a
+                                            href="#"
+                                            class="text-primary"
+                                            data-team-at-tournament-id="{{ participation.id }}"
+                                            hx-get="{% url 'international_tournaments:roster_dialog' participation.id %}"
+                                            hx-target="#dialog-lg"
+                                            style="cursor: pointer;"
+                                        >
+                                            {{ participation.team_name }}
+                                        </a>
                                     </td>
                                     <td class="text-start">
                                         {% if participation.final_placement and participation.total_teams %}
@@ -148,7 +157,16 @@
                                                 {{ participation.age_limit.name | upper }}
                                             </span>
                                         {% endif %}
-                                        {{ participation.team_name }}
+                                        <a
+                                            href="#"
+                                            class="text-primary"
+                                            data-team-at-tournament-id="{{ participation.id }}"
+                                            hx-get="{% url 'international_tournaments:roster_dialog' participation.id %}"
+                                            hx-target="#dialog-lg"
+                                            style="cursor: pointer;"
+                                        >
+                                            {{ participation.team_name }}
+                                        </a>
                                         {% if participation.final_placement and participation.total_teams %}
                                             <small class="text-muted"
                                                 >({{ participation.final_placement|ordinal }}/{{ participation.total_teams }})</small

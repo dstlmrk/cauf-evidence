@@ -10,10 +10,13 @@ from tests.factories import (
     CompetitionApplicationFactory,
     CompetitionFactory,
     DivisionFactory,
+    InternationalTournamentFactory,
     InvoiceFactory,
+    MemberAtInternationalTournamentFactory,
     MemberAtTournamentFactory,
     MemberFactory,
     SeasonFactory,
+    TeamAtInternationalTournamentFactory,
     TeamAtTournamentFactory,
     TeamFactory,
     TournamentFactory,
@@ -26,10 +29,13 @@ register(ClubFactory)
 register(CompetitionApplicationFactory)
 register(CompetitionFactory)
 register(DivisionFactory)
+register(InternationalTournamentFactory)
 register(InvoiceFactory)
+register(MemberAtInternationalTournamentFactory)
 register(MemberAtTournamentFactory)
 register(MemberFactory)
 register(SeasonFactory)
+register(TeamAtInternationalTournamentFactory)
 register(TeamAtTournamentFactory)
 register(TeamFactory)
 register(TournamentFactory)

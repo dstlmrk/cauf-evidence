@@ -1,0 +1,16 @@
+{% load crispy_forms_tags %}
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-person"></i> Roster</h5>
+    </div>
+    <form hx-post="{{ request.path }}">
+        <div class="modal-body">
+            {% csrf_token %}
+            {{ form | crispy }}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>

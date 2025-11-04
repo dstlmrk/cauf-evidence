@@ -1,0 +1,37 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-person"></i> Roster</h5>
+    </div>
+    <div class="modal-body">
+        {% load crispy_forms_tags %}
+        {% include "members/partials/member_search.html" %}
+        <form
+            id="addMemberToInternationalRosterForm"
+            hx-post="{% url 'international_tournaments:roster_add' team_at_tournament_id %}"
+        >
+            {% csrf_token %}
+            {{ form.member_id }}
+            <div class="form-group">
+                {% if form.member_id.errors %}
+                    <div class="form-error-msg">
+                        {% for error in form.member_id.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button
+            type="submit"
+            class="btn btn-primary"
+            form="addMemberToInternationalRosterForm"
+            x-data
+            x-init="setInterval(() => { $el.disabled = !document.querySelector('#id_member_id').value }, 100)"
+        >
+            Submit
+        </button>
+    </div>
+</div>

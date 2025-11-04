@@ -1,6 +1,7 @@
 from competitions.enums import CompetitionFeeTypeEnum, EnvironmentEnum
 from core.models import AuditModel
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django_countries.fields import CountryField
 
@@ -99,3 +100,49 @@ class TeamAtInternationalTournament(AuditModel):
                 raise ValidationError({"final_placement": "Final placement must be at least 1"})
         if self.total_teams and self.total_teams < 1:
             raise ValidationError({"total_teams": "Total teams must be at least 1"})
+
+
+class MemberAtInternationalTournament(AuditModel):
+    tournament = models.ForeignKey(
+        InternationalTournament,
+        on_delete=models.PROTECT,
+        related_name="members",
+    )
+    team_at_tournament = models.ForeignKey(
+        TeamAtInternationalTournament,
+        on_delete=models.PROTECT,
+        related_name="members",
+    )
+    member = models.ForeignKey(
+        "members.Member",
+        on_delete=models.PROTECT,
+    )
+    is_captain = models.BooleanField(
+        default=False,
+        verbose_name="Captain",
+        help_text="Only one captain per team is allowed",
+    )
+    is_spirit_captain = models.BooleanField(
+        default=False,
+        verbose_name="Spirit captain",
+        help_text="Only one spirit captain per team is allowed",
+    )
+    is_coach = models.BooleanField(
+        default=False,
+        verbose_name="Coach",
+    )
+    jersey_number = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1), MaxValueValidator(99)],
+    )
+
+    class Meta:
+        unique_together = (
+            ("tournament", "member"),
+            ("team_at_tournament", "member"),
+        )
+        app_label = "international_tournaments"
+
+    def __str__(self) -> str:
+        return f"{self.member}"

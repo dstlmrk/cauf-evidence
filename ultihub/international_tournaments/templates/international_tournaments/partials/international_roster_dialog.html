@@ -1,0 +1,137 @@
+<div class="modal-content">
+    <div class="modal-header p-3">
+        <div
+            class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between w-100"
+        >
+            <div>
+                <h5 class="modal-title mb-0">
+                    <i class="bi bi-people"></i> Roster:
+                    <span class="badge text-bg-primary text-bg-{{ team_at_tournament.division.name|lower }}">
+                        {{ team_at_tournament.division.name|upper }}
+                    </span>
+                    {% if team_at_tournament.age_limit %}
+                        <span class="badge text-bg-primary"> {{ team_at_tournament.age_limit.name|upper }} </span>
+                    {% endif %}
+                    {{ team_at_tournament.team_name }}
+                </h5>
+                <small class="text-muted">{{ team_at_tournament.tournament.name }}</small>
+            </div>
+            {% if request.session.club.id == NATIONAL_TEAM_CLUB_ID %}
+                <button
+                    class="btn btn-success mt-2 mt-md-0 ms-0 ms-md-3"
+                    hx-get="{% url 'international_tournaments:roster_add' team_at_tournament.id %}"
+                    hx-target="#dialog"
+                    data-bs-dismiss="modal"
+                >
+                    <i class="bi bi-person-plus"></i> Add member
+                </button>
+            {% endif %}
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="d-none d-md-block">
+            <table class="table align-middle">
+                <thead>
+                    <tr class="align-middle">
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Home club</th>
+                        <th scope="col">Birth year</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member_at_tournament in members_at_tournament %}
+                        {% with member_at_tournament.member as member %}
+                            <tr>
+                                <th>{{ member_at_tournament.jersey_number | default:"" }}</th>
+                                <td>
+                                    {{ member.citizenship.unicode_flag }} {{ member.full_name }}
+                                    {% if member_at_tournament.is_captain %}
+                                        (C)
+                                    {% endif %}
+                                    {% if member_at_tournament.is_spirit_captain %}
+                                        (SC)
+                                    {% endif %}
+                                    {% if member_at_tournament.is_coach %}
+                                        (COACH)
+                                    {% endif %}
+                                </td>
+                                <td>{{ member.club.name }}</td>
+                                <td>{{ member.birth_date | date:'Y' }}</td>
+                                <td class="fit text-end">
+                                    {% if request.session.club.id == NATIONAL_TEAM_CLUB_ID %}
+                                        <button
+                                            class="btn btn-primary"
+                                            hx-get="{% url 'international_tournaments:roster_update' member_at_tournament.id %}"
+                                            hx-target="#dialog"
+                                            data-bs-dismiss="modal"
+                                        >
+                                            Edit
+                                        </button>
+                                        <form
+                                            style="display: inline;"
+                                            hx-post="{% url 'international_tournaments:roster_remove' member_at_tournament.id %}"
+                                        >
+                                            {% csrf_token %}
+                                            <button class="btn btn-danger" type="submit">Remove</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endwith %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-block d-md-none">
+            <div class="list-group">
+                {% for member_at_tournament in members_at_tournament %}
+                    {% with member_at_tournament.member as member %}
+                        <div class="list-group-item">
+                            <div>Jersey number: {{ member_at_tournament.jersey_number | default:"" }}</div>
+                            <div>
+                                Member: {{ member.citizenship.unicode_flag }} <b>{{ member.full_name }}</b>
+                                {% if member_at_tournament.is_captain %}
+                                    (C)
+                                {% endif %}
+                                {% if member_at_tournament.is_spirit_captain %}
+                                    (SC)
+                                {% endif %}
+                                {% if member_at_tournament.is_coach %}
+                                    (COACH)
+                                {% endif %}
+                            </div>
+                            <div>Club: {{ member.club.name }}</div>
+                            <div>Birth year: {{ member.birth_date | date:'Y' }}</div>
+
+                            {% if request.session.club.id == NATIONAL_TEAM_CLUB_ID %}
+                                <div class="mt-2 mb-1">
+                                    <button
+                                        class="btn btn-primary"
+                                        hx-get="{% url 'international_tournaments:roster_update' member_at_tournament.id %}"
+                                        hx-target="#dialog"
+                                        data-bs-dismiss="modal"
+                                    >
+                                        Edit
+                                    </button>
+                                    <form
+                                        style="display: inline;"
+                                        hx-post="{% url 'international_tournaments:roster_remove' member_at_tournament.id %}"
+                                    >
+                                        {% csrf_token %}
+                                        <button class="btn btn-danger" type="submit">Remove</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer d-flex w-100 justify-content-end">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+</div>

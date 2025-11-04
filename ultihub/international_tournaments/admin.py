@@ -1,6 +1,10 @@
 from django.contrib import admin
 
-from international_tournaments.models import InternationalTournament, TeamAtInternationalTournament
+from international_tournaments.models import (
+    InternationalTournament,
+    MemberAtInternationalTournament,
+    TeamAtInternationalTournament,
+)
 
 
 class TeamAtInternationalTournamentInline(admin.TabularInline):
@@ -8,6 +12,13 @@ class TeamAtInternationalTournamentInline(admin.TabularInline):
     extra = 1
     fields = ("team", "age_limit", "division", "final_placement", "total_teams")
     autocomplete_fields = ["team"]
+
+
+class MemberAtInternationalTournamentInline(admin.TabularInline):
+    model = MemberAtInternationalTournament
+    extra = 0
+    fields = ("member", "is_captain", "is_spirit_captain", "is_coach", "jersey_number")
+    autocomplete_fields = ["member"]
 
 
 @admin.register(InternationalTournament)
@@ -66,3 +77,4 @@ class TeamAtInternationalTournamentAdmin(admin.ModelAdmin):
     list_filter = ("tournament", "age_limit", "division")
     search_fields = ("team_name", "team__name", "tournament__name")
     autocomplete_fields = ["team", "tournament"]
+    inlines = [MemberAtInternationalTournamentInline]
