@@ -1,3 +1,6 @@
+from datetime import date
+from typing import cast
+
 from clubs.models import Club
 from core.helpers import get_current_club
 from django.contrib import messages
@@ -53,6 +56,7 @@ def season_fees_list_view(request: HttpRequest) -> HttpResponse:
 @require_POST
 def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
     from competitions.models import Season
+    from international_tournaments.models import MemberAtInternationalTournament
 
     member_id = request.POST.get("member_id", "")
     season_id = request.POST.get("season_id", "")
@@ -60,7 +64,7 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
     member = get_object_or_404(Member, pk=member_id)
     season = get_object_or_404(Season, pk=season_id)
 
-    # Get all tournaments for this member in this season
+    # Get all domestic tournaments for this member in this season
     members_at_tournaments = (
         MemberAtTournament.objects.filter(
             member=member,
@@ -81,8 +85,35 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
                 "tournament": mat.tournament,
                 "team_name": mat.team_at_tournament.application.team_name,
                 "fee_type": mat.tournament.competition.fee_type,
+                "date": mat.tournament.start_date,
             }
         )
+
+    # Get all international tournaments for this member in this season
+    members_at_international_tournaments = (
+        MemberAtInternationalTournament.objects.filter(
+            member=member,
+            tournament__season=season,
+        )
+        .select_related(
+            "tournament",
+            "team_at_tournament",
+        )
+        .order_by("-tournament__date_from")
+    )
+
+    for mait in members_at_international_tournaments:
+        tournaments_data.append(
+            {
+                "tournament": mait.tournament,
+                "team_name": mait.team_at_tournament.team_name,
+                "fee_type": mait.tournament.fee_type,
+                "date": mait.tournament.date_from,
+            }
+        )
+
+    # Sort all tournaments by date (most recent first)
+    tournaments_data.sort(key=lambda x: cast(date, x["date"]) or date.min, reverse=True)
 
     return render(
         request,

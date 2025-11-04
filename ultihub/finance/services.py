@@ -134,12 +134,15 @@ def create_deposit_invoice(club: Club) -> bool:
 def calculate_season_fees(
     season: Season, club_id: int | None = None
 ) -> dict[Member, SeasonFeeData]:
+    from international_tournaments.models import MemberAtInternationalTournament
+
     fees: dict[Member, SeasonFeeData] = defaultdict(lambda: SeasonFeeData(Decimal(0), [], []))
 
     for amount, fee_type in [
         (season.discounted_fee, CompetitionFeeTypeEnum.DISCOUNTED),
         (season.regular_fee, CompetitionFeeTypeEnum.REGULAR),
     ]:
+        # Domestic tournaments
         members_at_tournaments = (
             MemberAtTournament.objects.filter(
                 Q(tournament__competition__season=season),
@@ -155,6 +158,20 @@ def calculate_season_fees(
             fees[member].amount = amount
             getattr(fees[member], f"{fee_type.label.lower()}_tournaments").append(
                 member_at_tournament.tournament
+            )
+
+        # International tournaments
+        members_at_international_tournaments = MemberAtInternationalTournament.objects.filter(
+            Q(tournament__season=season),
+            Q(tournament__fee_type=fee_type),
+            Q(member__club=club_id) if club_id else Q(),
+        ).select_related("member", "tournament")
+
+        for member_at_international_tournament in members_at_international_tournaments:
+            member = member_at_international_tournament.member
+            fees[member].amount = amount
+            getattr(fees[member], f"{fee_type.label.lower()}_tournaments").append(
+                member_at_international_tournament.tournament
             )
 
     return fees
