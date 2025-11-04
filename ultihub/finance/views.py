@@ -106,6 +106,7 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
         )
         .select_related(
             "tournament",
+            "tournament__country",
             "team_at_tournament",
             "team_at_tournament__division",
             "team_at_tournament__age_limit",
