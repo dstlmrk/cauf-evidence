@@ -5,6 +5,10 @@ from clubs.models import Club
 from clubs.service import notify_club
 from competitions.models import Season
 from django.utils import timezone
+from international_tournaments.models import (
+    InternationalTournament,
+    MemberAtInternationalTournament,
+)
 from tournaments.models import MemberAtTournament, Tournament
 from users.models import Agent
 
@@ -91,10 +95,19 @@ def reject_transfer(transfer: Transfer) -> None:
 
 
 def get_member_participation_counts(season: Season) -> Counter[int]:
-    tournament_lengths = {}
+    # Calculate days for domestic tournaments
+    tournament_lengths: dict[int, int] = {}
     for tournament in Tournament.objects.filter(competition__season=season):
         delta_days = (tournament.end_date - tournament.start_date).days + 1
         tournament_lengths[tournament.id] = delta_days
+
+    # Calculate days for international tournaments
+    international_tournament_lengths: dict[int, int] = {}
+    for int_tournament in InternationalTournament.objects.filter(season=season):
+        delta_days = (int_tournament.date_to - int_tournament.date_from).days + 1
+        international_tournament_lengths[int_tournament.id] = delta_days
+
+    # Sum up days for each member from domestic tournaments
     member_participation: Counter[int] = Counter()
     for member_at_tournament in MemberAtTournament.objects.filter(
         tournament_id__in=tournament_lengths.keys()
@@ -102,4 +115,13 @@ def get_member_participation_counts(season: Season) -> Counter[int]:
         member_participation[member_at_tournament.member_id] += tournament_lengths[
             member_at_tournament.tournament.id
         ]
+
+    # Add days from international tournaments
+    for member_at_int_tournament in MemberAtInternationalTournament.objects.filter(
+        tournament_id__in=international_tournament_lengths.keys()
+    ):
+        member_participation[member_at_int_tournament.member_id] += (
+            international_tournament_lengths[member_at_int_tournament.tournament.id]
+        )
+
     return member_participation

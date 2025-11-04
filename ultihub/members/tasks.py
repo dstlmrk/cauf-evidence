@@ -8,6 +8,7 @@ from core.tasks import send_email
 from django.contrib.auth.models import User
 from django.db.models import Exists, OuterRef, Subquery
 from django.utils.timezone import now
+from finance.services import calculate_season_fees
 from huey.contrib.djhuey import db_task
 
 from members.helpers import get_member_participation_counts
@@ -32,7 +33,17 @@ def generate_nsa_export(user: User, season: Season, club: Club | None) -> None:
     member_participation = get_member_participation_counts(season)
     logger.info(f"Participation counts calculated for {len(member_participation)} members")
 
-    members_qs = Member.objects.filter(id__in=member_participation.keys()).annotate(
+    # Calculate season fees to filter out members who only played in free tournaments
+    logger.info("Calculating season fees to filter free-only players")
+    season_fees = calculate_season_fees(season, club.id if club else None)
+    members_with_fees = set(season_fees.keys())
+    logger.info(f"Found {len(members_with_fees)} members with season fees")
+
+    # Filter members: must have participation AND season fees (not free-only)
+    eligible_member_ids = set(member_participation.keys()) & {m.id for m in members_with_fees}
+    logger.info(f"Eligible members for NSA export: {len(eligible_member_ids)}")
+
+    members_qs = Member.objects.filter(id__in=eligible_member_ids).annotate(
         has_coach_licence=Exists(
             CoachLicence.objects.filter(
                 member=OuterRef("pk"),
