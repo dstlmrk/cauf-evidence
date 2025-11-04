@@ -73,6 +73,8 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
         .select_related(
             "tournament",
             "tournament__competition",
+            "tournament__competition__division",
+            "tournament__competition__age_limit",
             "team_at_tournament__application",
         )
         .order_by("-tournament__start_date")
@@ -86,6 +88,13 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
                 "team_name": mat.team_at_tournament.application.team_name,
                 "fee_type": mat.tournament.competition.fee_type,
                 "date": mat.tournament.start_date,
+                "is_international": False,
+                "competition": mat.tournament.competition,
+                "division": mat.tournament.competition.division,
+                "age_limit": mat.tournament.competition.age_limit,
+                "location": mat.tournament.location,
+                "date_from": mat.tournament.start_date,
+                "date_to": mat.tournament.end_date,
             }
         )
 
@@ -98,6 +107,8 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
         .select_related(
             "tournament",
             "team_at_tournament",
+            "team_at_tournament__division",
+            "team_at_tournament__age_limit",
         )
         .order_by("-tournament__date_from")
     )
@@ -109,6 +120,13 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
                 "team_name": mait.team_at_tournament.team_name,
                 "fee_type": mait.tournament.fee_type,
                 "date": mait.tournament.date_from,
+                "is_international": True,
+                "tournament_type": mait.tournament.get_type_display(),
+                "division": mait.team_at_tournament.division,
+                "age_limit": mait.team_at_tournament.age_limit,
+                "location": f"{mait.tournament.city}, {mait.tournament.country.name}",
+                "date_from": mait.tournament.date_from,
+                "date_to": mait.tournament.date_to,
             }
         )
 
