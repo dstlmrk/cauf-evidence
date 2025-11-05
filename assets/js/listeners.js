@@ -6,6 +6,7 @@ document.addEventListener("alpine:init", () => {
 // Event listener for roster dialog
 document.body.addEventListener("showRosterDialog", (event) => {
     const { teamAtTournamentId } = event.detail;
+
     // Try button first (domestic tournaments)
     const rosterButton = document.getElementById(`rosterButton-${teamAtTournamentId}`);
     if (rosterButton) {
@@ -17,6 +18,7 @@ document.body.addEventListener("showRosterDialog", (event) => {
     if (rosterLink) {
         rosterLink.click();
     }
+    // Note: URL will be updated automatically in dialog.js after HTMX swap
 });
 
 function waitForElement(selector, callback, maxTries = 20, interval = 100) {
@@ -219,3 +221,50 @@ function memberForm() {
 
 // Export for global use
 window.memberForm = memberForm;
+
+// Auto-open roster dialog if URL contains roster parameter
+document.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const rosterId = urlParams.get("roster");
+
+    if (rosterId) {
+        // Try to find and click roster element (button or link)
+        const attemptClick = () => {
+            // Try button first (domestic tournaments)
+            const rosterButton = document.getElementById(`rosterButton-${rosterId}`);
+            if (rosterButton) {
+                rosterButton.click();
+                return true;
+            }
+
+            // Try link (international tournaments)
+            const rosterLink = document.querySelector(`a[data-team-at-tournament-id="${rosterId}"]`);
+            if (rosterLink) {
+                rosterLink.click();
+                return true;
+            }
+
+            return false;
+        };
+
+        // Try immediately
+        if (!attemptClick()) {
+            // If not found, wait for element to appear (HTMX may load it async)
+            let attempts = 0;
+            const maxAttempts = 20;
+            const interval = setInterval(() => {
+                if (attemptClick() || attempts >= maxAttempts) {
+                    clearInterval(interval);
+
+                    // If still not found after all attempts, remove invalid parameter
+                    if (attempts >= maxAttempts) {
+                        const url = new URL(window.location);
+                        url.searchParams.delete("roster");
+                        window.history.replaceState({}, "", url);
+                    }
+                }
+                attempts++;
+            }, 100);
+        }
+    }
+});

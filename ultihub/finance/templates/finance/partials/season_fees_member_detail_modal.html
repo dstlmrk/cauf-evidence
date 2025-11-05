@@ -10,8 +10,8 @@
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Tournament</th>
                             <th scope="col">Competition</th>
+                            <th scope="col">Tournament</th>
                             <th scope="col">Team</th>
                             <th scope="col">Fee Type</th>
                         </tr>
@@ -20,13 +20,6 @@
                         {% for item in tournaments %}
                             <tr>
                                 <th scope="row">{{ forloop.counter }}</th>
-                                <td>
-                                    <div>{{ item.tournament.name }}</div>
-                                    <small class="text-muted"
-                                        >{{ item.location }} •
-                                        {{ item.date_from|date:'d.m' }}.–{{ item.date_to|date:'d.m.Y' }}</small
-                                    >
-                                </td>
                                 <td>
                                     <div>
                                         {% if item.is_international %}
@@ -42,6 +35,34 @@
                                         {% if item.age_limit %}
                                             <span class="badge text-bg-primary">{{ item.age_limit.name|upper }}</span>
                                         {% endif %}
+                                    </small>
+                                </td>
+                                <td>
+                                    <div>
+                                        {% if item.is_international %}
+                                            <a
+                                                href="{% url 'international_tournaments:international_tournaments' %}?roster={{ item.team_at_tournament_id }}"
+                                                target="_blank"
+                                                class="text-primary"
+                                            >
+                                                {{ item.tournament.name }}
+                                            </a>
+                                        {% else %}
+                                            <a
+                                                href="{% url 'tournaments:detail' item.tournament.id %}?roster={{ item.team_at_tournament_id }}"
+                                                target="_blank"
+                                                class="text-primary"
+                                            >
+                                                {{ item.tournament.name }}
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted">
+                                        {{ item.location }}
+                                        {% if item.is_international %}
+                                            {{ item.tournament.country.unicode_flag }}
+                                        {% endif %}
+                                        • {{ item.date_from|date:'d.m' }}.–{{ item.date_to|date:'d.m.Y' }}
                                     </small>
                                 </td>
                                 <td>{{ item.team_name }}</td>
@@ -80,8 +101,34 @@
                                     <span class="badge text-bg-primary">{{ item.age_limit.name|upper }}</span>
                                 {% endif %}
                             </div>
-                            <div>Tournament: <strong>{{ item.tournament.name }}</strong></div>
-                            <div>Location: {{ item.location }}</div>
+                            <div>
+                                Tournament:
+                                <strong>
+                                    {% if item.is_international %}
+                                        <a
+                                            href="{% url 'international_tournaments:international_tournaments' %}?roster={{ item.team_at_tournament_id }}"
+                                            target="_blank"
+                                            class="text-primary"
+                                        >
+                                            {{ item.tournament.name }}
+                                        </a>
+                                    {% else %}
+                                        <a
+                                            href="{% url 'tournaments:detail' item.tournament.id %}?roster={{ item.team_at_tournament_id }}"
+                                            target="_blank"
+                                            class="text-primary"
+                                        >
+                                            {{ item.tournament.name }}
+                                        </a>
+                                    {% endif %}
+                                </strong>
+                            </div>
+                            <div>
+                                Location: {{ item.location }}
+                                {% if item.is_international %}
+                                    {{ item.tournament.country.unicode_flag }}
+                                {% endif %}
+                            </div>
                             <div>Date: {{ item.date_from|date:'d. m. Y' }} - {{ item.date_to|date:'d. m. Y' }}</div>
                             <div>Team: {{ item.team_name }}</div>
                             <div>
