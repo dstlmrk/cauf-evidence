@@ -106,6 +106,7 @@ class SeasonFactory(factory.django.DjangoModelFactory):
 class DivisionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Division
+        django_get_or_create = ("name",)
 
     name = factory.Faker("word")
     is_female_allowed = True
@@ -115,6 +116,7 @@ class DivisionFactory(factory.django.DjangoModelFactory):
 class AgeLimitFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = AgeLimit
+        django_get_or_create = ("name",)
 
     name = factory.Faker("word")
     m_min = f_min = 14

@@ -17,6 +17,7 @@ from tournaments.models import TeamAtTournament, Tournament
 
 from competitions.enums import ApplicationStateEnum
 from competitions.forms import AddTeamsToTournamentForm
+from competitions.helpers import get_clubs_without_subject_id_with_fees
 from competitions.models import (
     AgeLimit,
     Competition,
@@ -73,9 +74,15 @@ class SeasonAdmin(admin.ModelAdmin):
 
     def change_view(self, request: HttpRequest, object_id: str, form_url="", extra_context=None):  # type: ignore
         extra_context = extra_context or {}
-        extra_context["clubs_without_subject_id"] = Club.objects.filter(
-            fakturoid_subject_id__isnull=True
-        )
+        season = self.get_object(request, object_id)
+
+        if season:
+            extra_context["clubs_without_subject_id"] = get_clubs_without_subject_id_with_fees(
+                season
+            )
+        else:
+            extra_context["clubs_without_subject_id"] = Club.objects.none()
+
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
 

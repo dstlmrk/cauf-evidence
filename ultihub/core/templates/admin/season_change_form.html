@@ -14,8 +14,7 @@
     </div>
     {% if clubs_without_subject_id %}
         <div>
-            <b>Warning:</b> The second action will not generate invoices for clubs that do not have FAKTUROID_SUBJECT_ID
-            set:
+            <b>Warning:</b> Invoices will NOT be generated for these clubs (missing FAKTUROID_SUBJECT_ID):
             <ul>
                 {% for club in clubs_without_subject_id %}
                     <li>{{ club.name }}</li>
