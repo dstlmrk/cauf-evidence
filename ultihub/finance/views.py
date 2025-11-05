@@ -4,6 +4,7 @@ from typing import cast
 from clubs.models import Club
 from core.helpers import get_current_club
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
@@ -14,6 +15,7 @@ from finance.forms import SeasonFeesCheckForm
 from finance.services import calculate_season_fees, create_deposit_invoice
 
 
+@login_required
 @require_POST
 def invoices(request: HttpRequest) -> HttpResponse:
     club = get_object_or_404(Club, pk=get_current_club(request).id)
@@ -32,6 +34,7 @@ def invoices(request: HttpRequest) -> HttpResponse:
     return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
 
+@login_required
 @require_POST
 def season_fees_list_view(request: HttpRequest) -> HttpResponse:
     form = SeasonFeesCheckForm(request.POST)
@@ -53,6 +56,7 @@ def season_fees_list_view(request: HttpRequest) -> HttpResponse:
         return HttpResponse(status=400)
 
 
+@login_required
 @require_POST
 def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
     from competitions.models import Season

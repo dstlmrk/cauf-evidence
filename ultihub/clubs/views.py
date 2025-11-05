@@ -60,6 +60,7 @@ def members(request: HttpRequest) -> HttpResponse:
     )
 
 
+@login_required
 def season_fees_view(request: HttpRequest) -> HttpResponse:
     return render(request, "clubs/season_fees.html", {"form": SeasonFeesCheckForm()})
 
@@ -238,6 +239,7 @@ def agent_list(request: HttpRequest) -> HttpResponse:
     )
 
 
+@login_required
 def notifications_dialog_view(request: HttpRequest) -> HttpResponse:
     notifications_qs = ClubNotification.objects.filter(
         agent_at_club__agent_id=request.user.agent.id,  # type: ignore
