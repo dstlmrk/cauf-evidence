@@ -43,6 +43,14 @@ def create_transfer_request(
     )
 
 
+def cancel_competing_transfers(member: Member, approved_transfer_id: int) -> None:
+    """Cancel all other REQUESTED transfers for a member when one transfer is approved."""
+    Transfer.objects.filter(
+        member=member,
+        state=TransferStateEnum.REQUESTED,
+    ).exclude(pk=approved_transfer_id).update(state=TransferStateEnum.CANCELLED)
+
+
 def approve_transfer(agent: Agent, transfer: Transfer) -> None:
     if transfer.state != TransferStateEnum.REQUESTED:
         raise ValueError("Transfer must be in REQUESTED state to be approved")
@@ -54,6 +62,9 @@ def approve_transfer(agent: Agent, transfer: Transfer) -> None:
 
     transfer.member.club = transfer.target_club
     transfer.member.save()
+
+    # Cancel all other pending transfers for this member
+    cancel_competing_transfers(transfer.member, transfer.id)
 
     notify_club(
         club=transfer.requesting_club,

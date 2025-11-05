@@ -40,6 +40,7 @@ class TransferStateEnum(models.IntegerChoices):
     PROCESSED = 2, "Processed"
     REVOKED = 3, "Revoked"
     REJECTED = 4, "Rejected"
+    CANCELLED = 5, "Cancelled"
 
 
 class MemberQuerySet(QuerySet):
