@@ -3,6 +3,11 @@
 <div class="row mb-3">
     <div class="col-12">
         <form method="get" class="row g-2">
+            <!-- Preserve roster parameter when filtering -->
+            {% if request.GET.roster %}
+                <input type="hidden" name="roster" value="{{ request.GET.roster }}" />
+            {% endif %}
+
             <!-- Season filter -->
             <div class="col-md col-6">
                 <select class="form-select" id="season" name="season" onchange="this.form.submit()">

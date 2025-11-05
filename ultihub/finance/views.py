@@ -89,6 +89,7 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
         tournaments_data.append(
             {
                 "tournament": mat.tournament,
+                "team_at_tournament_id": mat.team_at_tournament.id,
                 "team_name": mat.team_at_tournament.application.team_name,
                 "fee_type": mat.tournament.competition.fee_type,
                 "date": mat.tournament.start_date,
@@ -121,6 +122,7 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
         tournaments_data.append(
             {
                 "tournament": mait.tournament,
+                "team_at_tournament_id": mait.team_at_tournament.id,
                 "team_name": mait.team_at_tournament.team_name,
                 "fee_type": mait.tournament.fee_type,
                 "date": mait.tournament.date_from,
