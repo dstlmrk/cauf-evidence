@@ -15,13 +15,8 @@
                         <th scope="col"></th>
                         <th scope="col">Rosters<br /><small class="text-muted">Deadline</small></th>
                         <th scope="col">Season</th>
-                        <th scope="col">Competition</th>
-                        <th scope="col">Tournament<br /><small class="text-muted">Location</small></th>
-                        <th scope="col">
-                            Start date <i class="bi bi-arrow-down-short"></i>
-                            <br />
-                            <small class="text-muted">End date</small>
-                        </th>
+                        <th scope="col">Tournament<br /><small class="text-muted">Competition</small></th>
+                        <th scope="col">Location<br /><small class="text-muted">Date</small></th>
                         <th scope="col" class="fit pe-5 text-center">
                             <div data-bs-toggle="tooltip" data-bs-title="Total teams / members">Total<br />T / M</div>
                         </th>
@@ -57,27 +52,30 @@
                                 </small>
                             </td>
                             <td>
-                                {{ tournament.competition.name }}<br />
-                                <span
-                                    class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
-                                    >{{ tournament.competition.division | upper }}</span
-                                >
-                                {% if tournament.competition.age_limit %}
-                                    <span class="badge text-bg-primary"
-                                        >{{ tournament.competition.age_limit | upper }}</span
-                                    >
-                                {% endif %}
-                            </td>
-                            <td>
                                 <a href="{% url 'tournaments:detail' tournament.id %}" class="text-primary">
                                     {{ tournament.name }}
                                 </a>
                                 <br />
-                                <small class="text-muted">{{ tournament.location }}</small>
+                                <small class="text-muted">
+                                    {{ tournament.competition.name }}
+                                    <span style="position: relative; top: -2px;">
+                                        <span
+                                            class="badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
+                                            >{{ tournament.competition.division | upper }}</span
+                                        >
+                                        {% if tournament.competition.age_limit %}
+                                            <span class="badge text-bg-primary"
+                                                >{{ tournament.competition.age_limit | upper }}</span
+                                            >
+                                        {% endif %}
+                                    </span>
+                                </small>
                             </td>
                             <td>
-                                {{ tournament.start_date | date:'d.m.Y' }}<br />
-                                <small class="text-muted">{{ tournament.end_date | date:'d.m.Y' }}</small>
+                                {{ tournament.location }}<br />
+                                <small class="text-muted"
+                                    >{{ tournament.start_date | date:'d.m' }}.–{{ tournament.end_date | date:'d.m.Y' }}</small
+                                >
                             </td>
                             <td>
                                 {% if tournament.team_count %}
