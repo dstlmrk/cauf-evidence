@@ -64,20 +64,15 @@
                 <div class="list-group">
                     {% for item in tournaments %}
                         <div class="list-group-item">
-                            <div><b>{{ item.tournament.name }}</b></div>
-                            <small class="text-muted"
-                                >{{ item.location }} •
-                                {{ item.date_from|date:'d.m' }}.–{{ item.date_to|date:'d.m.Y' }}</small
-                            >
-                            <div class="mt-1">
-                                Competition:
-                                {% if item.is_international %}
-                                    {{ item.tournament_type }}
-                                {% else %}
-                                    {{ item.competition.name }}
-                                {% endif %}
-                            </div>
                             <div>
+                                Competition:
+                                <strong>
+                                    {% if item.is_international %}
+                                        {{ item.tournament_type }}
+                                    {% else %}
+                                        {{ item.competition.name }}
+                                    {% endif %}
+                                </strong>
                                 <span class="badge text-bg-primary text-bg-{{ item.division.name|lower }}">
                                     {{ item.division.name|upper }}
                                 </span>
@@ -85,9 +80,12 @@
                                     <span class="badge text-bg-primary">{{ item.age_limit.name|upper }}</span>
                                 {% endif %}
                             </div>
+                            <div>Tournament: <strong>{{ item.tournament.name }}</strong></div>
+                            <div>Location: {{ item.location }}</div>
+                            <div>Date: {{ item.date_from|date:'d. m. Y' }} - {{ item.date_to|date:'d. m. Y' }}</div>
                             <div>Team: {{ item.team_name }}</div>
                             <div>
-                                Fee:
+                                Fee type:
                                 {% if item.fee_type == 1 %}
                                     <span class="badge bg-success">Free</span>
                                 {% elif item.fee_type == 2 %}
