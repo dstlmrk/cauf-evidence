@@ -35,7 +35,10 @@ class TournamentAdmin(admin.ModelAdmin):
         "end_date",
         "location",
         "rosters_deadline",
+        "winner_team",
+        "sotg_winner_team",
     )
+    readonly_fields = ("winner_team", "sotg_winner_team")
     ordering = ("-created_at",)
     inlines = [TeamAtTournamentInline]
 

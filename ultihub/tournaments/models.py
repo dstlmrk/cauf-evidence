@@ -4,7 +4,7 @@ from decimal import Decimal
 from core.models import AuditModel
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 
 
@@ -19,6 +19,20 @@ class Tournament(AuditModel):
     end_date = models.DateField()
     location = models.CharField(max_length=128)
     rosters_deadline = models.DateTimeField()
+    winner_team = models.ForeignKey(
+        "TeamAtTournament",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="won_tournaments",
+    )
+    sotg_winner_team = models.ForeignKey(
+        "TeamAtTournament",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sotg_won_tournaments",
+    )
 
     class Meta:
         unique_together = ("competition", "name")
@@ -50,6 +64,21 @@ class Tournament(AuditModel):
 
     def __str__(self) -> str:
         return f"{self.name} ({self.competition})"
+
+    @transaction.atomic
+    def update_winners(self) -> None:
+        """Update winner_team and sotg_winner_team based on current results."""
+        from django.db.models import F
+
+        if winner := self.teams.filter(final_placement=1).first():
+            self.winner_team = winner
+            sotg_winner = (
+                self.teams.exclude(spirit_avg__isnull=True)
+                .order_by(F("spirit_avg").desc(), "final_placement")
+                .first()
+            )
+            self.sotg_winner_team = sotg_winner
+            self.save(update_fields=["winner_team", "sotg_winner_team"])
 
     @property
     def has_open_rosters(self) -> bool:

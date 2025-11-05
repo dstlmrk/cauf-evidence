@@ -10,7 +10,7 @@ from core.helpers import get_current_club, get_current_club_or_none
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db.models import BooleanField, Count, Exists, F, OuterRef, Subquery, Value
+from django.db.models import BooleanField, Count, Exists, OuterRef, Value
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -37,6 +37,10 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
         "competition__season",
         "competition__division",
         "competition__age_limit",
+        "winner_team",
+        "winner_team__application",
+        "sotg_winner_team",
+        "sotg_winner_team__application",
     )
 
     # Apply filters using FilterSet
@@ -46,16 +50,6 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
     tournaments = queryset.annotate(
         team_count=Count("teams", distinct=True),
         member_count=Count("members", distinct=True),
-        winner_team=Subquery(
-            TeamAtTournament.objects.filter(tournament=OuterRef("pk"), final_placement=1).values(
-                "application__team_name"
-            )[:1]
-        ),
-        sotg_winner_team=Subquery(
-            TeamAtTournament.objects.filter(tournament=OuterRef("pk"))
-            .order_by(F("spirit_avg").desc(nulls_last=True), "final_placement")
-            .values("application__team_name")[:1]
-        ),
         includes_my_club_team=Exists(
             TeamAtTournament.objects.filter(
                 tournament=OuterRef("pk"), application__team__club_id=club.id
