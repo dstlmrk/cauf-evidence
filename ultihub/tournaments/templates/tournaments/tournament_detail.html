@@ -33,9 +33,6 @@
         </span>
     </div>
     <div>Total teams/members: {{ tournament.team_count }}/{{ tournament.member_count }}</div>
-    {% if tournament.winner_team %}
-        <div>Winner: {{ tournament.winner_team }}</div>
-    {% endif %}
 {% endblock %}
 
 {% block content %}

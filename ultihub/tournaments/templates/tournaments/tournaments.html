@@ -87,8 +87,12 @@
                             </td>
                             <td>
                                 {% if tournament.winner_team %}
-                                    {{ tournament.winner_team }}<br />
-                                    <small class="text-muted">{{ tournament.sotg_winner_team }}</small>
+                                    {{ tournament.winner_team.application.team_name }}<br />
+                                    {% if tournament.sotg_winner_team %}
+                                        <small class="text-muted"
+                                            >{{ tournament.sotg_winner_team.application.team_name }}</small
+                                        >
+                                    {% endif %}
                                 {% endif %}
                             </td>
                         </tr>
@@ -143,10 +147,10 @@
                         <div>Rosters deadline: {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}</div>
                         <div>Total teams/members: {{ tournament.team_count }}/{{ tournament.member_count }}</div>
                         {% if tournament.winner_team %}
-                            <div>Winner: {{ tournament.winner_team }}</div>
+                            <div>Winner: {{ tournament.winner_team.application.team_name }}</div>
                         {% endif %}
-                        {% if tournament.winner_team and tournament.sotg_winner_team %}
-                            <div>Spirit: {{ tournament.sotg_winner_team }}</div>
+                        {% if tournament.sotg_winner_team %}
+                            <div>Spirit: {{ tournament.sotg_winner_team.application.team_name }}</div>
                         {% endif %}
                     </div>
                 {% endfor %}
