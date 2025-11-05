@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 
 from core.models import AuditModel
@@ -31,6 +32,21 @@ class Tournament(AuditModel):
             raise ValidationError(
                 {"end_date": "Difference between start and end date cannot be more than 10 days"}
             )
+
+        # Ensure rosters_deadline is not after the first day of the tournament (end of day)
+        if self.rosters_deadline and self.start_date:
+            # Convert start_date to datetime at 23:59:59 in the local timezone
+            start_date_end = timezone.make_aware(
+                datetime.combine(self.start_date, datetime.max.time())
+            )
+            if self.rosters_deadline > start_date_end:
+                raise ValidationError(
+                    {
+                        "rosters_deadline": (
+                            "Roster deadline cannot be after the first day of the tournament"
+                        )
+                    }
+                )
 
     def __str__(self) -> str:
         return f"{self.name} ({self.competition})"
