@@ -47,8 +47,8 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
     queryset = filter_set.qs
 
     tournaments = queryset.annotate(
-        team_count=Count("teams"),
-        member_count=Count("members"),
+        team_count=Count("teams", distinct=True),
+        member_count=Count("members", distinct=True),
         includes_my_club_team=Exists(
             TeamAtTournament.objects.filter(
                 tournament=OuterRef("pk"), application__team__club_id=club.id
@@ -79,8 +79,8 @@ def tournament_detail_view(request: HttpRequest, tournament_id: int) -> HttpResp
         {
             "tournament": Tournament.objects.select_related("competition")
             .annotate(
-                team_count=Count("teams"),
-                member_count=Count("members"),
+                team_count=Count("teams", distinct=True),
+                member_count=Count("members", distinct=True),
             )
             .get(pk=tournament_id),
         },
