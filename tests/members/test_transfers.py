@@ -4,6 +4,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from members.helpers import (
     approve_transfer,
+    cancel_competing_transfers,
     create_transfer_request,
     reject_transfer,
     revoke_transfer,
@@ -279,6 +280,7 @@ class TestTransferStateTransitions:
             TransferStateEnum.PROCESSED,
             TransferStateEnum.REVOKED,
             TransferStateEnum.REJECTED,
+            TransferStateEnum.CANCELLED,
         ],
     )
     def test_invalid_state_transitions(self, invalid_state):
@@ -291,6 +293,154 @@ class TestTransferStateTransitions:
 
         agent = AgentFactory()
 
+        with pytest.raises(ValueError):
+            approve_transfer(agent=agent, transfer=transfer)
+
+        with pytest.raises(ValueError):
+            revoke_transfer(transfer=transfer)
+
+        with pytest.raises(ValueError):
+            reject_transfer(transfer=transfer)
+
+
+class TestCancelCompetingTransfers:
+    """Test automatic cancellation of competing transfers"""
+
+    def test_cancel_competing_transfers_cancels_other_requested_transfers(self):
+        """Test that other REQUESTED transfers for the same member are cancelled"""
+        member = MemberFactory()
+        club1 = ClubFactory()
+        club2 = ClubFactory()
+        club3 = ClubFactory()
+
+        # Create multiple transfer requests for the same member
+        transfer1 = TransferFactory(
+            member=member, source_club=club1, target_club=club2, state=TransferStateEnum.REQUESTED
+        )
+        transfer2 = TransferFactory(
+            member=member, source_club=club1, target_club=club3, state=TransferStateEnum.REQUESTED
+        )
+        transfer3 = TransferFactory(
+            member=member, source_club=club2, target_club=club3, state=TransferStateEnum.REQUESTED
+        )
+
+        # Cancel competing transfers (keeping transfer1)
+        cancel_competing_transfers(member, transfer1.id)
+
+        # Check that transfer1 is still REQUESTED
+        transfer1.refresh_from_db()
+        assert transfer1.state == TransferStateEnum.REQUESTED
+
+        # Check that other transfers are CANCELLED
+        transfer2.refresh_from_db()
+        assert transfer2.state == TransferStateEnum.CANCELLED
+
+        transfer3.refresh_from_db()
+        assert transfer3.state == TransferStateEnum.CANCELLED
+
+    def test_cancel_competing_transfers_does_not_affect_final_state_transfers(self):
+        """Test that transfers in final states (PROCESSED, REJECTED, REVOKED) are not affected"""
+        member = MemberFactory()
+        club1 = ClubFactory()
+        club2 = ClubFactory()
+        club3 = ClubFactory()
+        club4 = ClubFactory()
+        agent = AgentFactory()
+
+        # Create transfers in different states
+        transfer_requested = TransferFactory(
+            member=member, source_club=club1, target_club=club2, state=TransferStateEnum.REQUESTED
+        )
+        transfer_processed = TransferFactory(
+            member=member,
+            source_club=club1,
+            target_club=club3,
+            state=TransferStateEnum.PROCESSED,
+            approved_by=agent,
+        )
+        transfer_rejected = TransferFactory(
+            member=member, source_club=club1, target_club=club4, state=TransferStateEnum.REJECTED
+        )
+        transfer_revoked = TransferFactory(
+            member=member, source_club=club2, target_club=club4, state=TransferStateEnum.REVOKED
+        )
+
+        # Cancel competing transfers (keeping one that doesn't exist)
+        cancel_competing_transfers(member, 999999)
+
+        # Check that only REQUESTED transfer was cancelled
+        transfer_requested.refresh_from_db()
+        assert transfer_requested.state == TransferStateEnum.CANCELLED
+
+        # Check that final state transfers are unchanged
+        transfer_processed.refresh_from_db()
+        assert transfer_processed.state == TransferStateEnum.PROCESSED
+
+        transfer_rejected.refresh_from_db()
+        assert transfer_rejected.state == TransferStateEnum.REJECTED
+
+        transfer_revoked.refresh_from_db()
+        assert transfer_revoked.state == TransferStateEnum.REVOKED
+
+    @patch("members.helpers.notify_club")
+    def test_approve_transfer_cancels_competing_transfers(self, mock_notify):
+        """Test that approving a transfer automatically cancels other REQUESTED transfers"""
+        agent = AgentFactory()
+        source_club = ClubFactory()
+        target_club1 = ClubFactory()
+        target_club2 = ClubFactory()
+        member = MemberFactory(club=source_club)
+
+        # Create two transfer requests for the same member
+        transfer1 = TransferFactory(
+            member=member,
+            source_club=source_club,
+            target_club=target_club1,
+            state=TransferStateEnum.REQUESTED,
+        )
+        transfer2 = TransferFactory(
+            member=member,
+            source_club=source_club,
+            target_club=target_club2,
+            state=TransferStateEnum.REQUESTED,
+        )
+
+        # Approve the first transfer
+        approve_transfer(agent=agent, transfer=transfer1)
+
+        # Check that transfer1 is PROCESSED
+        transfer1.refresh_from_db()
+        assert transfer1.state == TransferStateEnum.PROCESSED
+
+        # Check that transfer2 was automatically CANCELLED
+        transfer2.refresh_from_db()
+        assert transfer2.state == TransferStateEnum.CANCELLED
+
+        # Check that member was moved to target_club1
+        member.refresh_from_db()
+        assert member.club == target_club1
+
+    def test_cancel_competing_transfers_with_no_other_transfers(self):
+        """Test that cancel_competing_transfers works when there are no other transfers"""
+        member = MemberFactory()
+        transfer = TransferFactory(member=member, state=TransferStateEnum.REQUESTED)
+
+        # Should not raise any errors
+        cancel_competing_transfers(member, transfer.id)
+
+        # Transfer should remain unchanged
+        transfer.refresh_from_db()
+        assert transfer.state == TransferStateEnum.REQUESTED
+
+    def test_cancelled_state_in_parametrized_test(self):
+        """Test that CANCELLED state is also a final state like PROCESSED, REJECTED, REVOKED"""
+        transfer = TransferFactory()
+        transfer.state = TransferStateEnum.CANCELLED
+        transfer.save()
+
+        agent = AgentFactory()
+
+        # Should not be able to approve, revoke, or reject a CANCELLED transfer
         with pytest.raises(ValueError):
             approve_transfer(agent=agent, transfer=transfer)
 

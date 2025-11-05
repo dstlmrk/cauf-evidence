@@ -71,6 +71,12 @@
                                     <span class="badge text-bg-success">{{ transfer.get_state_display | upper }}</span>
                                     <br />
                                     <small class="text-muted">{{ transfer.approved_at | date:'d/m/Y H:i' }}</small>
+                                {% elif transfer.state == 5 %}
+                                    <span class="badge text-bg-secondary"
+                                        >{{ transfer.get_state_display | upper }}</span
+                                    >
+                                    <br />
+                                    <small class="text-muted">{{ transfer.updated_at | date:'d/m/Y H:i' }}</small>
                                 {% else %}
                                     <span class="badge text-bg-danger">{{ transfer.get_state_display | upper }}</span>
                                     <br />
@@ -115,6 +121,8 @@
                                         class="badge text-bg-warning"
                                     {% elif transfer.state == 2 %}
                                         class="badge text-bg-success"
+                                    {% elif transfer.state == 5 %}
+                                        class="badge text-bg-secondary"
                                     {% else %}
                                         class="badge text-bg-danger"
                                     {% endif %}
