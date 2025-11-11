@@ -122,12 +122,36 @@ def calculate_season_fees_for_check(user: User, season: Season) -> None:
 @transaction.atomic()
 def calculate_season_fees_and_generate_invoices(season: Season) -> None:
     logger.info(f"Calculating fees (hot) for season {season.name}")
+
+    # Protection against duplicate execution
+    if season.invoices_generated_at is not None:
+        logger.warning(
+            f"Invoices for season {season.name} were already generated at "
+            f"{season.invoices_generated_at}"
+        )
+        return
+
     clubs_to_notification = []
 
     for club in Club.objects.filter(fakturoid_subject_id__isnull=False):
         fees = calculate_season_fees(season, club.id)
         total_amount = Decimal(sum([fee.amount for fee in fees.values()]))
+
         if total_amount > 0:
+            # Check if invoice already exists for this club and season (idempotence)
+            season_content_type = ContentType.objects.get_for_model(Season)
+            if Invoice.objects.filter(
+                club=club,
+                type=InvoiceTypeEnum.SEASON_PLAYER_FEES,
+                related_objects__content_type=season_content_type,
+                related_objects__object_id=season.id,
+            ).exists():
+                logger.info(
+                    f"Invoice for club {club.name} (ID: {club.id}) and season {season.name} "
+                    "already exists, skipping"
+                )
+                continue
+
             create_invoice(
                 club,
                 InvoiceTypeEnum.SEASON_PLAYER_FEES,
@@ -135,6 +159,10 @@ def calculate_season_fees_and_generate_invoices(season: Season) -> None:
                 related_objects=[season],
             )
             clubs_to_notification.append(club)
+        else:
+            logger.info(
+                f"Club {club.name} (ID: {club.id}) has no fees for season {season.name}, skipping"
+            )
 
     season.invoices_generated_at = timezone.now()
     season.save()
