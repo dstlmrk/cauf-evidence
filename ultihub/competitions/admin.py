@@ -61,6 +61,15 @@ class SeasonAdmin(admin.ModelAdmin):
                 request, "Fees calculation (for check) started. Check you email for results."
             )
             return HttpResponseRedirect(".")
+        if "_dry-run-invoices" in request.POST:
+            calculate_season_fees_and_generate_invoices(
+                season=obj, dry_run=True, dry_run_user=request.user
+            )
+            self.message_user(
+                request,
+                "Invoice generation dry-run started. Check your email for detailed preview.",
+            )
+            return HttpResponseRedirect(".")
         if "_generate-invoices" in request.POST:
             if self.has_generated_invoices(obj):
                 self.message_user(request, "Invoices are already generated.", level=messages.ERROR)
