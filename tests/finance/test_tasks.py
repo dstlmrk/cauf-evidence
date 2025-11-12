@@ -498,3 +498,107 @@ def test_calculate_season_fees_and_generate_invoices_notifications_and_emails(
     assert email_call[0][0] == "Season fees generated"  # subject
     assert season.name in email_call[0][1]  # message contains season name
     assert email_call[1]["to"] == [agent1.user.email]  # sent to correct email
+
+
+@patch("finance.tasks.send_email")
+@patch("finance.tasks.notify_club")
+def test_calculate_season_fees_dry_run_does_not_create_invoices_or_notifications(
+    mock_notify_club, mock_send_email
+):
+    """Test that dry-run does not create invoices, notifications, or modify season"""
+    season = SeasonFactory(regular_fee=Decimal("100"), discounted_fee=Decimal("50"))
+    user = AgentFactory().user
+
+    # Create clubs with different scenarios
+    club1 = ClubFactory(fakturoid_subject_id=100, name="Club With Fakturoid")
+    club2 = ClubFactory(fakturoid_subject_id=200, name="Club Two")
+    club3 = ClubFactory(fakturoid_subject_id=None, name="Club Without Fakturoid")
+
+    # Club 1: Regular tournament (100 CZK)
+    regular_competition = create_complete_competition(
+        season=season,
+        fee_type=CompetitionFeeTypeEnum.REGULAR,
+    )
+    MemberAtTournamentFactory(
+        tournament=regular_competition["tournament"],
+        team_at_tournament=regular_competition["team_at_tournament"],
+        member__club=club1,
+    )
+
+    # Club 2: Discounted tournament (50 CZK)
+    discounted_competition = create_complete_competition(
+        season=season,
+        fee_type=CompetitionFeeTypeEnum.DISCOUNTED,
+    )
+    MemberAtTournamentFactory(
+        tournament=discounted_competition["tournament"],
+        team_at_tournament=discounted_competition["team_at_tournament"],
+        member__club=club2,
+    )
+
+    # Club 3: Regular tournament but no fakturoid_subject_id
+    MemberAtTournamentFactory(
+        tournament=regular_competition["tournament"],
+        team_at_tournament=regular_competition["team_at_tournament"],
+        member__club=club3,
+    )
+
+    # Run dry-run
+    calculate_season_fees_and_generate_invoices(season=season, dry_run=True, dry_run_user=user)
+
+    # Verify NO invoices were created
+    assert Invoice.objects.count() == 0
+
+    # Verify season was NOT marked as invoices generated
+    season.refresh_from_db()
+    assert season.invoices_generated_at is None
+
+    # Verify NO club notifications were sent
+    assert mock_notify_club.call_count == 0
+
+    # Verify email was sent to the admin user
+    assert mock_send_email.call_count == 1
+    email_call = mock_send_email.call_args
+
+    # Check email subject
+    assert f"Preview generování faktur - {season.name}" in email_call[1]["subject"]
+
+    # Check email recipient
+    assert email_call[1]["to"] == [user.email]
+
+    # Check email body contains expected information (plain text format)
+    email_body = email_call[1]["body"]
+    assert season.name in email_body
+    assert "- Club With Fakturoid (ID:" in email_body
+    assert "- Club Two (ID:" in email_body
+    assert "100 CZK" in email_body  # Club 1 amount
+    assert "50 CZK" in email_body  # Club 2 amount
+
+
+@patch("finance.tasks.send_email")
+def test_calculate_season_fees_dry_run_works_even_if_invoices_already_generated(mock_send_email):
+    """Test that dry-run works even if invoices were already generated"""
+    season = SeasonFactory(regular_fee=Decimal("100"))
+    user = AgentFactory().user
+
+    # Mark season as already having invoices generated
+    season.invoices_generated_at = timezone.now()
+    season.save()
+
+    club = ClubFactory(fakturoid_subject_id=100)
+
+    regular_competition = create_complete_competition(
+        season=season,
+        fee_type=CompetitionFeeTypeEnum.REGULAR,
+    )
+    MemberAtTournamentFactory(
+        tournament=regular_competition["tournament"],
+        team_at_tournament=regular_competition["team_at_tournament"],
+        member__club=club,
+    )
+
+    # Run dry-run - should work despite invoices_generated_at being set
+    calculate_season_fees_and_generate_invoices(season=season, dry_run=True, dry_run_user=user)
+
+    # Email should still be sent
+    assert mock_send_email.call_count == 1

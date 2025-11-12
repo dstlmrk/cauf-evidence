@@ -119,60 +119,121 @@ def calculate_season_fees_for_check(user: User, season: Season) -> None:
 
 
 @db_task()
-@transaction.atomic()
-def calculate_season_fees_and_generate_invoices(season: Season) -> None:
-    logger.info(f"Calculating fees (hot) for season {season.name}")
+def calculate_season_fees_and_generate_invoices(
+    season: Season, dry_run: bool = False, dry_run_user: User | None = None
+) -> None:
+    """
+    Generate invoices for season fees.
+
+    Args:
+        season: The season to generate invoices for
+        dry_run: If True, only simulate and send preview email (no DB changes)
+        dry_run_user: Required when dry_run=True, user to send preview email to
+    """
+    if dry_run and dry_run_user is None:
+        raise ValueError("dry_run_user is required when dry_run=True")
+
+    logger.info(f"Calculating fees ({'dry-run' if dry_run else 'hot'}) for season {season.name}")
+
+    if not dry_run:
+        season = Season.objects.select_for_update().get(pk=season.pk)
+        if season.invoices_generated_at is not None:
+            logger.warning(
+                f"Invoices for season {season.name} were already"
+                f" generated at {season.invoices_generated_at}"
+            )
+            return
 
     season_ct = ContentType.objects.get_for_model(Season)
-    season = Season.objects.select_for_update().get(pk=season.pk)
-
-    if season.invoices_generated_at is not None:
-        logger.warning(
-            f"Invoices for season {season.name} were already"
-            f" generated at {season.invoices_generated_at}"
-        )
-        return
-
-    clubs_to_notification = []
+    invoices_data = []  # (club_name, club_id, amount) for clubs that will get invoices
+    clubs_to_notification = []  # Club objects for notifications (hot mode only)
+    total_amount = Decimal("0")
 
     for club in Club.objects.filter(fakturoid_subject_id__isnull=False).iterator():
         fees = calculate_season_fees(season, club.id)
-        total_amount = Decimal(sum([fee.amount for fee in fees.values()]))
+        club_info = f"{club.name} ({club.id})"
 
-        if total_amount > 0:
-            if Invoice.objects.filter(
-                club=club,
-                type=InvoiceTypeEnum.SEASON_PLAYER_FEES,
-                related_objects__content_type=season_ct,
-                related_objects__object_id=season.id,
-            ).exists():
-                logger.info(
-                    f"Invoice for club {club.name} (ID: {club.id}) and season {season.name} "
-                    "already exists, skipping"
-                )
-                continue
-
-            create_invoice(
-                club,
-                InvoiceTypeEnum.SEASON_PLAYER_FEES,
-                [(f"Poplatky za sezónu {season.name}", total_amount)],
-                related_objects=[season],
-            )
-            clubs_to_notification.append(club)
-        else:
+        if (club_total := Decimal(sum([fee.amount for fee in fees.values()]))) <= 0:
             logger.info(
                 f"Club {club.name} (ID: {club.id}) has no fees for season {season.name}, skipping"
             )
+            continue
 
-    season.invoices_generated_at = timezone.now()
-    season.save()
-
-    for club in clubs_to_notification:
-        notify_club(
+        if Invoice.objects.filter(
             club=club,
-            subject="Season fees generated",
-            message=(
-                f"Season fees for the season <b>{season.name}</b>"
-                " have been generated. Check your invoices."
-            ),
+            type=InvoiceTypeEnum.SEASON_PLAYER_FEES,
+            related_objects__content_type=season_ct,
+            related_objects__object_id=season.id,
+        ).exists():
+            logger.info(
+                f"Invoice for club {club_info} and season {season.name} already exists, skipping"
+            )
+            continue
+
+        invoices_data.append((club.name, club.id, club_total))
+        total_amount += club_total
+
+        if dry_run:
+            logger.info(
+                f"Dry-run: Would create invoice for club {club_info}, amount: {club_total} CZK"
+            )
+        else:
+            create_invoice(
+                club,
+                InvoiceTypeEnum.SEASON_PLAYER_FEES,
+                [(f"Poplatky za sezónu {season.name}", club_total)],
+                related_objects=[season],
+            )
+            clubs_to_notification.append(club)
+            logger.info(f"Created invoice for club {club_info}, amount: {club_total} CZK")
+
+    if dry_run:
+        email = dry_run_user.email  # type: ignore
+        _send_dry_run_email(email, season, invoices_data, total_amount)
+        logger.info(
+            f"Dry-run completed for season {season.name}. "
+            f"Would create {len(invoices_data)} invoices, total: {total_amount} CZK. "
+            f"Email sent to {email}"
         )
+    else:
+        season.invoices_generated_at = timezone.now()
+        season.save()
+        for club in clubs_to_notification:
+            notify_club(
+                club=club,
+                subject="Season fees generated",
+                message=(
+                    f"Season fees for the season <b>{season.name}</b>"
+                    " have been generated. Check your invoices."
+                ),
+            )
+        logger.info(
+            f"Invoice generation completed for season {season.name}. "
+            f"Created {len(clubs_to_notification)} invoices, total: {total_amount} CZK"
+        )
+
+
+def _send_dry_run_email(
+    email: str, season: Season, invoices_data: list[tuple[str, int, Decimal]], total_amount: Decimal
+) -> None:
+    """Send plain text preview email for dry-run mode."""
+    lines = [
+        f"Preview generování faktur - {season.name}",
+        "=" * 60,
+        "",
+        f"Sezóna: {season.name}",
+        f"Čas spuštění: {timezone.now().strftime('%d.%m.%Y %H:%M:%S')}",
+        f"Počet klubů s fakturou: {len(invoices_data)}",
+        f"Celková částka: {total_amount} CZK",
+        "",
+    ]
+
+    if invoices_data:
+        lines.append("Faktury, které by byly vytvořeny:")
+        for club_name, club_id, amount in invoices_data:
+            lines.append(f"- {club_name} (ID: {club_id}): {amount} CZK")
+        lines.append("")
+
+    body = "\n".join(lines)
+
+    send_email(subject=f"Preview generování faktur - {season.name}", body=body, to=[email])
