@@ -11,6 +11,7 @@
             value="Generate invoices (irreversible)"
             name="_generate-invoices"
             style="background-color: #ba2121"
+            {% if original.invoices_generated_at %}disabled{% endif %}
         />
     </div>
     {% if clubs_without_subject_id %}
