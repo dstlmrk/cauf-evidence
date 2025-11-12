@@ -566,11 +566,11 @@ def test_calculate_season_fees_dry_run_does_not_create_invoices_or_notifications
     # Check email recipient
     assert email_call[1]["to"] == [user.email]
 
-    # Check email body contains expected information (plain text format)
+    # Check email body contains expected information (HTML format)
     email_body = email_call[1]["body"]
     assert season.name in email_body
-    assert "- Club With Fakturoid (ID:" in email_body
-    assert "- Club Two (ID:" in email_body
+    assert "<li>Club With Fakturoid (ID:" in email_body
+    assert "<li>Club Two (ID:" in email_body
     assert "100 CZK" in email_body  # Club 1 amount
     assert "50 CZK" in email_body  # Club 2 amount
 

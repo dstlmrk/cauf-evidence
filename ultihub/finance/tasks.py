@@ -10,6 +10,7 @@ from core.tasks import send_email
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
+from django.template.loader import render_to_string
 from django.utils import timezone
 from huey import crontab
 from huey.contrib.djhuey import db_periodic_task, db_task
@@ -119,6 +120,7 @@ def calculate_season_fees_for_check(user: User, season: Season) -> None:
 
 
 @db_task()
+@transaction.atomic
 def calculate_season_fees_and_generate_invoices(
     season: Season, dry_run: bool = False, dry_run_user: User | None = None
 ) -> None:
@@ -216,24 +218,15 @@ def calculate_season_fees_and_generate_invoices(
 def _send_dry_run_email(
     email: str, season: Season, invoices_data: list[tuple[str, int, Decimal]], total_amount: Decimal
 ) -> None:
-    """Send plain text preview email for dry-run mode."""
-    lines = [
-        f"Preview generování faktur - {season.name}",
-        "=" * 60,
-        "",
-        f"Sezóna: {season.name}",
-        f"Čas spuštění: {timezone.now().strftime('%d.%m.%Y %H:%M:%S')}",
-        f"Počet klubů s fakturou: {len(invoices_data)}",
-        f"Celková částka: {total_amount} CZK",
-        "",
-    ]
-
-    if invoices_data:
-        lines.append("Faktury, které by byly vytvořeny:")
-        for club_name, club_id, amount in invoices_data:
-            lines.append(f"- {club_name} (ID: {club_id}): {amount} CZK")
-        lines.append("")
-
-    body = "\n".join(lines)
+    """Send HTML preview email for dry-run mode using template."""
+    body = render_to_string(
+        "emails/season_fees_preview.html",
+        {
+            "season": season,
+            "timestamp": timezone.now().strftime("%d.%m.%Y %H:%M:%S"),
+            "invoices_data": invoices_data,
+            "total_amount": total_amount,
+        },
+    )
 
     send_email(subject=f"Preview generování faktur - {season.name}", body=body, to=[email])

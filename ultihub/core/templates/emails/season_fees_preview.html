@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="cs">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Preview generování faktur - {{ season.name }}</title>
+    </head>
+    <body>
+        <h2>Preview generování faktur - {{ season.name }}</h2>
+        <hr />
+
+        <p><strong>Sezóna:</strong> {{ season.name }}</p>
+        <p><strong>Čas spuštění:</strong> {{ timestamp }}</p>
+        <p><strong>Počet klubů s fakturou:</strong> {{ invoices_data|length }}</p>
+        <p><strong>Celková částka:</strong> {{ total_amount }} CZK</p>
+
+        {% if invoices_data %}
+            <p><strong>Faktury, které by byly vytvořeny:</strong></p>
+            <ul>
+                {% for club_name, club_id, amount in invoices_data %}
+                    <li>{{ club_name }} (ID: {{ club_id }}): {{ amount }} CZK</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </body>
+</html>
