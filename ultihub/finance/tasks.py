@@ -123,27 +123,27 @@ def calculate_season_fees_for_check(user: User, season: Season) -> None:
 def calculate_season_fees_and_generate_invoices(season: Season) -> None:
     logger.info(f"Calculating fees (hot) for season {season.name}")
 
-    # Protection against duplicate execution
+    season_ct = ContentType.objects.get_for_model(Season)
+    season = Season.objects.select_for_update().get(pk=season.pk)
+
     if season.invoices_generated_at is not None:
         logger.warning(
-            f"Invoices for season {season.name} were already generated at "
-            f"{season.invoices_generated_at}"
+            f"Invoices for season {season.name} were already"
+            f" generated at {season.invoices_generated_at}"
         )
         return
 
     clubs_to_notification = []
 
-    for club in Club.objects.filter(fakturoid_subject_id__isnull=False):
+    for club in Club.objects.filter(fakturoid_subject_id__isnull=False).iterator():
         fees = calculate_season_fees(season, club.id)
         total_amount = Decimal(sum([fee.amount for fee in fees.values()]))
 
         if total_amount > 0:
-            # Check if invoice already exists for this club and season (idempotence)
-            season_content_type = ContentType.objects.get_for_model(Season)
             if Invoice.objects.filter(
                 club=club,
                 type=InvoiceTypeEnum.SEASON_PLAYER_FEES,
-                related_objects__content_type=season_content_type,
+                related_objects__content_type=season_ct,
                 related_objects__object_id=season.id,
             ).exists():
                 logger.info(
