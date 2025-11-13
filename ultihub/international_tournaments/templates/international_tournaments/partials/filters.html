@@ -15,7 +15,7 @@
                     {% for season in seasons %}
                         <option
                             value="{{ season.id }}"
-                            {% if request.GET.season == season.id|stringformat:"s" %}selected{% endif %}
+                            {% if selected_season_id == season.id|stringformat:"s" %}selected{% endif %}
                         >
                             {{ season.name | upper }}
                         </option>

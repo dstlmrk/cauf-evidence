@@ -42,8 +42,15 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
         "sotg_winner_team__application",
     )
 
+    # Set default season to the newest one if no season filter is applied
+    query_params = request.GET.copy()
+    if "season" not in query_params:
+        newest_season = Season.objects.order_by("-name").first()
+        if newest_season:
+            query_params["season"] = str(newest_season.id)
+
     # Apply filters using FilterSet
-    filter_set = TournamentFilterSet(request.GET, queryset=queryset)
+    filter_set = TournamentFilterSet(query_params, queryset=queryset)
     queryset = filter_set.qs
 
     tournaments = queryset.annotate(
@@ -64,6 +71,7 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
         {
             "tournaments": tournaments,
             "seasons": Season.objects.all().order_by("-name"),
+            "selected_season_id": query_params.get("season"),
             "environments": EnvironmentEnum.choices,
             "divisions": Division.objects.all().order_by("name"),
             "age_limits": AgeLimit.objects.all().order_by("name"),

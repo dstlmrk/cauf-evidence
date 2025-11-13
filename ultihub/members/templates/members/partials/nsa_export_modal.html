@@ -9,7 +9,7 @@
         <div class="mb-3">
             <p>Select the season for which you want to export member data:</p>
             <select name="season_id" class="form-select" required>
-                <option value="">Choose season...</option>
+                <option value="">Choose a season</option>
                 {% for season in seasons %}
                     <option value="{{ season.id }}" {% if season.id == last_season.id %}selected{% endif %}>
                         {{ season.name }}

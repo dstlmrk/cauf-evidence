@@ -34,9 +34,16 @@ logger = logging.getLogger(__name__)
 def international_tournaments_view(request: HttpRequest) -> HttpResponse:
     club = get_current_club_or_none(request)
 
+    # Set default season to the newest one if no season filter is applied
+    query_params = request.GET.copy()
+    if "season" not in query_params:
+        newest_season = Season.objects.order_by("-name").first()
+        if newest_season:
+            query_params["season"] = str(newest_season.id)
+
     # Get filter values
-    division_id = request.GET.get("division")
-    age_limit_id = request.GET.get("age_limit")
+    division_id = query_params.get("division")
+    age_limit_id = query_params.get("age_limit")
 
     # Build queryset with prefetch for teams, sorted by division, age_limit, and team_name
     # Apply filters on the prefetch queryset
@@ -57,15 +64,15 @@ def international_tournaments_view(request: HttpRequest) -> HttpResponse:
     )
 
     # Apply filters on tournaments
-    season_id = request.GET.get("season")
+    season_id = query_params.get("season")
     if season_id:
         queryset = queryset.filter(season_id=season_id)
 
-    environment = request.GET.get("environment")
+    environment = query_params.get("environment")
     if environment:
         queryset = queryset.filter(environment=environment)
 
-    tournament_type = request.GET.get("type")
+    tournament_type = query_params.get("type")
     if tournament_type:
         queryset = queryset.filter(type=tournament_type)
 
@@ -95,6 +102,7 @@ def international_tournaments_view(request: HttpRequest) -> HttpResponse:
         {
             "tournaments": tournaments,
             "seasons": Season.objects.all().order_by("-name"),
+            "selected_season_id": query_params.get("season"),
             "environments": EnvironmentEnum.choices,
             "tournament_types": InternationalTournamentTypeEnum.choices,
             "divisions": Division.objects.all().order_by("name"),
