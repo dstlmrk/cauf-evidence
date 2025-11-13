@@ -4,6 +4,9 @@ from collections import Counter
 from clubs.models import Club
 from clubs.service import notify_club
 from competitions.models import Season
+from core.tasks import send_email
+from django.conf import settings
+from django.template.loader import render_to_string
 from django.utils import timezone
 from international_tournaments.models import (
     InternationalTournament,
@@ -15,6 +18,40 @@ from users.models import Agent
 from members.models import Member, Transfer, TransferStateEnum
 
 logger = logging.getLogger(__name__)
+
+# Countries that trigger notifications
+MONITORED_COUNTRIES = ["RU", "BY"]
+
+
+def notify_monitored_citizenship(member: Member) -> None:
+    """
+    Send notification if member has monitored citizenship (RU or BY).
+    """
+    if member.citizenship.code not in MONITORED_COUNTRIES:
+        return
+
+    subject = f"Notifikace: Objevil se hráč s národností {member.citizenship.name}"
+
+    body = render_to_string(
+        "emails/member_notification.html",
+        {
+            "club_name": member.club.name,
+            "member_name": f"{member.first_name} {member.last_name}",
+            "birth_date": member.birth_date.strftime("%d.%m.%Y"),
+            "citizenship": member.citizenship.name,
+        },
+    )
+
+    logger.info(
+        f"Sending notification about member {member.id} ({member.full_name}) "
+        f"with citizenship {member.citizenship.code}"
+    )
+
+    send_email(
+        subject=subject,
+        body=body,
+        to=[settings.MEMBER_NOTIFICATION_EMAIL],
+    )
 
 
 def create_transfer_request(

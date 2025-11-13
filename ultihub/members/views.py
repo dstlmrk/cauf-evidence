@@ -25,6 +25,7 @@ from members.forms import (
 from members.helpers import (
     approve_transfer,
     create_transfer_request,
+    notify_monitored_citizenship,
     reject_transfer,
     revoke_transfer,
 )
@@ -42,6 +43,7 @@ def add_member(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             form.instance.club_id = get_current_club(request).id
             form.save()
+            notify_monitored_citizenship(form.instance)
             if form.instance.email or form.instance.legal_guardian_email:
                 messages.success(request, "Confirmation email sent")
             else:
@@ -58,9 +60,13 @@ def add_member(request: HttpRequest) -> HttpResponse:
 def edit_member(request: HttpRequest, member_id: int) -> HttpResponse:
     member = get_object_or_404(Member, pk=member_id, club_id=get_current_club(request).id)
     if request.method == "POST":
+        old_citizenship = member.citizenship.code
         form = MemberForm(request.POST, instance=member)
         if form.is_valid():
             form.save()
+            # Notify if citizenship was changed to monitored country
+            if form.instance.citizenship.code != old_citizenship:
+                notify_monitored_citizenship(form.instance)
             messages.success(request, "Member updated successfully.")
             return HttpResponse(status=204, headers={"HX-Trigger": "memberListChanged"})
         else:
