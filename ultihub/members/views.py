@@ -232,11 +232,11 @@ def change_transfer_state_view(request: HttpRequest) -> HttpResponse:
 @require_GET
 def nsa_export_modal_view(request: HttpRequest) -> HttpResponse:
     seasons = Season.objects.all().order_by("-name")
-    last_season = Season.objects.last()
+    newest_season = seasons.first()
     return render(
         request,
         "members/partials/nsa_export_modal.html",
-        {"seasons": seasons, "last_season": last_season},
+        {"seasons": seasons, "last_season": newest_season},
     )
 
 
@@ -248,7 +248,7 @@ def export_members_csv_for_nsa_view(request: HttpRequest) -> HttpResponse:
     if season_id:
         season = get_object_or_404(Season, pk=season_id)
     else:
-        season = cast(Season, Season.objects.last())
+        season = cast(Season, Season.objects.order_by("-name").first())
 
     generate_nsa_export(
         user=request.user,

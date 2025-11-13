@@ -38,8 +38,15 @@ def competitions(request: HttpRequest) -> HttpResponse:
     # Build queryset with filters
     competitions_qs = get_competitions_qs_with_related_data(club_id=club.id if club else None)
 
+    # Set default season to the newest one if no season filter is applied
+    query_params = request.GET.copy()
+    if "season" not in query_params:
+        newest_season = Season.objects.order_by("-name").first()
+        if newest_season:
+            query_params["season"] = str(newest_season.id)
+
     # Apply filters using FilterSet
-    filter_set = CompetitionFilterSet(request.GET, queryset=competitions_qs)
+    filter_set = CompetitionFilterSet(query_params, queryset=competitions_qs)
     competitions_qs = filter_set.qs
 
     return render(
@@ -56,6 +63,7 @@ def competitions(request: HttpRequest) -> HttpResponse:
                 )
             ),
             "seasons": Season.objects.all().order_by("-name"),
+            "selected_season_id": query_params.get("season"),
             "environments": EnvironmentEnum.choices,
             "divisions": Division.objects.all().order_by("name"),
             "age_limits": AgeLimit.objects.all().order_by("name"),
