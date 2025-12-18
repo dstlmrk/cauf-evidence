@@ -85,6 +85,8 @@ def generate_nsa_export(user: User, season: Season, club: Club | None) -> None:
                 "98.3",
                 "",
                 member_participation[member.id],
+                _format_date(member.created_at),  # SPORTOVEC_CINNOST_OD
+                "",  # SPORTOVEC_CINNOST_DO
                 "1" if member.has_coach_licence else "0",
                 (
                     _format_date(member.earliest_coach_licence_date)
@@ -94,6 +96,12 @@ def generate_nsa_export(user: User, season: Season, club: Club | None) -> None:
                 "",
                 "",
                 "98.3",
+                (
+                    _format_date(member.earliest_coach_licence_date)
+                    if member.has_coach_licence and member.earliest_coach_licence_date
+                    else ""
+                ),  # TRENER_CINNOST_OD
+                "",  # TRENER_CINNOST_DO
                 member.club.identification_number,
             ]
         )
@@ -104,8 +112,9 @@ def generate_nsa_export(user: User, season: Season, club: Club | None) -> None:
         "RODNE_CISLO", "OBCANSTVI", "DATUM_NAROZENI", "POHLAVI",
         "NAZEV_OBCE", "NAZEV_CASTI_OBCE", "NAZEV_ULICE", "CISLO_POPISNE", "CISLO_ORIENTACNI", "PSC",
         "SPORTOVEC", "SPORTOVCEM_OD", "SPORTOVCEM_DO", "SPORTOVEC_DRUH_SPORTU", "SPORTOVEC_CETNOST",
-        "SPORTOVEC_UCAST_SOUTEZE_POCET", "TRENER", "TRENEREM_OD", "TRENEREM_DO", "TRENER_CETNOST",
-        "TRENER_DRUH_SPORTU", "SVAZ_ICO_SKTJ",
+        "SPORTOVEC_UCAST_SOUTEZE_POCET", "SPORTOVEC_CINNOST_OD", "SPORTOVEC_CINNOST_DO",
+        "TRENER", "TRENEREM_OD", "TRENEREM_DO", "TRENER_CETNOST", "TRENER_DRUH_SPORTU",
+        "TRENER_CINNOST_OD", "TRENER_CINNOST_DO", "SVAZ_ICO_SKTJ",
     ]
     # fmt: on
 
