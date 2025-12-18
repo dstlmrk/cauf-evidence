@@ -310,9 +310,9 @@ def test_nsa_export_csv_format(mock_send_email):
     # Check that participation count is in the CSV (column 20)
     # Split by delimiter and verify structure
     data_row = lines[1]
-    # CSV should have 26 columns (comma-separated)
+    # CSV should have 30 columns (comma-separated)
     columns = data_row.split(",")
-    assert len(columns) == 26, f"Expected 26 columns, got {len(columns)}"
+    assert len(columns) == 30, f"Expected 30 columns, got {len(columns)}"
 
     # Column 20 (index 19) should contain participation count
     # Should be 3 days for our test member
@@ -380,3 +380,102 @@ def test_nsa_export_with_international_tournaments(mock_send_email):
     participation = columns[19]
     # Should be 2 + 3 = 5 days
     assert "5" in participation or participation == "5"
+
+
+@patch("members.tasks.send_email")
+def test_nsa_export_activity_columns(mock_send_email):
+    """Test that NSA export contains activity columns with correct values"""
+    from members.models import CoachLicence, CoachLicenceClassEnum
+
+    season = SeasonFactory()
+    user = UserFactory()
+
+    regular_competition = create_complete_competition(
+        season=season,
+        fee_type=CompetitionFeeTypeEnum.REGULAR,
+    )
+
+    mat = MemberAtTournamentFactory(
+        tournament=regular_competition["tournament"],
+        team_at_tournament=regular_competition["team_at_tournament"],
+    )
+    member = mat.member
+
+    # Create coach licence for the member
+    CoachLicence.objects.create(
+        member=member,
+        level=CoachLicenceClassEnum.FIRST,
+        valid_from=date(2020, 1, 15),
+        valid_to=date(2030, 12, 31),
+    )
+
+    generate_nsa_export(user, season, None)
+
+    assert mock_send_email.called
+    csv_data = mock_send_email.call_args[1]["csv_data"]
+
+    lines = csv_data.strip().split("\n")
+    header = lines[0].split(",")
+    data_row = lines[1].split(",")
+
+    # Verify new columns exist in header
+    assert "SPORTOVEC_CINNOST_OD" in header
+    assert "SPORTOVEC_CINNOST_DO" in header
+    assert "TRENER_CINNOST_OD" in header
+    assert "TRENER_CINNOST_DO" in header
+
+    # Find column indices
+    sportovec_cinnost_od_idx = header.index("SPORTOVEC_CINNOST_OD")
+    sportovec_cinnost_do_idx = header.index("SPORTOVEC_CINNOST_DO")
+    sportovcem_od_idx = header.index("SPORTOVCEM_OD")
+    trener_cinnost_od_idx = header.index("TRENER_CINNOST_OD")
+    trener_cinnost_do_idx = header.index("TRENER_CINNOST_DO")
+    trenerem_od_idx = header.index("TRENEREM_OD")
+
+    # SPORTOVEC_CINNOST_OD should equal SPORTOVCEM_OD
+    assert data_row[sportovec_cinnost_od_idx] == data_row[sportovcem_od_idx]
+
+    # SPORTOVEC_CINNOST_DO should be empty
+    assert data_row[sportovec_cinnost_do_idx] == ""
+
+    # TRENER_CINNOST_OD should equal TRENEREM_OD (member has coach licence)
+    assert data_row[trener_cinnost_od_idx] == data_row[trenerem_od_idx]
+    assert data_row[trener_cinnost_od_idx] == "15.1.2020"
+
+    # TRENER_CINNOST_DO should be empty
+    assert data_row[trener_cinnost_do_idx] == ""
+
+
+@patch("members.tasks.send_email")
+def test_nsa_export_activity_columns_non_coach(mock_send_email):
+    """Test that NSA export activity columns are empty for non-coaches"""
+    season = SeasonFactory()
+    user = UserFactory()
+
+    regular_competition = create_complete_competition(
+        season=season,
+        fee_type=CompetitionFeeTypeEnum.REGULAR,
+    )
+
+    MemberAtTournamentFactory(
+        tournament=regular_competition["tournament"],
+        team_at_tournament=regular_competition["team_at_tournament"],
+    )
+
+    generate_nsa_export(user, season, None)
+
+    assert mock_send_email.called
+    csv_data = mock_send_email.call_args[1]["csv_data"]
+
+    lines = csv_data.strip().split("\n")
+    header = lines[0].split(",")
+    data_row = lines[1].split(",")
+
+    trener_cinnost_od_idx = header.index("TRENER_CINNOST_OD")
+    trener_cinnost_do_idx = header.index("TRENER_CINNOST_DO")
+    trenerem_od_idx = header.index("TRENEREM_OD")
+
+    # Non-coach: both TRENEREM_OD and TRENER_CINNOST_OD should be empty
+    assert data_row[trenerem_od_idx] == ""
+    assert data_row[trener_cinnost_od_idx] == ""
+    assert data_row[trener_cinnost_do_idx] == ""
