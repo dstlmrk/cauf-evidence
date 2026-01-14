@@ -190,6 +190,7 @@ class InvoiceFactory(factory.django.DjangoModelFactory):
     club = SubFactory(ClubFactory)
     type = InvoiceTypeEnum.COMPETITION_DEPOSIT
     original_amount = Decimal(2000)
+    fakturoid_due_on = None
 
 
 class TransferFactory(factory.django.DjangoModelFactory):

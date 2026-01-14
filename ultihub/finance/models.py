@@ -59,6 +59,10 @@ class Invoice(AuditModel):
     fakturoid_public_html_url = models.URLField(
         blank=True,
     )
+    fakturoid_due_on = models.DateField(
+        blank=True,
+        null=True,
+    )
 
     def __str__(self) -> str:
         return f"<Invoice({self.pk}, amount={self.amount})>"
