@@ -1,4 +1,4 @@
-<span>© 2025 |</span>
+<span>© {% now "Y" %} |</span>
 <span x-data="{ user: 'info', domain: 'frisbee.cz' }">
     <a class="text-primary" :href="'mailto:' + user + '@' + domain" x-text="user + '@' + domain"></a>
 </span>
