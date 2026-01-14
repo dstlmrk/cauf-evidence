@@ -66,6 +66,8 @@ def test_command_resend_invoices_to_fakturoid_should_not_resend_invoices_younger
 def test_command_check_invoices_in_fakturoid_should_work_properly(
     status, expected_invoice_state, expected_application_state, club, competition_application
 ):
+    from datetime import date
+
     invoice = create_invoice(
         club, InvoiceTypeEnum.COMPETITION_DEPOSIT, [("", 100)], [competition_application]
     )
@@ -74,14 +76,19 @@ def test_command_check_invoices_in_fakturoid_should_work_properly(
     invoice.save()
 
     with patch(
-        "finance.clients.fakturoid.fakturoid_client.get_invoice_status_and_total"
-    ) as mock_get_invoice_status_and_total:
-        mock_get_invoice_status_and_total.return_value = status, Decimal("100.1")
+        "finance.clients.fakturoid.fakturoid_client.get_invoice_details"
+    ) as mock_get_invoice_details:
+        mock_get_invoice_details.return_value = {
+            "status": status,
+            "total": Decimal("100.1"),
+            "due_on": date(2025, 1, 15),
+        }
         check_fakturoid_invoices()
         invoice.refresh_from_db()
         assert invoice.state == expected_invoice_state
         assert invoice.fakturoid_status == status
         assert invoice.fakturoid_total == Decimal("100.1")
+        assert invoice.fakturoid_due_on == date(2025, 1, 15)
 
     competition_application.refresh_from_db()
     assert competition_application.state == expected_application_state
@@ -602,3 +609,196 @@ def test_calculate_season_fees_dry_run_works_even_if_invoices_already_generated(
 
     # Email should still be sent
     assert mock_send_email.call_count == 1
+
+
+# Tests for send_overdue_invoice_reminders
+
+
+@patch("finance.tasks.notify_club")
+def test_send_overdue_invoice_reminders_finds_invoices_1_day_overdue(mock_notify_club):
+    """Invoice 1 day overdue should trigger reminder"""
+    from datetime import date, timedelta
+
+    from finance.tasks import send_overdue_invoice_reminders
+
+    club = ClubFactory()
+    InvoiceFactory(
+        club=club,
+        state=InvoiceStateEnum.OPEN,
+        fakturoid_due_on=date.today() - timedelta(days=1),
+        fakturoid_public_html_url="https://example.com/invoice",
+        fakturoid_total=Decimal("1000"),
+    )
+
+    send_overdue_invoice_reminders()
+
+    mock_notify_club.assert_called_once()
+    call_kwargs = mock_notify_club.call_args[1]
+    assert call_kwargs["club"] == club
+    assert "Faktury po splatnosti" in call_kwargs["subject"]
+    assert "1000" in call_kwargs["message"]
+    assert "https://example.com/invoice" in call_kwargs["message"]
+
+
+@patch("finance.tasks.notify_club")
+def test_send_overdue_invoice_reminders_finds_invoices_15_days_overdue(mock_notify_club):
+    """Invoice 15 days overdue should trigger reminder"""
+    from datetime import date, timedelta
+
+    from finance.tasks import send_overdue_invoice_reminders
+
+    club = ClubFactory()
+    InvoiceFactory(
+        club=club,
+        state=InvoiceStateEnum.OPEN,
+        fakturoid_due_on=date.today() - timedelta(days=15),
+        fakturoid_public_html_url="https://example.com/invoice",
+    )
+
+    send_overdue_invoice_reminders()
+
+    mock_notify_club.assert_called_once()
+    assert "15 dnů po splatnosti" in mock_notify_club.call_args[1]["message"]
+
+
+@patch("finance.tasks.notify_club")
+def test_send_overdue_invoice_reminders_finds_invoices_30_days_overdue(mock_notify_club):
+    """Invoice 30 days overdue should trigger reminder"""
+    from datetime import date, timedelta
+
+    from finance.tasks import send_overdue_invoice_reminders
+
+    club = ClubFactory()
+    InvoiceFactory(
+        club=club,
+        state=InvoiceStateEnum.OPEN,
+        fakturoid_due_on=date.today() - timedelta(days=30),
+        fakturoid_public_html_url="https://example.com/invoice",
+    )
+
+    send_overdue_invoice_reminders()
+
+    mock_notify_club.assert_called_once()
+    assert "30 dnů po splatnosti" in mock_notify_club.call_args[1]["message"]
+
+
+@patch("finance.tasks.notify_club")
+def test_send_overdue_invoice_reminders_ignores_invoices_on_other_days(mock_notify_club):
+    """Invoices not exactly 1, 15, or 30 days overdue should not trigger reminder"""
+    from datetime import date, timedelta
+
+    from finance.tasks import send_overdue_invoice_reminders
+
+    club = ClubFactory()
+    # 2 days overdue - should not trigger
+    InvoiceFactory(
+        club=club,
+        state=InvoiceStateEnum.OPEN,
+        fakturoid_due_on=date.today() - timedelta(days=2),
+    )
+    # 10 days overdue - should not trigger
+    InvoiceFactory(
+        club=club,
+        state=InvoiceStateEnum.OPEN,
+        fakturoid_due_on=date.today() - timedelta(days=10),
+    )
+
+    send_overdue_invoice_reminders()
+
+    mock_notify_club.assert_not_called()
+
+
+@patch("finance.tasks.notify_club")
+def test_send_overdue_invoice_reminders_ignores_paid_invoices(mock_notify_club):
+    """Paid invoices should not trigger reminder even if overdue"""
+    from datetime import date, timedelta
+
+    from finance.tasks import send_overdue_invoice_reminders
+
+    club = ClubFactory()
+    InvoiceFactory(
+        club=club,
+        state=InvoiceStateEnum.PAID,
+        fakturoid_due_on=date.today() - timedelta(days=1),
+    )
+
+    send_overdue_invoice_reminders()
+
+    mock_notify_club.assert_not_called()
+
+
+@patch("finance.tasks.notify_club")
+def test_send_overdue_invoice_reminders_ignores_invoices_without_due_date(mock_notify_club):
+    """Invoices without due date should not trigger reminder"""
+    from finance.tasks import send_overdue_invoice_reminders
+
+    club = ClubFactory()
+    InvoiceFactory(
+        club=club,
+        state=InvoiceStateEnum.OPEN,
+        fakturoid_due_on=None,
+    )
+
+    send_overdue_invoice_reminders()
+
+    mock_notify_club.assert_not_called()
+
+
+@patch("finance.tasks.notify_club")
+def test_send_overdue_invoice_reminders_groups_invoices_by_club(mock_notify_club):
+    """Multiple invoices for same club should be in one notification"""
+    from datetime import date, timedelta
+
+    from finance.tasks import send_overdue_invoice_reminders
+
+    club = ClubFactory()
+    InvoiceFactory(
+        club=club,
+        state=InvoiceStateEnum.OPEN,
+        fakturoid_due_on=date.today() - timedelta(days=1),
+        fakturoid_public_html_url="https://example.com/invoice1",
+        fakturoid_total=Decimal("1000"),
+    )
+    InvoiceFactory(
+        club=club,
+        state=InvoiceStateEnum.OPEN,
+        fakturoid_due_on=date.today() - timedelta(days=15),
+        fakturoid_public_html_url="https://example.com/invoice2",
+        fakturoid_total=Decimal("2000"),
+    )
+
+    send_overdue_invoice_reminders()
+
+    # Should be called only once for the club
+    mock_notify_club.assert_called_once()
+    message = mock_notify_club.call_args[1]["message"]
+    assert "1000" in message
+    assert "2000" in message
+
+
+@patch("finance.tasks.notify_club")
+def test_send_overdue_invoice_reminders_sends_separate_notifications_per_club(mock_notify_club):
+    """Different clubs should get separate notifications"""
+    from datetime import date, timedelta
+
+    from finance.tasks import send_overdue_invoice_reminders
+
+    club1 = ClubFactory()
+    club2 = ClubFactory()
+
+    InvoiceFactory(
+        club=club1,
+        state=InvoiceStateEnum.OPEN,
+        fakturoid_due_on=date.today() - timedelta(days=1),
+    )
+    InvoiceFactory(
+        club=club2,
+        state=InvoiceStateEnum.OPEN,
+        fakturoid_due_on=date.today() - timedelta(days=1),
+    )
+
+    send_overdue_invoice_reminders()
+
+    assert mock_notify_club.call_count == 2
+    notified_clubs = {call[1]["club"] for call in mock_notify_club.call_args_list}
+    assert notified_clubs == {club1, club2}

@@ -1,5 +1,6 @@
 import logging
-from datetime import timedelta
+from collections import defaultdict
+from datetime import date, timedelta
 from decimal import Decimal
 
 from clubs.models import Club
@@ -15,7 +16,7 @@ from django.utils import timezone
 from huey import crontab
 from huey.contrib.djhuey import db_periodic_task, db_task
 
-from finance.clients.fakturoid import InvoiceStatus, fakturoid_client
+from finance.clients.fakturoid import InvoiceDetails, fakturoid_client
 from finance.models import Invoice, InvoiceStateEnum, InvoiceTypeEnum
 from finance.services import (
     calculate_season_fees,
@@ -27,7 +28,11 @@ logger = logging.getLogger(__name__)
 
 
 @transaction.atomic
-def _update_invoice(invoice: Invoice, status: InvoiceStatus, total: Decimal) -> None:
+def _update_invoice(invoice: Invoice, details: InvoiceDetails) -> None:
+    status = details["status"]
+    total = details["total"]
+    due_on = details["due_on"]
+
     if invoice.fakturoid_status != status:
         invoice.fakturoid_status = status
 
@@ -51,6 +56,10 @@ def _update_invoice(invoice: Invoice, status: InvoiceStatus, total: Decimal) -> 
         invoice.fakturoid_total = total
         logger.info("Invoice %s total was updated to %s", invoice.id, total)
 
+    if due_on and invoice.fakturoid_due_on != due_on:
+        invoice.fakturoid_due_on = due_on
+        logger.info("Invoice %s due_on was updated to %s", invoice.id, due_on)
+
     invoice.save()
 
 
@@ -58,6 +67,7 @@ def _update_invoice(invoice: Invoice, status: InvoiceStatus, total: Decimal) -> 
 def check_fakturoid_invoices() -> None:
     """
     Periodic task to check invoices in Fakturoid.
+    Syncs status, total, and due_on from Fakturoid.
     """
     logger.info("Start regular check of invoices in Fakturoid")
 
@@ -65,11 +75,16 @@ def check_fakturoid_invoices() -> None:
         state=InvoiceStateEnum.OPEN,
         created_at__gte=timezone.now() - timedelta(days=180),
     ):
-        status, total = fakturoid_client.get_invoice_status_and_total(
+        details = fakturoid_client.get_invoice_details(
             invoice_id=invoice.fakturoid_invoice_id  # type: ignore
         )
-        if status in ("paid", "cancelled", "uncollectible") or invoice.fakturoid_total != total:
-            _update_invoice(invoice, status, total)
+        status = details["status"]
+        if (
+            status in ("paid", "cancelled", "uncollectible")
+            or invoice.fakturoid_total != details["total"]
+            or invoice.fakturoid_due_on != details["due_on"]
+        ):
+            _update_invoice(invoice, details)
 
     logger.info("End regular check of invoices in Fakturoid")
 
@@ -230,3 +245,83 @@ def _send_dry_run_email(
     )
 
     send_email(subject=f"Preview generování faktur - {season.name}", body=body, to=[email])
+
+
+OVERDUE_REMINDER_DAYS = [1, 15, 30]
+
+
+def _get_overdue_invoices_for_reminder() -> dict[Club, list[tuple[Invoice, int]]]:
+    """
+    Find invoices that are exactly 1, 15, or 30 days overdue.
+    Returns dict: {club: [(invoice, days_overdue), ...]}
+    """
+    today = date.today()
+    result: dict[Club, list[tuple[Invoice, int]]] = defaultdict(list)
+
+    target_due_dates = [today - timedelta(days=d) for d in OVERDUE_REMINDER_DAYS]
+
+    overdue_invoices = Invoice.objects.filter(
+        state=InvoiceStateEnum.OPEN,
+        fakturoid_due_on__in=target_due_dates,
+    ).select_related("club")
+
+    for invoice in overdue_invoices:
+        assert invoice.fakturoid_due_on is not None  # Guaranteed by filter
+        days_overdue = (today - invoice.fakturoid_due_on).days
+        result[invoice.club].append((invoice, days_overdue))
+
+    return result
+
+
+def _format_overdue_reminder_message(invoices_data: list[tuple[Invoice, int]]) -> str:
+    """Format HTML message listing overdue invoices for a club."""
+    lines = ["<p>Následující faktury jsou po splatnosti:</p>", "<ul>"]
+
+    for invoice, days_overdue in invoices_data:
+        assert invoice.fakturoid_due_on is not None  # Guaranteed by caller
+        amount = invoice.amount
+        link = invoice.fakturoid_public_html_url
+        due_date = invoice.fakturoid_due_on.strftime("%d.%m.%Y")
+
+        lines.append(
+            f'<li><a href="{link}">Faktura</a> - '
+            f"{amount} Kč, splatnost {due_date} ({days_overdue} dnů po splatnosti)</li>"
+        )
+
+    lines.append("</ul>")
+    lines.append("<p>Prosíme o úhradu co nejdříve.</p>")
+
+    return "\n".join(lines)
+
+
+@db_periodic_task(crontab(minute="0", hour="8"))
+def send_overdue_invoice_reminders() -> None:
+    """
+    Send reminder notifications for overdue invoices.
+    Runs daily at 8:00 AM.
+    Sends reminders when invoices are exactly 1, 15, or 30 days overdue.
+    One summary notification per club containing all overdue invoices.
+    """
+    logger.info("Start sending overdue invoice reminders")
+
+    clubs_with_overdue = _get_overdue_invoices_for_reminder()
+
+    for club, invoices_data in clubs_with_overdue.items():
+        if not invoices_data:
+            continue
+
+        message = _format_overdue_reminder_message(invoices_data)
+
+        notify_club(
+            club=club,
+            subject="Připomínka: Faktury po splatnosti",
+            message=message,
+        )
+
+        logger.info(
+            "Sent overdue reminder to club %s for %d invoices",
+            club.name,
+            len(invoices_data),
+        )
+
+    logger.info("End sending overdue invoice reminders, notified %d clubs", len(clubs_with_overdue))

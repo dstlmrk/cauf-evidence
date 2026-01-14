@@ -1,6 +1,7 @@
 import logging
+from datetime import date
 from decimal import Decimal
-from typing import Any, Literal
+from typing import Any, Literal, TypedDict
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -16,6 +17,13 @@ from ultihub.settings import (
 )
 
 type InvoiceStatus = Literal["open", "sent", "overdue", "paid", "cancelled", "uncollectible"]
+
+
+class InvoiceDetails(TypedDict):
+    status: InvoiceStatus
+    total: Decimal
+    due_on: date | None
+
 
 logger = logging.getLogger(__name__)
 
@@ -111,12 +119,11 @@ class FakturoidClient:
                 f"Error while creating invoice: {response.status_code}, {response.json()}"
             )
 
-    def get_invoice_status_and_total(self, invoice_id: int) -> tuple[InvoiceStatus, Decimal]:
+    def get_invoice_details(self, invoice_id: int) -> InvoiceDetails:
         """
-        Return the status of the invoice with the given ID.
-        Possible values are: open, sent, overdue, paid, cancelled, uncollectible.
+        Return details of the invoice with the given ID.
 
-        https://www.fakturoid.cz/api/v3/invoices#invoice-status-table
+        https://www.fakturoid.cz/api/v3/invoices
         """
         response = self.get(
             FAKTUROID_BASE_URL + f"/accounts/{self.slug}/invoices/{invoice_id}.json"
@@ -124,10 +131,15 @@ class FakturoidClient:
 
         if response.status_code == 200:
             data = response.json()
-            return data["status"], Decimal(data["total"])
+            due_on = date.fromisoformat(data["due_on"]) if data.get("due_on") else None
+            return InvoiceDetails(
+                status=data["status"],
+                total=Decimal(data["total"]),
+                due_on=due_on,
+            )
         else:
             raise UnexpectedResponse(
-                f"Error while getting invoice status: {response.status_code}, {response.json()}"
+                f"Error while getting invoice details: {response.status_code}, {response.json()}"
             )
 
     def get_subject_detail(self, subject_id: int) -> dict:
@@ -151,8 +163,8 @@ class FakturoidFakeClient:
     def create_invoice(self, subject_id: int, lines: list[dict[str, Any]]) -> dict:
         return {"invoice_id": 1, "status": "open", "total": 100, "public_html_url": ""}
 
-    def get_invoice_status_and_total(self, invoice_id: int) -> tuple[InvoiceStatus, Decimal]:
-        return "open", Decimal(100)
+    def get_invoice_details(self, invoice_id: int) -> InvoiceDetails:
+        return InvoiceDetails(status="open", total=Decimal(100), due_on=None)
 
     def get_subject_detail(self, subject_id: int) -> dict:
         return {}
