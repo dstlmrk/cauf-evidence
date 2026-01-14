@@ -307,17 +307,17 @@ def test_nsa_export_csv_format(mock_send_email):
     # Check that we have at least one data row
     assert len(lines) > 1
 
-    # Check that participation count is in the CSV (column 20)
     # Split by delimiter and verify structure
+    header_cols = lines[0].split(",")
     data_row = lines[1]
-    # CSV should have 30 columns (comma-separated)
     columns = data_row.split(",")
     assert len(columns) == 30, f"Expected 30 columns, got {len(columns)}"
 
-    # Column 20 (index 19) should contain participation count
+    # Find participation count column by name
+    participation_idx = header_cols.index("SPORTOVEC_UCAST_SOUTEZE_POCET")
+    participation_col = columns[participation_idx]
     # Should be 3 days for our test member
-    participation_col = columns[19]
-    assert "3" in participation_col or participation_col == "3"
+    assert participation_col == "3", f"Expected participation count 3, got {participation_col}"
 
 
 @patch("members.tasks.send_email")
@@ -375,11 +375,13 @@ def test_nsa_export_with_international_tournaments(mock_send_email):
 
     assert member_row is not None, "Member should be in export"
 
-    # Check participation count (column 20, index 19)
+    # Find participation count column by name
+    header_cols = lines[0].split(",")
+    participation_idx = header_cols.index("SPORTOVEC_UCAST_SOUTEZE_POCET")
     columns = member_row.split(",")
-    participation = columns[19]
+    participation = columns[participation_idx]
     # Should be 2 + 3 = 5 days
-    assert "5" in participation or participation == "5"
+    assert participation == "5", f"Expected participation count 5, got {participation}"
 
 
 @patch("members.tasks.send_email")
