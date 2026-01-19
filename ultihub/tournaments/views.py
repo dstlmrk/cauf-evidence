@@ -1,3 +1,4 @@
+import csv
 import json
 import logging
 from typing import cast
@@ -276,3 +277,65 @@ def teams_table_view(request: HttpRequest, tournament_id: int) -> HttpResponse:
             ),
         },
     )
+
+
+@require_GET
+def export_rosters_csv_view(request: HttpRequest, tournament_id: int) -> HttpResponse:
+    """Export all rosters for a tournament as CSV. Staff/superuser only."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise PermissionDenied()
+
+    tournament = get_object_or_404(Tournament, pk=tournament_id)
+
+    members_at_tournament = (
+        MemberAtTournament.objects.filter(tournament=tournament)
+        .select_related(
+            "member",
+            "team_at_tournament__application__team__club",
+        )
+        .order_by(
+            "team_at_tournament__application__team__name",
+            "member__last_name",
+            "member__first_name",
+        )
+    )
+
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = f'attachment; filename="rosters_{tournament_id}.csv"'
+    response.write("\ufeff")  # BOM for Excel
+
+    writer = csv.writer(response)
+    writer.writerow(
+        [
+            "first_name",
+            "last_name",
+            "birth_date",
+            "sex",
+            "citizenship",
+            "team",
+            "club",
+            "is_captain",
+            "is_spirit_captain",
+            "is_coach",
+            "jersey_number",
+        ]
+    )
+
+    for mat in members_at_tournament:
+        writer.writerow(
+            [
+                mat.member.first_name,
+                mat.member.last_name,
+                mat.member.birth_date.strftime("%Y-%m-%d"),
+                mat.member.get_sex_display(),
+                mat.member.citizenship.code,
+                mat.team_at_tournament.application.team_name,
+                mat.team_at_tournament.application.team.club.name,
+                mat.is_captain,
+                mat.is_spirit_captain,
+                mat.is_coach,
+                mat.jersey_number or "",
+            ]
+        )
+
+    return response

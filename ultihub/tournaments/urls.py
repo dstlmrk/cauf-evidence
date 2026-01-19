@@ -41,4 +41,9 @@ urlpatterns = [
         views.teams_table_view,
         name="teams_table",
     ),
+    path(
+        "<int:tournament_id>/export-rosters-csv",
+        views.export_rosters_csv_view,
+        name="export_rosters_csv",
+    ),
 ]
