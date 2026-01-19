@@ -35,6 +35,14 @@
     <div>Total teams/members: {{ tournament.team_count }}/{{ tournament.member_count }}</div>
 {% endblock %}
 
+{% block buttons %}
+    {% if user.is_staff or user.is_superuser %}
+        <a href="{% url 'tournaments:export_rosters_csv' tournament.id %}" class="btn btn-primary">
+            <i class="bi bi-download"></i> Export rosters
+        </a>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     {% if tournament.team_count %}
         <div
