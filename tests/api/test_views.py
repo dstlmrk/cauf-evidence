@@ -135,6 +135,7 @@ def test_get_teams_at_tournament(api_client):
                         "id": member_at_tournament.member.id,
                         "full_name": member_at_tournament.member.full_name,
                         "birth_year": member_at_tournament.member.birth_date.year,
+                        "sex": member_at_tournament.member.sex,
                     },
                 },
             ],

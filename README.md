@@ -73,6 +73,7 @@ Already created tokens are available at `/admin/authtoken/tokenproxy`.
 #### /api/teams-at-tournament
 
 -   `GET` Returns all teams at tournament with theirs roster. Parameter `tournament_id` is required.
+-   Each member in the roster includes a `sex` field (1=Female, 2=Male).
 
 #### /api/team-at-tournament/\<int:pk>
 
