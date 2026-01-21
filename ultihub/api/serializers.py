@@ -82,7 +82,7 @@ class MemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Member
-        fields = ["id", "full_name", "birth_year"]
+        fields = ["id", "full_name", "birth_year", "sex"]
 
     def get_birth_year(self, obj: Member) -> int:
         return obj.birth_date.year
