@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 
 import pytest
+from django.test import Client
 from pytest_factoryboy import register
 
 from tests.factories import (
@@ -45,6 +46,23 @@ register(UserFactory)
 @pytest.fixture(scope="function", autouse=True)
 def enable_db_access_for_all_tests(db):
     pass
+
+
+@pytest.fixture
+def logged_in_client():
+    def _make(user, club):
+        from users.models import Agent
+
+        if not Agent.objects.filter(user=user).exists():
+            AgentFactory(user=user)
+        client = Client()
+        client.force_login(user)
+        session = client.session
+        session["club"] = {"id": club.id, "name": club.name}
+        session.save()
+        return client
+
+    return _make
 
 
 @contextmanager
