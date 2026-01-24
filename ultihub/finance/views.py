@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from members.models import Member
 from tournaments.models import MemberAtTournament
@@ -22,13 +23,13 @@ def invoices(request: HttpRequest) -> HttpResponse:
 
     if club.fakturoid_subject_id:
         invoice_created = create_deposit_invoice(club)
-        message = "The request has been successfully sent."
+        message = _("The request has been successfully sent.")
         if invoice_created:
-            message += " Check your invoices."
+            message += " " + _("Check your invoices.")
         messages.success(request, message)
     else:
         messages.error(
-            request, "Your club has no financial settings. Please contact the administrator."
+            request, _("Your club has no financial settings. Please contact the administrator.")
         )
 
     return HttpResponse(status=204, headers={"HX-Refresh": "true"})
@@ -41,7 +42,7 @@ def season_fees_list_view(request: HttpRequest) -> HttpResponse:
     if form.is_valid():
         club = get_current_club(request)
         fees = calculate_season_fees(form.cleaned_data["season"], club.id)
-        messages.success(request, "Season fees have been calculated")
+        messages.success(request, _("Season fees have been calculated"))
         return render(
             request,
             "finance/partials/season_fees_list.html",
@@ -52,7 +53,7 @@ def season_fees_list_view(request: HttpRequest) -> HttpResponse:
             },
         )
     else:
-        messages.error(request, "Something went wrong")
+        messages.error(request, _("Something went wrong"))
         return HttpResponse(status=400)
 
 

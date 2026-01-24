@@ -1,8 +1,9 @@
+{% load i18n %}
 <div class="d-flex align-items-center gap-1">
     <button class="btn btn-success" hx-get="{% url 'members:add_member' %}" hx-target="#dialog-xl">
-        <i class="bi bi-plus"></i> Create member
+        <i class="bi bi-plus"></i> {% trans "Create member" %}
     </button>
     <button class="btn btn-primary" hx-get="{% url 'members:nsa_export_modal' %}" hx-target="#dialog">
-        <i class="bi bi-box-arrow-up"></i> NSA Export
+        <i class="bi bi-box-arrow-up"></i> {% trans "NSA Export" %}
     </button>
 </div>

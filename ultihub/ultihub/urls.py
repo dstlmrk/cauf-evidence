@@ -30,6 +30,7 @@ admin.site.index_title = ""
 
 urlpatterns = [
     path("", include("core.urls")),
+    path("i18n/", include("django.conf.urls.i18n")),
     path("accounts/", include("allauth.urls")),
     path("admin/", admin.site.urls, name="admin"),
     path("api/", include("api.urls")),

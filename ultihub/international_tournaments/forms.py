@@ -2,6 +2,7 @@ from typing import Any
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from members.models import Member
 
 from international_tournaments.models import MemberAtInternationalTournament
@@ -26,7 +27,7 @@ class AddMemberToInternationalRosterForm(forms.Form):
             try:
                 member = Member.objects.get(pk=cleaned_data["member_id"])
             except Member.DoesNotExist as err:
-                raise ValidationError({"member_id": "Member not found"}) from err
+                raise ValidationError({"member_id": _("Member not found")}) from err
 
             # Store for later use to avoid re-fetching
             self.validated_member = member
@@ -35,7 +36,7 @@ class AddMemberToInternationalRosterForm(forms.Form):
             if MemberAtInternationalTournament.objects.filter(
                 team_at_tournament=self.team_at_tournament, member=member
             ).exists():
-                raise ValidationError({"member_id": "Member is already in this team roster"})
+                raise ValidationError({"member_id": _("Member is already in this team roster")})
 
             # Check if member is already in another team at this tournament
             if roster_record := MemberAtInternationalTournament.objects.filter(
@@ -43,10 +44,10 @@ class AddMemberToInternationalRosterForm(forms.Form):
             ).first():
                 raise ValidationError(
                     {
-                        "member_id": (
-                            "Member is already in another team at this tournament: "
-                            f"{roster_record.team_at_tournament.team_name}"
+                        "member_id": _(
+                            "Member is already in another team at this tournament: %(team_name)s"
                         )
+                        % {"team_name": roster_record.team_at_tournament.team_name}
                     }
                 )
 
@@ -77,7 +78,7 @@ class UpdateMemberToInternationalRosterForm(forms.ModelForm):
                 is_captain=True,
             ).exclude(pk=self.instance.pk)
             if existing_captains.exists():
-                raise ValidationError({"is_captain": "Team already has a captain."})
+                raise ValidationError({"is_captain": _("Team already has a captain.")})
 
         if is_spirit_captain:
             existing_spirit_captains = MemberAtInternationalTournament.objects.filter(
@@ -85,7 +86,9 @@ class UpdateMemberToInternationalRosterForm(forms.ModelForm):
                 is_spirit_captain=True,
             ).exclude(pk=self.instance.pk)
             if existing_spirit_captains.exists():
-                raise ValidationError({"is_spirit_captain": "Team already has a spirit captain."})
+                raise ValidationError(
+                    {"is_spirit_captain": _("Team already has a spirit captain.")}
+                )
 
         if jersey_number is not None:
             existing_jersey = MemberAtInternationalTournament.objects.filter(
@@ -94,7 +97,10 @@ class UpdateMemberToInternationalRosterForm(forms.ModelForm):
             ).exclude(pk=self.instance.pk)
             if existing_jersey.exists():
                 raise ValidationError(
-                    {"jersey_number": f"Another player already has jersey number {jersey_number}."}
+                    {
+                        "jersey_number": _("Another player already has jersey number %(number)s.")
+                        % {"number": jersey_number}
+                    }
                 )
 
         return cleaned_data

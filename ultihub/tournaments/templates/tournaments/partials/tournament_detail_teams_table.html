@@ -1,12 +1,13 @@
+{% load i18n %}
 <div class="d-none d-md-block">
     <table class="table align-middle">
         <thead>
             <tr class="align-middle">
-                <th>Standing</th>
-                <th>SOTG avg</th>
-                <th>Team</th>
-                <th>Club</th>
-                <th>Seeding</th>
+                <th>{% trans "Standing" %}</th>
+                <th>{% trans "SOTG avg" %}</th>
+                <th>{% trans "Team" %}</th>
+                <th>{% trans "Club" %}</th>
+                <th>{% trans "Seeding" %}</th>
                 <th></th>
             </tr>
         </thead>
@@ -29,11 +30,11 @@
     <div class="list-group">
         {% for team in teams_at_tournament %}
             <div class="list-group-item">
-                <div>Standing: {{ team.final_placement | default:"" }}</div>
-                <div>SOTG avg: {{ team.spirit_avg | floatformat:2 }}</div>
-                <div>Team: <b>{{ team.application.team_name }}</b></div>
-                <div>Club: {{ team.application.team.club.name }}</div>
-                <div>Seeding: {{ team.seeding | default:"" }}</div>
+                <div>{% blocktrans with placement=team.final_placement|default:"" %}Standing: {{ placement }}{% endblocktrans %}</div>
+                <div>{% blocktrans with avg=team.spirit_avg|floatformat:2 %}SOTG avg: {{ avg }}{% endblocktrans %}</div>
+                <div>{% trans "Team" %}: <b>{{ team.application.team_name }}</b></div>
+                <div>{% blocktrans with club=team.application.team.club.name %}Club: {{ club }}{% endblocktrans %}</div>
+                <div>{% blocktrans with seed=team.seeding|default:"" %}Seeding: {{ seed }}{% endblocktrans %}</div>
                 <div class="mt-2 mb-1">{% include "tournaments/components/roster-button.html" %}</div>
             </div>
         {% endfor %}

@@ -12,6 +12,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.timezone import now
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 from tournaments.models import Tournament
 
@@ -45,12 +46,12 @@ def add_member(request: HttpRequest) -> HttpResponse:
             form.save()
             notify_monitored_citizenship(form.instance)
             if form.instance.email or form.instance.legal_guardian_email:
-                messages.success(request, "Confirmation email sent")
+                messages.success(request, _("Confirmation email sent"))
             else:
-                messages.success(request, "Member created successfully")
+                messages.success(request, _("Member created successfully"))
             return HttpResponse(status=204, headers={"HX-Trigger": "memberListChanged"})
         else:
-            messages.error(request, "Member not created")
+            messages.error(request, _("Member not created"))
     else:
         form = MemberForm()
     return render(request, "members/partials/member_form.html", {"form": form})
@@ -67,10 +68,10 @@ def edit_member(request: HttpRequest, member_id: int) -> HttpResponse:
             # Notify if citizenship was changed to monitored country
             if form.instance.citizenship.code != old_citizenship:
                 notify_monitored_citizenship(form.instance)
-            messages.success(request, "Member updated successfully.")
+            messages.success(request, _("Member updated successfully."))
             return HttpResponse(status=204, headers={"HX-Trigger": "memberListChanged"})
         else:
-            messages.error(request, "Member not updated")
+            messages.error(request, _("Member not updated"))
     else:
         form = MemberForm(instance=member)
     return render(request, "members/partials/member_form.html", {"form": form})
@@ -97,7 +98,7 @@ def confirm_email(request: HttpRequest, token: UUID) -> HttpResponse:
             if form.cleaned_data.get("marketing_consent"):
                 member.marketing_consent_given_at = current_time
             member.save()
-            messages.success(request, "You have confirmed your email")
+            messages.success(request, _("You have confirmed your email"))
             return HttpResponse(status=204, headers={"HX-Redirect": reverse("home")})
     else:
         form = MemberConfirmEmailForm(member=member)
@@ -174,7 +175,7 @@ def transfer_form(request: HttpRequest) -> HttpResponse:
                         source_club=Club.objects.get(pk=form.cleaned_data["source_club"]),
                         target_club=Club.objects.get(pk=form.cleaned_data["target_club"]),
                     )
-                    messages.success(request, "Transfer request created")
+                    messages.success(request, _("Transfer request created"))
                     # TODO: solve HTMX cases when the request fails (everywhere in the app)
                     #  I don't see error messages in the UI (or in the console)
                     return HttpResponse(status=204, headers={"HX-Refresh": "true"})
@@ -215,15 +216,15 @@ def change_transfer_state_view(request: HttpRequest) -> HttpResponse:
             return HttpResponse(status=403)
         if action == "approve":
             approve_transfer(agent=request.user.agent, transfer=transfer)  # type: ignore
-            messages.success(request, "Transfer approved")
+            messages.success(request, _("Transfer approved"))
         else:
             reject_transfer(transfer=transfer)
-            messages.success(request, "Transfer rejected")
+            messages.success(request, _("Transfer rejected"))
     else:
         if transfer.requesting_club.id != get_current_club(request).id:
             return HttpResponse(status=403)
         revoke_transfer(transfer=transfer)
-        messages.success(request, "Transfer revoked")
+        messages.success(request, _("Transfer revoked"))
 
     return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
@@ -257,9 +258,10 @@ def export_members_csv_for_nsa_view(request: HttpRequest) -> HttpResponse:
     )
     messages.success(
         request,
-        (
-            f"The process of exporting members for {season.name} season has started."
+        _(
+            "The process of exporting members for %(season_name)s season has started."
             " The file will be sent to your email."
-        ),
+        )
+        % {"season_name": season.name},
     )
     return HttpResponse(status=204)

@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
+{% load i18n %}
 
-{% block title %}<h1>Members</h1>{% endblock %}
+{% block title %}<h1>{% trans "Members" %}</h1>{% endblock %}
 
 {% block buttons %}
     <div class="d-none d-md-block">{% include 'members/components/members-action-buttons.html' %}</div>
@@ -12,19 +13,19 @@
     {% if any_member_exists %}
         <div class="row align-items-center">
             <div class="col-md-4 mb-2">
-                <input id="memberSearch" type="text" class="form-control" placeholder="Search..." aria-label="Search" />
+                <input id="memberSearch" type="text" class="form-control" placeholder="{% trans "Search..." %}" aria-label="{% trans "Search" %}" />
             </div>
             <div class="col-md-4 mb-2">
-                <select id="sexFilter" class="form-select" aria-label="Sex filter">
-                    <option value="" selected>All sex</option>
-                    <option value="Female">Female</option>
-                    <option value="Male">Male</option>
+                <select id="sexFilter" class="form-select" aria-label="{% trans "Sex filter" %}">
+                    <option value="" selected>{% trans "All sex" %}</option>
+                    <option value="Female">{% trans "Female" %}</option>
+                    <option value="Male">{% trans "Male" %}</option>
                 </select>
             </div>
             <div class="col-md-4 mb-2">
                 <div class="form-check d-flex align-items-center">
                     <input class="form-check-input me-2" type="checkbox" value="" id="activeFilter" />
-                    <label class="form-check-label mt-1" for="flexCheckDefault">Include inactive members</label>
+                    <label class="form-check-label mt-1" for="flexCheckDefault">{% trans "Include inactive members" %}</label>
                 </div>
             </div>
         </div>
@@ -35,7 +36,7 @@
         ></div>
     {% else %}
         <div class="alert alert-primary" role="alert">
-            <i class="bi bi-info-circle-fill me-1"></i> No members found.
+            <i class="bi bi-info-circle-fill me-1"></i> {% trans "No members found." %}
         </div>
     {% endif %}
 {% endblock %}

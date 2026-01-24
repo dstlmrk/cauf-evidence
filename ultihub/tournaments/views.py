@@ -15,6 +15,7 @@ from django.db.models import BooleanField, Count, Exists, OuterRef, Value
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 from members.models import Member
 
@@ -144,7 +145,7 @@ def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int
                 member_id=member.id,
                 jersey_number=member.default_jersey_number,
             )
-            messages.success(request, "Member added successfully")
+            messages.success(request, _("Member added successfully"))
 
             if member.club != team_at_tournament.application.team.club:
                 tournament = team_at_tournament.tournament
@@ -202,12 +203,12 @@ def roster_dialog_update_form_view(
         form = UpdateMemberToRosterForm(request.POST, instance=member_at_tournament)
 
         if not member_at_tournament.tournament.has_open_rosters:
-            messages.error(request, "The roster deadline has passed")
+            messages.error(request, _("The roster deadline has passed"))
             return HttpResponse(status=400)
 
         if form.is_valid():
             form.save()
-            messages.success(request, "Member updated successfully")
+            messages.success(request, _("Member updated successfully"))
             response = HttpResponse(status=204)
 
             response["HX-Trigger"] = (
@@ -246,7 +247,7 @@ def remove_member_from_roster_view(
         member_at_tournament.team_at_tournament,
         member_at_tournament.tournament,
     )
-    messages.success(request, "Member removed successfully")
+    messages.success(request, _("Member removed successfully"))
 
     response = render(
         request,

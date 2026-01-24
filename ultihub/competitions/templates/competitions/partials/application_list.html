@@ -1,9 +1,10 @@
+{% load i18n %}
 <div class="modal-content">
     <div class="modal-header p-3">
         <div
             class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between w-100"
         >
-            <h5 class="modal-title mb-0"><i class="bi bi-people-fill"></i> {{ competition }}: Registration</h5>
+            <h5 class="modal-title mb-0"><i class="bi bi-people-fill"></i> {% blocktrans with comp=competition %}{{ comp }}: Registration{% endblocktrans %}</h5>
             {% if request.session.club and competition.has_open_registration %}
                 <button
                     class="btn btn-success mt-2 mt-md-0 ms-0 ms-md-3 position-relative"
@@ -11,7 +12,7 @@
                     hx-target="#dialog"
                     data-bs-dismiss="modal"
                 >
-                    <i class="bi bi-plus-circle"></i> Add team
+                    <i class="bi bi-plus-circle"></i> {% trans "Add team" %}
                 </button>
             {% endif %}
         </div>
@@ -22,10 +23,10 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Team name</th>
-                        <th scope="col">Club</th>
-                        <th scope="col">State</th>
-                        <th scope="col">Registration time</th>
+                        <th scope="col">{% trans "Team name" %}</th>
+                        <th scope="col">{% trans "Club" %}</th>
+                        <th scope="col">{% trans "State" %}</th>
+                        <th scope="col">{% trans "Registration time" %}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -44,7 +45,7 @@
                                             class="btn btn-danger"
                                             hx-post="{% url 'competitions:cancel_application' application.id %}"
                                         >
-                                            Remove
+                                            {% trans "Remove" %}
                                         </button>
                                     </div>
                                 {% else %}
@@ -60,15 +61,15 @@
             <ul class="list-group">
                 {% for application in applications %}
                     <div class="list-group-item">
-                        <div>Name: <b>{{ application.team_name }}</b></div>
-                        <div>Club: {{ application.team.club.name }}</div>
+                        <div>{% trans "Name" %}: <b>{{ application.team_name }}</b></div>
+                        <div>{% trans "Club" %}: {{ application.team.club.name }}</div>
                         <div>
-                            State:
+                            {% trans "State" %}:
                             <span style="position: relative; top: -2px;">
                                 {% include "competitions/components/competition-state-badge.html" %}
                             </span>
                         </div>
-                        <div>Registration time: {{ application.created_at | date:"d/m/Y H:i" }}</div>
+                        <div>{% trans "Registration time" %}: {{ application.created_at | date:"d/m/Y H:i" }}</div>
                         <div>
                             {% if request.session.club.id == application.team.club.id and competition.has_open_registration and not application.invoice %}
                                 <div class="mt-2 mb-1">
@@ -76,7 +77,7 @@
                                         class="btn btn-danger"
                                         hx-post="{% url 'competitions:cancel_application' application.id %}"
                                     >
-                                        Remove
+                                        {% trans "Remove" %}
                                     </button>
                                 </div>
                             {% endif %}
@@ -87,6 +88,6 @@
         </div>
     </div>
     <div class="modal-footer d-flex w-100 justify-content-end">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
     </div>
 </div>

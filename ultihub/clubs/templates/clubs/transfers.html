@@ -1,11 +1,12 @@
 {% extends "core/base.html" %}
+{% load i18n %}
 
-{% block title %}<h1>Transfers</h1>{% endblock %}
+{% block title %}<h1>{% trans "Transfers" %}</h1>{% endblock %}
 
 {% block buttons %}
     {% if app_settings.transfers_enabled %}
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestTransferModal">
-            <i class="bi bi-envelope-plus"></i> Request transfer
+            <i class="bi bi-envelope-plus"></i> {% trans "Request transfer" %}
         </button>
     {% endif %}
 {% endblock %}
@@ -15,7 +16,7 @@
 
     {% if not app_settings.transfers_enabled %}
         <div class="alert alert-warning " role="alert">
-            <i class="bi bi-exclamation-octagon-fill me-1"></i> Transfers are currently <b>disabled</b>.
+            <i class="bi bi-exclamation-octagon-fill me-1"></i> {% trans "Transfers are currently" %} <b>{% trans "disabled" %}</b>.
         </div>
     {% endif %}
 
@@ -23,8 +24,8 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5"><i class="bi bi-envelope-plus"></i> Transfer request</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h1 class="modal-title fs-5"><i class="bi bi-envelope-plus"></i> {% trans "Transfer request" %}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans "Close" %}"></button>
                 </div>
                 <div>
                     <div class="modal-body">
@@ -38,8 +39,8 @@
                         ></div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" form="requestTransferForm">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                        <button type="submit" class="btn btn-primary" form="requestTransferForm">{% trans "Submit" %}</button>
                     </div>
                 </div>
             </div>
@@ -51,11 +52,11 @@
             <table class="table align-middle">
                 <thead>
                     <tr>
-                        <th>State</th>
-                        <th>Member</th>
-                        <th>Transfer</th>
-                        <th>Requested by</th>
-                        <th>Approved by</th>
+                        <th>{% trans "State" %}</th>
+                        <th>{% trans "Member" %}</th>
+                        <th>{% trans "Transfer" %}</th>
+                        <th>{% trans "Requested by" %}</th>
+                        <th>{% trans "Approved by" %}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -114,7 +115,7 @@
                 {% for transfer in transfers %}
                     <div class="list-group-item">
                         <div>
-                            State:
+                            {% trans "State" %}:
                             <span style="position: relative; top: -2px;">
                                 <span
                                     {% if transfer.state == 1 %}
@@ -132,27 +133,23 @@
                             </span>
                             <div>
                                 {% if transfer.state == 1 %}
-                                    Requested at: {{ transfer.created_at | date:'d/m/Y H:i' }}
+                                    {% trans "Requested at" %}: {{ transfer.created_at | date:'d/m/Y H:i' }}
                                 {% elif transfer.state == 2 %}
-                                    Approved at: {{ transfer.approved_at | date:'d/m/Y H:i' }}
+                                    {% trans "Approved at" %}: {{ transfer.approved_at | date:'d/m/Y H:i' }}
                                 {% else %}
-                                    Updated at: {{ transfer.updated_at | date:'d/m/Y H:i' }}
+                                    {% trans "Updated at" %}: {{ transfer.updated_at | date:'d/m/Y H:i' }}
                                 {% endif %}
                             </div>
                         </div>
-                        <div>Member: <b>{{ transfer.member.full_name }}</b></div>
-                        <div>Birth date: {{ transfer.member.birth_date | date:'d/m/Y' }}</div>
-                        <div>Transfer: <b>{{ transfer.source_club.name }} → {{ transfer.target_club.name }}</b></div>
+                        <div>{% trans "Member" %}: <b>{{ transfer.member.full_name }}</b></div>
+                        <div>{% trans "Birth date" %}: {{ transfer.member.birth_date | date:'d/m/Y' }}</div>
+                        <div>{% blocktrans with source=transfer.source_club.name target=transfer.target_club.name %}Transfer: <b>{{ source }} → {{ target }}</b>{% endblocktrans %}</div>
                         <div>
-                            Requested by: {{ transfer.requested_by.user.first_name }}
-                            {{ transfer.requested_by.user.last_name }}
-                            ({{ transfer.requesting_club }})
+                            {% blocktrans with first_name=transfer.requested_by.user.first_name last_name=transfer.requested_by.user.last_name club=transfer.requesting_club %}Requested by: {{ first_name }} {{ last_name }} ({{ club }}){% endblocktrans %}
                         </div>
                         {% if transfer.state == 2 %}
                             <div>
-                                Approved by: {{ transfer.approved_by.user.first_name }}
-                                {{ transfer.approved_by.user.last_name }}
-                                ({{ transfer.approving_club }})
+                                {% blocktrans with first_name=transfer.approved_by.user.first_name last_name=transfer.approved_by.user.last_name club=transfer.approving_club %}Approved by: {{ first_name }} {{ last_name }} ({{ club }}){% endblocktrans %}
                             </div>
                         {% endif %}
                         <div class="mt-2 mb-1">{% include "members/components/transfer-action-buttons.html" %}</div>
@@ -162,7 +159,7 @@
         </div>
     {% else %}
         <div class="alert alert-primary" role="alert">
-            <i class="bi bi-info-circle-fill me-1"></i> No transfers found.
+            <i class="bi bi-info-circle-fill me-1"></i> {% trans "No transfers found." %}
         </div>
     {% endif %}
 {% endblock %}

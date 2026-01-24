@@ -1,7 +1,8 @@
 {% extends "core/base.html" %}
+{% load i18n %}
 {% load humanize %}
 
-{% block title %}<h1>International tournaments</h1>{% endblock %}
+{% block title %}<h1>{% trans "International tournaments" %}</h1>{% endblock %}
 
 {% block content %}
     <!-- Filters -->
@@ -13,11 +14,11 @@
                 <thead>
                     <tr class="align-middle">
                         <th scope="col"></th>
-                        <th scope="col">Season</th>
-                        <th scope="col">Tournament<br /><small class="text-muted">Type</small></th>
-                        <th scope="col">Location<br /><small class="text-muted">Date</small></th>
-                        <th scope="col">Czech teams</th>
-                        <th scope="col">Placement</th>
+                        <th scope="col">{% trans "Season" %}</th>
+                        <th scope="col">{% trans "Tournament" %}<br /><small class="text-muted">{% trans "Type" %}</small></th>
+                        <th scope="col">{% trans "Location" %}<br /><small class="text-muted">{% trans "Date" %}</small></th>
+                        <th scope="col">{% trans "Czech teams" %}</th>
+                        <th scope="col">{% trans "Placement" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,7 +33,7 @@
                                                     class="bi bi-check"
                                                     style="color: green;"
                                                     data-bs-toggle="tooltip"
-                                                    data-bs-title="Your club has a team in this tournament"
+                                                    data-bs-title="{% trans "Your club has a team in this tournament" %}"
                                                 ></i>
                                             {% endif %}
                                         </td>
@@ -83,7 +84,7 @@
                                     <td class="text-start">
                                         {% if participation.final_placement and participation.total_teams %}
                                             {{ participation.final_placement|ordinal }}
-                                            from {{ participation.total_teams }}
+                                            {% blocktrans with total=participation.total_teams %}from {{ total }}{% endblocktrans %}
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -96,7 +97,7 @@
                                             class="bi bi-check"
                                             style="color: green;"
                                             data-bs-toggle="tooltip"
-                                            data-bs-title="Your club has a team in this tournament"
+                                            data-bs-title="{% trans "Your club has a team in this tournament" %}"
                                         ></i>
                                     {% endif %}
                                 </td>
@@ -176,7 +177,7 @@
                                 {% endfor %}
                             </div>
                         {% else %}
-                            <div class="mt-2 text-muted">No teams registered yet.</div>
+                            <div class="mt-2 text-muted">{% trans "No teams registered yet." %}</div>
                         {% endif %}
                     </div>
                 {% endfor %}
@@ -184,7 +185,7 @@
         </div>
     {% else %}
         <div class="alert alert-primary" role="alert">
-            <i class="bi bi-info-circle-fill me-1"></i> No international tournaments found.
+            <i class="bi bi-info-circle-fill me-1"></i> {% trans "No international tournaments found." %}
         </div>
     {% endif %}
 {% endblock %}

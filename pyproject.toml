@@ -87,6 +87,9 @@ select = [
 	"PTH", # flake8-pathlib
 ]
 
+[tool.ruff.lint.per-file-ignores]
+"scripts/*.py" = ["T201"]
+
 [tool.mypy]
 mypy_path = "ultihub"
 check_untyped_defs = true
@@ -158,6 +161,10 @@ cmd = "docker compose -f docker/compose.dev.yaml exec app python manage.py migra
 [tool.poe.tasks.makemigrations]
 help = "Make migrations"
 cmd = "docker compose -f docker/compose.dev.yaml exec app python manage.py makemigrations"
+
+[tool.poe.tasks.translations-check]
+help = "Check for missing translations"
+cmd = "python scripts/check_translations.py"
 
 [tool.poe.tasks.shell]
 help = "Run a shell"
