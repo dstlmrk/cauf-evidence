@@ -8,6 +8,7 @@ from django.db.models import Exists, OuterRef, Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 from finance.forms import SeasonFeesCheckForm
 from finance.models import Invoice
@@ -101,7 +102,7 @@ def add_team(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             form.instance.club_id = get_club_id(request)
             form.save()
-            messages.success(request, "Team added successfully.")
+            messages.success(request, _("Team added successfully."))
             return HttpResponse(status=204, headers={"HX-Trigger": "teamListChanged"})
     else:
         form = TeamForm()
@@ -115,7 +116,7 @@ def edit_team(request: HttpRequest, team_id: int) -> HttpResponse:
         form = TeamForm(request.POST, instance=team)
         if form.is_valid():
             form.save()
-            messages.success(request, "Team updated successfully.")
+            messages.success(request, _("Team updated successfully."))
             return HttpResponse(status=204, headers={"HX-Trigger": "teamListChanged"})
     else:
         form = TeamForm(instance=team)
@@ -128,7 +129,7 @@ def remove_team(request: HttpRequest, team_id: int) -> HttpResponse:
     Team.objects.filter(id=team_id, club_id=get_club_id(request), is_primary=False).update(
         is_active=False
     )
-    messages.success(request, "Team removed successfully.")
+    messages.success(request, _("Team removed successfully."))
     return HttpResponse(status=204, headers={"HX-Trigger": "teamListChanged"})
 
 
@@ -157,7 +158,7 @@ def settings(request: HttpRequest) -> HttpResponse:
             request.session["club"]["name"] = club_form.cleaned_data["name"]
             request.session.modified = True
 
-            messages.success(request, "Club updated successfully.")
+            messages.success(request, _("Club updated successfully."))
             return redirect("clubs:settings")
 
     return render(
@@ -180,12 +181,12 @@ def add_agent(request: HttpRequest) -> HttpResponse:
                     club=get_object_or_404(Club, pk=get_club_id(request)),
                     invited_by=request.user,  # type: ignore
                 )
-                messages.success(request, "Agent added successfully.")
+                messages.success(request, _("Agent added successfully."))
                 return HttpResponse(status=204, headers={"HX-Trigger": "agentListChanged"})
             except NewAgentRequestAlreadyExistsError:
                 messages.error(
                     request,
-                    (
+                    _(
                         "The agent is already invited to the application."
                         " He must complete it before the next invitation."
                     ),
@@ -203,7 +204,7 @@ def remove_agent(request: HttpRequest) -> HttpResponse:
         email=request.POST["email"],
         club=get_object_or_404(Club, pk=get_club_id(request)),
     )
-    messages.success(request, "Agent removed successfully.")
+    messages.success(request, _("Agent removed successfully."))
     return HttpResponse(status=204, headers={"HX-Trigger": "agentListChanged"})
 
 

@@ -1,10 +1,11 @@
 {% extends "core/base.html" %}
+{% load i18n %}
 
-{% block title %}<h1>Settings</h1>{% endblock %}
+{% block title %}<h1>{% trans "Settings" %}</h1>{% endblock %}
 
 {% block buttons %}
     <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_agent' %}" hx-target="#dialog">
-        <i class="bi bi-person-plus"></i> Add agent
+        <i class="bi bi-person-plus"></i> {% trans "Add agent" %}
     </button>
 {% endblock %}
 
@@ -12,7 +13,7 @@
     {% load crispy_forms_tags %}
     <div class="row">
         <div class="col-lg-7">
-            <h2>Club</h2>
+            <h2>{% trans "Club" %}</h2>
             <div class="card mb-3">
                 <div class="card-body" x-data="{ isModified: false }">
                     <form method="POST" x-on:input="isModified = true">
@@ -30,14 +31,14 @@
                             </div>
                         </div>
                         <button type="submit" name="submit_club" class="btn btn-success" :disabled="!isModified">
-                            Save
+                            {% trans "Save" %}
                         </button>
                     </form>
                 </div>
             </div>
         </div>
         <div class="col-lg-5">
-            <h2>Agents</h2>
+            <h2>{% trans "Agents" %}</h2>
             <div
                 hx-trigger="load, agentListChanged from:body"
                 hx-get="{% url 'clubs:agent_list' %}"

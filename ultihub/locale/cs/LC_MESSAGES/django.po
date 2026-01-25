@@ -1,0 +1,1373 @@
+# Czech translations for ultihub project.
+# Copyright (C) 2024
+# This file is distributed under the same license as the ultihub package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ultihub 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Czech\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
+"<= 4 && n % 1 == 0) ? 1 : (n % 1 != 0 ) ? 2 : 3;\n"
+
+#. Navigation - core/templates/core/base.html
+#: ultihub/core/templates/core/base.html
+msgid "Club"
+msgstr "Klub"
+
+#: ultihub/core/templates/core/base.html
+msgid "Members"
+msgstr "Členové"
+
+#: ultihub/core/templates/core/base.html
+msgid "Teams"
+msgstr "Týmy"
+
+#: ultihub/core/templates/core/base.html
+msgid "Transfers"
+msgstr "Přestupy"
+
+#: ultihub/core/templates/core/base.html
+msgid "Season fees"
+msgstr "Sezónní poplatky"
+
+#: ultihub/core/templates/core/base.html
+msgid "Invoices"
+msgstr "Faktury"
+
+#: ultihub/core/templates/core/base.html
+msgid "Settings"
+msgstr "Nastavení"
+
+#: ultihub/core/templates/core/base.html
+msgid "Tournaments"
+msgstr "Turnaje"
+
+#: ultihub/core/templates/core/base.html
+msgid "Domestic"
+msgstr "Domácí"
+
+#: ultihub/core/templates/core/base.html
+msgid "International"
+msgstr "Mezinárodní"
+
+#: ultihub/core/templates/core/base.html
+msgid "Competitions"
+msgstr "Soutěže"
+
+#: ultihub/core/templates/core/base.html
+msgid "FAQ"
+msgstr "Často kladené dotazy"
+
+#: ultihub/core/templates/core/base.html
+msgid "Administration"
+msgstr "Administrace"
+
+#: ultihub/core/templates/core/base.html
+msgid "Profile"
+msgstr "Profil"
+
+#: ultihub/core/templates/core/base.html
+msgid "Sign out"
+msgstr "Odhlásit se"
+
+#: ultihub/core/templates/core/base.html
+msgid "Sign in"
+msgstr "Přihlásit se"
+
+#. Common UI elements
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+#: ultihub/clubs/templates/clubs/partials/notifications_dialog.html
+#: ultihub/competitions/templates/competitions/partials/competition_detail.html
+#: ultihub/competitions/templates/competitions/partials/application_list.html
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+#: ultihub/members/templates/members/partials/coach_licence_list.html
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Close"
+msgstr "Zavřít"
+
+#: ultihub/members/templates/members/partials/member_form.html
+#: ultihub/clubs/templates/clubs/partials/team_form.html
+#: ultihub/clubs/templates/clubs/partials/add_agent_form.html
+#: ultihub/competitions/templates/competitions/partials/registration_form.html
+#: ultihub/members/templates/members/partials/nsa_export_modal.html
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog_update_form.html
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog_add_form.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_update_form.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_add_form.html
+#: ultihub/members/templates/members/partials/member_form.html
+#: ultihub/members/templates/members/confirm_email.html
+#: ultihub/clubs/templates/clubs/partials/team_form.html
+#: ultihub/clubs/templates/clubs/partials/add_agent_form.html
+#: ultihub/clubs/templates/clubs/season_fees.html
+#: ultihub/clubs/templates/clubs/transfers.html
+#: ultihub/competitions/templates/competitions/partials/registration_form.html
+#: ultihub/users/templates/users/profile.html
+msgid "Submit"
+msgstr "Odeslat"
+
+#: ultihub/clubs/templates/clubs/settings.html
+msgid "Save"
+msgstr "Uložit"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+#: ultihub/clubs/templates/clubs/partials/agent_list.html
+#: ultihub/clubs/templates/clubs/components/team-action-buttons.html
+#: ultihub/competitions/templates/competitions/partials/application_list.html
+msgid "Remove"
+msgstr "Odebrat"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+#: ultihub/clubs/templates/clubs/partials/member_list.html
+#: ultihub/clubs/templates/clubs/components/team-action-buttons.html
+msgid "Edit"
+msgstr "Upravit"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+#: ultihub/clubs/templates/clubs/partials/member_list.html
+#: ultihub/clubs/templates/clubs/partials/team_list.html
+#: ultihub/competitions/templates/competitions/partials/application_list.html
+msgid "Name"
+msgstr "Jméno"
+
+#: ultihub/clubs/templates/clubs/partials/team_list.html
+#: ultihub/competitions/templates/competitions/partials/competition_detail.html
+msgid "Description"
+msgstr "Popis"
+
+#. Table headers - Member list
+#: ultihub/clubs/templates/clubs/partials/member_list.html
+msgid "Number"
+msgstr "Číslo"
+
+#: ultihub/clubs/templates/clubs/partials/member_list.html
+#: ultihub/members/templates/members/confirm_email.html
+msgid "Birthdate"
+msgstr "Datum narození"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+msgid "Birth year"
+msgstr "Rok narození"
+
+#: ultihub/clubs/templates/clubs/partials/member_list.html
+#: ultihub/members/templates/members/confirm_email.html
+msgid "Citizenship"
+msgstr "Občanství"
+
+#: ultihub/clubs/templates/clubs/partials/member_list.html
+#: ultihub/members/templates/members/confirm_email.html
+msgid "Sex"
+msgstr "Pohlaví"
+
+#: ultihub/clubs/templates/clubs/partials/member_list.html
+msgid "Coach licence"
+msgstr "Trenérská licence"
+
+#: ultihub/clubs/templates/clubs/partials/member_list.html
+msgid "Confirmed email"
+msgstr "Potvrzený email"
+
+#: ultihub/clubs/templates/clubs/partials/member_list.html
+msgid "Active"
+msgstr "Aktivní"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+msgid "Home club"
+msgstr "Domovský klub"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+msgid "Added at"
+msgstr "Přidáno"
+
+#. Member form
+#: ultihub/members/templates/members/components/members-action-buttons.html
+msgid "Create member"
+msgstr "Vytvořit člena"
+
+#: ultihub/members/templates/members/partials/member_form.html
+msgid "Edit member"
+msgstr "Upravit člena"
+
+#: ultihub/clubs/templates/clubs/members.html
+msgid "No members found."
+msgstr "Žádní členové nenalezeni."
+
+#: ultihub/clubs/templates/clubs/members.html
+msgid "Include inactive members"
+msgstr "Zahrnout neaktivní členy"
+
+#: ultihub/clubs/templates/clubs/members.html
+msgid "All sex"
+msgstr "Všechna pohlaví"
+
+#: ultihub/clubs/templates/clubs/members.html
+msgid "Female"
+msgstr "Žena"
+
+#: ultihub/clubs/templates/clubs/members.html
+msgid "Male"
+msgstr "Muž"
+
+#: ultihub/members/templates/members/partials/member_form.html
+msgid "Personal information"
+msgstr "Osobní údaje"
+
+#: ultihub/members/templates/members/partials/member_form.html
+msgid "Membership details"
+msgstr "Údaje o členství"
+
+#: ultihub/members/templates/members/partials/member_form.html
+msgid "Contact information"
+msgstr "Kontaktní údaje"
+
+#: ultihub/members/templates/members/partials/member_form.html
+msgid "Residential address"
+msgstr "Adresa bydliště"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+#: ultihub/finance/templates/finance/partials/season_fees_list.html
+#: ultihub/clubs/templates/clubs/transfers.html
+#: ultihub/members/templates/members/partials/member_search.html
+msgid "Member"
+msgstr "Člen"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+msgid "Add member"
+msgstr "Přidat člena"
+
+#. Messages - Success
+#: ultihub/clubs/views.py
+msgid "Team added successfully."
+msgstr "Tým byl úspěšně přidán."
+
+#: ultihub/clubs/views.py
+msgid "Team updated successfully."
+msgstr "Tým byl úspěšně upraven."
+
+#: ultihub/clubs/views.py
+msgid "Team removed successfully."
+msgstr "Tým byl úspěšně odebrán."
+
+#: ultihub/clubs/views.py
+msgid "Club updated successfully."
+msgstr "Klub byl úspěšně upraven."
+
+#: ultihub/clubs/views.py
+msgid "Agent added successfully."
+msgstr "Správce byl úspěšně přidán."
+
+#: ultihub/clubs/views.py
+msgid "Agent removed successfully."
+msgstr "Správce byl úspěšně odebrán."
+
+#: ultihub/clubs/views.py
+msgid ""
+"The agent is already invited to the application. He must complete it before "
+"the next invitation."
+msgstr ""
+"Správce je již přizván do aplikace. Musí ji dokončit před dalším pozváním."
+
+#: ultihub/members/views.py
+msgid "Confirmation email sent"
+msgstr "Potvrzovací email odeslán"
+
+#: ultihub/members/views.py
+msgid "Member created successfully"
+msgstr "Člen byl úspěšně vytvořen"
+
+#: ultihub/members/views.py
+msgid "Member not created"
+msgstr "Člen nebyl vytvořen"
+
+#: ultihub/members/views.py
+msgid "Member updated successfully."
+msgstr "Člen byl úspěšně upraven."
+
+#: ultihub/members/views.py
+msgid "Member not updated"
+msgstr "Člen nebyl upraven"
+
+#: ultihub/members/views.py
+msgid "You have confirmed your email"
+msgstr "Váš email byl potvrzen"
+
+#: ultihub/members/views.py
+msgid "Transfer request created"
+msgstr "Žádost o přestup vytvořena"
+
+#: ultihub/members/views.py
+msgid "Transfer approved"
+msgstr "Přestup schválen"
+
+#: ultihub/members/views.py
+msgid "Transfer rejected"
+msgstr "Přestup zamítnut"
+
+#: ultihub/members/views.py
+msgid "Transfer revoked"
+msgstr "Přestup zrušen"
+
+#: ultihub/tournaments/views.py
+#: ultihub/international_tournaments/views.py
+msgid "Member added successfully"
+msgstr "Člen byl úspěšně přidán"
+
+#: ultihub/tournaments/views.py
+#: ultihub/international_tournaments/views.py
+msgid "Member updated successfully"
+msgstr "Člen byl úspěšně upraven"
+
+#: ultihub/tournaments/views.py
+#: ultihub/international_tournaments/views.py
+msgid "Member removed successfully"
+msgstr "Člen byl úspěšně odebrán"
+
+#: ultihub/tournaments/views.py
+#: ultihub/tournaments/forms.py
+msgid "The roster deadline has passed"
+msgstr "Termín pro soupisku vypršel"
+
+#: ultihub/finance/views.py
+msgid "Season fees have been calculated"
+msgstr "Sezónní poplatky byly vypočítány"
+
+#: ultihub/finance/views.py
+msgid "Something went wrong"
+msgstr "Něco se pokazilo"
+
+#: ultihub/finance/views.py
+msgid "The request has been successfully sent."
+msgstr "Požadavek byl úspěšně odeslán."
+
+#: ultihub/finance/views.py
+msgid "Check your invoices."
+msgstr "Zkontrolujte své faktury."
+
+#: ultihub/finance/views.py
+msgid "Your club has no financial settings. Please contact the administrator."
+msgstr ""
+"Váš klub nemá nastavené finanční údaje. Kontaktujte prosím administrátora."
+
+#: ultihub/competitions/views.py
+msgid "The application has been cancelled."
+msgstr "Přihláška byla zrušena."
+
+#: ultihub/competitions/views.py
+msgid ""
+"Your team has been registered for the tournament. To finalize the "
+"registration, please confirm it above."
+msgstr ""
+"Váš tým byl zaregistrován na turnaj. Pro dokončení registrace ji prosím "
+"potvrďte výše."
+
+#: ultihub/users/views.py
+msgid "Club switched successfully"
+msgstr "Klub úspěšně přepnut"
+
+#: ultihub/users/views.py
+msgid "Profile updated successfully"
+msgstr "Profil úspěšně upraven"
+
+#: ultihub/users/adapters.py
+msgid "Your email is not allowed to log in"
+msgstr "Váš email nemá povolení k přihlášení"
+
+#: ultihub/members/views.py
+msgid ""
+"The process of exporting members for %(season_name)s season has started. The "
+"file will be sent to your email."
+msgstr ""
+"Export členů pro sezónu %(season_name)s byl zahájen. Soubor bude odeslán na "
+"váš email."
+
+#. Forms
+#: ultihub/clubs/forms.py
+#: ultihub/members/templates/members/confirm_email.html
+msgid "Email"
+msgstr "Email"
+
+#: ultihub/clubs/forms.py
+msgid "Requires an email that is linked to a Google Account."
+msgstr "Vyžaduje email propojený s účtem Google."
+
+#: ultihub/members/forms.py
+msgid "All information about me is correct"
+msgstr "Všechny údaje o mně jsou správné"
+
+#: ultihub/members/forms.py
+msgid ""
+"If not, please contact the club administrator, wait for the data to be "
+"corrected, and then reopen this link."
+msgstr ""
+"Pokud ne, kontaktujte prosím správce klubu, počkejte na opravu údajů a poté "
+"znovu otevřete tento odkaz."
+
+#: ultihub/members/forms.py
+msgid "I agree to the processing of my personal data"
+msgstr "Souhlasím se zpracováním osobních údajů"
+
+#: ultihub/members/forms.py
+msgid "I agree to receive newsletters and marketing materials"
+msgstr "Souhlasím se zasíláním newsletterů a marketingových materiálů"
+
+#: ultihub/finance/forms.py
+msgid "Season"
+msgstr "Sezóna"
+
+#: ultihub/finance/forms.py
+msgid "Choose a season"
+msgstr "Vyberte sezónu"
+
+#: ultihub/finance/forms.py
+msgid "Select a season to calculate fees for."
+msgstr "Vyberte sezónu pro výpočet poplatků."
+
+#: ultihub/competitions/forms.py
+msgid "Not registered"
+msgstr "Neregistrováno"
+
+#: ultihub/competitions/forms.py
+msgid "Select tournament"
+msgstr "Vybrat turnaj"
+
+#: ultihub/competitions/forms.py
+#, python-format
+msgid "Registered: %(state)s"
+msgstr "Registrováno: %(state)s"
+
+#. Validation errors
+#: ultihub/tournaments/forms.py
+msgid "Member has not confirmed email"
+msgstr "Člen nemá potvrzený email"
+
+#: ultihub/tournaments/forms.py
+msgid "Men are not allowed in this division"
+msgstr "Muži nejsou povoleni v této divizi"
+
+#: ultihub/tournaments/forms.py
+msgid "Women are not allowed in this division"
+msgstr "Ženy nejsou povoleny v této divizi"
+
+#: ultihub/tournaments/forms.py
+msgid "Member does not meet age requirements"
+msgstr "Člen nesplňuje věkové požadavky"
+
+#: ultihub/tournaments/forms.py
+#, python-format
+msgid "Member is already in the roster: %(team_name)s"
+msgstr "Člen je již na soupisce: %(team_name)s"
+
+#: ultihub/tournaments/forms.py
+msgid "Nationality ratio: at least 51% must be Czech citizens"
+msgstr "Poměr národností: alespoň 51% musí být čeští občané"
+
+#: ultihub/tournaments/forms.py
+#: ultihub/international_tournaments/forms.py
+msgid "Team already has a captain."
+msgstr "Tým již má kapitána."
+
+#: ultihub/tournaments/forms.py
+#: ultihub/international_tournaments/forms.py
+msgid "Team already has a spirit captain."
+msgstr "Tým již má spirit kapitána."
+
+#: ultihub/international_tournaments/forms.py
+msgid "Member not found"
+msgstr "Člen nenalezen"
+
+#: ultihub/international_tournaments/forms.py
+msgid "Member is already in this team roster"
+msgstr "Člen je již na soupisce tohoto týmu"
+
+#: ultihub/international_tournaments/forms.py
+#, python-format
+msgid ""
+"Member is already in another team at this tournament: %(team_name)s"
+msgstr ""
+"Člen je již v jiném týmu na tomto turnaji: %(team_name)s"
+
+#: ultihub/international_tournaments/forms.py
+#, python-format
+msgid "Another player already has jersey number %(number)s."
+msgstr "Jiný hráč již má číslo dresu %(number)s."
+
+#: ultihub/clubs/forms.py
+msgid "Subject with this ID does not exist in Fakturoid."
+msgstr "Subjekt s tímto ID v systému Fakturoid neexistuje."
+
+#: ultihub/clubs/forms.py
+msgid "Must be Google account"
+msgstr "Musí být Google účet"
+
+#: ultihub/clubs/forms.py
+msgid "Agent with this email must log in first"
+msgstr "Správce s tímto emailem se musí nejprve přihlásit"
+
+#: ultihub/clubs/forms.py
+msgid "There is already an active team with this name"
+msgstr "Tým s tímto názvem již existuje"
+
+#. Privacy Policy
+#: ultihub/core/templates/core/partials/footer_base_info.html
+msgid "Privacy Policy"
+msgstr "Ochrana osobních údajů"
+
+#. Roster
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog_update_form.html
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog_add_form.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_update_form.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_add_form.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+#: ultihub/tournaments/templates/tournaments/components/roster-button.html
+msgid "Roster"
+msgstr "Soupiska"
+
+#. Tournaments page
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+msgid "Domestic tournaments"
+msgstr "Domácí turnaje"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+msgid "Rosters"
+msgstr "Soupisky"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid "Deadline"
+msgstr "Termín"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+msgid "Tournament"
+msgstr "Turnaj"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+msgid "Competition"
+msgstr "Soutěž"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+msgid "Location"
+msgstr "Místo"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+msgid "Date"
+msgstr "Datum"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+msgid "Total teams / members"
+msgstr "Celkem týmů / členů"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#: ultihub/finance/templates/finance/partials/season_fees_list.html
+msgid "Total"
+msgstr "Celkem"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+msgid "Winner"
+msgstr "Vítěz"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+msgid "SOTG"
+msgstr "SOTG"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+msgid "Your club has a team in this tournament"
+msgstr "Váš klub má tým na tomto turnaji"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#: ultihub/tournaments/templates/tournaments/tournament_detail.html
+#: ultihub/competitions/templates/competitions/competitions.html
+#: ultihub/competitions/templates/competitions/partials/competition_detail.html
+msgid "OPEN"
+msgstr "OTEVŘENO"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#: ultihub/tournaments/templates/tournaments/tournament_detail.html
+#: ultihub/competitions/templates/competitions/competitions.html
+#: ultihub/competitions/templates/competitions/partials/competition_detail.html
+msgid "CLOSED"
+msgstr "UZAVŘENO"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+msgid "No tournaments found."
+msgstr "Žádné turnaje nenalezeny."
+
+#. Tournament detail
+#: ultihub/tournaments/templates/tournaments/tournament_detail.html
+msgid "Export rosters"
+msgstr "Export soupisek"
+
+#: ultihub/tournaments/templates/tournaments/tournament_detail.html
+msgid "No teams have been assigned to the tournament yet."
+msgstr "Turnaji zatím nebyly přiřazeny žádné týmy."
+
+#. Tournament detail teams table
+#: ultihub/tournaments/templates/tournaments/partials/tournament_detail_teams_table.html
+msgid "Standing"
+msgstr "Pořadí"
+
+#: ultihub/tournaments/templates/tournaments/partials/tournament_detail_teams_table.html
+msgid "SOTG avg"
+msgstr "SOTG průměr"
+
+#: ultihub/tournaments/templates/tournaments/partials/tournament_detail_teams_table.html
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+msgid "Team"
+msgstr "Tým"
+
+#: ultihub/tournaments/templates/tournaments/partials/tournament_detail_teams_table.html
+msgid "Seeding"
+msgstr "Nasazení"
+
+#. International tournaments page
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+msgid "International tournaments"
+msgstr "Mezinárodní turnaje"
+
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+msgid "Czech teams"
+msgstr "České týmy"
+
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+msgid "Placement"
+msgstr "Umístění"
+
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+msgid "No teams registered yet."
+msgstr "Zatím nejsou zaregistrovány žádné týmy."
+
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+msgid "No international tournaments found."
+msgstr "Žádné mezinárodní turnaje nenalezeny."
+
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/filters.html
+#: ultihub/core/templates/core/partials/competition_filters.html
+msgid "Type"
+msgstr "Typ"
+
+#. International roster
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+msgid "member"
+msgstr "člen"
+
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+msgid "No members found in this roster."
+msgstr "Na soupisce nebyli nalezeni žádní členové."
+
+#. Filters
+#: ultihub/international_tournaments/templates/international_tournaments/partials/filters.html
+#: ultihub/core/templates/core/partials/competition_filters.html
+msgid "All seasons"
+msgstr "Všechny sezóny"
+
+#: ultihub/international_tournaments/templates/international_tournaments/partials/filters.html
+#: ultihub/core/templates/core/partials/competition_filters.html
+msgid "All environments"
+msgstr "Všechna prostředí"
+
+#: ultihub/international_tournaments/templates/international_tournaments/partials/filters.html
+msgid "All types"
+msgstr "Všechny typy"
+
+#: ultihub/international_tournaments/templates/international_tournaments/partials/filters.html
+#: ultihub/core/templates/core/partials/competition_filters.html
+msgid "All divisions"
+msgstr "Všechny divize"
+
+#: ultihub/international_tournaments/templates/international_tournaments/partials/filters.html
+#: ultihub/core/templates/core/partials/competition_filters.html
+msgid "No age limits"
+msgstr "Bez věkového omezení"
+
+#. Teams page
+#: ultihub/clubs/templates/clubs/teams.html
+#: ultihub/clubs/templates/clubs/partials/team_form.html
+msgid "Create team"
+msgstr "Vytvořit tým"
+
+#: ultihub/clubs/templates/clubs/partials/team_form.html
+msgid "Edit team"
+msgstr "Upravit tým"
+
+#: ultihub/clubs/templates/clubs/teams.html
+msgid ""
+"Additional teams are suitable if you want to register your B team for a "
+"tournament or if you occasionally want to register your club under a "
+"different name. For example, your junior's team might have a different name "
+"than the others, etc."
+msgstr ""
+"Další týmy jsou vhodné pokud chcete na turnaj zaregistrovat svůj B tým nebo "
+"pokud chcete příležitostně zaregistrovat svůj klub pod jiným názvem. "
+"Například tým juniorů může mít jiný název než ostatní, atd."
+
+#: ultihub/clubs/templates/clubs/teams.html
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Teams management is currently"
+msgstr "Správa týmů je momentálně"
+
+#: ultihub/clubs/templates/clubs/teams.html
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "disabled"
+msgstr "vypnuta"
+
+#: ultihub/clubs/templates/clubs/partials/team_list.html
+#: ultihub/competitions/templates/competitions/partials/application_list.html
+#: ultihub/competitions/templates/competitions/partials/competition_final_placements_dialog.html
+msgid "Team name"
+msgstr "Název týmu"
+
+#: ultihub/clubs/templates/clubs/partials/team_list.html
+msgid "Action"
+msgstr "Akce"
+
+#: ultihub/clubs/templates/clubs/partials/team_list.html
+#: ultihub/clubs/templates/clubs/partials/agent_list.html
+msgid "Primary"
+msgstr "Primární"
+
+#. Settings page
+#: ultihub/clubs/templates/clubs/settings.html
+#: ultihub/clubs/templates/clubs/partials/add_agent_form.html
+msgid "Add agent"
+msgstr "Přidat správce"
+
+#: ultihub/clubs/templates/clubs/settings.html
+msgid "Agents"
+msgstr "Správci"
+
+#. Agent list
+#: ultihub/clubs/templates/clubs/partials/agent_list.html
+msgid "Avatar"
+msgstr "Avatar"
+
+#: ultihub/clubs/templates/clubs/partials/agent_list.html
+msgid "Do you really want to remove this agent?"
+msgstr "Opravdu chcete odebrat tohoto správce?"
+
+#: ultihub/clubs/templates/clubs/components/team-action-buttons.html
+msgid "Do you really want to remove this team?"
+msgstr "Opravdu chcete odebrat tento tým?"
+
+#. Member list - YES/NO
+#: ultihub/clubs/templates/clubs/partials/member_list.html
+msgid "YES"
+msgstr "ANO"
+
+#: ultihub/clubs/templates/clubs/partials/member_list.html
+msgid "NO"
+msgstr "NE"
+
+#. Members page search
+#: ultihub/clubs/templates/clubs/members.html
+msgid "Search..."
+msgstr "Hledat..."
+
+#: ultihub/clubs/templates/clubs/members.html
+msgid "Search"
+msgstr "Hledat"
+
+#: ultihub/clubs/templates/clubs/members.html
+msgid "Sex filter"
+msgstr "Filtr pohlaví"
+
+#. Invoices page
+#: ultihub/clubs/templates/clubs/invoices.html
+msgid "FID"
+msgstr "FID"
+
+#: ultihub/clubs/templates/clubs/invoices.html
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Created at"
+msgstr "Vytvořeno"
+
+#: ultihub/clubs/templates/clubs/invoices.html
+msgid "State"
+msgstr "Stav"
+
+#: ultihub/clubs/templates/clubs/invoices.html
+msgid "Amount (CZK)"
+msgstr "Částka (CZK)"
+
+#: ultihub/clubs/templates/clubs/invoices.html
+msgid "Amount"
+msgstr "Částka"
+
+#: ultihub/clubs/templates/clubs/invoices.html
+msgid "Link"
+msgstr "Odkaz"
+
+#: ultihub/clubs/templates/clubs/invoices.html
+msgid "Here"
+msgstr "Zde"
+
+#: ultihub/clubs/templates/clubs/invoices.html
+msgid "No invoices found."
+msgstr "Žádné faktury nenalezeny."
+
+#. Transfers page
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Request transfer"
+msgstr "Žádost o přestup"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Transfers are currently"
+msgstr "Přestupy jsou momentálně"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Transfer request"
+msgstr "Žádost o přestup"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Transfer"
+msgstr "Přestup"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Requested by"
+msgstr "Žádal"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Approved by"
+msgstr "Schválil"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Requested at"
+msgstr "Požadováno"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Approved at"
+msgstr "Schváleno"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Updated at"
+msgstr "Aktualizováno"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "Birth date"
+msgstr "Datum narození"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+msgid "No transfers found."
+msgstr "Žádné přestupy nenalezeny."
+
+#. Transfer action buttons
+#: ultihub/members/templates/members/components/transfer-action-buttons.html
+msgid "Are you sure?"
+msgstr "Jste si jisti?"
+
+#: ultihub/members/templates/members/components/transfer-action-buttons.html
+msgid "Approve"
+msgstr "Schválit"
+
+#: ultihub/members/templates/members/components/transfer-action-buttons.html
+msgid "Reject"
+msgstr "Zamítnout"
+
+#: ultihub/members/templates/members/components/transfer-action-buttons.html
+msgid "Revoke"
+msgstr "Zrušit"
+
+#. Notifications
+#: ultihub/clubs/templates/clubs/partials/notifications_dialog.html
+msgid "Club's notifications"
+msgstr "Oznámení klubu"
+
+#: ultihub/clubs/templates/clubs/partials/notifications_dialog.html
+msgid "UNREAD"
+msgstr "NEPŘEČTENO"
+
+#: ultihub/clubs/templates/clubs/partials/notifications_dialog.html
+msgid "No notifications"
+msgstr "Žádná oznámení"
+
+#: ultihub/clubs/templates/clubs/partials/notifications_dialog.html
+msgid "Mark as read"
+msgstr "Označit jako přečtené"
+
+#. Competitions page
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid ""
+"Are you sure you don't want to register any more teams for now? It's always "
+"better to have fewer invoices than more."
+msgstr ""
+"Opravdu nechcete zaregistrovat další týmy? Vždy je lepší mít méně faktur "
+"než více."
+
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid "Confirm registration"
+msgstr "Potvrdit registraci"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid "total"
+msgstr "celkem"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid ""
+"Your club has no financial settings. You are not allowed to register any "
+"teams. Please"
+msgstr ""
+"Váš klub nemá nastavené finanční údaje. Nemáte povolení registrovat žádné "
+"týmy. Prosím"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid "contact the administrator"
+msgstr "kontaktujte administrátora"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid "Registration"
+msgstr "Registrace"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid "Deposit"
+msgstr "Záloha"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid "per team"
+msgstr "za tým"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid "Season fee"
+msgstr "Sezónní poplatek"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid "AWAITING PAYMENT"
+msgstr "ČEKÁ NA PLATBU"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+#: ultihub/competitions/templates/competitions/partials/competition_detail.html
+msgid "Registration deadline"
+msgstr "Termín registrace"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+msgid "No competitions found."
+msgstr "Žádné soutěže nenalezeny."
+
+#. Competition detail
+#: ultihub/competitions/templates/competitions/partials/competition_detail.html
+msgid "General"
+msgstr "Obecné"
+
+#: ultihub/competitions/templates/competitions/partials/competition_detail.html
+msgid "Registered teams"
+msgstr "Zaregistrované týmy"
+
+#: ultihub/competitions/templates/competitions/partials/competition_detail.html
+msgid "Deposit per team"
+msgstr "Záloha za tým"
+
+#: ultihub/competitions/templates/competitions/partials/competition_detail.html
+msgid "Player's season fee (tier)"
+msgstr "Sezónní poplatek hráče (úroveň)"
+
+#: ultihub/competitions/templates/competitions/partials/competition_detail.html
+msgid "Player's fee at tournament"
+msgstr "Poplatek hráče na turnaji"
+
+#. Competition action buttons
+#: ultihub/competitions/templates/competitions/components/competition-action-buttons.html
+msgid "Registrations"
+msgstr "Registrace"
+
+#. Competition registration form
+#: ultihub/competitions/templates/competitions/partials/registration_form.html
+msgid ""
+"After registering, it is necessary to generate an invoice and complete the "
+"payment. The registration will not be finalized until the payment is "
+"received in the association's account."
+msgstr ""
+"Po registraci je nutné vygenerovat fakturu a provést platbu. Registrace "
+"nebude dokončena, dokud platba nebude přijata na účet asociace."
+
+#: ultihub/competitions/templates/competitions/partials/registration_form.html
+msgid ""
+"If you need to cancel the registration of an already invoiced team, please "
+"contact the association. This action cannot be completed in the application "
+"at this time."
+msgstr ""
+"Pokud potřebujete zrušit registraci již fakturovaného týmu, kontaktujte "
+"prosím asociaci. Tuto akci momentálně nelze provést v aplikaci."
+
+#. Application list
+#: ultihub/competitions/templates/competitions/partials/application_list.html
+msgid "Add team"
+msgstr "Přidat tým"
+
+#: ultihub/competitions/templates/competitions/partials/application_list.html
+msgid "Registration time"
+msgstr "Čas registrace"
+
+#. Final placements
+#: ultihub/competitions/templates/competitions/partials/competition_final_placements_dialog.html
+msgid "Final placements"
+msgstr "Konečné umístění"
+
+#: ultihub/competitions/templates/competitions/partials/competition_final_placements_dialog.html
+msgid "Rank"
+msgstr "Pořadí"
+
+#. Season fees
+#: ultihub/finance/templates/finance/partials/season_fees_list.html
+msgid "Fee (CZK)"
+msgstr "Poplatek (CZK)"
+
+#: ultihub/finance/templates/finance/partials/season_fees_list.html
+msgid "Total regular / discounted tournaments"
+msgstr "Celkem řádné / zvýhodněné turnaje"
+
+#. Season fees member detail
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+msgid "Fee Type"
+msgstr "Typ poplatku"
+
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+msgid "Fee type"
+msgstr "Typ poplatku"
+
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+msgid "Free"
+msgstr "Zdarma"
+
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+msgid "Discounted"
+msgstr "Zvýhodněný"
+
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+msgid "Regular"
+msgstr "Řádný"
+
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+msgid "No tournaments found for this member in this season."
+msgstr "Pro tohoto člena nebyly v této sezóně nalezeny žádné turnaje."
+
+#. NSA Export
+#: ultihub/members/templates/members/partials/nsa_export_modal.html
+#: ultihub/members/templates/members/components/members-action-buttons.html
+msgid "NSA Export"
+msgstr "Export pro NSA"
+
+#: ultihub/members/templates/members/partials/nsa_export_modal.html
+msgid "Select the season for which you want to export member data:"
+msgstr "Vyberte sezónu, pro kterou chcete exportovat data členů:"
+
+#: ultihub/members/templates/members/partials/nsa_export_modal.html
+msgid "Send Export"
+msgstr "Odeslat export"
+
+#. Coach licences
+#: ultihub/members/templates/members/partials/coach_licence_list.html
+msgid "Coach licences"
+msgstr "Trenérské licence"
+
+#: ultihub/members/templates/members/partials/coach_licence_list.html
+msgid "Class"
+msgstr "Třída"
+
+#: ultihub/members/templates/members/partials/coach_licence_list.html
+msgid "Valid from"
+msgstr "Platná od"
+
+#: ultihub/members/templates/members/partials/coach_licence_list.html
+msgid "Valid to"
+msgstr "Platná do"
+
+#: ultihub/members/templates/members/partials/coach_licence_list.html
+msgid "No coach licences found."
+msgstr "Žádné trenérské licence nenalezeny."
+
+#. Member search
+#: ultihub/members/templates/members/partials/member_search.html
+msgid "Search members..."
+msgstr "Hledat členy..."
+
+#: ultihub/members/templates/members/partials/member_search.html
+msgid "No members found matching your search"
+msgstr "Nebyli nalezeni žádní členové odpovídající vašemu hledání"
+
+#. Confirm email page
+#: ultihub/members/templates/members/confirm_email.html
+msgid "Check your data. Then read and confirm the terms and conditions."
+msgstr "Zkontrolujte své údaje. Poté si přečtěte a potvrďte podmínky."
+
+#: ultihub/members/templates/members/confirm_email.html
+msgid "Data to confirm"
+msgstr "Údaje k potvrzení"
+
+#: ultihub/members/templates/members/confirm_email.html
+msgid "Full name"
+msgstr "Celé jméno"
+
+#: ultihub/members/templates/members/confirm_email.html
+msgid "Birth number"
+msgstr "Rodné číslo"
+
+#: ultihub/members/templates/members/confirm_email.html
+msgid "Address"
+msgstr "Adresa"
+
+#: ultihub/members/templates/members/confirm_email.html
+msgid "Legal guardian full name"
+msgstr "Celé jméno zákonného zástupce"
+
+#: ultihub/members/templates/members/confirm_email.html
+msgid "Legal guardian email"
+msgstr "Email zákonného zástupce"
+
+#. Member form hints
+#: ultihub/members/templates/members/partials/member_form.html
+msgid ""
+"For members under 15 years old, the consent link for personal data "
+"processing will be sent to the legal guardian's email."
+msgstr ""
+"Pro členy mladší 15 let bude odkaz pro souhlas se zpracováním osobních údajů "
+"odeslán na email zákonného zástupce."
+
+#: ultihub/members/templates/members/partials/member_form.html
+msgid ""
+"If the member is a foreigner permanently residing in the Czech Republic, it "
+"is mandatory to provide a Czech address."
+msgstr ""
+"Pokud je člen cizinec s trvalým pobytem v České republice, je povinné uvést "
+"českou adresu."
+
+#. Season fees page
+#: ultihub/clubs/templates/clubs/season_fees.html
+msgid ""
+"This overview is intended for monitoring during the season only. At the end "
+"of the season, an invoice will be automatically generated, and you will be "
+"notified about its issuance."
+msgstr ""
+"Tento přehled slouží pouze pro sledování v průběhu sezóny. Na konci sezóny "
+"bude automaticky vygenerována faktura a budete upozorněni na její vystavení."
+
+#. Users profile page
+#: ultihub/users/templates/users/profile.html
+msgid "Personal profile"
+msgstr "Osobní profil"
+
+#. Homepage
+#: ultihub/core/templates/core/homepage.html
+msgid "Homepage"
+msgstr "Hlavní stránka"
+
+#. Privacy policy page - already in Czech
+#: ultihub/core/templates/core/privacy-policy.html
+msgid "Ochrana osobních údajů"
+msgstr "Ochrana osobních údajů"
+
+#: ultihub/core/templates/core/privacy-policy.html
+msgid "Sledování chyb (Sentry)"
+msgstr "Sledování chyb (Sentry)"
+
+#: ultihub/core/templates/core/privacy-policy.html
+msgid ""
+"Pro zajištění stability aplikace používáme službu <strong>Sentry.io</"
+"strong>. V případě chyby se mohou odesílat technické údaje a váš e-mail "
+"(pokud jste přihlášeni). Data jsou uchovávána 90 dní. Právním základem je "
+"oprávněný zájem na zajištění technického provozu."
+msgstr ""
+"Pro zajištění stability aplikace používáme službu <strong>Sentry.io</"
+"strong>. V případě chyby se mohou odesílat technické údaje a váš e-mail "
+"(pokud jste přihlášeni). Data jsou uchovávána 90 dní. Právním základem je "
+"oprávněný zájem na zajištění technického provozu."
+
+#: ultihub/core/templates/core/privacy-policy.html
+msgid "Monitoring (Datadog)"
+msgstr "Monitoring (Datadog)"
+
+#: ultihub/core/templates/core/privacy-policy.html
+msgid ""
+"Pro sledování výkonu a provozu aplikace používáme službu <strong>Datadog</"
+"strong>. Do Datadogu se mohou odesílat technické údaje o provozu aplikace "
+"(např. IP adresa, časové značky, informace o prohlížeči). Tyto údaje slouží "
+"pouze k analýze výkonu a stability. Právním základem je oprávněný zájem na "
+"zajištění provozu a bezpečnosti."
+msgstr ""
+"Pro sledování výkonu a provozu aplikace používáme službu <strong>Datadog</"
+"strong>. Do Datadogu se mohou odesílat technické údaje o provozu aplikace "
+"(např. IP adresa, časové značky, informace o prohlížeči). Tyto údaje slouží "
+"pouze k analýze výkonu a stability. Právním základem je oprávněný zájem na "
+"zajištění provozu a bezpečnosti."
+
+#. Blocktrans entries
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#, python-format
+msgid "Roster: %(team)s"
+msgstr "Soupiska: %(team)s"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+#, python-format
+msgid "Jersey number: %(number)s"
+msgstr "Číslo dresu: %(number)s"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+#: ultihub/tournaments/templates/tournaments/partials/tournament_detail_teams_table.html
+#, python-format
+msgid "Club: %(club)s"
+msgstr "Klub: %(club)s"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#: ultihub/international_tournaments/templates/international_tournaments/partials/international_roster_dialog.html
+#, python-format
+msgid "Birth year: %(year)s"
+msgstr "Rok narození: %(year)s"
+
+#: ultihub/tournaments/templates/tournaments/partials/roster_dialog.html
+#, python-format
+msgid "Added at: %(date)s"
+msgstr "Přidáno: %(date)s"
+
+#: ultihub/tournaments/templates/tournaments/partials/tournament_detail_teams_table.html
+#, python-format
+msgid "Standing: %(placement)s"
+msgstr "Pořadí: %(placement)s"
+
+#: ultihub/tournaments/templates/tournaments/partials/tournament_detail_teams_table.html
+#, python-format
+msgid "SOTG avg: %(avg)s"
+msgstr "SOTG průměr: %(avg)s"
+
+#: ultihub/tournaments/templates/tournaments/partials/tournament_detail_teams_table.html
+#, python-format
+msgid "Seeding: %(seed)s"
+msgstr "Nasazení: %(seed)s"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#: ultihub/tournaments/templates/tournaments/tournament_detail.html
+#, python-format
+msgid "Rosters deadline: %(deadline)s"
+msgstr "Termín soupisek: %(deadline)s"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#: ultihub/tournaments/templates/tournaments/tournament_detail.html
+#, python-format
+msgid "Total teams/members: %(teams)s/%(members)s"
+msgstr "Celkem týmů/členů: %(teams)s/%(members)s"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#, python-format
+msgid "Winner: %(winner)s"
+msgstr "Vítěz: %(winner)s"
+
+#: ultihub/tournaments/templates/tournaments/tournaments.html
+#, python-format
+msgid "Spirit: %(spirit)s"
+msgstr "Spirit: %(spirit)s"
+
+#: ultihub/international_tournaments/templates/international_tournaments/international_tournaments.html
+#, python-format
+msgid "from %(total)s"
+msgstr "z %(total)s"
+
+#: ultihub/competitions/templates/competitions/partials/application_list.html
+#, python-format
+msgid "%(comp)s: Registration"
+msgstr "%(comp)s: Registrace"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+#, python-format
+msgid "Deposit: CZK %(deposit)s"
+msgstr "Záloha: %(deposit)s Kč"
+
+#: ultihub/competitions/templates/competitions/competitions.html
+#, python-format
+msgid "Season fee: CZK %(fee)s"
+msgstr "Sezónní poplatek: %(fee)s Kč"
+
+#: ultihub/finance/templates/finance/partials/season_fees_list.html
+#, python-format
+msgid "Season %(name)s"
+msgstr "Sezóna %(name)s"
+
+#: ultihub/finance/templates/finance/partials/season_fees_list.html
+#, python-format
+msgid "Total amount: <b>CZK %(amount)s</b>"
+msgstr "Celková částka: <b>%(amount)s Kč</b>"
+
+#: ultihub/finance/templates/finance/partials/season_fees_list.html
+#, python-format
+msgid "Birth date: %(date)s"
+msgstr "Datum narození: %(date)s"
+
+#: ultihub/finance/templates/finance/partials/season_fees_list.html
+#, python-format
+msgid "Fee: <b>CZK %(amount)s</b>"
+msgstr "Poplatek: <b>%(amount)s Kč</b>"
+
+#: ultihub/finance/templates/finance/partials/season_fees_list.html
+#, python-format
+msgid "Regular tournaments: %(count)s"
+msgstr "Řádné turnaje: %(count)s"
+
+#: ultihub/finance/templates/finance/partials/season_fees_list.html
+#, python-format
+msgid "Discounted tournaments: %(count)s"
+msgstr "Zvýhodněné turnaje: %(count)s"
+
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+#, python-format
+msgid "Season %(season)s: %(member)s"
+msgstr "Sezóna %(season)s: %(member)s"
+
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+#, python-format
+msgid "Location: %(location)s"
+msgstr "Místo: %(location)s"
+
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+#, python-format
+msgid "Date: %(from)s - %(to)s"
+msgstr "Datum: %(from)s - %(to)s"
+
+#: ultihub/finance/templates/finance/partials/season_fees_member_detail_modal.html
+#, python-format
+msgid "Team: %(team)s"
+msgstr "Tým: %(team)s"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+#, python-format
+msgid "Transfer: <b>%(source)s → %(target)s</b>"
+msgstr "Přestup: <b>%(source)s → %(target)s</b>"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+#, python-format
+msgid "Requested by: %(first_name)s %(last_name)s (%(club)s)"
+msgstr "Požádal: %(first_name)s %(last_name)s (%(club)s)"
+
+#: ultihub/clubs/templates/clubs/transfers.html
+#, python-format
+msgid "Approved by: %(first_name)s %(last_name)s (%(club)s)"
+msgstr "Schválil: %(first_name)s %(last_name)s (%(club)s)"
+
+#: ultihub/clubs/templates/clubs/partials/agent_list.html
+#, python-format
+msgid "Invited by %(name)s"
+msgstr "Pozván uživatelem %(name)s"
+
+#: ultihub/members/templates/members/partials/nsa_export_modal.html
+#, python-format
+msgid "The CSV file will be sent to your email address %(email)s."
+msgstr "CSV soubor bude odeslán na vaši emailovou adresu %(email)s."

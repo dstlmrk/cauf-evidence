@@ -2,6 +2,7 @@ from typing import Any
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from finance.clients.fakturoid import NotFoundError, fakturoid_client
 from users.models import NewAgentRequest
 
@@ -49,8 +50,8 @@ class TeamForm(forms.ModelForm):
 
 class AddAgentForm(forms.Form):
     email = forms.EmailField(
-        label="Email",
-        help_text="Requires an email that is linked to a Google Account.",
+        label=_("Email"),
+        help_text=_("Requires an email that is linked to a Google Account."),
         max_length=48,
         required=True,
     )
@@ -71,14 +72,16 @@ class ClubAdminForm(forms.ModelForm):
                 subject_data = fakturoid_client.get_subject_detail(value)
                 self.instance._fakturoid_subject_name = subject_data["name"]
             except NotFoundError as ex:
-                raise ValidationError("Subject with this ID does not exist in Fakturoid.") from ex
+                raise ValidationError(
+                    _("Subject with this ID does not exist in Fakturoid.")
+                ) from ex
         return value
 
 
 class CreateClubForm(ClubAdminForm):
     primary_agent_email = forms.EmailField(
         required=False,  # temporary solution
-        help_text="Must be Google account",
+        help_text=_("Must be Google account"),
     )
 
     def clean(self) -> None:
@@ -93,9 +96,9 @@ class CreateClubForm(ClubAdminForm):
             ).exists()
         ):
             raise ValidationError(
-                {"primary_agent_email": "Agent with this email must log in first"},
+                {"primary_agent_email": _("Agent with this email must log in first")},
             )
         if Team.objects.filter(name=team_name, is_active=True).exists():
             raise ValidationError(
-                {"name": "There is already an active team with this name"},
+                {"name": _("There is already an active team with this name")},
             )

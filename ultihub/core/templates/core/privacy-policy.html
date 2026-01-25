@@ -1,7 +1,8 @@
 {% extends "core/base.html" %}
+{% load i18n %}
 {% load humanize %}
 
-{% block title %}<h1>Ochrana osobních údajů</h1>{% endblock %}
+{% block title %}<h1>{% trans "Ochrana osobních údajů" %}</h1>{% endblock %}
 
 {% block content %}
     <p>
@@ -11,17 +12,13 @@
         >.
     </p>
 
-    <h2>Sledování chyb (Sentry)</h2>
+    <h2>{% trans "Sledování chyb (Sentry)" %}</h2>
     <p>
-        Pro zajištění stability aplikace používáme službu <strong>Sentry.io</strong>. V případě chyby se mohou odesílat
-        technické údaje a váš e-mail (pokud jste přihlášeni). Data jsou uchovávána 90 dní. Právním základem je oprávněný
-        zájem na zajištění technického provozu.
+        {% trans "Pro zajištění stability aplikace používáme službu <strong>Sentry.io</strong>. V případě chyby se mohou odesílat technické údaje a váš e-mail (pokud jste přihlášeni). Data jsou uchovávána 90 dní. Právním základem je oprávněný zájem na zajištění technického provozu." %}
     </p>
 
-    <h2>Monitoring (Datadog)</h2>
+    <h2>{% trans "Monitoring (Datadog)" %}</h2>
     <p>
-        Pro sledování výkonu a provozu aplikace používáme službu <strong>Datadog</strong>. Do Datadogu se mohou odesílat
-        technické údaje o provozu aplikace (např. IP adresa, časové značky, informace o prohlížeči). Tyto údaje slouží
-        pouze k analýze výkonu a stability. Právním základem je oprávněný zájem na zajištění provozu a bezpečnosti.
+        {% trans "Pro sledování výkonu a provozu aplikace používáme službu <strong>Datadog</strong>. Do Datadogu se mohou odesílat technické údaje o provozu aplikace (např. IP adresa, časové značky, informace o prohlížeči). Tyto údaje slouží pouze k analýze výkonu a stability. Právním základem je oprávněný zájem na zajištění provozu a bezpečnosti." %}
     </p>
 {% endblock %}

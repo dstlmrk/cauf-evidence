@@ -1,7 +1,8 @@
 {% extends "core/base.html" %}
 {% load humanize %}
+{% load i18n %}
 
-{% block title %}<h1>Competitions</h1>{% endblock %}
+{% block title %}<h1>{% trans "Competitions" %}</h1>{% endblock %}
 
 {% block buttons %}
     {% if request.session.club %}
@@ -10,13 +11,13 @@
             class="btn btn-success position-relative"
             hx-post="{% url 'finance:invoices' %}"
             hx-trigger="click"
-            hx-confirm="Are you sure you don't want to register any more teams for now? It's always better to have fewer invoices than more. 🙂"
+            hx-confirm="{% trans "Are you sure you don't want to register any more teams for now? It's always better to have fewer invoices than more." %}"
             hx-swap="none"
             {% if not club_application_without_invoice_total or is_unset_fakturoid_id %}disabled{% endif %}
         >
-            <i class="bi bi-receipt-cutoff"></i> Confirm registration
+            <i class="bi bi-receipt-cutoff"></i> {% trans "Confirm registration" %}
             <span class="position-absolute top-0 translate-middle badge rounded-pill bg-dark">
-                {{ club_application_without_invoice_total }} total
+                {{ club_application_without_invoice_total }} {% trans "total" %}
             </span>
         </button>
     {% endif %}
@@ -26,8 +27,7 @@
 
     {% if is_unset_fakturoid_id %}
         <div class="alert alert-warning " role="alert">
-            <i class="bi bi-exclamation-octagon-fill me-1"></i> Your club has no financial settings. You are not allowed
-            to register any teams. Please <b>contact the administrator</b>.
+            <i class="bi bi-exclamation-octagon-fill me-1"></i> {% trans "Your club has no financial settings. You are not allowed to register any teams. Please" %} <b>{% trans "contact the administrator" %}</b>.
         </div>
     {% endif %}
 
@@ -39,11 +39,11 @@
             <table class="table align-middle">
                 <thead>
                     <tr class="align-middle">
-                        <th scope="col">Registration<br /><small class="text-muted">Deadline</small></th>
-                        <th scope="col">Season</th>
-                        <th scope="col">Competition</th>
-                        <th scope="col">Deposit<br />per team</th>
-                        <th scope="col">Season fee</th>
+                        <th scope="col">{% trans "Registration" %}<br /><small class="text-muted">{% trans "Deadline" %}</small></th>
+                        <th scope="col">{% trans "Season" %}</th>
+                        <th scope="col">{% trans "Competition" %}</th>
+                        <th scope="col">{% trans "Deposit" %}<br />{% trans "per team" %}</th>
+                        <th scope="col">{% trans "Season fee" %}</th>
                         <th scope="col" class="text-end"></th>
                     </tr>
                 </thead>
@@ -52,12 +52,12 @@
                         <tr>
                             <td class="fit pe-5">
                                 {% if competition.has_open_registration %}
-                                    <span class="badge text-bg-success">OPEN</span>
+                                    <span class="badge text-bg-success">{% trans "OPEN" %}</span>
                                     {% if competition.has_awaiting_payment %}
-                                        <span class="badge text-bg-danger">AWAITING PAYMENT</span>
+                                        <span class="badge text-bg-danger">{% trans "AWAITING PAYMENT" %}</span>
                                     {% endif %}
                                 {% else %}
-                                    <span class="badge text-bg-dark">CLOSED</span>
+                                    <span class="badge text-bg-dark">{% trans "CLOSED" %}</span>
                                 {% endif %}
                                 <br />
                                 <small class="text-muted"
@@ -112,22 +112,22 @@
                             </div>
                             <div>
                                 {% if competition.has_open_registration %}
-                                    <span class="badge text-bg-success">OPEN</span>
+                                    <span class="badge text-bg-success">{% trans "OPEN" %}</span>
                                 {% else %}
-                                    <span class="badge text-bg-dark">CLOSED</span>
+                                    <span class="badge text-bg-dark">{% trans "CLOSED" %}</span>
                                 {% endif %}
                             </div>
                         </div>
-                        <div>Registration deadline: {{ competition.registration_deadline | date:'d/m/Y H:i' }}</div>
+                        <div>{% trans "Registration deadline" %}: {{ competition.registration_deadline | date:'d/m/Y H:i' }}</div>
                         <div>
-                            Deposit: CZK {{ competition.deposit | floatformat:0 }}
+                            {% blocktrans with deposit=competition.deposit|floatformat:0 %}Deposit: CZK {{ deposit }}{% endblocktrans %}
                             {% if competition.has_awaiting_payment %}
                                 <span style="position: relative; top: -2px;" class="badge text-bg-danger"
-                                    >AWAITING PAYMENT</span
+                                    >{% trans "AWAITING PAYMENT" %}</span
                                 >
                             {% endif %}
                         </div>
-                        <div>Season fee: CZK {{ competition.season_fee | floatformat:0 }}</div>
+                        <div>{% blocktrans with fee=competition.season_fee|floatformat:0 %}Season fee: CZK {{ fee }}{% endblocktrans %}</div>
                         <div class="mt-2 mb-1">
                             {% include "competitions/components/competition-action-buttons.html" %}
                         </div>
@@ -137,7 +137,7 @@
         </div>
     {% else %}
         <div class="alert alert-primary" role="alert">
-            <i class="bi bi-info-circle-fill me-1"></i> No competitions found.
+            <i class="bi bi-info-circle-fill me-1"></i> {% trans "No competitions found." %}
         </div>
     {% endif %}
 {% endblock %}

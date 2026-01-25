@@ -1,6 +1,7 @@
+{% load i18n %}
 <div class="modal-content">
     <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-person"></i> Roster</h5>
+        <h5 class="modal-title"><i class="bi bi-person"></i> {% trans "Roster" %}</h5>
     </div>
     <div class="modal-body">
         {% load crispy_forms_tags %}
@@ -23,7 +24,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
         <button
             type="submit"
             class="btn btn-primary"
@@ -31,7 +32,7 @@
             x-data
             x-init="setInterval(() => { $el.disabled = !document.querySelector('#id_member_id').value }, 100)"
         >
-            Submit
+            {% trans "Submit" %}
         </button>
     </div>
 </div>

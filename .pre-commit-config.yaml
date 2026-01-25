@@ -19,3 +19,9 @@ repos:
         pass_filenames: false
         language: system
         types: [file, python]
+      - id: translations-check
+        name: translations-check
+        entry: uv run poe translations-check
+        pass_filenames: false
+        language: system
+        files: \.(po|py|html)$

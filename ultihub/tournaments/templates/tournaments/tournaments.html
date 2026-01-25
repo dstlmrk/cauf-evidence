@@ -1,7 +1,8 @@
 {% extends "core/base.html" %}
+{% load i18n %}
 {% load humanize %}
 
-{% block title %}<h1>Domestic tournaments</h1>{% endblock %}
+{% block title %}<h1>{% trans "Domestic tournaments" %}</h1>{% endblock %}
 
 {% block content %}
     <!-- Filters -->
@@ -13,14 +14,14 @@
                 <thead>
                     <tr class="align-middle">
                         <th scope="col"></th>
-                        <th scope="col">Rosters<br /><small class="text-muted">Deadline</small></th>
-                        <th scope="col">Season</th>
-                        <th scope="col">Tournament<br /><small class="text-muted">Competition</small></th>
-                        <th scope="col">Location<br /><small class="text-muted">Date</small></th>
+                        <th scope="col">{% trans "Rosters" %}<br /><small class="text-muted">{% trans "Deadline" %}</small></th>
+                        <th scope="col">{% trans "Season" %}</th>
+                        <th scope="col">{% trans "Tournament" %}<br /><small class="text-muted">{% trans "Competition" %}</small></th>
+                        <th scope="col">{% trans "Location" %}<br /><small class="text-muted">{% trans "Date" %}</small></th>
                         <th scope="col" class="fit pe-5 text-center">
-                            <div data-bs-toggle="tooltip" data-bs-title="Total teams / members">Total<br />T / M</div>
+                            <div data-bs-toggle="tooltip" data-bs-title="{% trans "Total teams / members" %}">{% trans "Total" %}<br />T / M</div>
                         </th>
-                        <th scope="col">Winner<br /><small class="text-muted">SOTG</small></th>
+                        <th scope="col">{% trans "Winner" %}<br /><small class="text-muted">{% trans "SOTG" %}</small></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,15 +33,15 @@
                                         class="bi bi-check"
                                         style="color: green;"
                                         data-bs-toggle="tooltip"
-                                        data-bs-title="Your club has a team in this tournament"
+                                        data-bs-title="{% trans "Your club has a team in this tournament" %}"
                                     ></i>
                                 {% endif %}
                             </td>
                             <td>
                                 {% if tournament.has_open_rosters %}
-                                    <span class="badge text-bg-success">OPEN</span>
+                                    <span class="badge text-bg-success">{% trans "OPEN" %}</span>
                                 {% else %}
-                                    <span class="badge text-bg-dark">CLOSED</span>
+                                    <span class="badge text-bg-dark">{% trans "CLOSED" %}</span>
                                 {% endif %}
                                 <br />
                                 <small class="text-muted">{{ tournament.rosters_deadline | date:'d/m/Y H:i' }}</small>
@@ -129,9 +130,9 @@
                             </div>
                             <div>
                                 {% if tournament.has_open_rosters %}
-                                    <span class="badge text-bg-success">OPEN</span>
+                                    <span class="badge text-bg-success">{% trans "OPEN" %}</span>
                                 {% else %}
-                                    <span class="badge text-bg-dark">CLOSED</span>
+                                    <span class="badge text-bg-dark">{% trans "CLOSED" %}</span>
                                 {% endif %}
                             </div>
                         </div>
@@ -142,13 +143,13 @@
                             {{ tournament.location }} • {{ tournament.start_date | date:'d.m.Y' }} -
                             {{ tournament.end_date | date:'d.m.Y' }}
                         </div>
-                        <div>Rosters deadline: {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}</div>
-                        <div>Total teams/members: {{ tournament.team_count }}/{{ tournament.member_count }}</div>
+                        <div>{% blocktrans with deadline=tournament.rosters_deadline|date:'d/m/Y H:i' %}Rosters deadline: {{ deadline }}{% endblocktrans %}</div>
+                        <div>{% blocktrans with teams=tournament.team_count members=tournament.member_count %}Total teams/members: {{ teams }}/{{ members }}{% endblocktrans %}</div>
                         {% if tournament.winner_team %}
-                            <div>Winner: {{ tournament.winner_team.application.team_name }}</div>
+                            <div>{% blocktrans with winner=tournament.winner_team.application.team_name %}Winner: {{ winner }}{% endblocktrans %}</div>
                         {% endif %}
                         {% if tournament.sotg_winner_team %}
-                            <div>Spirit: {{ tournament.sotg_winner_team.application.team_name }}</div>
+                            <div>{% blocktrans with spirit=tournament.sotg_winner_team.application.team_name %}Spirit: {{ spirit }}{% endblocktrans %}</div>
                         {% endif %}
                     </div>
                 {% endfor %}
@@ -156,7 +157,7 @@
         </div>
     {% else %}
         <div class="alert alert-primary" role="alert">
-            <i class="bi bi-info-circle-fill me-1"></i> No tournaments found.
+            <i class="bi bi-info-circle-fill me-1"></i> {% trans "No tournaments found." %}
         </div>
     {% endif %}
 {% endblock %}

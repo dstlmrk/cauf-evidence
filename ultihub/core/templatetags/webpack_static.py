@@ -3,7 +3,6 @@ from pathlib import Path
 
 from django import template
 from django.conf import settings
-
 from ultihub.settings import ENVIRONMENT
 
 register = template.Library()

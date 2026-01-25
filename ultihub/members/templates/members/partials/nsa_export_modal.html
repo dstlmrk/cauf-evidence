@@ -1,15 +1,16 @@
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 <form hx-post="{% url 'members:export_members_csv_for_nsa' %}" class="modal-content">
     {% csrf_token %}
     <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-box-arrow-up"></i> NSA Export</h5>
+        <h5 class="modal-title"><i class="bi bi-box-arrow-up"></i> {% trans "NSA Export" %}</h5>
     </div>
     <div class="modal-body">
         <div class="mb-3">
-            <p>Select the season for which you want to export member data:</p>
+            <p>{% trans "Select the season for which you want to export member data:" %}</p>
             <select name="season_id" class="form-select" required>
-                <option value="">Choose a season</option>
+                <option value="">{% trans "Choose a season" %}</option>
                 {% for season in seasons %}
                     <option value="{{ season.id }}" {% if season.id == last_season.id %}selected{% endif %}>
                         {{ season.name }}
@@ -17,10 +18,10 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="alert alert-primary">The CSV file will be sent to your email address {{ user.email }}.</div>
+        <div class="alert alert-primary">{% blocktrans with email=user.email %}The CSV file will be sent to your email address {{ email }}.{% endblocktrans %}</div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary"><i class="bi bi-envelope"></i> Send Export</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-envelope"></i> {% trans "Send Export" %}</button>
     </div>
 </form>

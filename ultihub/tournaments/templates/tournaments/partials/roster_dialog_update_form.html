@@ -1,7 +1,8 @@
 {% load crispy_forms_tags %}
+{% load i18n %}
 <div class="modal-content">
     <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-person"></i> Roster</h5>
+        <h5 class="modal-title"><i class="bi bi-person"></i> {% trans "Roster" %}</h5>
     </div>
     <form hx-post="{{ request.path }}">
         <div class="modal-body">
@@ -9,8 +10,8 @@
             {{ form | crispy }}
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+            <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
         </div>
     </form>
 </div>

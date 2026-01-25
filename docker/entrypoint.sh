@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Compile translation message files
+python manage.py compilemessages
+
 # Collect all static files to the root directory
 python manage.py collectstatic --no-input
 

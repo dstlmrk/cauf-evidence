@@ -6,6 +6,7 @@ from allauth.socialaccount.models import SocialLogin
 from django.contrib import messages
 from django.http import HttpRequest
 from django.shortcuts import redirect
+from django.utils.translation import gettext as _
 
 from users.models import Agent, NewAgentRequest
 
@@ -24,5 +25,5 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
                 logger.info("User %s is invited to be agent and has logged in", google_email)
             except NewAgentRequest.DoesNotExist:
                 logger.info("User %s is not allowed to log in", google_email)
-                messages.error(request, "Your email is not allowed to log in")
+                messages.error(request, _("Your email is not allowed to log in"))
                 raise ImmediateHttpResponse(redirect("home")) from None

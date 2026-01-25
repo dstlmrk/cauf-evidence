@@ -9,6 +9,7 @@ from django.db import transaction
 from django.db.models import Exists, OuterRef, Prefetch
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
 from competitions.enums import ApplicationStateEnum, EnvironmentEnum
@@ -109,7 +110,7 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
 
             messages.success(
                 request,
-                (
+                _(
                     "Your team has been registered for the tournament. "
                     "To finalize the registration, please confirm it above."
                 ),
@@ -160,7 +161,7 @@ def cancel_application_view(request: HttpRequest, application_id: int) -> HttpRe
         and not application.invoice
     ):
         application.delete()
-        messages.success(request, "The application has been cancelled.")
+        messages.success(request, _("The application has been cancelled."))
         return HttpResponse(status=204, headers={"HX-Refresh": "true"})
     else:
         raise PermissionDenied()

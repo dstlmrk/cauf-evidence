@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
+{% load i18n %}
 
-{% block title %}<h1>Invoices</h1>{% endblock %}
+{% block title %}<h1>{% trans "Invoices" %}</h1>{% endblock %}
 
 {% block content %}
     {% if invoices %}
@@ -9,12 +10,12 @@
                 <table class="table align-middle">
                     <thead>
                         <tr>
-                            <th scope="col">FID</th>
-                            <th scope="col">Created at</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">State</th>
-                            <th scope="col">Amount (CZK)</th>
-                            <th scope="col">Link</th>
+                            <th scope="col">{% trans "FID" %}</th>
+                            <th scope="col">{% trans "Created at" %}</th>
+                            <th scope="col">{% trans "Type" %}</th>
+                            <th scope="col">{% trans "State" %}</th>
+                            <th scope="col">{% trans "Amount (CZK)" %}</th>
+                            <th scope="col">{% trans "Link" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -58,11 +59,11 @@
             <div class="list-group">
                 {% for invoice in invoices %}
                     <div class="list-group-item">
-                        <div>FID: {{ invoice.fakturoid_invoice_id|default:"N/A" }}</div>
-                        <div>Created at: {{ invoice.created_at | date:'d/m/Y H:i' }}</div>
-                        <div>Type: {{ invoice.get_type_display | upper }}</div>
+                        <div>{% trans "FID" %}: {{ invoice.fakturoid_invoice_id|default:"N/A" }}</div>
+                        <div>{% trans "Created at" %}: {{ invoice.created_at | date:'d/m/Y H:i' }}</div>
+                        <div>{% trans "Type" %}: {{ invoice.get_type_display | upper }}</div>
                         <div>
-                            State:
+                            {% trans "State" %}:
                             <span
                                 style="position: relative; top: -2px;"
                                 {% if invoice.state == 1 %}
@@ -76,9 +77,9 @@
                                 {{ invoice.get_state_display | upper }}
                             </span>
                         </div>
-                        <div>Amount: <b>CZK {{ invoice.amount | floatformat:0 }}</b></div>
+                        <div>{% trans "Amount" %}: <b>CZK {{ invoice.amount | floatformat:0 }}</b></div>
                         <div>
-                            Link:
+                            {% trans "Link" %}:
                             {% if invoice.fakturoid_public_html_url %}
                                 <a
                                     class="text-primary"
@@ -86,7 +87,7 @@
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    <i class="bi bi-box-arrow-up-right"></i> Here
+                                    <i class="bi bi-box-arrow-up-right"></i> {% trans "Here" %}
                                 </a>
                             {% else %}
                                 N/A
@@ -98,7 +99,7 @@
         </div>
     {% else %}
         <div class="alert alert-primary" role="alert">
-            <i class="bi bi-info-circle-fill me-1"></i> No invoices found.
+            <i class="bi bi-info-circle-fill me-1"></i> {% trans "No invoices found." %}
         </div>
     {% endif %}
 {% endblock %}

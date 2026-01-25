@@ -4,7 +4,6 @@ from django.core.mail import EmailMessage
 from django.core.management import call_command
 from huey import crontab
 from huey.contrib.djhuey import db_periodic_task, task
-
 from ultihub.settings import ENVIRONMENT
 
 logger = logging.getLogger(__name__)

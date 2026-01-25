@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load i18n %}
 {% load humanize %}
 
 {% block title %}
@@ -23,22 +24,22 @@
         >
     </div>
     <div>
-        Rosters deadline: {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}
+        {% blocktrans with deadline=tournament.rosters_deadline|date:'d/m/Y H:i' %}Rosters deadline: {{ deadline }}{% endblocktrans %}
         <span style="position: relative; top: -2px;">
             {% if tournament.has_open_rosters %}
-                <span class="badge text-bg-success">OPEN</span>
+                <span class="badge text-bg-success">{% trans "OPEN" %}</span>
             {% else %}
-                <span class="badge text-bg-dark">CLOSED</span>
+                <span class="badge text-bg-dark">{% trans "CLOSED" %}</span>
             {% endif %}
         </span>
     </div>
-    <div>Total teams/members: {{ tournament.team_count }}/{{ tournament.member_count }}</div>
+    <div>{% blocktrans with teams=tournament.team_count members=tournament.member_count %}Total teams/members: {{ teams }}/{{ members }}{% endblocktrans %}</div>
 {% endblock %}
 
 {% block buttons %}
     {% if user.is_staff or user.is_superuser %}
         <a href="{% url 'tournaments:export_rosters_csv' tournament.id %}" class="btn btn-primary">
-            <i class="bi bi-download"></i> Export rosters
+            <i class="bi bi-download"></i> {% trans "Export rosters" %}
         </a>
     {% endif %}
 {% endblock %}
@@ -51,6 +52,6 @@
             hx-target="this"
         ></div>
     {% else %}
-        <div class="alert alert-dark" role="alert">No teams have been assigned to the tournament yet.</div>
+        <div class="alert alert-dark" role="alert">{% trans "No teams have been assigned to the tournament yet." %}</div>
     {% endif %}
 {% endblock %}

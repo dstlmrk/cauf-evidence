@@ -1,12 +1,11 @@
 {% extends "core/base.html" %}
+{% load i18n %}
 
-{% block title %}<h1>Season fees</h1>{% endblock %}
+{% block title %}<h1>{% trans "Season fees" %}</h1>{% endblock %}
 
 {% block content %}
     <div class="alert alert-light" role="alert">
-        <i class="bi bi-question-circle-fill me-1"></i> This overview is intended for monitoring during the season only.
-        At the end of the season, an invoice will be automatically generated, and you will be notified about its
-        issuance.
+        <i class="bi bi-question-circle-fill me-1"></i> {% trans "This overview is intended for monitoring during the season only. At the end of the season, an invoice will be automatically generated, and you will be notified about its issuance." %}
     </div>
 
     <div class="card">
@@ -20,7 +19,7 @@
             >
                 {% csrf_token %}
                 {{ form | crispy }}
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
             </form>
         </div>
     </div>

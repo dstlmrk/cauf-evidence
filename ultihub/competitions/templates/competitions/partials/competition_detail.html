@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="modal-content">
     <div class="modal-header">
         <h5 class="modal-title">
@@ -5,23 +6,23 @@
         </h5>
     </div>
     <div class="modal-body">
-        <h5>General</h5>
-        <div>Registered teams: {{ competition.application_count }}</div>
-        <div>Deposit per team: CZK {{ competition.deposit }}</div>
-        <div>Player's season fee (tier): CZK {{ competition.season_fee }}</div>
-        <div>Player's fee at tournament: CZK {{ competition.fee_at_tournament }}</div>
+        <h5>{% trans "General" %}</h5>
+        <div>{% trans "Registered teams" %}: {{ competition.application_count }}</div>
+        <div>{% trans "Deposit per team" %}: CZK {{ competition.deposit }}</div>
+        <div>{% trans "Player's season fee (tier)" %}: CZK {{ competition.season_fee }}</div>
+        <div>{% trans "Player's fee at tournament" %}: CZK {{ competition.fee_at_tournament }}</div>
         <div>
-            Registration deadline: {{ competition.registration_deadline | date:'d/m/Y H:i' }}
+            {% trans "Registration deadline" %}: {{ competition.registration_deadline | date:'d/m/Y H:i' }}
             <span style="position: relative; top: -2px;">
                 {% if competition.has_open_registration %}
-                    <span class="badge text-bg-success">OPEN</span>
+                    <span class="badge text-bg-success">{% trans "OPEN" %}</span>
                 {% else %}
-                    <span class="badge text-bg-dark">CLOSED</span>
+                    <span class="badge text-bg-dark">{% trans "CLOSED" %}</span>
                 {% endif %}
             </span>
         </div>
         <div class="mt-3">
-            <h5>Tournaments</h5>
+            <h5>{% trans "Tournaments" %}</h5>
             {% for tournament in competition.prefetched_tournaments %}
                 <div class="mt-2">
                     {{ tournament.name }}<br />
@@ -34,12 +35,12 @@
         </div>
         {% if competition.description %}
             <div class="mt-3">
-                <h5>Description</h5>
+                <h5>{% trans "Description" %}</h5>
                 {{ competition.description|linebreaks }}
             </div>
         {% endif %}
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
     </div>
 </div>

@@ -1,14 +1,15 @@
+{% load i18n %}
 <div
     x-data="memberSearch({{ tournament_id|default:'null' }})"
     x-init="await loadPreselectedMember()"
     style="position: relative;"
 >
-    <label class="mb-2">Member*</label>
+    <label class="mb-2">{% trans "Member" %}*</label>
     <input
         id="id_member_search"
         type="text"
         class="form-control"
-        placeholder="Search members..."
+        placeholder="{% trans "Search members..." %}"
         x-model="query"
         @input.debounce.300ms="search()"
         @input="if (!$event.target.value) document.querySelector('#id_member_id').value = ''; document.querySelector('.form-error-msg')?.remove()"
@@ -52,7 +53,7 @@
             x-show="results.length === 0 && query.length >= 3"
             style="cursor: default;"
         >
-            No members found matching your search
+            {% trans "No members found matching your search" %}
         </li>
     </ul>
 </div>

@@ -1,3 +1,4 @@
+{% load i18n %}
 <button
     {% if request.session.club and competition.registration_deadline > now %}
         class="btn btn-success position-relative"
@@ -7,7 +8,7 @@
     hx-get="{% url 'competitions:application_list' competition.id %}"
     hx-target="#dialog-lg"
 >
-    Registrations
+    {% trans "Registrations" %}
     <span class="badge text-bg-light ms-1">{{ competition.application_count }}</span>
     {% if competition.club_application_without_invoice_count > 0 %}
         <span

@@ -3,6 +3,7 @@ from typing import Any
 from clubs.models import Club
 from core.helpers import SessionClub
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from members.models import Member
 
@@ -50,21 +51,21 @@ class MemberForm(forms.ModelForm):
 
 class MemberConfirmEmailForm(forms.Form):
     data_ok = forms.BooleanField(
-        label="All information about me is correct",
+        label=_("All information about me is correct"),
         required=True,
-        help_text=(
+        help_text=_(
             "If not, please contact the club administrator, wait for"
             " the data to be corrected, and then reopen this link."
         ),
         initial=False,
     )
     basic_consent = forms.BooleanField(
-        label="I agree to the processing of my personal data",
+        label=_("I agree to the processing of my personal data"),
         required=True,
         initial=True,
     )
     marketing_consent = forms.BooleanField(
-        label="I agree to receive newsletters and marketing materials",
+        label=_("I agree to receive newsletters and marketing materials"),
         required=False,
         initial=True,
     )

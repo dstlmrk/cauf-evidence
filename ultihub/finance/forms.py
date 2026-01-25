@@ -2,15 +2,16 @@ from typing import Any
 
 from competitions.models import Season
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 
 class SeasonFeesCheckForm(forms.Form):
     season = forms.ModelChoiceField(
         queryset=Season.objects.all(),
-        label="Season",
-        empty_label="Choose a season",
+        label=_("Season"),
+        empty_label=_("Choose a season"),
         widget=forms.Select(attrs={"class": "form-control"}),
-        help_text="Select a season to calculate fees for.",
+        help_text=_("Select a season to calculate fees for."),
     )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

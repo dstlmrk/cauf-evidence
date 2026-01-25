@@ -1,7 +1,8 @@
 {% load humanize %}
+{% load i18n %}
 <div class="modal-content">
     <div class="modal-header justify-content-between">
-        <h5 class="modal-title"><i class="bi bi-bell-fill"></i> Club's notifications</h5>
+        <h5 class="modal-title"><i class="bi bi-bell-fill"></i> {% trans "Club's notifications" %}</h5>
         <span class="text-muted">{{ request.session.club.name }}</span>
     </div>
     <div class="modal-body">
@@ -18,7 +19,7 @@
                                 {{ notification.created_at | naturaltime }}
                             </span>
                             {% if not notification.is_read %}
-                                <span class="badge bg-danger">UNREAD</span>
+                                <span class="badge bg-danger">{% trans "UNREAD" %}</span>
                             {% endif %}
                         </div>
                         <strong class="mb-1"> {{ notification.subject }} </strong>
@@ -28,11 +29,11 @@
                 {% endfor %}
             </ul>
         {% else %}
-            <div class="alert alert-dark" role="alert">No notifications</div>
+            <div class="alert alert-dark" role="alert">{% trans "No notifications" %}</div>
         {% endif %}
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
         <form hx-post="{% url 'clubs:notifications_dialog' %}">
             {% csrf_token %}
             <button
@@ -41,7 +42,7 @@
                 data-bs-dismiss="modal"
                 {% if not notifications %}disabled{% endif %}
             >
-                Mark as read
+                {% trans "Mark as read" %}
             </button>
         </form>
     </div>

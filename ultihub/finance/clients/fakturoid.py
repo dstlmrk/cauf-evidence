@@ -6,7 +6,6 @@ from typing import Any, Literal, TypedDict
 import requests
 from requests.auth import HTTPBasicAuth
 from tenacity import RetryCallState, retry, retry_if_exception_type, stop_after_attempt
-
 from ultihub.settings import (
     ENVIRONMENT,
     FAKTUROID_BASE_URL,

@@ -1,14 +1,15 @@
+{% load i18n %}
 <div class="modal-content">
     <div class="modal-header">
-        <h5 class="modal-title">Final placements</h5>
+        <h5 class="modal-title">{% trans "Final placements" %}</h5>
     </div>
     <div class="modal-body">
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">Rank</th>
-                    <th scope="col">Team name</th>
-                    <th scope="col">Club</th>
+                    <th scope="col">{% trans "Rank" %}</th>
+                    <th scope="col">{% trans "Team name" %}</th>
+                    <th scope="col">{% trans "Club" %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +34,6 @@
         </table>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
     </div>
 </div>
