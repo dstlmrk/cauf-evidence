@@ -82,17 +82,17 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
 
 @require_GET
 def tournament_detail_view(request: HttpRequest, tournament_id: int) -> HttpResponse:
+    tournament = get_object_or_404(
+        Tournament.objects.select_related("competition").annotate(
+            team_count=Count("teams", distinct=True),
+            member_count=Count("members", distinct=True),
+        ),
+        pk=tournament_id,
+    )
     return render(
         request,
         "tournaments/tournament_detail.html",
-        {
-            "tournament": Tournament.objects.select_related("competition")
-            .annotate(
-                team_count=Count("teams", distinct=True),
-                member_count=Count("members", distinct=True),
-            )
-            .get(pk=tournament_id),
-        },
+        {"tournament": tournament},
     )
 
 
@@ -264,11 +264,15 @@ def remove_member_from_roster_view(
 
 @require_GET
 def teams_table_view(request: HttpRequest, tournament_id: int) -> HttpResponse:
+    tournament = get_object_or_404(
+        Tournament.objects.select_related("competition"),
+        pk=tournament_id,
+    )
     return render(
         request,
         "tournaments/partials/tournament_detail_teams_table.html",
         {
-            "tournament": Tournament.objects.select_related("competition").get(pk=tournament_id),
+            "tournament": tournament,
             "teams_at_tournament": (
                 TeamAtTournament.objects.filter(tournament_id=tournament_id)
                 .select_related("application", "application__team", "application__team__club")
