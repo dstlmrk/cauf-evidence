@@ -1,38 +1,39 @@
 {% extends "core/_base.html" %}
+{% load i18n %}
 
 {% block base_content %}
     {% load crispy_forms_tags %}
 
-    <h1>Check your data. Then read and confirm the terms and conditions.</h1>
+    <h1>{% trans "Check your data. Then read and confirm the terms and conditions." %}</h1>
 
     <div class="card mt-4">
         <div class="card-body">
-            <h2>Data to confirm</h2>
+            <h2>{% trans "Data to confirm" %}</h2>
 
-            Full name: <b>{{ member.full_name }}</b><br />
-            Club: <b>{{ member.club.name }}</b><br />
-            Birthdate: <b>{{ member.birth_date | date:'d/m/Y' }}</b><br />
-            Sex: <b>{{ member.get_sex_display }}</b><br />
-            Citizenship: <b>{{ member.citizenship.unicode_flag }} {{ member.citizenship }}</b><br />
+            {% trans "Full name" %}: <b>{{ member.full_name }}</b><br />
+            {% trans "Club" %}: <b>{{ member.club.name }}</b><br />
+            {% trans "Birthdate" %}: <b>{{ member.birth_date | date:'d/m/Y' }}</b><br />
+            {% trans "Sex" %}: <b>{{ member.get_sex_display }}</b><br />
+            {% trans "Citizenship" %}: <b>{{ member.citizenship.unicode_flag }} {{ member.citizenship }}</b><br />
 
             {% if member.birth_number %}
-                Birth number: <b>{{ member.birth_number }}</b><br />
+                {% trans "Birth number" %}: <b>{{ member.birth_number }}</b><br />
             {% endif %}
 
             {% if member.address %}
-                Address: <b>{{ member.address }}</b><br />
+                {% trans "Address" %}: <b>{{ member.address }}</b><br />
             {% endif %}
 
             {% if member.email %}
-                Email: <b>{{ member.email }}</b><br />
+                {% trans "Email" %}: <b>{{ member.email }}</b><br />
             {% endif %}
 
             {% if member.legal_guardian_full_name %}
-                Legal guardian full name: <b>{{ member.legal_guardian_full_name }}</b><br />
+                {% trans "Legal guardian full name" %}: <b>{{ member.legal_guardian_full_name }}</b><br />
             {% endif %}
 
             {% if member.legal_guardian_email %}
-                Legal guardian email: <b>{{ member.legal_guardian_email }}</b><br />
+                {% trans "Legal guardian email" %}: <b>{{ member.legal_guardian_email }}</b><br />
             {% endif %}
         </div>
     </div>
@@ -140,6 +141,6 @@
     <form hx-post="{% url 'members:confirm_email' member.email_confirmation_token %}" method="post" class="mt-4">
         {% csrf_token %}
         {{ form|crispy }}
-        <button type="submit" class="btn btn-success">Submit</button>
+        <button type="submit" class="btn btn-success">{% trans "Submit" %}</button>
     </form>
 {% endblock %}

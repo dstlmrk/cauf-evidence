@@ -6,9 +6,9 @@ import requests
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
+from ultihub.settings import ORIGINAL_EVIDENCE_LOGIN, ORIGINAL_EVIDENCE_PASSWORD
 
 from members.models import Member
-from ultihub.settings import ORIGINAL_EVIDENCE_LOGIN, ORIGINAL_EVIDENCE_PASSWORD
 
 SEASON_ID = 23
 ORIGINAL_EVIDENCE_URL = "https://api.evidence.czechultimate.cz/"

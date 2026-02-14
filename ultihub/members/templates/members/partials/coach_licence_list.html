@@ -1,6 +1,7 @@
+{% load i18n %}
 <div class="modal-content">
     <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-patch-check-fill"></i> Coach licences</h5>
+        <h5 class="modal-title"><i class="bi bi-patch-check-fill"></i> {% trans "Coach licences" %}</h5>
     </div>
     <div class="modal-body">
         {% if coach_licences %}
@@ -8,9 +9,9 @@
                 <table class="table align-middle">
                     <thead>
                         <tr>
-                            <th scope="col">Class</th>
-                            <th scope="col">Valid from</th>
-                            <th scope="col">Valid to</th>
+                            <th scope="col">{% trans "Class" %}</th>
+                            <th scope="col">{% trans "Valid from" %}</th>
+                            <th scope="col">{% trans "Valid to" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -25,10 +26,10 @@
                 </table>
             </div>
         {% else %}
-            <div class="alert alert-primary" role="alert">No coach licences found.</div>
+            <div class="alert alert-primary" role="alert">{% trans "No coach licences found." %}</div>
         {% endif %}
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
     </div>
 </div>

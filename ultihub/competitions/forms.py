@@ -1,6 +1,7 @@
 from typing import Any
 
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 
 class RegistrationForm(forms.Form):
@@ -13,9 +14,9 @@ class RegistrationForm(forms.Form):
                 label=application.team_name if application else team.name,
                 required=False,
                 help_text=(
-                    f"Registered: {application.get_state_display()}"
+                    _("Registered: %(state)s") % {"state": application.get_state_display()}
                     if application
-                    else "Not registered"
+                    else _("Not registered")
                 ),
                 initial=bool(application),
                 disabled=bool(application),
@@ -23,7 +24,7 @@ class RegistrationForm(forms.Form):
 
 
 class AddTeamsToTournamentForm(forms.Form):
-    tournament = forms.ChoiceField(choices=[], label="Select tournament")
+    tournament = forms.ChoiceField(choices=[], label=_("Select tournament"))
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         related_tournaments = kwargs.pop("related_tournaments", [])

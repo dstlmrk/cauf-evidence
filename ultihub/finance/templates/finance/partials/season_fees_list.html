@@ -1,4 +1,5 @@
-<h2>Season {{ season.name }}</h2>
+{% load i18n %}
+<h2>{% blocktrans with name=season.name %}Season {{ name }}{% endblocktrans %}</h2>
 <div class="d-none d-md-block">
     <div class="card mt-3">
         <div class="card-body">
@@ -6,12 +7,12 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Member</th>
-                        <th scope="col">Birth date</th>
-                        <th scope="col">Fee (CZK)</th>
+                        <th scope="col">{% trans "Member" %}</th>
+                        <th scope="col">{% trans "Birth date" %}</th>
+                        <th scope="col">{% trans "Fee (CZK)" %}</th>
                         <th scope="col" class="fit pe-5 text-center">
-                            <div data-bs-toggle="tooltip" data-bs-title="Total regular / discounted tournaments">
-                                Total<br />R / D
+                            <div data-bs-toggle="tooltip" data-bs-title="{% trans "Total regular / discounted tournaments" %}">
+                                {% trans "Total" %}<br />R / D
                             </div>
                         </th>
                     </tr>
@@ -38,7 +39,7 @@
                     <tr class="table-secondary">
                         <td></td>
                         <td></td>
-                        <td class="text-end"><b>Total</b></td>
+                        <td class="text-end"><b>{% trans "Total" %}</b></td>
                         <td><b>{{ total_amount }}</b></td>
                         <td></td>
                     </tr>
@@ -49,12 +50,12 @@
 </div>
 
 <div class="d-block d-md-none">
-    <p>Total amount: <b>CZK {{ total_amount }}</b></p>
+    <p>{% blocktrans with amount=total_amount %}Total amount: <b>CZK {{ amount }}</b>{% endblocktrans %}</p>
     <div class="list-group">
         {% for member, fee in fees %}
             <div class="list-group-item">
                 <div>
-                    Member:
+                    {% trans "Member" %}:
                     <b>
                         <a
                             href=""
@@ -66,10 +67,10 @@
                         >
                     </b>
                 </div>
-                <div>Birth date: {{ member.birth_date | date:'d/m/Y' }}</div>
-                <div>Fee: <b>CZK {{ fee.amount }}</b></div>
-                <div>Regular tournaments: {{ fee.regular_tournaments | length }}</div>
-                <div>Discounted tournaments: {{ fee.discounted_tournaments | length }}</div>
+                <div>{% blocktrans with date=member.birth_date|date:'d/m/Y' %}Birth date: {{ date }}{% endblocktrans %}</div>
+                <div>{% blocktrans with amount=fee.amount %}Fee: <b>CZK {{ amount }}</b>{% endblocktrans %}</div>
+                <div>{% blocktrans with count=fee.regular_tournaments|length %}Regular tournaments: {{ count }}{% endblocktrans %}</div>
+                <div>{% blocktrans with count=fee.discounted_tournaments|length %}Discounted tournaments: {{ count }}{% endblocktrans %}</div>
             </div>
         {% endfor %}
     </div>

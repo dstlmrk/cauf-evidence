@@ -1,7 +1,8 @@
+{% load i18n %}
 <div class="modal-content">
     <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-person"></i> Season {{ season.name }}: {{ member.full_name }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title"><i class="bi bi-person"></i> {% blocktrans with season=season.name member=member.full_name %}Season {{ season }}: {{ member }}{% endblocktrans %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans "Close" %}"></button>
     </div>
     <div class="modal-body">
         {% if tournaments %}
@@ -10,10 +11,10 @@
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Competition</th>
-                            <th scope="col">Tournament</th>
-                            <th scope="col">Team</th>
-                            <th scope="col">Fee Type</th>
+                            <th scope="col">{% trans "Competition" %}</th>
+                            <th scope="col">{% trans "Tournament" %}</th>
+                            <th scope="col">{% trans "Team" %}</th>
+                            <th scope="col">{% trans "Fee Type" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,11 +69,11 @@
                                 <td>{{ item.team_name }}</td>
                                 <td>
                                     {% if item.fee_type == 1 %}
-                                        <span class="badge bg-success">Free</span>
+                                        <span class="badge bg-success">{% trans "Free" %}</span>
                                     {% elif item.fee_type == 2 %}
-                                        <span class="badge bg-success">Discounted</span>
+                                        <span class="badge bg-success">{% trans "Discounted" %}</span>
                                     {% elif item.fee_type == 3 %}
-                                        <span class="badge bg-dark">Regular</span>
+                                        <span class="badge bg-dark">{% trans "Regular" %}</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -86,7 +87,7 @@
                     {% for item in tournaments %}
                         <div class="list-group-item">
                             <div>
-                                Competition:
+                                {% trans "Competition" %}:
                                 <strong>
                                     {% if item.is_international %}
                                         {{ item.tournament_type }}
@@ -102,7 +103,7 @@
                                 {% endif %}
                             </div>
                             <div>
-                                Tournament:
+                                {% trans "Tournament" %}:
                                 <strong>
                                     {% if item.is_international %}
                                         <a
@@ -124,21 +125,21 @@
                                 </strong>
                             </div>
                             <div>
-                                Location: {{ item.location }}
+                                {% blocktrans with location=item.location %}Location: {{ location }}{% endblocktrans %}
                                 {% if item.is_international %}
                                     {{ item.tournament.country.unicode_flag }}
                                 {% endif %}
                             </div>
-                            <div>Date: {{ item.date_from|date:'d. m. Y' }} - {{ item.date_to|date:'d. m. Y' }}</div>
-                            <div>Team: {{ item.team_name }}</div>
+                            <div>{% blocktrans with from=item.date_from|date:'d. m. Y' to=item.date_to|date:'d. m. Y' %}Date: {{ from }} - {{ to }}{% endblocktrans %}</div>
+                            <div>{% blocktrans with team=item.team_name %}Team: {{ team }}{% endblocktrans %}</div>
                             <div>
-                                Fee type:
+                                {% trans "Fee type" %}:
                                 {% if item.fee_type == 1 %}
-                                    <span class="badge bg-success">Free</span>
+                                    <span class="badge bg-success">{% trans "Free" %}</span>
                                 {% elif item.fee_type == 2 %}
-                                    <span class="badge bg-success">Discounted</span>
+                                    <span class="badge bg-success">{% trans "Discounted" %}</span>
                                 {% elif item.fee_type == 3 %}
-                                    <span class="badge bg-dark">Regular</span>
+                                    <span class="badge bg-dark">{% trans "Regular" %}</span>
                                 {% endif %}
                             </div>
                         </div>
@@ -146,10 +147,10 @@
                 </div>
             </div>
         {% else %}
-            <p class="text-muted">No tournaments found for this member in this season.</p>
+            <p class="text-muted">{% trans "No tournaments found for this member in this season." %}</p>
         {% endif %}
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
     </div>
 </div>

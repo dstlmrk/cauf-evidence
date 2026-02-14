@@ -1,17 +1,18 @@
+{% load i18n %}
 <div class="mt-2 mb-1">
     {% if team.is_primary %}
         <button class="btn btn-primary invisible">X</button>
     {% else %}
-        <button class="btn btn-primary" hx-get="{% url 'clubs:edit_team' team.id %}" hx-target="#dialog">Edit</button>
+        <button class="btn btn-primary" hx-get="{% url 'clubs:edit_team' team.id %}" hx-target="#dialog">{% trans "Edit" %}</button>
         <button
             class="btn btn-danger"
             hx-post="{% url 'clubs:remove_team' team.id %}"
             hx-trigger="click"
-            hx-confirm="Do you really want to remove this team?"
+            hx-confirm="{% trans "Do you really want to remove this team?" %}"
             hx-vals='{"team_id": "{{ team.id }}"}'
             hx-swap="none"
         >
-            Remove
+            {% trans "Remove" %}
         </button>
     {% endif %}
 </div>

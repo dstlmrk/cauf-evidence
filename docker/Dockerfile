@@ -28,9 +28,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 FROM python:3.12.5-slim AS runtime
 
-# Due to pg_dump
+# Due to pg_dump and compilemessages
 RUN apt-get update && \
-    apt-get install -y wget gnupg lsb-release && \
+    apt-get install -y wget gnupg lsb-release gettext && \
     echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" \
         > /etc/apt/sources.list.d/pgdg.list && \
     wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \

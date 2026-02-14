@@ -13,6 +13,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import BooleanField, Count, Exists, F, OuterRef, Prefetch, Q, Value
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 from members.models import Member
 
@@ -180,7 +181,7 @@ def international_roster_add_form_view(
                 member_id=member.id,
                 jersey_number=member.default_jersey_number,
             )
-            messages.success(request, "Member added successfully")
+            messages.success(request, _("Member added successfully"))
 
             response = HttpResponse(status=204)
             response["HX-Trigger"] = json.dumps(
@@ -217,7 +218,7 @@ def international_roster_update_form_view(
 
         if form.is_valid():
             form.save()
-            messages.success(request, "Member updated successfully")
+            messages.success(request, _("Member updated successfully"))
             response = HttpResponse(status=204)
 
             response["HX-Trigger"] = json.dumps(
@@ -257,7 +258,7 @@ def remove_member_from_international_roster_view(
     )
 
     member_at_tournament.delete()
-    messages.success(request, "Member removed successfully")
+    messages.success(request, _("Member removed successfully"))
 
     response = render(
         request,

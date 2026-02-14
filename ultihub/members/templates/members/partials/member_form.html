@@ -1,4 +1,5 @@
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 <div x-data="memberForm()">
     <form hx-post="{{ request.path }}" class="modal-content" x-ref="form" novalidate>
@@ -6,9 +7,9 @@
         <div class="modal-header">
             <h5 class="modal-title">
                 {% if form.instance.pk %}
-                    <i class="bi bi-person-fill"></i> Edit member
+                    <i class="bi bi-person-fill"></i> {% trans "Edit member" %}
                 {% else %}
-                    <i class="bi bi-person-plus-fill"></i> Create member
+                    <i class="bi bi-person-plus-fill"></i> {% trans "Create member" %}
                 {% endif %}
             </h5>
         </div>
@@ -17,7 +18,7 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <i class="bi bi-person me-2"></i>
-                    <b class="flex-grow-1">Personal information</b>
+                    <b class="flex-grow-1">{% trans "Personal information" %}</b>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -37,7 +38,7 @@
             <div class="card mt-3">
                 <div class="card-header d-flex align-items-center">
                     <i class="bi bi-shield-fill me-2"></i>
-                    <b class="flex-grow-1">Membership details</b>
+                    <b class="flex-grow-1">{% trans "Membership details" %}</b>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -49,10 +50,9 @@
             <div class="card mt-3">
                 <div class="card-header d-xl-flex align-items-center">
                     <i class="bi bi-envelope me-2"></i>
-                    <b class="flex-grow-1 me-2 me-xl-0">Contact information</b>
+                    <b class="flex-grow-1 me-2 me-xl-0">{% trans "Contact information" %}</b>
                     <small class="text-muted">
-                        For members under 15 years old, the consent link for personal data processing will be sent to
-                        the legal guardian's email.
+                        {% trans "For members under 15 years old, the consent link for personal data processing will be sent to the legal guardian's email." %}
                     </small>
                 </div>
                 <div class="card-body">
@@ -74,10 +74,9 @@
             <div class="card mt-3">
                 <div class="card-header d-xl-flex align-items-center">
                     <i class="bi bi-house-door me-2"></i>
-                    <b class="flex-grow-1 me-2 me-xl-0">Residential address</b>
+                    <b class="flex-grow-1 me-2 me-xl-0">{% trans "Residential address" %}</b>
                     <small class="text-muted">
-                        If the member is a foreigner permanently residing in the Czech Republic, it is mandatory to
-                        provide a Czech address.
+                        {% trans "If the member is a foreigner permanently residing in the Czech Republic, it is mandatory to provide a Czech address." %}
                     </small>
                 </div>
                 <div class="card-body" x-ref="addressContainer">
@@ -93,8 +92,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-success">Submit</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+            <button type="submit" class="btn btn-success">{% trans "Submit" %}</button>
         </div>
     </form>
 </div>

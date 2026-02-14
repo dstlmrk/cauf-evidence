@@ -1,4 +1,5 @@
 {% load crispy_forms_tags %}
+{% load i18n %}
 <div
     x-data="{
         isFormValid: false,
@@ -22,18 +23,16 @@
     >
         {% csrf_token %}
         <div class="modal-header">
-            <h5 class="modal-title"><i class="bi bi-person-plus-fill"></i> Registration</h5>
+            <h5 class="modal-title"><i class="bi bi-person-plus-fill"></i> {% trans "Registration" %}</h5>
         </div>
         <div class="modal-body">
             <div class="alert alert-light" role="alert">
                 <div>
                     <p>
-                        After registering, it is necessary to generate an invoice and complete the payment. The
-                        registration will not be finalized until the payment is received in the association’s account.
+                        {% trans "After registering, it is necessary to generate an invoice and complete the payment. The registration will not be finalized until the payment is received in the association's account." %}
                     </p>
                     <p class="mb-0">
-                        If you need to cancel the registration of an already invoiced team, please contact the
-                        association. This action cannot be completed in the application at this time.
+                        {% trans "If you need to cancel the registration of an already invoiced team, please contact the association. This action cannot be completed in the application at this time." %}
                     </p>
                 </div>
             </div>
@@ -41,8 +40,8 @@
             {{ form|crispy }}
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-success" :disabled="!isFormValid || !isFormChanged">Submit</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+            <button type="submit" class="btn btn-success" :disabled="!isFormValid || !isFormChanged">{% trans "Submit" %}</button>
         </div>
     </form>
 </div>

@@ -1,11 +1,12 @@
 {% extends "core/base.html" %}
+{% load i18n %}
 
-{% block title %}<h1>Teams</h1>{% endblock %}
+{% block title %}<h1>{% trans "Teams" %}</h1>{% endblock %}
 
 {% block buttons %}
     {% if app_settings.team_management_enabled %}
         <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_team' %}" hx-target="#dialog">
-            <i class="bi bi-plus"></i> Create team
+            <i class="bi bi-plus"></i> {% trans "Create team" %}
         </button>
     {% endif %}
 {% endblock %}
@@ -16,13 +17,11 @@
         <div class="col-md-12">
             <div class="alert alert-light " role="alert">
                 <i class="bi bi-question-circle-fill me-1"></i>
-                Additional teams are suitable if you want to register your B team for a tournament or if you
-                occasionally want to register your club under a different name. For example, your junior’s team might
-                have a different name than the others, etc.
+                {% trans "Additional teams are suitable if you want to register your B team for a tournament or if you occasionally want to register your club under a different name. For example, your junior's team might have a different name than the others, etc." %}
             </div>
             {% if not app_settings.team_management_enabled %}
                 <div class="alert alert-warning " role="alert">
-                    <i class="bi bi-exclamation-octagon-fill me-1"></i> Teams management is currently <b>disabled</b>.
+                    <i class="bi bi-exclamation-octagon-fill me-1"></i> {% trans "Teams management is currently" %} <b>{% trans "disabled" %}</b>.
                 </div>
             {% endif %}
             <div

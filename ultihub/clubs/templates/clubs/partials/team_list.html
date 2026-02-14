@@ -1,13 +1,14 @@
 {% load static %}
+{% load i18n %}
 <div class="d-none d-md-block">
     <table class="table align-middle">
         <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Team name</th>
-                <th scope="col">Description</th>
+                <th scope="col">{% trans "Team name" %}</th>
+                <th scope="col">{% trans "Description" %}</th>
                 {% if app_settings.team_management_enabled %}
-                    <th scope="col" class="fit">Action</th>
+                    <th scope="col" class="fit">{% trans "Action" %}</th>
                 {% endif %}
             </tr>
         </thead>
@@ -18,7 +19,7 @@
                     <td><b>{{ team.name }}</b></td>
                     <td>
                         {% if team.is_primary %}
-                            <span class="badge bg-dark">Primary</span>
+                            <span class="badge bg-dark">{% trans "Primary" %}</span>
                         {% else %}
                             {{ team.description }}
                         {% endif %}
@@ -36,11 +37,11 @@
     <div class="list-group">
         {% for team in teams %}
             <div class="list-group-item">
-                <div>Name: <b>{{ team.name }}</b></div>
+                <div>{% trans "Name" %}: <b>{{ team.name }}</b></div>
                 <div>
-                    Description:
+                    {% trans "Description" %}:
                     {% if team.is_primary %}
-                        <span class="badge bg-dark" style="position: relative; top: -2px;">Primary</span>
+                        <span class="badge bg-dark" style="position: relative; top: -2px;">{% trans "Primary" %}</span>
                     {% else %}
                         {{ team.description }}
                     {% endif %}

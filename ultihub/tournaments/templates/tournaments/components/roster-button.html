@@ -1,3 +1,4 @@
+{% load i18n %}
 <button
     id="rosterButton-{{ team.id }}"
     {% if request.session.club.id == team.application.team.club_id and tournament.has_open_rosters %}
@@ -8,6 +9,6 @@
     hx-get="{% url 'tournaments:roster_dialog' team.id %}"
     hx-target="#dialog-lg"
 >
-    Roster
+    {% trans "Roster" %}
     <span class="badge text-bg-light ms-1">{{ team.members_count_on_roster }}</span>
 </button>

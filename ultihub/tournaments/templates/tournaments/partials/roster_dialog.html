@@ -1,9 +1,10 @@
+{% load i18n %}
 <div class="modal-content">
     <div class="modal-header p-3">
         <div
             class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between w-100"
         >
-            <h5 class="modal-title mb-0"><i class="bi bi-people"></i> Roster: {{ team_at_tournament }}</h5>
+            <h5 class="modal-title mb-0"><i class="bi bi-people"></i> {% blocktrans with team=team_at_tournament %}Roster: {{ team }}{% endblocktrans %}</h5>
             {% if request.session.club.id == team_at_tournament.application.team.club_id and team_at_tournament.tournament.has_open_rosters %}
                 <button
                     class="btn btn-success mt-2 mt-md-0 ms-0 ms-md-3"
@@ -11,7 +12,7 @@
                     hx-target="#dialog"
                     data-bs-dismiss="modal"
                 >
-                    <i class="bi bi-person-plus"></i> Add member
+                    <i class="bi bi-person-plus"></i> {% trans "Add member" %}
                 </button>
             {% endif %}
         </div>
@@ -22,10 +23,10 @@
                 <thead>
                     <tr class="align-middle">
                         <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Home club</th>
-                        <th scope="col">Birth year</th>
-                        <th scope="col">Added at</th>
+                        <th scope="col">{% trans "Name" %}</th>
+                        <th scope="col">{% trans "Home club" %}</th>
+                        <th scope="col">{% trans "Birth year" %}</th>
+                        <th scope="col">{% trans "Added at" %}</th>
                         <th scope="col"></th>
                     </tr>
                 </thead>
@@ -57,13 +58,13 @@
                                             hx-target="#dialog"
                                             data-bs-dismiss="modal"
                                         >
-                                            Edit
+                                            {% trans "Edit" %}
                                         </button>
                                         <button
                                             class="btn btn-danger"
                                             hx-post="{% url 'tournaments:remove_member_from_roster' member_at_tournament.id %}"
                                         >
-                                            Remove
+                                            {% trans "Remove" %}
                                         </button>
                                     {% endif %}
                                 </td>
@@ -79,9 +80,9 @@
                 {% for member_at_tournament in members_at_tournament %}
                     {% with member_at_tournament.member as member %}
                         <div class="list-group-item">
-                            <div>Jersey number: {{ member_at_tournament.jersey_number | default:"" }}</div>
+                            <div>{% blocktrans with number=member_at_tournament.jersey_number|default:"" %}Jersey number: {{ number }}{% endblocktrans %}</div>
                             <div>
-                                Member: {{ member.citizenship.unicode_flag }} <b>{{ member.full_name }}</b>
+                                {% trans "Member" %}: {{ member.citizenship.unicode_flag }} <b>{{ member.full_name }}</b>
                                 {% if member_at_tournament.is_captain %}
                                     (C)
                                 {% endif %}
@@ -92,9 +93,9 @@
                                     (COACH)
                                 {% endif %}
                             </div>
-                            <div>Club: {{ member.club.name }}</div>
-                            <div>Birth year: {{ member.birth_date | date:'Y' }}</div>
-                            <div>Added at: {{ member_at_tournament.created_at | date:'d/m/Y H:i' }}</div>
+                            <div>{% blocktrans with club=member.club.name %}Club: {{ club }}{% endblocktrans %}</div>
+                            <div>{% blocktrans with year=member.birth_date|date:'Y' %}Birth year: {{ year }}{% endblocktrans %}</div>
+                            <div>{% blocktrans with date=member_at_tournament.created_at|date:'d/m/Y H:i' %}Added at: {{ date }}{% endblocktrans %}</div>
 
                             {% if request.session.club.id == member_at_tournament.team_at_tournament.application.team.club_id and team_at_tournament.tournament.has_open_rosters %}
                                 <div class="mt-2 mb-1">
@@ -104,13 +105,13 @@
                                         hx-target="#dialog"
                                         data-bs-dismiss="modal"
                                     >
-                                        Edit
+                                        {% trans "Edit" %}
                                     </button>
                                     <button
                                         class="btn btn-danger"
                                         hx-post="{% url 'tournaments:remove_member_from_roster' member_at_tournament.id %}"
                                     >
-                                        Remove
+                                        {% trans "Remove" %}
                                     </button>
                                 </div>
                             {% endif %}
@@ -121,6 +122,6 @@
         </div>
     </div>
     <div class="modal-footer d-flex w-100 justify-content-end">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
     </div>
 </div>

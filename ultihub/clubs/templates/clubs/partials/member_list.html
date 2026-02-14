@@ -1,16 +1,17 @@
 {% load static %}
+{% load i18n %}
 
 <table class="table align-middle" id="membersTable" style="visibility: hidden;">
     <thead>
         <tr class="align-middle">
-            <th>Number</th>
-            <th>Name</th>
-            <th>Birthdate</th>
-            <th>Citizenship</th>
-            <th>Sex</th>
-            <th>Coach licence</th>
-            <th>Confirmed email</th>
-            <th>Active</th>
+            <th>{% trans "Number" %}</th>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Birthdate" %}</th>
+            <th>{% trans "Citizenship" %}</th>
+            <th>{% trans "Sex" %}</th>
+            <th>{% trans "Coach licence" %}</th>
+            <th>{% trans "Confirmed email" %}</th>
+            <th>{% trans "Active" %}</th>
             <th></th>
         </tr>
     </thead>
@@ -24,7 +25,7 @@
                 <td>{{ member.get_sex_display }}</td>
                 <td>
                     <a href="" hx-get="{% url 'members:coach_licence_list' member.id %}" hx-target="#dialog"
-                        >{% if member.has_coach_licence %}YES{% else %}NO{% endif %}</a
+                        >{% if member.has_coach_licence %}{% trans "YES" %}{% else %}{% trans "NO" %}{% endif %}</a
                     >
                 </td>
                 <td data-order="{% if member.has_email_confirmed %}1{% else %}0{% endif %}">
@@ -34,14 +35,14 @@
                         <i class="bi bi-x-circle" style="color: red;"></i>
                     {% endif %}
                 </td>
-                <td>{% if member.is_active %}YES{% else %}NO{% endif %}</td>
+                <td>{% if member.is_active %}{% trans "YES" %}{% else %}{% trans "NO" %}{% endif %}</td>
                 <td>
                     <button
                         class="btn btn-primary"
                         hx-get="{% url 'members:edit_member' member.id %}"
                         hx-target="#dialog-xl"
                     >
-                        Edit
+                        {% trans "Edit" %}
                     </button>
                 </td>
             </tr>

@@ -1,5 +1,18 @@
+{% load i18n %}
 <span>© {% now "Y" %} |</span>
 <span x-data="{ user: 'info', domain: 'frisbee.cz' }">
     <a class="text-primary" :href="'mailto:' + user + '@' + domain" x-text="user + '@' + domain"></a>
 </span>
-| <a href="{% url 'privacy_policy' %}" class="text-primary">Privacy Policy</a>
+| <a href="{% url 'privacy_policy' %}" class="text-primary">{% trans "Privacy Policy" %}</a>
+| {% get_current_language as CURRENT_LANGUAGE %}
+<form method="post" action="{% url 'set_language' %}" class="d-inline">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}" />
+    {% if CURRENT_LANGUAGE == "cs" %}
+        <button type="submit" name="language" value="en" class="btn btn-link btn-sm p-0 text-primary">EN</button>
+        <span class="text-muted">CS</span>
+    {% else %}
+        <span class="text-muted">EN</span>
+        <button type="submit" name="language" value="cs" class="btn btn-link btn-sm p-0 text-primary">CS</button>
+    {% endif %}
+</form>
