@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "django_htmx",
     "guardian",
     "rangefilter",
+    "django.contrib.postgres",
     "rest_framework",
     "rest_framework.authtoken",
 ]
