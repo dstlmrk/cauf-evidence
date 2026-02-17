@@ -30,12 +30,16 @@ def search(
 
         if len(search_terms) == 2:
             first, second = search_terms
-            query_filter |= (Q(first_name__icontains=first) & Q(last_name__icontains=second)) | (
-                Q(first_name__icontains=second) & Q(last_name__icontains=first)
+            query_filter |= (
+                Q(first_name__unaccent__icontains=first) & Q(last_name__unaccent__icontains=second)
+            ) | (
+                Q(first_name__unaccent__icontains=second) & Q(last_name__unaccent__icontains=first)
             )
         else:
             for term in search_terms:
-                query_filter |= Q(first_name__icontains=term) | Q(last_name__icontains=term)
+                query_filter |= Q(first_name__unaccent__icontains=term) | Q(
+                    last_name__unaccent__icontains=term
+                )
 
     else:  # search for members in the current club
         query_filter &= Q(club_id=club_id)

@@ -130,6 +130,30 @@ def test_search_should_return_properly_old_members(prepared_members):
     assert set(result) == {members[0], members[3], members[4]}
 
 
+def test_search_finds_member_without_diacritics(club):
+    member = MemberFactory(club=club, first_name="Éva", last_name="Mészáros")
+
+    result = search("Meszaros", club.id, None)
+    assert len(result) == 1
+    assert result[0] == member
+
+
+def test_search_finds_member_with_czech_diacritics(club):
+    member = MemberFactory(club=club, first_name="Jiří", last_name="Říha")
+
+    result = search("Jiri Riha", club.id, None)
+    assert len(result) == 1
+    assert result[0] == member
+
+
+def test_search_finds_member_with_diacritics_query(club):
+    member = MemberFactory(club=club, first_name="Jiří", last_name="Říha")
+
+    result = search("Říha", club.id, None)
+    assert len(result) == 1
+    assert result[0] == member
+
+
 def test_search_should_ignore_global_min_age_when_age_limit_exists(club):
     MemberFactory(club=club, sex=MemberSexEnum.MALE, birth_date="2000-01-01")
     master = MemberFactory(club=club, sex=MemberSexEnum.MALE, birth_date="1990-01-01")
