@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+from auditlog.mixins import AuditlogHistoryAdminMixin
 from clubs.models import Club
 from django.contrib import admin, messages
 from django.db import IntegrityError, transaction
@@ -30,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 @admin.register(Season)
-class SeasonAdmin(admin.ModelAdmin):
+class SeasonAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
     list_display = (
         "id",
         "name",
@@ -96,12 +97,12 @@ class SeasonAdmin(admin.ModelAdmin):
 
 
 @admin.register(Division)
-class DivisionAdmin(admin.ModelAdmin):
+class DivisionAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
     list_display = ("id", "name", "is_female_allowed", "is_male_allowed")
 
 
 @admin.register(AgeLimit)
-class AgeLimitAdmin(admin.ModelAdmin):
+class AgeLimitAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
     list_display = ("id", "name", "m_min", "m_max", "f_min", "f_max")
     change_form_template = "admin/age_limit_change_form.html"
 
@@ -125,7 +126,7 @@ class CompetitionApplicationInline(admin.TabularInline):
 
 
 @admin.register(Competition)
-class CompetitionAdmin(admin.ModelAdmin):
+class CompetitionAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
     list_filter = ("season", "division", "age_limit", "environment")
     list_display = (
         "id",
@@ -169,7 +170,7 @@ class SeasonFilter(admin.SimpleListFilter):
 
 
 @admin.register(CompetitionApplication)
-class CompetitionApplicationAdmin(admin.ModelAdmin):
+class CompetitionApplicationAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
     list_display = (
         "id",
         "competition__season",

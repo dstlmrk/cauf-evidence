@@ -1,3 +1,4 @@
+from auditlog.mixins import AuditlogHistoryAdminMixin
 from django.contrib import admin, messages
 from django.db.models import QuerySet
 from django.http import HttpRequest
@@ -8,7 +9,7 @@ from clubs.models import Club, ClubNotification, Team
 
 
 @admin.register(Club)
-class ClubAdmin(admin.ModelAdmin):
+class ClubAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
     list_display = (
         "id",
         "name",
@@ -44,14 +45,14 @@ class ClubAdmin(admin.ModelAdmin):
 
 
 @admin.register(Team)
-class TeamAdmin(admin.ModelAdmin):
+class TeamAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
     list_display = ("id", "name", "club__name", "is_primary", "is_active")
     ordering = ("club__name", "name")
     search_fields = ("name", "club__name")
 
 
 @admin.register(ClubNotification)
-class ClubNotificationAdmin(admin.ModelAdmin):
+class ClubNotificationAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
     list_display = (
         "id",
         "created_at",

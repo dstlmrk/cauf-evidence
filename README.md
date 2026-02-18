@@ -116,7 +116,7 @@ For more informations visit [django-extensions](https://django-extensions.readth
 For fresh start, follow these steps:
 
 ```bash
-# Pull and buiforld images
+# Pull and build for images
 docker compose -f docker/compose.dev.yaml build
 
 # Run containers

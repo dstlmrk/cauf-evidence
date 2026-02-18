@@ -261,6 +261,19 @@ socialaccount = [
 ]
 
 [[package]]
+name = "django-auditlog"
+version = "3.4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "python-dateutil" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/70/e5/2beb2b256775c4fc041ed60cb44f5d77acb6cde307f01567dcf2756721a7/django_auditlog-3.4.1.tar.gz", hash = "sha256:ad07b9db452d5fa8303822cccd78cd3fcb2c2863aeb6abe039ec45739b4d7e33", size = 91611, upload-time = "2025-12-18T08:56:35.378Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/91/37/3239143dddb34a3f64582c43f56587a80c9ac136cbd34fc215077f83beb9/django_auditlog-3.4.1-py3-none-any.whl", hash = "sha256:29958ecacfee00144127214f3ccef3f0c203c3659bcb6dd404a0f3d5551a10a5", size = 49541, upload-time = "2025-12-18T08:56:23.483Z" },
+]
+
+[[package]]
 name = "django-countries"
 version = "7.6.1"
 source = { registry = "https://pypi.org/simple" }
@@ -903,6 +916,18 @@ wheels = [
 ]
 
 [[package]]
+name = "python-dateutil"
+version = "2.9.0.post0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "six" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/66/c0/0c8b6ad9f17a802ee498c46e004a0eb49bc148f2fd230864601a86dcf6db/python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3", size = 342432, upload-time = "2024-03-01T18:36:20.211Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427", size = 229892, upload-time = "2024-03-01T18:36:18.57Z" },
+]
+
+[[package]]
 name = "python-json-logger"
 version = "3.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1112,6 +1137,7 @@ dependencies = [
     { name = "django" },
     { name = "django-admin-rangefilter" },
     { name = "django-allauth", extra = ["socialaccount"] },
+    { name = "django-auditlog" },
     { name = "django-countries" },
     { name = "django-crispy-forms" },
     { name = "django-dbbackup" },
@@ -1160,6 +1186,7 @@ requires-dist = [
     { name = "django", specifier = ">=5.1.9" },
     { name = "django-admin-rangefilter", specifier = ">=0.13.2" },
     { name = "django-allauth", extras = ["socialaccount"], specifier = ">=64.2.1" },
+    { name = "django-auditlog", specifier = ">=3.4.1" },
     { name = "django-countries", specifier = ">=7.6.1" },
     { name = "django-crispy-forms", specifier = ">=2.3" },
     { name = "django-dbbackup", specifier = ">=4.2.1,<5.0.0" },

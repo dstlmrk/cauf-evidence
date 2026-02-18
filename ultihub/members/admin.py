@@ -1,6 +1,7 @@
 import csv
 from typing import Any
 
+from auditlog.mixins import AuditlogHistoryAdminMixin
 from core.admin import ReadOnlyModelAdmin
 from django.contrib import admin
 from django.db.models import Exists, OuterRef, QuerySet
@@ -65,7 +66,7 @@ class CoachLicenceFilter(admin.SimpleListFilter):
 
 
 @admin.register(Member)
-class MemberAdmin(admin.ModelAdmin):
+class MemberAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
     list_display = (
         "id",
         "original_id",
@@ -225,7 +226,7 @@ class MemberAdmin(admin.ModelAdmin):
 
 
 @admin.register(CoachLicence)
-class CoachLicenceAdmin(admin.ModelAdmin):
+class CoachLicenceAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
     list_display = (
         "id",
         "member__first_name",
@@ -248,7 +249,7 @@ class CoachLicenceAdmin(admin.ModelAdmin):
 
 
 @admin.register(Transfer)
-class TransferAdmin(ReadOnlyModelAdmin):
+class TransferAdmin(AuditlogHistoryAdminMixin, ReadOnlyModelAdmin):
     list_display = (
         "id",
         "transfer",
