@@ -52,12 +52,12 @@
                         <tr>
                             <td class="fit pe-5">
                                 {% if competition.has_open_registration %}
-                                    <span class="badge text-bg-success">OPEN</span>
+                                    <span class="badge text-bg-success">OPEN REGISTRATION</span>
                                     {% if competition.has_awaiting_payment %}
                                         <span class="badge text-bg-danger">AWAITING PAYMENT</span>
                                     {% endif %}
                                 {% else %}
-                                    <span class="badge text-bg-dark">CLOSED</span>
+                                    <span class="badge text-bg-dark">CLOSED REGISTRATION</span>
                                 {% endif %}
                                 <br />
                                 <small class="text-muted"
@@ -112,9 +112,9 @@
                             </div>
                             <div>
                                 {% if competition.has_open_registration %}
-                                    <span class="badge text-bg-success">OPEN</span>
+                                    <span class="badge text-bg-success">OPEN REGISTRATION</span>
                                 {% else %}
-                                    <span class="badge text-bg-dark">CLOSED</span>
+                                    <span class="badge text-bg-dark">CLOSED REGISTRATION</span>
                                 {% endif %}
                             </div>
                         </div>
