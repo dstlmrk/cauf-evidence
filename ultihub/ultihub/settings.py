@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 import environ
 import sentry_sdk
@@ -27,11 +28,23 @@ if ENVIRONMENT == "prod":
     SESSION_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     CSRF_TRUSTED_ORIGINS = [f"https://{APPLICATION_DOMAIN}"]
+
+    from sentry_sdk.types import Event
+
+    def _sentry_before_send(event: Event, hint: dict[str, Any]) -> Event | None:
+        from core.tasks import RetriableEmailError
+
+        exc_info = hint.get("exc_info")
+        if exc_info and issubclass(exc_info[0], RetriableEmailError):
+            return None
+        return event
+
     sentry_sdk.init(
         integrations=[
             DjangoIntegration(),
         ],
         send_default_pii=True,
+        before_send=_sentry_before_send,
     )
 
 # APPLICATION DEFINITION ------------------------------------------------------
