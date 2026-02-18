@@ -38,9 +38,9 @@
                             </td>
                             <td>
                                 {% if tournament.has_open_rosters %}
-                                    <span class="badge text-bg-success">OPEN</span>
+                                    <span class="badge text-bg-success">OPEN ROSTERS</span>
                                 {% else %}
-                                    <span class="badge text-bg-dark">CLOSED</span>
+                                    <span class="badge text-bg-dark">CLOSED ROSTERS</span>
                                 {% endif %}
                                 <br />
                                 <small class="text-muted">{{ tournament.rosters_deadline | date:'d/m/Y H:i' }}</small>
@@ -129,9 +129,9 @@
                             </div>
                             <div>
                                 {% if tournament.has_open_rosters %}
-                                    <span class="badge text-bg-success">OPEN</span>
+                                    <span class="badge text-bg-success">OPEN ROSTERS</span>
                                 {% else %}
-                                    <span class="badge text-bg-dark">CLOSED</span>
+                                    <span class="badge text-bg-dark">CLOSED ROSTERS</span>
                                 {% endif %}
                             </div>
                         </div>
