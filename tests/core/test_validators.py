@@ -1,7 +1,10 @@
+from unittest.mock import patch
+
+import dns.resolver
 import pytest
 from django.core.exceptions import ValidationError
 
-from core.validators import validate_email_domain_typos
+from core.validators import validate_email_domain_typos, validate_email_mx_record
 
 
 class TestValidateEmailDomainTypos:
@@ -51,3 +54,38 @@ class TestValidateEmailDomainTypos:
     def test_case_insensitive_matching(self, email):
         with pytest.raises(ValidationError):
             validate_email_domain_typos(email)
+
+
+class TestValidateEmailMxRecord:
+    @patch("core.validators.dns.resolver.resolve")
+    def test_valid_domain_passes(self, mock_resolve):
+        mock_resolve.return_value = ["mx.example.com"]
+        validate_email_mx_record("user@example.com")
+        mock_resolve.assert_called_once_with("example.com", "MX")
+
+    @patch("core.validators.dns.resolver.resolve", side_effect=dns.resolver.NXDOMAIN)
+    def test_nxdomain_raises_validation_error(self, mock_resolve):
+        with pytest.raises(ValidationError, match="does not accept emails"):
+            validate_email_mx_record("user@nonexistent-domain.xyz")
+
+    @patch("core.validators.dns.resolver.resolve", side_effect=dns.resolver.NoAnswer)
+    def test_no_answer_raises_validation_error(self, mock_resolve):
+        with pytest.raises(ValidationError, match="does not accept emails"):
+            validate_email_mx_record("user@no-mx.example.com")
+
+    @patch("core.validators.dns.resolver.resolve", side_effect=dns.resolver.NoNameservers)
+    def test_no_nameservers_raises_validation_error(self, mock_resolve):
+        with pytest.raises(ValidationError, match="does not accept emails"):
+            validate_email_mx_record("user@broken-ns.example.com")
+
+    @patch(
+        "core.validators.dns.resolver.resolve",
+        side_effect=dns.resolver.LifetimeTimeout,
+    )
+    def test_timeout_raises_validation_error(self, mock_resolve):
+        with pytest.raises(ValidationError, match="does not accept emails"):
+            validate_email_mx_record("user@slow-domain.example.com")
+
+    @patch("core.validators.dns.resolver.resolve", side_effect=OSError("Network error"))
+    def test_unexpected_exception_passes_silently(self, mock_resolve):
+        validate_email_mx_record("user@example.com")
