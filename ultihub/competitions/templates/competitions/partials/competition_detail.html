@@ -14,9 +14,9 @@
             Registration deadline: {{ competition.registration_deadline | date:'d/m/Y H:i' }}
             <span style="position: relative; top: -2px;">
                 {% if competition.has_open_registration %}
-                    <span class="badge text-bg-success">OPEN</span>
+                    <span class="badge text-bg-success">OPEN REGISTRATION</span>
                 {% else %}
-                    <span class="badge text-bg-dark">CLOSED</span>
+                    <span class="badge text-bg-dark">CLOSED REGISTRATION</span>
                 {% endif %}
             </span>
         </div>
