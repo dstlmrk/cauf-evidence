@@ -38,6 +38,7 @@ dependencies = [
     "django-storages[dropbox] (>=1.14.5,<2.0.0)",
     "django-solo>=2.4.0",
     "dnspython>=2.6.1",
+    "django-auditlog>=3.4.1",
 ]
 
 [dependency-groups]
