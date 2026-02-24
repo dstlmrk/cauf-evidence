@@ -1,4 +1,4 @@
-from auditlog.mixins import AuditlogHistoryAdminMixin
+from core.admin import AuditlogMixin
 from django.contrib import admin
 
 from finance.models import Invoice, InvoiceRelatedObject
@@ -12,7 +12,7 @@ class InvoiceRelatedObjectInline(admin.TabularInline):
 
 
 @admin.register(Invoice)
-class InvoiceAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
+class InvoiceAdmin(AuditlogMixin, admin.ModelAdmin):
     list_display = ("id", "club__name", "state", "type", "amount")
     ordering = ("-created_at",)
     inlines = [InvoiceRelatedObjectInline]

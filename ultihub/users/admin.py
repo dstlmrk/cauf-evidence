@@ -1,6 +1,6 @@
 from typing import Any
 
-from auditlog.mixins import AuditlogHistoryAdminMixin
+from core.admin import AuditlogMixin
 from django.contrib import admin
 from django.http import HttpRequest
 from guardian.admin import GuardedModelAdmin
@@ -11,7 +11,7 @@ from users.services import send_inviting_email
 
 
 @admin.register(NewAgentRequest)
-class NewAgentRequestAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
+class NewAgentRequestAdmin(AuditlogMixin, admin.ModelAdmin):
     list_display = ("id", "email", "is_staff", "is_superuser", "created_at", "processed_at", "club")
     search_fields = ("email",)
     list_filter = ("is_staff",)
@@ -31,14 +31,14 @@ class NewAgentRequestAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
 
 
 @admin.register(Agent)
-class AgentAdmin(AuditlogHistoryAdminMixin, GuardedModelAdmin):
+class AgentAdmin(AuditlogMixin, GuardedModelAdmin):  # type: ignore[misc]
     list_display = ("id", "user__email")
     search_fields = ("user__email",)
     ordering = ("-pk",)
 
 
 @admin.register(AgentAtClub)
-class AgentAtClubAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
+class AgentAtClubAdmin(AuditlogMixin, admin.ModelAdmin):
     list_display = ("id", "agent__user__email", "club", "is_primary", "is_active", "invited_by")
 
     def save_model(self, request, obj, form, change):  # type: ignore
