@@ -1,4 +1,4 @@
-from auditlog.mixins import AuditlogHistoryAdminMixin
+from core.admin import AuditlogMixin
 from django.contrib import admin
 
 from tournaments.models import MemberAtTournament, TeamAtTournament, Tournament
@@ -27,7 +27,7 @@ class MemberAtTournamentInline(admin.TabularInline):
 
 
 @admin.register(Tournament)
-class TournamentAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
+class TournamentAdmin(AuditlogMixin, admin.ModelAdmin):
     list_display = (
         "id",
         "competition",
@@ -45,7 +45,7 @@ class TournamentAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
 
 
 @admin.register(TeamAtTournament)
-class TeamAtTournamentAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
+class TeamAtTournamentAdmin(AuditlogMixin, admin.ModelAdmin):
     list_display = (
         "id",
         "tournament",
@@ -59,7 +59,7 @@ class TeamAtTournamentAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
 
 
 @admin.register(MemberAtTournament)
-class MemberAtTournamentAdmin(AuditlogHistoryAdminMixin, admin.ModelAdmin):
+class MemberAtTournamentAdmin(AuditlogMixin, admin.ModelAdmin):
     list_display = (
         "id",
         "tournament__name",

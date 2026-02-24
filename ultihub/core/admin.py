@@ -1,10 +1,15 @@
 from typing import Any
 
+from auditlog.mixins import AuditlogHistoryAdminMixin
 from django.contrib import admin
 from django.http import HttpRequest
 from solo.admin import SingletonModelAdmin
 
 from core.models import AppSettings
+
+
+class AuditlogMixin(AuditlogHistoryAdminMixin):
+    show_auditlog_history_link = True
 
 
 class ReadOnlyModelAdmin(admin.ModelAdmin):
