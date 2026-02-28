@@ -15,7 +15,7 @@ from django.db.models import BooleanField, Count, Exists, OuterRef, Value
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_GET, require_POST, require_safe
 from members.models import Member
 
 from tournaments.forms import AddMemberToRosterForm, UpdateMemberToRosterForm
@@ -28,7 +28,7 @@ from tournaments.models import (
 logger = logging.getLogger(__name__)
 
 
-@require_GET
+@require_safe
 def tournaments_view(request: HttpRequest) -> HttpResponse:
     club = get_current_club_or_none(request)
 
