@@ -49,6 +49,21 @@ def enable_db_access_for_all_tests(db):
 
 
 @pytest.fixture
+def staff_user(user_factory):
+    return user_factory(is_staff=True)
+
+
+@pytest.fixture
+def superuser(user_factory):
+    return user_factory(is_superuser=True)
+
+
+@pytest.fixture
+def regular_user(user_factory):
+    return user_factory(is_staff=False, is_superuser=False)
+
+
+@pytest.fixture
 def logged_in_client():
     def _make(user, club):
         from users.models import Agent
