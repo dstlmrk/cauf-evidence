@@ -1,0 +1,25 @@
+<form method="get" action="{% url 'international_tournaments:export_rosters_csv' %}" class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-box-arrow-up"></i> Export rosters</h5>
+    </div>
+    <div class="modal-body">
+        <div class="mb-3">
+            <p>Select the season for which you want to export international tournament rosters:</p>
+            <select name="season_id" class="form-select" required>
+                <option value="">Choose a season</option>
+                {% for season in seasons %}
+                    <option
+                        value="{{ season.id }}"
+                        {% if newest_season and season.id == newest_season.id %}selected{% endif %}
+                    >
+                        {{ season.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-download"></i> Export CSV</button>
+    </div>
+</form>

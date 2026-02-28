@@ -3,6 +3,18 @@
 
 {% block title %}<h1>International tournaments</h1>{% endblock %}
 
+{% block buttons %}
+    {% if user.is_staff or user.is_superuser %}
+        <button
+            class="btn btn-primary"
+            hx-get="{% url 'international_tournaments:export_rosters_modal' %}"
+            hx-target="#dialog"
+        >
+            <i class="bi bi-box-arrow-up"></i> Export rosters
+        </button>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     <!-- Filters -->
     {% include "international_tournaments/partials/filters.html" %}
