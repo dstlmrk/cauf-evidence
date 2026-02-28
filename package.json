@@ -20,9 +20,12 @@
         "prettier": "^3.3.3",
         "prettier-plugin-jinja-template": "^1.5.0",
         "style-loader": "^4.0.0",
-        "webpack": "^5.95.0",
+        "webpack": "^5.104.1",
         "webpack-cli": "^5.1.4",
         "webpack-manifest-plugin": "^5.0.1"
+    },
+    "overrides": {
+        "serialize-javascript": ">=7.0.3"
     },
     "dependencies": {
         "@popperjs/core": "^2.11.8",
