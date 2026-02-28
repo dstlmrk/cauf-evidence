@@ -8,4 +8,6 @@ def app_settings(request: HttpRequest) -> dict:
     return {
         "app_settings": get_app_settings(),
         "NATIONAL_TEAM_CLUB_ID": settings.NATIONAL_TEAM_CLUB_ID,
+        "SENTRY_DSN": settings.SENTRY_DSN,
+        "ENVIRONMENT": settings.ENVIRONMENT,
     }

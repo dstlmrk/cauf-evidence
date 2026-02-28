@@ -5,6 +5,8 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="sentry-dsn" content="{{ SENTRY_DSN }}" />
+        <meta name="environment" content="{{ ENVIRONMENT }}" />
         <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
         <title>Evidence ČAUF</title>
         <link href="{% webpack_static 'bundle.css' %}" rel="stylesheet" />

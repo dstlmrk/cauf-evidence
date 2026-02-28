@@ -1,9 +1,12 @@
 import * as Sentry from "@sentry/browser";
 
-if (SENTRY_DSN) {
+const dsn = document.querySelector('meta[name="sentry-dsn"]')?.content;
+const environment = document.querySelector('meta[name="environment"]')?.content;
+
+if (dsn) {
     Sentry.init({
-        dsn: SENTRY_DSN,
-        environment: ENVIRONMENT,
+        dsn,
+        environment,
         sendDefaultPii: true,
         integrations: [],
     });
