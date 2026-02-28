@@ -9,5 +9,6 @@ if (dsn) {
         environment,
         sendDefaultPii: true,
         integrations: [],
+        tunnel: "/api/feedback/",
     });
 }

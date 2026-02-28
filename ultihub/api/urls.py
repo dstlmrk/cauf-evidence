@@ -1,3 +1,4 @@
+from core.views import sentry_tunnel_view
 from django.urls import path
 
 from api.views import (
@@ -41,5 +42,10 @@ urlpatterns = [
         "seasons",
         SeasonsView.as_view(),
         name="seasons",
+    ),
+    path(
+        "feedback",
+        sentry_tunnel_view,
+        name="sentry_tunnel",
     ),
 ]
