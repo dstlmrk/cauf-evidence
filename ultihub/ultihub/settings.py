@@ -22,6 +22,7 @@ FORMS_URLFIELD_ASSUME_HTTPS = True
 ORIGINAL_EVIDENCE_LOGIN = env.str("ORIGINAL_EVIDENCE_LOGIN")
 ORIGINAL_EVIDENCE_PASSWORD = env.str("ORIGINAL_EVIDENCE_PASSWORD")
 MEMBER_NOTIFICATION_EMAIL = env.str("MEMBER_NOTIFICATION_EMAIL")
+SENTRY_DSN = env.str("SENTRY_DSN", default="")
 
 if ENVIRONMENT == "prod":
     CSRF_COOKIE_SECURE = True
@@ -40,6 +41,7 @@ if ENVIRONMENT == "prod":
         return event
 
     sentry_sdk.init(
+        dsn=SENTRY_DSN,
         integrations=[
             DjangoIntegration(),
         ],

@@ -24,6 +24,10 @@ module.exports = {
             fileName: "manifest.json",
             publicPath: "/static/dist/",
         }),
+        new webpack.DefinePlugin({
+            SENTRY_DSN: JSON.stringify(process.env.SENTRY_DSN || ""),
+            ENVIRONMENT: JSON.stringify(process.env.ENVIRONMENT || "unknown"),
+        }),
         new webpack.ProvidePlugin({
             bootstrap: "bootstrap",
             htmx: "htmx.org",
