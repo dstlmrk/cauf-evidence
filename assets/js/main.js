@@ -1,3 +1,4 @@
+import "./sentry";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.min.css";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
