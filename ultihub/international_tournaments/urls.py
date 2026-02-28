@@ -31,4 +31,14 @@ urlpatterns = [
         views.remove_member_from_international_roster_view,
         name="roster_remove",
     ),
+    path(
+        "export-rosters-modal",
+        views.export_rosters_modal_view,
+        name="export_rosters_modal",
+    ),
+    path(
+        "export-rosters-csv",
+        views.export_rosters_csv_view,
+        name="export_rosters_csv",
+    ),
 ]

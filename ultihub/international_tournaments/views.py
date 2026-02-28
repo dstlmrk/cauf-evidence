@@ -1,3 +1,4 @@
+import csv
 import json
 import logging
 from functools import wraps
@@ -11,7 +12,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import BooleanField, Count, Exists, F, OuterRef, Prefetch, Q, Value
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET, require_POST
 from members.models import Member
@@ -272,4 +273,108 @@ def remove_member_from_international_roster_view(
         },
     )
     response["HX-Trigger"] = "teamsListChanged"
+    return response
+
+
+@require_GET
+def export_rosters_modal_view(request: HttpRequest) -> HttpResponse:
+    """Return HTML modal partial for selecting season to export rosters."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise PermissionDenied()
+
+    seasons = Season.objects.all().order_by("-name")
+    newest_season = seasons.first()
+
+    return render(
+        request,
+        "international_tournaments/partials/export_rosters_modal.html",
+        {
+            "seasons": seasons,
+            "newest_season": newest_season,
+        },
+    )
+
+
+@require_GET
+def export_rosters_csv_view(request: HttpRequest) -> HttpResponse:
+    """Export all international tournament rosters for a season as CSV. Staff/superuser only."""
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise PermissionDenied()
+
+    season_id = request.GET.get("season_id")
+    if not season_id:
+        return HttpResponseBadRequest("Missing season_id parameter")
+
+    season = get_object_or_404(Season, pk=season_id)
+
+    members_at_tournament = (
+        MemberAtInternationalTournament.objects.filter(tournament__season=season)
+        .select_related(
+            "tournament",
+            "team_at_tournament__division",
+            "team_at_tournament__age_limit",
+            "member",
+        )
+        .order_by(
+            "tournament__name",
+            "team_at_tournament__team_name",
+            "member__last_name",
+            "member__first_name",
+        )
+    )
+
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = (
+        f'attachment; filename="international_rosters_{season.name}.csv"'
+    )
+    response.write("\ufeff")  # BOM for Excel
+
+    writer = csv.writer(response)
+    writer.writerow(
+        [
+            "season",
+            "tournament",
+            "type",
+            "location",
+            "date",
+            "team",
+            "division",
+            "age_restriction",
+            "first_name",
+            "last_name",
+            "birth_date",
+            "sex",
+            "citizenship",
+            "is_captain",
+            "is_spirit_captain",
+            "is_coach",
+            "jersey_number",
+        ]
+    )
+
+    for mat in members_at_tournament:
+        tournament = mat.tournament
+        team = mat.team_at_tournament
+        writer.writerow(
+            [
+                season.name,
+                tournament.name,
+                tournament.get_type_display(),
+                f"{tournament.city}, {tournament.country.name}",
+                tournament.date_from.strftime("%Y-%m-%d"),
+                team.team_name,
+                team.division.name,
+                team.age_limit.name if team.age_limit else "",
+                mat.member.first_name,
+                mat.member.last_name,
+                mat.member.birth_date.strftime("%Y-%m-%d"),
+                mat.member.get_sex_display(),
+                mat.member.citizenship.code,
+                mat.is_captain,
+                mat.is_spirit_captain,
+                mat.is_coach,
+                mat.jersey_number or "",
+            ]
+        )
+
     return response
