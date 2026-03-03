@@ -11,7 +11,7 @@
         placeholder="Search members..."
         x-model="query"
         @input.debounce.300ms="search()"
-        @input="if (!$event.target.value) document.querySelector('#id_member_id').value = ''; document.querySelector('.form-error-msg')?.remove()"
+        @input="if (!$event.target.value) { const mi = document.querySelector('#id_member_id'); mi.value = ''; mi.dispatchEvent(new Event('change', { bubbles: true })); } document.querySelector('.form-error-msg')?.remove()"
         @focus="onFocus()"
         @blur="onBlur()"
         @keydown.arrow-down.prevent="moveDown()"

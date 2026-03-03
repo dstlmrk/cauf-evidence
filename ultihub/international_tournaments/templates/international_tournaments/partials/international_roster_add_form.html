@@ -28,8 +28,9 @@
             type="submit"
             class="btn btn-primary"
             form="addMemberToInternationalRosterForm"
+            disabled
             x-data
-            x-init="setInterval(() => { $el.disabled = !document.querySelector('#id_member_id').value }, 100)"
+            x-init="document.querySelector('#id_member_id')?.closest('form')?.addEventListener('change', (e) => { if (e.target.id === 'id_member_id') $el.disabled = !e.target.value })"
         >
             Submit
         </button>

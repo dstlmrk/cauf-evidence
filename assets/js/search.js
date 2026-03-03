@@ -102,7 +102,9 @@ window.memberSearch = function (tournament_id) {
 
             if (this.tournament_id) {
                 // Roster page
-                document.querySelector("#id_member_id").value = member.id;
+                const memberInput = document.querySelector("#id_member_id");
+                memberInput.value = member.id;
+                memberInput.dispatchEvent(new Event("change", { bubbles: true }));
             } else {
                 // Transfer page
                 await this.fetchForm(member.id);
