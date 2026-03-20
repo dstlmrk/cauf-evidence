@@ -35,6 +35,7 @@ window.memberSearch = function (tournament_id) {
                             const member = data.results[0];
                             this.selectedMember = member;
                             this.query = member.full_name + " (" + member.birth_year + ")";
+                            memberIdInput.dispatchEvent(new Event("change", { bubbles: true }));
                         }
                     }
                 } catch (error) {
