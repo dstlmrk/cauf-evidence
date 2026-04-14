@@ -247,6 +247,45 @@ class TestAddMemberToRosterForm:
             form.errors["member_id"]
         )
 
+    def test_member_can_play_for_different_team_when_team_transfers_allowed(
+        self,
+        member_factory,
+        team_at_tournament_factory,
+        member_at_tournament_factory,
+        competition_application_factory,
+    ):
+        """When allow_team_transfers is True, member can play for different teams"""
+        tat_a = team_at_tournament_factory(
+            tournament__competition__allow_team_transfers=True,
+        )
+        competition = tat_a.tournament.competition
+
+        application_b = competition_application_factory(competition=competition)
+        tat_b = team_at_tournament_factory(
+            tournament__competition=competition,
+            application=application_b,
+        )
+
+        member = member_factory(
+            citizenship="CZ",
+            sex=MemberSexEnum.MALE,
+            club=tat_b.application.team.club,
+            email_confirmed_at=timezone.now(),
+        )
+
+        member_at_tournament_factory(
+            team_at_tournament=tat_a,
+            tournament=tat_a.tournament,
+            member=member,
+        )
+
+        form = AddMemberToRosterForm(
+            data={"member_id": member.id},
+            team_at_tournament=tat_b,
+        )
+
+        assert form.is_valid()
+
     def test_member_can_play_for_same_team_in_same_competition(
         self,
         member_factory,
