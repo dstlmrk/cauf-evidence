@@ -135,6 +135,10 @@ class Competition(AuditModel):
     description = models.TextField(
         blank=True,
     )
+    allow_team_transfers = models.BooleanField(
+        default=False,
+        help_text="Allow a player to transfer between teams within this competition",
+    )
 
     class Meta:
         unique_together = ("name", "season", "environment", "division", "age_limit")

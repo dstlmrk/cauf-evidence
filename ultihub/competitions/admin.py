@@ -148,6 +148,7 @@ class CompetitionAdmin(AuditlogMixin, admin.ModelAdmin):
         "registration_deadline",
         "deposit",
         "description",
+        "allow_team_transfers",
     )
     inlines = [TournamentInline, CompetitionApplicationInline]
 

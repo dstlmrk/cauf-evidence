@@ -62,29 +62,30 @@ class AddMemberToRosterForm(forms.Form):
                     raise ValidationError({"member_id": "Member is already on this team's roster"})
 
                 # Check if member is registered for another team in this competition
-                current_team = self.team_at_tournament.application.team
-                if conflict := (
-                    MemberAtTournament.objects.filter(
-                        tournament__competition=tournament.competition,
-                        member_id=member.id,
-                    )
-                    .exclude(team_at_tournament__application__team=current_team)
-                    .select_related(
-                        "team_at_tournament__application",
-                        "tournament",
-                    )
-                    .first()
-                ):
-                    raise ValidationError(
-                        {
-                            "member_id": (
-                                "Member is already registered for another team"
-                                f" in this competition: "
-                                f"{conflict.team_at_tournament.application.team_name}"
-                                f" ({conflict.tournament.name})"
-                            )
-                        }
-                    )
+                if not tournament.competition.allow_team_transfers:
+                    current_team = self.team_at_tournament.application.team
+                    if conflict := (
+                        MemberAtTournament.objects.filter(
+                            tournament__competition=tournament.competition,
+                            member_id=member.id,
+                        )
+                        .exclude(team_at_tournament__application__team=current_team)
+                        .select_related(
+                            "team_at_tournament__application",
+                            "tournament",
+                        )
+                        .first()
+                    ):
+                        raise ValidationError(
+                            {
+                                "member_id": (
+                                    "Member is already registered for another team"
+                                    f" in this competition: "
+                                    f"{conflict.team_at_tournament.application.team_name}"
+                                    f" ({conflict.tournament.name})"
+                                )
+                            }
+                        )
 
                 if tournament.competition.age_limit:
                     if member.sex == MemberSexEnum.MALE and (
