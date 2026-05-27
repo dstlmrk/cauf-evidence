@@ -55,11 +55,15 @@ class AddMemberToRosterForm(forms.Form):
                 ):
                     raise ValidationError({"member_id": "Women are not allowed in this division"})
 
-                # Check if member is already on this team's roster at this tournament
+                # A player can be on only one roster per tournament, regardless of
+                # the allow_team_transfers setting (transfers apply across tournaments,
+                # not within a single one).
                 if MemberAtTournament.objects.filter(
-                    team_at_tournament=self.team_at_tournament, member_id=member.id
+                    tournament_id=tournament.id, member_id=member.id
                 ).exists():
-                    raise ValidationError({"member_id": "Member is already on this team's roster"})
+                    raise ValidationError(
+                        {"member_id": "Member is already on a roster at this tournament"}
+                    )
 
                 # Check if member is registered for another team in this competition
                 if not tournament.competition.allow_team_transfers:
@@ -69,6 +73,7 @@ class AddMemberToRosterForm(forms.Form):
                             tournament__competition=tournament.competition,
                             member_id=member.id,
                         )
+                        .exclude(tournament=tournament)
                         .exclude(team_at_tournament__application__team=current_team)
                         .select_related(
                             "team_at_tournament__application",

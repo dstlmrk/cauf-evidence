@@ -286,6 +286,48 @@ class TestAddMemberToRosterForm:
 
         assert form.is_valid()
 
+    def test_member_cannot_play_for_two_teams_in_same_tournament_even_when_transfers_allowed(
+        self,
+        member_factory,
+        team_at_tournament_factory,
+        member_at_tournament_factory,
+        competition_application_factory,
+    ):
+        """Within a single tournament a player must stay on one roster, even if
+        the competition allows team transfers."""
+        tat_a = team_at_tournament_factory(
+            tournament__competition__allow_team_transfers=True,
+        )
+        tournament = tat_a.tournament
+
+        # Second team in the same tournament (different application/team)
+        application_b = competition_application_factory(competition=tournament.competition)
+        tat_b = team_at_tournament_factory(
+            tournament=tournament,
+            application=application_b,
+        )
+
+        member = member_factory(
+            citizenship="CZ",
+            sex=MemberSexEnum.MALE,
+            club=tat_b.application.team.club,
+            email_confirmed_at=timezone.now(),
+        )
+
+        member_at_tournament_factory(
+            team_at_tournament=tat_a,
+            tournament=tournament,
+            member=member,
+        )
+
+        form = AddMemberToRosterForm(
+            data={"member_id": member.id},
+            team_at_tournament=tat_b,
+        )
+
+        assert not form.is_valid()
+        assert "Member is already on a roster at this tournament" in str(form.errors["member_id"])
+
     def test_member_can_play_for_same_team_in_same_competition(
         self,
         member_factory,
