@@ -7,8 +7,10 @@ from typing import Any
 from clubs.models import Club
 from competitions.models import (
     ApplicationStateEnum,
+    Competition,
     CompetitionApplication,
     CompetitionFeeTypeEnum,
+    EnvironmentEnum,
     Season,
 )
 from django.contrib.contenttypes.models import ContentType
@@ -35,6 +37,24 @@ class SeasonFeeData:
 
 class NoSubjectIdError(Exception):
     pass
+
+
+# Exact-match expansions of competition name abbreviations used in invoice descriptions
+_COMPETITION_NAME_EXPANSIONS = {
+    "MČR": "Mistrovství ČR",
+    "HMČR": "Halové mistrovství ČR",
+    "JMČR": "Juniorské mistrovství ČR",
+    "JHMČR": "Juniorské halové mistrovství ČR",
+}
+
+
+def _expand_competition_name_for_invoice(competition: Competition) -> str:
+    expanded = _COMPETITION_NAME_EXPANSIONS.get(competition.name, competition.name)
+    prefix = "BEACH " if competition.environment == EnvironmentEnum.BEACH else ""
+    return (
+        f"{prefix}{expanded} {competition.season} "
+        f"{str(competition.division).upper()} {competition.age_limit or ''}"
+    ).strip()
 
 
 def create_invoice_in_fakturoid_and_save_data(invoice: Invoice) -> None:
@@ -118,7 +138,8 @@ def create_deposit_invoice(club: Club) -> bool:
             InvoiceTypeEnum.COMPETITION_DEPOSIT,
             lines=[
                 (
-                    f"{str(application.competition)} - Startovné za {application.team_name}",
+                    f"{_expand_competition_name_for_invoice(application.competition)}"
+                    f" - Startovné za {application.team_name}",
                     application.competition.deposit,
                 )
                 for application in applications
