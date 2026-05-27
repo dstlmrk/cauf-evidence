@@ -237,6 +237,50 @@ def test_create_deposit_invoice_with_positive_deposit(club):
     assert application.invoice == invoice
 
 
+@pytest.mark.parametrize(
+    ("competition_name", "expected_substring", "forbidden_substring"),
+    [
+        ("MČR", "Mistrovství ČR", None),
+        ("HMČR", "Halové mistrovství ČR", None),
+        ("JMČR", "Juniorské mistrovství ČR", None),
+        ("JHMČR", "Juniorské halové mistrovství ČR", None),
+        # Substring must not trigger expansion (exact match only)
+        ("MČR Open", "MČR Open", "Mistrovství ČR"),
+        # Case-sensitive: lowercase variant stays as-is
+        ("mčr", "mčr", "Mistrovství ČR"),
+    ],
+)
+@pytest.mark.parametrize("club__fakturoid_subject_id", [999])
+def test_create_deposit_invoice_expands_competition_abbreviation(
+    club, competition_name, expected_substring, forbidden_substring
+):
+    competition = CompetitionFactory(name=competition_name, deposit=Decimal("500"))
+    team = TeamFactory(club=club)
+    CompetitionApplicationFactory(
+        competition=competition,
+        team=team,
+        state=ApplicationStateEnum.AWAITING_PAYMENT,
+        invoice=None,
+    )
+
+    with patch("finance.clients.fakturoid.fakturoid_client.create_invoice") as mock_create_invoice:
+        mock_create_invoice.return_value = {
+            "invoice_id": 1,
+            "status": "open",
+            "total": 500,
+            "public_html_url": "https://example.com/invoice",
+        }
+        result = create_deposit_invoice(club)
+
+    assert result is True
+    invoice = Invoice.objects.first()
+    assert invoice is not None
+    line_name = invoice.lines[0]["name"]
+    assert expected_substring in line_name
+    if forbidden_substring is not None:
+        assert forbidden_substring not in line_name
+
+
 @pytest.mark.parametrize("club__fakturoid_subject_id", [999])
 def test_create_deposit_invoice_with_mixed_deposits(club):
     """Test that only applications with deposit > 0 are included in invoice"""
