@@ -12,19 +12,28 @@ if (dsn) {
         sendDefaultPii: true,
         integrations: [],
         tunnel: "/api/feedback",
+        // Filter by the stack-frame origin: anything thrown from a browser
+        // extension or injected script lives outside our app, so it's
+        // environment noise, not an application bug. This generically covers
+        // present and future extension errors (e.g. Safari's "askUserFor
+        // permission" rejection masked as webkit-masked-url://hidden/).
+        denyUrls: [
+            /webkit-masked-url/, // Safari extensions / injected scripts
+            /moz-extension:\/\//, // Firefox extensions
+            /chrome-extension:\/\//, // Chromium extensions
+            /safari-web-extension:\/\//, // Safari web extensions
+        ],
         ignoreErrors: [
             // Firefox cross-origin noise: Alpine's MutationObserver touches
             // nodes injected by browser extensions / cross-origin iframes.
-            // Not an application bug and out of our control.
+            // This originates in OUR own bundle, so denyUrls can't catch it
+            // (the top stack frame is our URL) and a message filter is right.
             "Permission denied to access property",
             // Browser extension noise: extensions calling runtime.sendMessage()
             // against a stale tab leak rejections into our global handlers.
-            // Not an application bug and out of our control.
+            // The rejection often carries no stack frame, so denyUrls may miss
+            // it; keep the message filter as a belt-and-suspenders.
             "Invalid call to runtime.sendMessage(). Tab not found.",
-            // Safari extension noise: an injected script (masked as
-            // webkit-masked-url://hidden/) rejects in its own handleResponse.
-            // Not an application bug and out of our control.
-            "undefined is not an object (evaluating 'message[\"askUserForPermission\"]')",
         ],
     });
 
