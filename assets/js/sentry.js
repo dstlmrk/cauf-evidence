@@ -21,6 +21,10 @@ if (dsn) {
             // against a stale tab leak rejections into our global handlers.
             // Not an application bug and out of our control.
             "Invalid call to runtime.sendMessage(). Tab not found.",
+            // Safari extension noise: an injected script (masked as
+            // webkit-masked-url://hidden/) rejects in its own handleResponse.
+            // Not an application bug and out of our control.
+            "undefined is not an object (evaluating 'message[\"askUserForPermission\"]')",
         ],
     });
 
