@@ -12,6 +12,12 @@ if (dsn) {
         sendDefaultPii: true,
         integrations: [],
         tunnel: "/api/feedback",
+        ignoreErrors: [
+            // Firefox cross-origin noise: Alpine's MutationObserver touches
+            // nodes injected by browser extensions / cross-origin iframes.
+            // Not an application bug and out of our control.
+            "Permission denied to access property",
+        ],
     });
 
     if (userId) {
