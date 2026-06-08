@@ -17,6 +17,10 @@ if (dsn) {
             // nodes injected by browser extensions / cross-origin iframes.
             // Not an application bug and out of our control.
             "Permission denied to access property",
+            // Browser extension noise: extensions calling runtime.sendMessage()
+            // against a stale tab leak rejections into our global handlers.
+            // Not an application bug and out of our control.
+            "Invalid call to runtime.sendMessage(). Tab not found.",
         ],
     });
 
