@@ -136,12 +136,16 @@ def calculate_season_fees_for_check(user: User, season: Season) -> None:
 
 
 @db_task()
-@transaction.atomic
 def calculate_season_fees_and_generate_invoices(
     season: Season, dry_run: bool = False, dry_run_user: User | None = None
 ) -> None:
     """
     Generate invoices for season fees.
+
+    Each club is processed in its own transaction so that a failure for one club
+    cannot roll back invoices already created for other clubs. Invoices are also
+    idempotent per club (skipped if one already exists), so a re-run only fills in
+    the missing ones and never bills a club twice.
 
     Args:
         season: The season to generate invoices for
@@ -154,13 +158,15 @@ def calculate_season_fees_and_generate_invoices(
     logger.info(f"Calculating fees ({'dry-run' if dry_run else 'hot'}) for season {season.name}")
 
     if not dry_run:
-        season = Season.objects.select_for_update().get(pk=season.pk)
-        if season.invoices_generated_at is not None:
-            logger.warning(
-                f"Invoices for season {season.name} were already"
-                f" generated at {season.invoices_generated_at}"
-            )
-            return
+        # Lock the season just long enough to claim the run and prevent a concurrent execution.
+        with transaction.atomic():
+            season = Season.objects.select_for_update().get(pk=season.pk)
+            if season.invoices_generated_at is not None:
+                logger.warning(
+                    f"Invoices for season {season.name} were already"
+                    f" generated at {season.invoices_generated_at}"
+                )
+                return
 
     season_ct = ContentType.objects.get_for_model(Season)
     invoices_data = []  # (club_name, club_id, amount) for clubs that will get invoices
@@ -196,12 +202,15 @@ def calculate_season_fees_and_generate_invoices(
                 f"Dry-run: Would create invoice for club {club_info}, amount: {club_total} CZK"
             )
         else:
-            create_invoice(
-                club,
-                InvoiceTypeEnum.SEASON_PLAYER_FEES,
-                [(f"Poplatky za sezónu {season.name}", club_total)],
-                related_objects=[season],
-            )
+            # Commit per club: keep the invoice and its related objects even if a later
+            # club fails. A Fakturoid failure leaves the invoice in DRAFT for the resend task.
+            with transaction.atomic():
+                create_invoice(
+                    club,
+                    InvoiceTypeEnum.SEASON_PLAYER_FEES,
+                    [(f"Poplatky za sezónu {season.name}", club_total)],
+                    related_objects=[season],
+                )
             clubs_to_notification.append(club)
             logger.info(f"Created invoice for club {club_info}, amount: {club_total} CZK")
 
@@ -214,8 +223,11 @@ def calculate_season_fees_and_generate_invoices(
             f"Email sent to {email}"
         )
     else:
-        season.invoices_generated_at = timezone.now()
-        season.save()
+        # Set idempotently: only stamp once, so a re-run after a partial failure does not
+        # overwrite the original timestamp.
+        Season.objects.filter(pk=season.pk, invoices_generated_at__isnull=True).update(
+            invoices_generated_at=timezone.now()
+        )
         for club in clubs_to_notification:
             notify_club(
                 club=club,
