@@ -15,6 +15,7 @@ from django.db.models import BooleanField, Count, Exists, OuterRef, Value
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils.html import format_html
 from django.views.decorators.http import require_GET, require_POST, require_safe
 from members.models import Member
 
@@ -152,10 +153,9 @@ def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int
                 notify_club(
                     club=member.club,
                     subject="Roster announcement",
-                    message=(
+                    message=format_html(
                         "Your player <b>{}</b> has been registered on the <b>{}</b> roster"
-                        ' for the <a href="{}">{}</a> tournament.'
-                    ).format(
+                        ' for the <a href="{}">{}</a> tournament.',
                         member.full_name,
                         team_at_tournament.application.team_name,
                         request.build_absolute_uri(
