@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
 
+import requests
 from clubs.models import Club
 from competitions.models import (
     ApplicationStateEnum,
@@ -19,7 +20,7 @@ from django.db.models import Q
 from members.models import Member
 from tournaments.models import MemberAtTournament, Tournament
 
-from finance.clients.fakturoid import UnexpectedResponse, fakturoid_client
+from finance.clients.fakturoid import AuthorizationError, UnexpectedResponse, fakturoid_client
 from finance.models import Invoice, InvoiceRelatedObject, InvoiceStateEnum, InvoiceTypeEnum
 
 logger = logging.getLogger(__name__)
@@ -66,7 +67,10 @@ def create_invoice_in_fakturoid_and_save_data(invoice: Invoice) -> None:
             subject_id=invoice.club.fakturoid_subject_id,
             lines=invoice.lines,
         )
-    except UnexpectedResponse as ex:
+    except (UnexpectedResponse, AuthorizationError, requests.RequestException) as ex:
+        # Leave the invoice in DRAFT state so resend_invoices_to_fakturoid retries it later.
+        # Catching network and authorization errors (not just UnexpectedResponse) prevents the
+        # exception from bubbling up and rolling back invoices that were already created.
         logger.error(f"Failed to create invoice in Fakturoid: {ex}")
     else:
         invoice.fakturoid_invoice_id = data["invoice_id"]
