@@ -1,8 +1,26 @@
 import json
 
+import sentry_sdk
 from django.contrib.messages import get_messages
 from django.http import HttpRequest, HttpResponse
 from django.utils.deprecation import MiddlewareMixin
+
+
+class SentryUserMiddleware(MiddlewareMixin):
+    """
+    Attaches the signed-in agent's email to Sentry events.
+
+    Sentry runs with send_default_pii=False, so it never sends IP addresses,
+    cookies or request bodies (which may contain members' personal data). The
+    agent's email is the only identifier we deliberately keep, so support can
+    tell which signed-in user an error belongs to. set_user is a no-op when the
+    Sentry SDK is not initialized (dev/test), so this is safe everywhere.
+    """
+
+    def process_request(self, request: HttpRequest) -> None:
+        user = getattr(request, "user", None)
+        if user is not None and user.is_authenticated:
+            sentry_sdk.set_user({"id": user.pk, "email": user.email})
 
 
 class HtmxMessageMiddleware(MiddlewareMixin):
