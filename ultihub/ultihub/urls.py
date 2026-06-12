@@ -42,7 +42,8 @@ urlpatterns = [
     path("users/", include("users.urls")),
 ]
 
-if settings.ENVIRONMENT != "test":
+# Register debug toolbar URLs only in local development, matching settings.py.
+if settings.ENVIRONMENT == "dev":
     from debug_toolbar.toolbar import debug_toolbar_urls
 
     urlpatterns = [*urlpatterns] + debug_toolbar_urls()
