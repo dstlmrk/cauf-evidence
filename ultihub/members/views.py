@@ -215,20 +215,25 @@ def change_transfer_state_view(request: HttpRequest) -> HttpResponse:
     action = request.POST.get("action")
     transfer = get_object_or_404(Transfer, pk=transfer_id)
 
-    if action in ["approve", "reject"]:
-        if transfer.approving_club.id != get_current_club(request).id:
-            return HttpResponse(status=403)
-        if action == "approve":
-            approve_transfer(agent=request.user.agent, transfer=transfer)  # type: ignore
-            messages.success(request, "Transfer approved")
+    try:
+        if action in ["approve", "reject"]:
+            if transfer.approving_club.id != get_current_club(request).id:
+                return HttpResponse(status=403)
+            if action == "approve":
+                approve_transfer(agent=request.user.agent, transfer=transfer)  # type: ignore
+                messages.success(request, "Transfer approved")
+            else:
+                reject_transfer(transfer=transfer)
+                messages.success(request, "Transfer rejected")
         else:
-            reject_transfer(transfer=transfer)
-            messages.success(request, "Transfer rejected")
-    else:
-        if transfer.requesting_club.id != get_current_club(request).id:
-            return HttpResponse(status=403)
-        revoke_transfer(transfer=transfer)
-        messages.success(request, "Transfer revoked")
+            if transfer.requesting_club.id != get_current_club(request).id:
+                return HttpResponse(status=403)
+            revoke_transfer(transfer=transfer)
+            messages.success(request, "Transfer revoked")
+    except ValueError:
+        # The transfer is no longer in REQUESTED state (e.g. a double click or a
+        # concurrent action already resolved it). Inform the user instead of 500.
+        messages.error(request, "This transfer has already been resolved")
 
     return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 

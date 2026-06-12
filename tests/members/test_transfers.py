@@ -191,6 +191,30 @@ class TestTransferHelpers:
             approve_transfer(agent=agent, transfer=transfer)
 
     @patch("members.helpers.notify_club")
+    def test_approve_transfer_twice_raises_value_error(self, mock_notify):
+        """Test that approving an already processed transfer (double click) raises ValueError"""
+        agent = AgentFactory()
+        source_club = ClubFactory()
+        target_club = ClubFactory()
+        member = MemberFactory(club=source_club)
+        transfer = TransferFactory(
+            member=member,
+            source_club=source_club,
+            target_club=target_club,
+            state=TransferStateEnum.REQUESTED,
+        )
+
+        # First approval succeeds
+        approve_transfer(agent=agent, transfer=transfer)
+
+        # Second approval must be rejected without corrupting the state
+        with pytest.raises(ValueError, match="Transfer must be in REQUESTED state to be approved"):
+            approve_transfer(agent=agent, transfer=transfer)
+
+        transfer.refresh_from_db()
+        assert transfer.state == TransferStateEnum.PROCESSED
+
+    @patch("members.helpers.notify_club")
     def test_revoke_transfer_success(self, mock_notify):
         """Test successful transfer revocation"""
         transfer = TransferFactory(state=TransferStateEnum.REQUESTED)

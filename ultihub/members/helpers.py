@@ -6,6 +6,7 @@ from clubs.service import notify_club
 from competitions.models import Season
 from core.tasks import send_email
 from django.conf import settings
+from django.db import transaction
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.html import format_html
@@ -93,19 +94,25 @@ def cancel_competing_transfers(member: Member, approved_transfer_id: int) -> Non
 
 
 def approve_transfer(agent: Agent, transfer: Transfer) -> None:
-    if transfer.state != TransferStateEnum.REQUESTED:
-        raise ValueError("Transfer must be in REQUESTED state to be approved")
+    # Lock the transfer row and re-check its state inside the transaction so two
+    # concurrent approvals cannot both pass the check (avoids a TOCTOU race), and
+    # so the member move plus competing-transfer cancellation stay atomic.
+    with transaction.atomic():
+        transfer = Transfer.objects.select_for_update().get(pk=transfer.pk)
 
-    transfer.state = TransferStateEnum.PROCESSED
-    transfer.approved_at = timezone.now()
-    transfer.approved_by = agent
-    transfer.save()
+        if transfer.state != TransferStateEnum.REQUESTED:
+            raise ValueError("Transfer must be in REQUESTED state to be approved")
 
-    transfer.member.club = transfer.target_club
-    transfer.member.save()
+        transfer.state = TransferStateEnum.PROCESSED
+        transfer.approved_at = timezone.now()
+        transfer.approved_by = agent
+        transfer.save()
 
-    # Cancel all other pending transfers for this member
-    cancel_competing_transfers(transfer.member, transfer.id)
+        transfer.member.club = transfer.target_club
+        transfer.member.save()
+
+        # Cancel all other pending transfers for this member
+        cancel_competing_transfers(transfer.member, transfer.id)
 
     notify_club(
         club=transfer.requesting_club,
