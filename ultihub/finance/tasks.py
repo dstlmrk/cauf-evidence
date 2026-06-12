@@ -3,6 +3,7 @@ from collections import defaultdict
 from datetime import date, timedelta
 from decimal import Decimal
 
+import sentry_sdk
 from clubs.models import Club
 from clubs.service import notify_club
 from competitions.models import ApplicationStateEnum, CompetitionApplication, Season
@@ -17,7 +18,7 @@ from django.utils.html import format_html, format_html_join
 from huey import crontab
 from huey.contrib.djhuey import db_periodic_task, db_task
 
-from finance.clients.fakturoid import InvoiceDetails, fakturoid_client
+from finance.clients.fakturoid import InvoiceDetails, NotFoundError, fakturoid_client
 from finance.models import Invoice, InvoiceStateEnum, InvoiceTypeEnum
 from finance.services import (
     calculate_season_fees,
@@ -76,16 +77,29 @@ def check_fakturoid_invoices() -> None:
         state=InvoiceStateEnum.OPEN,
         created_at__gte=timezone.now() - timedelta(days=180),
     ):
-        details = fakturoid_client.get_invoice_details(
-            invoice_id=invoice.fakturoid_invoice_id  # type: ignore
-        )
-        status = details["status"]
-        if (
-            status in ("paid", "cancelled", "uncollectible")
-            or invoice.fakturoid_total != details["total"]
-            or invoice.fakturoid_due_on != details["due_on"]
-        ):
-            _update_invoice(invoice, details)
+        # Process each invoice in isolation so a single failing invoice cannot abort the
+        # whole run and get stuck blocking every subsequent run on the same record.
+        try:
+            details = fakturoid_client.get_invoice_details(
+                invoice_id=invoice.fakturoid_invoice_id  # type: ignore
+            )
+            status = details["status"]
+            if (
+                status in ("paid", "cancelled", "uncollectible")
+                or invoice.fakturoid_total != details["total"]
+                or invoice.fakturoid_due_on != details["due_on"]
+            ):
+                _update_invoice(invoice, details)
+        except NotFoundError as ex:
+            # Invoice was deleted in Fakturoid. Mark it as canceled so it leaves the OPEN
+            # set and stops blocking the run on every future execution.
+            invoice.state = InvoiceStateEnum.CANCELED
+            invoice.save(update_fields=["state"])
+            logger.warning("Invoice %s not found in Fakturoid, marked as canceled", invoice.id)
+            sentry_sdk.capture_exception(ex)
+        except Exception as ex:
+            logger.exception("Failed to check invoice %s in Fakturoid", invoice.id)
+            sentry_sdk.capture_exception(ex)
 
     logger.info("End regular check of invoices in Fakturoid")
 
