@@ -264,7 +264,8 @@ else:
 # TESTING AND DEBUG ----------------------------------------------------------
 DEBUG = env.bool("DEBUG", ENVIRONMENT in ["dev", "test"])
 
-if ENVIRONMENT != "test":
+# Debug toolbar must only run in local development, never in test or prod.
+if ENVIRONMENT == "dev":
     INSTALLED_APPS = [
         *INSTALLED_APPS,
         "debug_toolbar",
