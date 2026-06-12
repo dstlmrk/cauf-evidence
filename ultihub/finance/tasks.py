@@ -13,6 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.html import format_html, format_html_join
 from huey import crontab
 from huey.contrib.djhuey import db_periodic_task, db_task
 
@@ -219,9 +220,10 @@ def calculate_season_fees_and_generate_invoices(
             notify_club(
                 club=club,
                 subject="Season fees generated",
-                message=(
-                    f"Season fees for the season <b>{season.name}</b>"
-                    " have been generated. Check your invoices."
+                message=format_html(
+                    "Season fees for the season <b>{}</b>"
+                    " have been generated. Check your invoices.",
+                    season.name,
                 ),
             )
         logger.info(
@@ -275,23 +277,29 @@ def _get_overdue_invoices_for_reminder() -> dict[Club, list[tuple[Invoice, int]]
 
 def _format_overdue_reminder_message(invoices_data: list[tuple[Invoice, int]]) -> str:
     """Format HTML message listing overdue invoices for a club."""
-    lines = ["<p>Následující faktury jsou po splatnosti:</p>", "<ul>"]
-
+    items = []
     for invoice, days_overdue in invoices_data:
         assert invoice.fakturoid_due_on is not None  # Guaranteed by caller
-        amount = invoice.amount
-        link = invoice.fakturoid_public_html_url
-        due_date = invoice.fakturoid_due_on.strftime("%d.%m.%Y")
-
-        lines.append(
-            f'<li><a href="{link}">Faktura</a> - '
-            f"{amount} Kč, splatnost {due_date} ({days_overdue} dnů po splatnosti)</li>"
+        items.append(
+            (
+                invoice.fakturoid_public_html_url,
+                invoice.amount,
+                invoice.fakturoid_due_on.strftime("%d.%m.%Y"),
+                days_overdue,
+            )
         )
 
-    lines.append("</ul>")
-    lines.append("<p>Prosíme o úhradu co nejdříve.</p>")
+    list_items = format_html_join(
+        "\n",
+        '<li><a href="{}">Faktura</a> - {} Kč, splatnost {} ({} dnů po splatnosti)</li>',
+        items,
+    )
 
-    return "\n".join(lines)
+    return format_html(
+        "<p>Následující faktury jsou po splatnosti:</p>\n<ul>\n{}\n</ul>\n"
+        "<p>Prosíme o úhradu co nejdříve.</p>",
+        list_items,
+    )
 
 
 @db_periodic_task(crontab(minute="0", hour="8"))

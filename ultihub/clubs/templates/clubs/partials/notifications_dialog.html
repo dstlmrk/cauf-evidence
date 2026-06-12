@@ -23,6 +23,7 @@
                         </div>
                         <strong class="mb-1"> {{ notification.subject }} </strong>
 
+                        {# Message is built server-side with format_html, so user values are already escaped #}
                         <div>{{ notification.message | safe }}</div>
                     </li>
                 {% endfor %}

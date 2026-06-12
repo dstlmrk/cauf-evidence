@@ -8,6 +8,7 @@ from core.tasks import send_email
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.html import format_html
 from international_tournaments.models import (
     InternationalTournament,
     MemberAtInternationalTournament,
@@ -76,7 +77,10 @@ def create_transfer_request(
     notify_club(
         club=approving_club,
         subject="Transfer request",
-        message=f"You have been requested to approve the transfer of <b>{member.full_name}</b>.",
+        message=format_html(
+            "You have been requested to approve the transfer of <b>{}</b>.",
+            member.full_name,
+        ),
     )
 
 
@@ -106,7 +110,10 @@ def approve_transfer(agent: Agent, transfer: Transfer) -> None:
     notify_club(
         club=transfer.requesting_club,
         subject="Transfer approved",
-        message=f"Your request to transfer <b>{transfer.member.full_name}</b> has been approved.",
+        message=format_html(
+            "Your request to transfer <b>{}</b> has been approved.",
+            transfer.member.full_name,
+        ),
     )
 
 
@@ -120,8 +127,9 @@ def revoke_transfer(transfer: Transfer) -> None:
     notify_club(
         club=transfer.approving_club,
         subject="Transfer revoked",
-        message=(
-            f"The transfer of <b>{transfer.member.full_name}</b> has been revoked by requester."
+        message=format_html(
+            "The transfer of <b>{}</b> has been revoked by requester.",
+            transfer.member.full_name,
         ),
     )
 
@@ -136,8 +144,9 @@ def reject_transfer(transfer: Transfer) -> None:
     notify_club(
         club=transfer.requesting_club,
         subject="Transfer rejected",
-        message=(
-            f"The transfer of <b>{transfer.member.full_name}</b> has been rejected by approver."
+        message=format_html(
+            "The transfer of <b>{}</b> has been rejected by approver.",
+            transfer.member.full_name,
         ),
     )
 
