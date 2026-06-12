@@ -21,6 +21,7 @@ from huey.contrib.djhuey import db_periodic_task, db_task
 from finance.clients.fakturoid import InvoiceDetails, NotFoundError, fakturoid_client
 from finance.models import Invoice, InvoiceStateEnum, InvoiceTypeEnum
 from finance.services import (
+    NoSubjectIdError,
     calculate_season_fees,
     create_invoice,
     create_invoice_in_fakturoid_and_save_data,
@@ -112,7 +113,18 @@ def resend_invoices_to_fakturoid() -> None:
         state=InvoiceStateEnum.DRAFT,
         created_at__lte=timezone.now() - timedelta(seconds=60),
     ):
-        create_invoice_in_fakturoid_and_save_data(invoice)
+        # Process each invoice in isolation so a single failing invoice cannot abort the
+        # whole run and block every subsequent DRAFT invoice from ever being sent.
+        try:
+            create_invoice_in_fakturoid_and_save_data(invoice)
+        except NoSubjectIdError as ex:
+            # DRAFT invoice whose club has no Fakturoid subject_id set. It can never be sent
+            # automatically, so skip it and report it instead of crashing the run.
+            logger.warning("Invoice %s skipped, club has no Fakturoid subject_id", invoice.id)
+            sentry_sdk.capture_exception(ex)
+        except Exception as ex:
+            logger.exception("Failed to resend invoice %s to Fakturoid", invoice.id)
+            sentry_sdk.capture_exception(ex)
 
     logger.info("End trying to resend invoices to Fakturoid")
 
