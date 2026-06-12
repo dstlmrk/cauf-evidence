@@ -79,10 +79,12 @@ def edit_member(request: HttpRequest, member_id: int) -> HttpResponse:
 @login_required
 @require_GET
 def coach_licence_list(request: HttpRequest, member_id: int) -> HttpResponse:
+    # Ensure the member belongs to the current club before exposing their licences
+    member = get_object_or_404(Member, pk=member_id, club_id=get_current_club(request).id)
     return render(
         request,
         "members/partials/coach_licence_list.html",
-        {"coach_licences": CoachLicence.objects.filter(member_id=member_id).order_by("-valid_to")},
+        {"coach_licences": CoachLicence.objects.filter(member=member).order_by("-valid_to")},
     )
 
 
