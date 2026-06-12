@@ -62,11 +62,20 @@ def create_invoice_in_fakturoid_and_save_data(invoice: Invoice) -> None:
     if not invoice.club.fakturoid_subject_id:
         raise NoSubjectIdError
 
+    # Stable identifier shared between our DB and Fakturoid, used for deduplication.
+    custom_id = str(invoice.id)
+
     try:
-        data = fakturoid_client.create_invoice(
-            subject_id=invoice.club.fakturoid_subject_id,
-            lines=invoice.lines,
-        )
+        # If a previous attempt created the invoice in Fakturoid but its response was lost
+        # (e.g. a timeout), the invoice is already there under our custom_id. Reuse it instead
+        # of creating a duplicate.
+        data = fakturoid_client.find_invoice_by_custom_id(custom_id)
+        if data is None:
+            data = fakturoid_client.create_invoice(
+                subject_id=invoice.club.fakturoid_subject_id,
+                lines=invoice.lines,
+                custom_id=custom_id,
+            )
     except (UnexpectedResponse, AuthorizationError, requests.RequestException) as ex:
         # Leave the invoice in DRAFT state so resend_invoices_to_fakturoid retries it later.
         # Catching network and authorization errors (not just UnexpectedResponse) prevents the

@@ -27,6 +27,11 @@ class InvoiceDetails(TypedDict):
 
 logger = logging.getLogger(__name__)
 
+# (connect, read) timeout in seconds. A bounded timeout prevents a request from hanging
+# indefinitely, which is critical for invoice creation where a stuck request would otherwise
+# hold DB locks and leave the invoice in DRAFT, triggering a duplicate on the next resend.
+HTTP_TIMEOUT = (5, 30)
+
 
 class AuthorizationError(Exception):
     pass
@@ -59,6 +64,7 @@ class FakturoidClient:
             json={"grant_type": "client_credentials"},
             auth=HTTPBasicAuth(self.client_id, self.client_secret),
             headers={"Accept": "application/json", "User-Agent": FAKTUROID_USER_AGENT},
+            timeout=HTTP_TIMEOUT,
         )
 
         if response.status_code == 200:
@@ -76,7 +82,9 @@ class FakturoidClient:
         )(self._request)(method, url, json)
 
     def _request(self, method: str, url: str, json: dict) -> requests.Response:
-        response = getattr(requests, method)(url, headers=self.headers, json=json)
+        response = getattr(requests, method)(
+            url, headers=self.headers, json=json, timeout=HTTP_TIMEOUT
+        )
         if response.status_code == 401:
             raise AuthorizationError
         if response.status_code == 404:
@@ -89,35 +97,72 @@ class FakturoidClient:
     def post(self, url: str, json: dict) -> requests.Response:
         return self._retry_request("post", url, json)
 
-    def create_invoice(self, subject_id: int, lines: list[dict[str, Any]]) -> dict:
+    def create_invoice(
+        self, subject_id: int, lines: list[dict[str, Any]], custom_id: str | None = None
+    ) -> dict:
         """
         Create an invoice for the given subject with the given text and price.
 
+        custom_id is our own stable identifier (the local Invoice id). It lets us deduplicate:
+        if a previous create call timed out after Fakturoid had already stored the invoice, the
+        retry can look the invoice up by custom_id instead of creating a duplicate.
+
         https://www.fakturoid.cz/api/v3/invoices#create-invoice
         """
+        payload: dict[str, Any] = {
+            "subject_id": subject_id,
+            "lines": lines,
+            "tags": ["created-by-evidence"],
+        }
+        if custom_id is not None:
+            payload["custom_id"] = custom_id
+
         response = self.post(
             FAKTUROID_BASE_URL + f"/accounts/{self.slug}/invoices.json",
-            {
-                "subject_id": subject_id,
-                "lines": lines,
-                "tags": ["created-by-evidence"],
-            },
+            payload,
         )
 
         if response.status_code == 201:
-            unpacked_response = response.json()
-            invoice_id = unpacked_response["id"]
-            logger.info("Successfully created invoice %s", invoice_id)
-            return {
-                "invoice_id": invoice_id,
-                "status": unpacked_response["status"],
-                "total": unpacked_response["total"],
-                "public_html_url": unpacked_response["public_html_url"],
-            }
+            return self._unpack_invoice(response.json())
         else:
             raise UnexpectedResponse(
                 f"Error while creating invoice: {response.status_code}, {response.json()}"
             )
+
+    def find_invoice_by_custom_id(self, custom_id: str) -> dict | None:
+        """
+        Return the invoice previously created with the given custom_id, or None if none exists.
+
+        Used for idempotent retries: before creating an invoice again we check whether Fakturoid
+        already has it (e.g. the original create succeeded but its response was lost to a timeout).
+
+        https://www.fakturoid.cz/api/v3/invoices#invoices-index
+        """
+        response = self.get(
+            FAKTUROID_BASE_URL + f"/accounts/{self.slug}/invoices.json?custom_id={custom_id}"
+        )
+
+        if response.status_code == 200:
+            invoices = response.json()
+            if invoices:
+                return self._unpack_invoice(invoices[0])
+            return None
+        else:
+            raise UnexpectedResponse(
+                f"Error while searching invoice by custom_id: {response.status_code},"
+                f" {response.json()}"
+            )
+
+    @staticmethod
+    def _unpack_invoice(data: dict) -> dict:
+        invoice_id = data["id"]
+        logger.info("Fakturoid invoice %s", invoice_id)
+        return {
+            "invoice_id": invoice_id,
+            "status": data["status"],
+            "total": data["total"],
+            "public_html_url": data["public_html_url"],
+        }
 
     def get_invoice_details(self, invoice_id: int) -> InvoiceDetails:
         """
@@ -160,8 +205,13 @@ class FakturoidClient:
 
 
 class FakturoidFakeClient:
-    def create_invoice(self, subject_id: int, lines: list[dict[str, Any]]) -> dict:
+    def create_invoice(
+        self, subject_id: int, lines: list[dict[str, Any]], custom_id: str | None = None
+    ) -> dict:
         return {"invoice_id": 1, "status": "open", "total": 100, "public_html_url": ""}
+
+    def find_invoice_by_custom_id(self, custom_id: str) -> dict | None:
+        return None
 
     def get_invoice_details(self, invoice_id: int) -> InvoiceDetails:
         return InvoiceDetails(status="open", total=Decimal(100), due_on=None)
