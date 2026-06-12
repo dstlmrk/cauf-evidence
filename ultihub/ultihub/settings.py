@@ -45,7 +45,15 @@ if ENVIRONMENT == "prod":
         integrations=[
             DjangoIntegration(),
         ],
-        send_default_pii=True,
+        # Do not send PII by default: no IP addresses, no cookies and no
+        # request bodies (which may contain members' personal data such as
+        # birth numbers, addresses or emails). The only identifier we keep is
+        # the signed-in agent's email, attached via SentryUserMiddleware.
+        send_default_pii=False,
+        # Never capture HTTP request bodies, so members' PII submitted in forms
+        # (birth_number, street, postal_code, dates of birth, etc.) can never
+        # be transmitted to Sentry.
+        max_request_body_size="never",
         before_send=_sentry_before_send,
     )
 
@@ -94,6 +102,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "core.middleware.SentryUserMiddleware",
     "auditlog.middleware.AuditlogMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
