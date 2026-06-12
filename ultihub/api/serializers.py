@@ -129,12 +129,14 @@ class TeamAtTournamentUpdateSerializer(serializers.ModelSerializer):
         fields = ["final_placement", "spirit_avg"]
 
     def validate_final_placement(self, value):  # type: ignore
-        if value < 1:
+        # The field is nullable, so a null value is valid and clears the placement.
+        if value is not None and value < 1:
             raise serializers.ValidationError("Final placement must be a positive integer.")
         return value
 
     def validate_spirit_avg(self, value):  # type: ignore
-        if value < 0 or value > 20:
+        # The field is nullable, so a null value is valid and clears the average.
+        if value is not None and (value < 0 or value > 20):
             raise serializers.ValidationError("Spirit average must be between 0 and 20.")
         return value
 
@@ -145,7 +147,8 @@ class CompetitionApplicationUpdateSerializer(serializers.ModelSerializer):
         fields = ["final_placement"]
 
     def validate_final_placement(self, value):  # type: ignore
-        if value < 1:
+        # The field is nullable, so a null value is valid and clears the placement.
+        if value is not None and value < 1:
             raise serializers.ValidationError("Final placement must be a positive integer.")
         return value
 
