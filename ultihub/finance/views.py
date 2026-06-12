@@ -65,7 +65,8 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
     member_id = request.POST.get("member_id", "")
     season_id = request.POST.get("season_id", "")
 
-    member = get_object_or_404(Member, pk=member_id)
+    # Scope the member to the current club to prevent IDOR access to other clubs' members
+    member = get_object_or_404(Member, pk=member_id, club_id=get_current_club(request).id)
     season = get_object_or_404(Season, pk=season_id)
 
     # Get all domestic tournaments for this member in this season
