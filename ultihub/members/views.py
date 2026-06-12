@@ -8,7 +8,7 @@ from core.helpers import get_current_club
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.timezone import now
@@ -90,6 +90,9 @@ def coach_licence_list(request: HttpRequest, member_id: int) -> HttpResponse:
 
 def confirm_email(request: HttpRequest, token: UUID) -> HttpResponse:
     member = get_object_or_404(Member, email_confirmation_token=token)
+    # The page exposes the member's PII, so an expired token must not render it.
+    if member.is_email_confirmation_token_expired:
+        raise Http404
     if request.method == "POST":
         form = MemberConfirmEmailForm(request.POST, member=member)
         current_time = now()

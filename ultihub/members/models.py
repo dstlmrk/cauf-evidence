@@ -1,6 +1,6 @@
 import logging
 import uuid
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 
 from core.fields import ValidatedEmailField
@@ -12,6 +12,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, FloatField, Func, Manager, Q, QuerySet, UniqueConstraint, Value
 from django.template.loader import render_to_string
+from django.utils.timezone import now
 from django_countries.fields import CountryField
 
 from members.validators import (
@@ -22,6 +23,9 @@ from members.validators import (
 )
 
 logger = logging.getLogger(__name__)
+
+# How long a freshly issued email confirmation token stays valid.
+EMAIL_CONFIRMATION_TOKEN_VALIDITY = timedelta(days=30)
 
 
 class MemberSexEnum(models.IntegerChoices):
@@ -127,6 +131,11 @@ class Member(AuditModel):
         null=True,
         editable=False,
     )
+    email_confirmation_token_created_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        editable=False,
+    )
     email_confirmed_at = models.DateTimeField(
         null=True,
         blank=True,
@@ -184,6 +193,12 @@ class Member(AuditModel):
     @property
     def has_email_confirmed(self) -> bool:
         return bool(self.email_confirmed_at)
+
+    @property
+    def is_email_confirmation_token_expired(self) -> bool:
+        if not self.email_confirmation_token_created_at:
+            return True
+        return now() - self.email_confirmation_token_created_at > EMAIL_CONFIRMATION_TOKEN_VALIDITY
 
     def __str__(self) -> str:
         return f"{self.full_name} ({self.club.short_name or self.club.name})"
@@ -256,12 +271,15 @@ class Member(AuditModel):
                 self.email_confirmed_at = None
                 if email:
                     self.email_confirmation_token = uuid.uuid4()
+                    self.email_confirmation_token_created_at = now()
                     send_token = True
                 else:
                     self.email_confirmation_token = None
+                    self.email_confirmation_token_created_at = None
         else:
             if email:
                 self.email_confirmation_token = uuid.uuid4()
+                self.email_confirmation_token_created_at = now()
                 send_token = True
 
         super().save(*args, **kwargs)
