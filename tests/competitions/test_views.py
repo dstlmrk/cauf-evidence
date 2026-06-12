@@ -76,6 +76,26 @@ class TestRegistrationView:
         assert response.status_code == 204
         assert not CompetitionApplication.objects.filter(team=team).exists()
 
+    def test_cannot_register_after_deadline(self, logged_in_client):
+        user = UserFactory()
+        club = ClubFactory()
+        team = TeamFactory(club=club, is_primary=True)
+        competition = CompetitionFactory(
+            registration_deadline=timezone.now() - timedelta(days=1),
+        )
+        TournamentFactory(competition=competition)
+        client = logged_in_client(user, club)
+
+        response = client.post(
+            reverse("competitions:registration", args=[competition.id]),
+            data={f"team_{team.id}": True},
+        )
+
+        assert response.status_code == 403
+        assert not CompetitionApplication.objects.filter(
+            team=team, competition=competition
+        ).exists()
+
 
 class TestCancelApplicationView:
     def test_cancels_own_application(self, logged_in_client):

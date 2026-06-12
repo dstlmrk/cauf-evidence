@@ -85,9 +85,13 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
     )
 
     if request.method == "POST":
+        competition = get_object_or_404(Competition, pk=competition_id)
+        # Enforce the registration deadline on the server; the template only hides
+        # the submit button, so a form opened before the deadline must not be accepted afterwards.
+        if not competition.has_open_registration:
+            raise PermissionDenied()
         form = RegistrationForm(request.POST, teams_with_applications=teams_with_applications)
         if form.is_valid():
-            competition = get_object_or_404(Competition, pk=competition_id)
             for checkbox_name, value in form.cleaned_data.items():
                 team_id = int(checkbox_name.split("_")[1])
                 team = teams_with_applications.get(pk=team_id)
