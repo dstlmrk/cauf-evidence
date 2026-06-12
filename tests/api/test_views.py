@@ -175,6 +175,19 @@ def test_patch_team_at_tournament(api_token, api_client, team_at_tournament):
     assert team_at_tournament.final_placement == 99
     assert team_at_tournament.spirit_avg == Decimal("10.123")
 
+    # Null values must be accepted to clear the placement and spirit average
+    response = api_client.patch(
+        reverse("api:team-at-tournament", args=[team_at_tournament.pk]),
+        data={"final_placement": None, "spirit_avg": None},
+        format="json",
+        HTTP_AUTHORIZATION=f"Token {api_token.key}",
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    team_at_tournament = TeamAtTournament.objects.get(pk=team_at_tournament.pk)
+    assert team_at_tournament.final_placement is None
+    assert team_at_tournament.spirit_avg is None
+
 
 def test_get_competition_application(api_client, competition_application):
     response = api_client.get(
@@ -209,6 +222,18 @@ def test_patch_competition_application(api_token, api_client, competition_applic
 
     competition_application = CompetitionApplication.objects.get(pk=competition_application.pk)
     assert competition_application.final_placement == 98
+
+    # Null value must be accepted to clear the placement
+    response = api_client.patch(
+        reverse("api:competition-application", args=[competition_application.pk]),
+        data={"final_placement": None},
+        format="json",
+        HTTP_AUTHORIZATION=f"Token {api_token.key}",
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    competition_application = CompetitionApplication.objects.get(pk=competition_application.pk)
+    assert competition_application.final_placement is None
 
 
 def test_get_seasons(api_client, season):
