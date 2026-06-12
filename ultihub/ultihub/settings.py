@@ -29,6 +29,12 @@ if ENVIRONMENT == "prod":
     SESSION_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     CSRF_TRUSTED_ORIGINS = [f"https://{APPLICATION_DOMAIN}"]
+    # HSTS: instruct browsers to always use HTTPS. The nginx-proxy handles the
+    # HTTP->HTTPS redirect; setting HSTS here guarantees it at the application level.
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    # Prevent browsers from MIME-sniffing responses away from the declared content type.
+    SECURE_CONTENT_TYPE_NOSNIFF = True
 
     from sentry_sdk.types import Event
 
