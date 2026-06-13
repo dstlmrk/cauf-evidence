@@ -4,10 +4,12 @@ import logging
 from typing import cast
 
 from clubs.service import notify_club
-from competitions.enums import EnvironmentEnum
 from competitions.filters import TournamentFilterSet
-from competitions.models import AgeLimit, Division, Season
-from core.helpers import get_current_club, get_current_club_or_none
+from core.helpers import (
+    get_current_club,
+    get_current_club_or_none,
+    get_filter_context_and_params,
+)
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -45,12 +47,8 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
         "sotg_winner_team__application",
     )
 
-    # Set default season to the newest one if no season filter is applied
-    query_params = request.GET.copy()
-    if "season" not in query_params:
-        newest_season = Season.objects.order_by("-name").first()
-        if newest_season:
-            query_params["season"] = str(newest_season.id)
+    # Default season + shared filter context for core/partials/competition_filters.html
+    query_params, filter_context = get_filter_context_and_params(request)
 
     # Apply filters using FilterSet
     filter_set = TournamentFilterSet(query_params, queryset=queryset)
@@ -73,11 +71,7 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
         "tournaments/tournaments.html",
         {
             "tournaments": tournaments,
-            "seasons": Season.objects.all().order_by("-name"),
-            "selected_season_id": query_params.get("season"),
-            "environments": EnvironmentEnum.choices,
-            "divisions": Division.objects.all().order_by("name"),
-            "age_limits": AgeLimit.objects.all().order_by("name"),
+            **filter_context,
         },
     )
 
