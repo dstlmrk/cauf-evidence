@@ -1,0 +1,13 @@
+{% extends "core/base.html" %}
+
+{% block page_title %}Stránka nenalezena | Evidence ČAUF{% endblock %}
+
+{% block title %}<h1>Stránka nenalezena</h1>{% endblock %}
+
+{% block content %}
+    <div class="alert alert-warning" role="alert">
+        <i class="bi bi-exclamation-octagon-fill me-1"></i>
+        Požadovaná stránka neexistuje nebo byla přesunuta.
+    </div>
+    <a href="{% url 'home' %}" class="btn btn-primary"> <i class="bi bi-house-fill"></i> Zpět na úvodní stránku </a>
+{% endblock %}

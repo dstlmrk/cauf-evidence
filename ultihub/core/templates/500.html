@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="cs">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Někde se stala chyba | Evidence ČAUF</title>
+        {# Standalone page: the 500 handler renders with an empty context and #}
+        {# context processors do not run, so this template must not depend on #}
+        {# them or on the base template. All styling is inlined. #}
+        <style>
+            body {
+                margin: 0;
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    Roboto,
+                    Arial,
+                    sans-serif;
+                background-color: #f8f9fa;
+                color: #212529;
+                display: flex;
+                min-height: 100vh;
+                align-items: center;
+                justify-content: center;
+            }
+            .error-card {
+                max-width: 32rem;
+                margin: 1rem;
+                padding: 2.5rem;
+                background-color: #ffffff;
+                border-radius: 0.5rem;
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+                text-align: center;
+            }
+            .error-card h1 {
+                margin-top: 0;
+                font-size: 1.75rem;
+            }
+            .error-card p {
+                color: #6c757d;
+                line-height: 1.5;
+            }
+            .error-card a {
+                display: inline-block;
+                margin-top: 1rem;
+                padding: 0.5rem 1.25rem;
+                background-color: #0d6efd;
+                color: #ffffff;
+                text-decoration: none;
+                border-radius: 0.375rem;
+            }
+            .error-card a:hover {
+                background-color: #0b5ed7;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="error-card">
+            <h1>Někde se stala chyba</h1>
+            <p>
+                Omlouváme se, něco se pokazilo na naší straně. Zkuste to prosím za chvíli znovu, nebo se vraťte na
+                úvodní stránku.
+            </p>
+            <a href="/">Zpět na úvodní stránku</a>
+        </div>
+    </body>
+</html>
