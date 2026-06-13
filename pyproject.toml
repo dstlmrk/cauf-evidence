@@ -107,7 +107,26 @@ select = [
 	"SIM", # flake8-simplify
 	"T20", # flake8-print
 	"PTH", # flake8-pathlib
+	"S",   # flake8-bandit (security)
+	"DTZ", # flake8-datetimez
+	"C4",  # flake8-comprehensions
+	"RUF", # ruff-specific rules
 ]
+ignore = [
+	# Mutable class defaults are pervasive and intentional on Django model/admin
+	# and DRF serializer class attributes (Meta.fields, list_display, ...).
+	"RUF012",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests rely on assert, dummy credentials/random data and naive fixture dates.
+"tests/**" = ["S101", "S105", "S106", "S311", "DTZ001", "DTZ007", "DTZ011"]
+"**/tests/**" = ["S101", "S105", "S106", "S311", "DTZ001", "DTZ007", "DTZ011"]
+# One-off operational scripts talk to trusted internal endpoints and parse
+# external naive dates; request timeouts, asserts and tz-awareness add no value.
+"ultihub/**/management/commands/**" = ["S101", "S113", "DTZ001", "DTZ007"]
+# Birth-number validation works with date-only domain values, not tz-aware moments.
+"ultihub/members/validators.py" = ["DTZ001", "DTZ007", "DTZ011"]
 
 [tool.mypy]
 mypy_path = "ultihub"

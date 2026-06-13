@@ -77,4 +77,4 @@ def search(
             query_filter &= ~Q(id__in=_get_already_assigned_members_ids(tournament))
 
     # TODO: add higher weight to members who already played for the club in this competition
-    return [member for member in qs.filter(query_filter)[:limit]]
+    return list(qs.filter(query_filter)[:limit])

@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import timedelta
 from decimal import Decimal
 
 import sentry_sdk
@@ -301,7 +301,7 @@ def _get_overdue_invoices_for_reminder() -> dict[Club, list[tuple[Invoice, int]]
     Find invoices that are exactly 1, 15, or 30 days overdue.
     Returns dict: {club: [(invoice, days_overdue), ...]}
     """
-    today = date.today()
+    today = timezone.localdate()
     result: dict[Club, list[tuple[Invoice, int]]] = defaultdict(list)
 
     target_due_dates = [today - timedelta(days=d) for d in OVERDUE_REMINDER_DAYS]
@@ -312,7 +312,7 @@ def _get_overdue_invoices_for_reminder() -> dict[Club, list[tuple[Invoice, int]]
     ).select_related("club")
 
     for invoice in overdue_invoices:
-        assert invoice.fakturoid_due_on is not None  # Guaranteed by filter
+        assert invoice.fakturoid_due_on is not None  # noqa: S101  # Guaranteed by filter
         days_overdue = (today - invoice.fakturoid_due_on).days
         result[invoice.club].append((invoice, days_overdue))
 
@@ -323,7 +323,7 @@ def _format_overdue_reminder_message(invoices_data: list[tuple[Invoice, int]]) -
     """Format HTML message listing overdue invoices for a club."""
     items = []
     for invoice, days_overdue in invoices_data:
-        assert invoice.fakturoid_due_on is not None  # Guaranteed by caller
+        assert invoice.fakturoid_due_on is not None  # noqa: S101  # Guaranteed by caller
         items.append(
             (
                 invoice.fakturoid_public_html_url,

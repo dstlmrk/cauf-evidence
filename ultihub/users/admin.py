@@ -20,7 +20,7 @@ class NewAgentRequestAdmin(AuditlogMixin, admin.ModelAdmin):
     def get_readonly_fields(self, request: HttpRequest, obj: Any | None = None) -> tuple:
         fields = tuple(super().get_readonly_fields(request, obj))
         if obj:
-            return ("email", "is_staff", "is_superuser", "processed_at") + fields
+            return ("email", "is_staff", "is_superuser", "processed_at", *fields)
         else:
             return fields
 

@@ -193,7 +193,7 @@ def international_roster_add_form_view(
             messages.success(request, "Member added successfully")
 
             return hx_trigger_response(
-                showRosterDialog=dict(teamAtTournamentId=team_at_tournament_id),
+                showRosterDialog={"teamAtTournamentId": team_at_tournament_id},
                 teamsListChanged=True,
             )
     else:
