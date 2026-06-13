@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from clubs.models import ClubNotification
-from clubs.service import notify_club
+from clubs.services import notify_club
 
 from tests.factories import AgentAtClubFactory, AgentFactory, ClubFactory
 
@@ -14,7 +14,7 @@ class TestNotifyClub:
         AgentAtClubFactory(agent=agent1, club=club, is_active=True)
         AgentAtClubFactory(agent=agent2, club=club, is_active=True)
 
-        with patch("clubs.service.send_email"):
+        with patch("clubs.services.send_email"):
             notify_club(club, "Test Subject", "Test Message")
 
         assert ClubNotification.objects.filter(agent_at_club__club=club).count() == 2
@@ -26,14 +26,14 @@ class TestNotifyClub:
         AgentAtClubFactory(agent=active_agent, club=club, is_active=True)
         AgentAtClubFactory(agent=inactive_agent, club=club, is_active=False)
 
-        with patch("clubs.service.send_email"):
+        with patch("clubs.services.send_email"):
             notify_club(club, "Test Subject", "Test Message")
 
         assert ClubNotification.objects.filter(agent_at_club__club=club).count() == 1
         notification = ClubNotification.objects.get()
         assert notification.agent_at_club.agent == active_agent
 
-    @patch("clubs.service.send_email")
+    @patch("clubs.services.send_email")
     def test_sends_email_only_to_agents_with_notifications_enabled(self, mock_send_email):
         club = ClubFactory()
         agent_with_email = AgentFactory(has_email_notifications_enabled=True)
@@ -47,7 +47,7 @@ class TestNotifyClub:
             "Test Subject", "Test Message", to=[agent_with_email.user.email]
         )
 
-    @patch("clubs.service.send_email")
+    @patch("clubs.services.send_email")
     def test_no_email_when_all_have_notifications_disabled(self, mock_send_email):
         club = ClubFactory()
         agent = AgentFactory(has_email_notifications_enabled=False)
@@ -57,7 +57,7 @@ class TestNotifyClub:
 
         mock_send_email.assert_not_called()
 
-    @patch("clubs.service.send_email")
+    @patch("clubs.services.send_email")
     def test_handles_club_with_no_agents(self, mock_send_email):
         club = ClubFactory()
 

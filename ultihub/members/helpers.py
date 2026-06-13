@@ -2,7 +2,7 @@ import logging
 from collections import Counter
 
 from clubs.models import Club
-from clubs.service import notify_club
+from clubs.services import notify_club
 from competitions.models import Season
 from core.tasks import send_email
 from django.conf import settings

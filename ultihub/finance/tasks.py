@@ -5,7 +5,7 @@ from decimal import Decimal
 
 import sentry_sdk
 from clubs.models import Club
-from clubs.service import notify_club
+from clubs.services import notify_club
 from competitions.models import ApplicationStateEnum, CompetitionApplication, Season
 from core.helpers import create_csv
 from core.tasks import send_email

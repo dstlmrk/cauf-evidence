@@ -439,7 +439,7 @@ def test_calculate_season_fees_and_generate_invoices_no_clubs_with_fees(mock_not
 
 
 @patch("finance.services.fakturoid_client.create_invoice")
-@patch("clubs.service.send_email")
+@patch("clubs.services.send_email")
 def test_calculate_season_fees_and_generate_invoices_notifications_and_emails(
     mock_send_email, mock_fakturoid_create
 ):

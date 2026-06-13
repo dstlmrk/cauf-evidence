@@ -2,7 +2,7 @@ import csv
 import logging
 from typing import cast
 
-from clubs.service import notify_club
+from clubs.services import notify_club
 from competitions.filters import TournamentFilterSet
 from core.helpers import (
     get_current_club,
