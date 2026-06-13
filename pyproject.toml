@@ -157,6 +157,23 @@ sequence = [
 ]
 envfile = "secrets/.env.test"
 
+[tool.poe.tasks.test-db-up]
+help = "Start the test database for the fast test loop (keeps it running)"
+sequence = [
+  "docker compose -f docker/compose.test.yaml up -d",
+  "python tests/wait_for_postgres.py"
+]
+envfile = "secrets/.env.test"
+
+[tool.poe.tasks.test-db-down]
+help = "Stop the test database started by test-db-up"
+cmd = "docker compose -f docker/compose.test.yaml down --volumes"
+
+[tool.poe.tasks.t]
+help = "Run tests against the already running test DB, reusing the schema. Pass pytest args directly, e.g. 'poe t -k transfer -x' or 'poe t tests/users/'"
+cmd = "pytest --reuse-db"
+envfile = "secrets/.env.test"
+
 [tool.poe.tasks.migrate]
 help = "Migrate the database"
 cmd = "docker compose -f docker/compose.dev.yaml exec app python manage.py migrate"

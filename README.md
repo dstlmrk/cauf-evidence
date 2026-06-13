@@ -168,3 +168,28 @@ npm run build
 # Watch for changes
 npm run watch
 ```
+
+### Testing
+
+`uv run poe test` spins up a fresh test database, runs the whole suite and tears
+the database down again. That is what CI uses, but the rebuild adds tens of
+seconds to every run.
+
+For a fast local loop, keep the test database running and reuse its schema
+between runs:
+
+```bash
+# Start the test database once
+uv run poe test-db-up
+
+# Run a subset of tests against it (reuses the schema, no rebuild)
+uv run poe t tests/members/
+uv run poe t -k transfer -x
+
+# Stop the test database when you are done
+uv run poe test-db-down
+```
+
+`poe t` passes any extra arguments straight to `pytest` and adds `--reuse-db`,
+so the schema is created only on the first run. If you change models, run with
+`--create-db` once to refresh the schema.
