@@ -145,6 +145,45 @@ class TestTournamentWinners:
         # In this case, no team has final_placement=1 anymore, so should be None
         assert tournament.winner_team is None
 
+    def test_winner_cleared_when_final_placement_removed(
+        self, tournament_factory, team_at_tournament_factory
+    ):
+        """Test that winner_team is cleared when the winning team loses final_placement=1"""
+        tournament = tournament_factory()
+        team1 = team_at_tournament_factory(tournament=tournament, final_placement=1)
+        _team2 = team_at_tournament_factory(tournament=tournament, final_placement=2)
+
+        tournament.refresh_from_db()
+        assert tournament.winner_team == team1
+
+        # Remove final_placement during a results correction
+        team1.final_placement = None
+        team1.save()
+
+        tournament.refresh_from_db()
+        # No team has final_placement=1 anymore, so winner_team must be cleared
+        assert tournament.winner_team is None
+
+    def test_sotg_winner_cleared_when_spirit_removed(
+        self, tournament_factory, team_at_tournament_factory
+    ):
+        """Test that sotg_winner_team is cleared when no team has spirit_avg anymore"""
+        tournament = tournament_factory()
+        team1 = team_at_tournament_factory(
+            tournament=tournament, final_placement=1, spirit_avg=Decimal("15.000")
+        )
+
+        tournament.refresh_from_db()
+        assert tournament.sotg_winner_team == team1
+
+        # Remove spirit_avg during a results correction
+        team1.spirit_avg = None
+        team1.save()
+
+        tournament.refresh_from_db()
+        # No team has spirit_avg anymore, so sotg_winner_team must be cleared
+        assert tournament.sotg_winner_team is None
+
     def test_no_winner_when_no_teams(self, tournament_factory):
         """Test that winner_team is None when tournament has no teams"""
         tournament = tournament_factory()
