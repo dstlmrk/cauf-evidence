@@ -116,7 +116,9 @@ def search(request: HttpRequest) -> JsonResponse:
     tournament_id = request.GET.get("tournament_id")
     member_id = request.GET.get("member_id")
 
-    if tournament_id == "null":
+    # Searching without a tournament is supported, so treat both a missing parameter
+    # and the literal "null" as "no tournament" instead of looking up pk=None (404).
+    if not tournament_id or tournament_id == "null":
         tournament = None
     else:
         tournament = get_object_or_404(Tournament, pk=tournament_id)
