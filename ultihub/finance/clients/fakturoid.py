@@ -1,4 +1,5 @@
 import logging
+import threading
 from datetime import date
 from decimal import Decimal
 from typing import Any, Literal, TypedDict
@@ -50,10 +51,11 @@ class FakturoidClient:
         self.client_id = client_id
         self.client_secret = client_secret
         self.slug = slug
-        self.headers = {
-            "Authorization": None,
-            "User-Agent": FAKTUROID_USER_AGENT,
-        }
+        # This client is a module-level singleton shared across web threads. Keep only the
+        # bearer token as shared state (its assignment is atomic) and guard re-authorization
+        # with a lock; request headers are built per call so no mutable dict is shared.
+        self._token: str | None = None
+        self._auth_lock = threading.Lock()
 
     def _authorize(self, retry_state: RetryCallState) -> None:
         """
@@ -68,7 +70,8 @@ class FakturoidClient:
         )
 
         if response.status_code == 200:
-            self.headers["Authorization"] = f"Bearer {response.json()['access_token']}"
+            with self._auth_lock:
+                self._token = f"Bearer {response.json()['access_token']}"
         else:
             logger.error("Error while authorizing to Fakturoid API: %s", response.status_code)
             raise AuthorizationError
@@ -82,9 +85,12 @@ class FakturoidClient:
         )(self._request)(method, url, json)
 
     def _request(self, method: str, url: str, json: dict) -> requests.Response:
-        response = getattr(requests, method)(
-            url, headers=self.headers, json=json, timeout=HTTP_TIMEOUT
-        )
+        # Build headers per request so concurrent threads never mutate a shared dict.
+        headers = {
+            "Authorization": self._token,
+            "User-Agent": FAKTUROID_USER_AGENT,
+        }
+        response = getattr(requests, method)(url, headers=headers, json=json, timeout=HTTP_TIMEOUT)
         if response.status_code == 401:
             raise AuthorizationError
         if response.status_code == 404:
