@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import Exists, OuterRef, Prefetch
+from django.db.models import Exists, OuterRef, Prefetch, ProtectedError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET, require_POST
@@ -163,7 +163,16 @@ def cancel_application_view(request: HttpRequest, application_id: int) -> HttpRe
         and application.competition.has_open_registration
         and not application.invoice
     ):
-        application.delete()
+        try:
+            application.delete()
+        except ProtectedError:
+            # The team is already assigned to a tournament (TeamAtTournament has
+            # on_delete=PROTECT), so the application cannot be removed anymore.
+            messages.error(
+                request,
+                "Cannot cancel application: the team is already assigned to a tournament.",
+            )
+            return HttpResponse(status=409)
         messages.success(request, "The application has been cancelled.")
         return HttpResponse(status=204, headers={"HX-Refresh": "true"})
     else:

@@ -10,6 +10,7 @@ from tests.factories import (
     CompetitionApplicationFactory,
     CompetitionFactory,
     InvoiceFactory,
+    TeamAtTournamentFactory,
     TeamFactory,
     TournamentFactory,
     UserFactory,
@@ -173,3 +174,28 @@ class TestCancelApplicationView:
         response = client.post(reverse("competitions:cancel_application", args=[application.id]))
 
         assert response.status_code == 403
+
+    def test_cannot_cancel_when_team_assigned_to_tournament(self, logged_in_client):
+        user = UserFactory()
+        club = ClubFactory()
+        team = TeamFactory(club=club)
+        competition = CompetitionFactory(
+            registration_deadline=timezone.now() + timedelta(days=5),
+        )
+        application = CompetitionApplicationFactory(
+            competition=competition,
+            team=team,
+            state=ApplicationStateEnum.PAID,
+        )
+        # Assigning the team to a tournament protects the application from deletion.
+        TeamAtTournamentFactory(
+            tournament=TournamentFactory(competition=competition),
+            application=application,
+        )
+        client = logged_in_client(user, club)
+
+        response = client.post(reverse("competitions:cancel_application", args=[application.id]))
+
+        # The protected delete must surface a user-facing error, not an HTTP 500.
+        assert response.status_code == 409
+        assert CompetitionApplication.objects.filter(pk=application.pk).exists()
