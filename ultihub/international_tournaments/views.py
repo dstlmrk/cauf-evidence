@@ -19,6 +19,7 @@ from django.db.models import BooleanField, Count, Exists, F, OuterRef, Prefetch,
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET, require_POST
+from django_countries.fields import Country
 from members.models import Member
 
 from international_tournaments.enums import InternationalTournamentTypeEnum
@@ -347,7 +348,7 @@ def export_rosters_csv_view(request: HttpRequest) -> HttpResponse:
                 season.name,
                 tournament.name,
                 tournament.get_type_display(),
-                f"{tournament.city}, {tournament.country.name}",
+                f"{tournament.city}, {cast(Country, tournament.country).name}",
                 tournament.date_from.strftime("%Y-%m-%d"),
                 team.team_name,
                 team.division.name,
@@ -356,7 +357,7 @@ def export_rosters_csv_view(request: HttpRequest) -> HttpResponse:
                 mat.member.last_name,
                 mat.member.birth_date.strftime("%Y-%m-%d"),
                 mat.member.get_sex_display(),
-                mat.member.citizenship.code,
+                cast(Country, mat.member.citizenship).code,
                 mat.is_captain,
                 mat.is_spirit_captain,
                 mat.is_coach,

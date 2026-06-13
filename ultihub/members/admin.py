@@ -1,5 +1,5 @@
 import csv
-from typing import Any
+from typing import Any, cast
 
 from core.admin import AuditlogMixin, ReadOnlyModelAdmin
 from django.contrib import admin
@@ -144,7 +144,7 @@ class MemberAdmin(AuditlogMixin, admin.ModelAdmin):
 
     @admin.display(description="Citizenship")
     def citizenship_code(self, obj: Member) -> str:
-        return obj.citizenship.code
+        return cast(Country, obj.citizenship).code
 
     def club(self, obj: Member) -> str:
         return obj.club.short_name_or_name

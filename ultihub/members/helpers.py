@@ -1,5 +1,6 @@
 import logging
 from collections import Counter
+from typing import cast
 
 from clubs.models import Club
 from clubs.services import notify_club
@@ -10,6 +11,7 @@ from django.db import IntegrityError, transaction
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.html import format_html
+from django_countries.fields import Country
 from international_tournaments.models import (
     InternationalTournament,
     MemberAtInternationalTournament,
@@ -29,10 +31,11 @@ def notify_monitored_citizenship(member: Member) -> None:
     """
     Send notification if member has monitored citizenship (RU or BY).
     """
-    if member.citizenship.code not in MONITORED_COUNTRIES:
+    citizenship = cast(Country, member.citizenship)
+    if citizenship.code not in MONITORED_COUNTRIES:
         return
 
-    subject = f"Notifikace: Objevil se hráč s národností {member.citizenship.name}"
+    subject = f"Notifikace: Objevil se hráč s národností {citizenship.name}"
 
     body = render_to_string(
         "emails/member_notification.html",
@@ -40,13 +43,13 @@ def notify_monitored_citizenship(member: Member) -> None:
             "club_name": member.club.name,
             "member_name": f"{member.first_name} {member.last_name}",
             "birth_date": member.birth_date.strftime("%d.%m.%Y"),
-            "citizenship": member.citizenship.name,
+            "citizenship": citizenship.name,
         },
     )
 
     logger.info(
         f"Sending notification about member {member.id} ({member.full_name}) "
-        f"with citizenship {member.citizenship.code}"
+        f"with citizenship {citizenship.code}"
     )
 
     send_email(

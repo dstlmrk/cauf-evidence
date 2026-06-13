@@ -18,7 +18,7 @@ Including another URLconf
 import logging
 
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import URLPattern, URLResolver, include, path
 
 from ultihub import settings
 
@@ -28,7 +28,7 @@ admin.site.site_header = "ČAUF Admin"
 admin.site.site_title = "ČAUF Admin"
 admin.site.index_title = ""
 
-urlpatterns = [
+urlpatterns: list[URLResolver | URLPattern] = [
     path("", include("core.urls")),
     path("accounts/", include("allauth.urls")),
     path("admin/", admin.site.urls, name="admin"),

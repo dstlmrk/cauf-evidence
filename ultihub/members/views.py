@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.timezone import now
 from django.views.decorators.http import require_GET, require_POST
+from django_countries.fields import Country
 from tournaments.models import Tournament
 
 from members.forms import (
@@ -60,7 +61,7 @@ def add_member(request: HttpRequest) -> HttpResponse:
 def edit_member(request: HttpRequest, member_id: int) -> HttpResponse:
     member = get_object_or_404(Member, pk=member_id, club_id=get_current_club(request).id)
     if request.method == "POST":
-        old_citizenship = member.citizenship.code
+        old_citizenship = cast(Country, member.citizenship).code
         form = MemberForm(request.POST, instance=member)
         if form.is_valid():
             form.save()
@@ -149,7 +150,7 @@ def search(request: HttpRequest) -> JsonResponse:
                         "name": member.club.name,
                     },
                     "default_jersey_number": member.default_jersey_number,
-                    "flag": member.citizenship.unicode_flag,
+                    "flag": cast(Country, member.citizenship).unicode_flag,
                 }
                 for member in members
             ]

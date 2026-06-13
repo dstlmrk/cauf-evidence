@@ -1,5 +1,6 @@
 import logging
 from datetime import date
+from typing import cast
 
 from clubs.models import Club
 from competitions.models import Season
@@ -8,6 +9,7 @@ from core.tasks import send_email
 from django.contrib.auth.models import User
 from django.db.models import Exists, OuterRef, Subquery
 from django.utils.timezone import now
+from django_countries.fields import Country
 from finance.services import calculate_season_fees
 from huey.contrib.djhuey import db_task
 
@@ -74,7 +76,7 @@ def generate_nsa_export(user: User, season: Season, club: Club | None) -> None:
                 "",  # TITUL_PRED
                 "",  # TITUL_ZA
                 member.birth_number,  # RODNE_CISLO
-                member.citizenship.alpha3,  # OBCANSTVI
+                cast(Country, member.citizenship).alpha3,  # OBCANSTVI
                 _format_date(member.birth_date),  # DATUM_NAROZENI
                 "Ž" if member.sex == 1 else "M",  # POHLAVI
                 member.city,  # NAZEV_OBCE

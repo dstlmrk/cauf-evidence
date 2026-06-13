@@ -91,7 +91,7 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
                 team_id = int(checkbox_name.split("_")[1])
                 team = teams_with_applications.get(pk=team_id)
                 if team.club.id == current_club.id:
-                    if value and not team.prefetched_applications:  # type: ignore
+                    if value and not team.prefetched_applications:
                         try:
                             # A double submit can race past the prefetched-applications check
                             # above; the (competition, team) unique constraint then rejects the

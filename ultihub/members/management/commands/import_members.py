@@ -6,9 +6,9 @@ import requests
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
+from ultihub.settings import ORIGINAL_EVIDENCE_LOGIN, ORIGINAL_EVIDENCE_PASSWORD
 
 from members.models import Member
-from ultihub.settings import ORIGINAL_EVIDENCE_LOGIN, ORIGINAL_EVIDENCE_PASSWORD
 
 SEASON_ID = 23
 ORIGINAL_EVIDENCE_URL = "https://api.evidence.czechultimate.cz/"
@@ -120,10 +120,8 @@ TOURNAMENT_MAP = {  # old ID -> new ID
 
 
 def _iso3_to_iso2(iso3: str) -> str | None:
-    try:
-        return pycountry.countries.get(alpha_3=iso3).alpha_2
-    except AttributeError:
-        return None
+    country = pycountry.countries.get(alpha_3=iso3)
+    return country.alpha_2 if country else None
 
 
 def _validate_birth_number(dob: str, rc: str) -> bool:
@@ -203,9 +201,11 @@ class Command(BaseCommand):
             f"- {club_id}/{player_id} {player['first_name']} {player['last_name']} ({birth_date})"
         )
 
+        if not club_id:  # KO: members of unmapped clubs cannot be imported
+            self.stdout.write(f"--- Missing club, skipping {player}")
+            return
+
         warnings = []
-        if not club_id:  # KO
-            warnings.append(f"Missing club {club_id}")
         if not birth_number:  # OK
             warnings.append("Invalid or missing birth number")
         if not nationality:  # OK

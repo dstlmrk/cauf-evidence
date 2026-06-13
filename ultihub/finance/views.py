@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
+from django_countries.fields import Country
 from members.models import Member
 from tournaments.models import MemberAtTournament
 
@@ -120,6 +121,7 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
     )
 
     for mait in members_at_international_tournaments:
+        country = cast(Country, mait.tournament.country)
         tournaments_data.append(
             {
                 "tournament": mait.tournament,
@@ -131,7 +133,7 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
                 "tournament_type": mait.tournament.get_type_display(),
                 "division": mait.team_at_tournament.division,
                 "age_limit": mait.team_at_tournament.age_limit,
-                "location": f"{mait.tournament.city}, {mait.tournament.country.name}",
+                "location": f"{mait.tournament.city}, {country.name}",
                 "date_from": mait.tournament.date_from,
                 "date_to": mait.tournament.date_to,
             }

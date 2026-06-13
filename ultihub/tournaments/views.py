@@ -20,6 +20,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.html import format_html
 from django.views.decorators.http import require_GET, require_POST, require_safe
+from django_countries.fields import Country
 from members.models import Member
 
 from tournaments.forms import AddMemberToRosterForm, UpdateMemberToRosterForm
@@ -329,7 +330,7 @@ def export_rosters_csv_view(request: HttpRequest, tournament_id: int) -> HttpRes
                 mat.member.last_name,
                 mat.member.birth_date.strftime("%Y-%m-%d"),
                 mat.member.get_sex_display(),
-                mat.member.citizenship.code,
+                cast(Country, mat.member.citizenship).code,
                 mat.team_at_tournament.application.team_name,
                 mat.team_at_tournament.application.team.club.name,
                 mat.is_captain,
