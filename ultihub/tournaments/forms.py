@@ -30,11 +30,14 @@ class AddMemberToRosterForm(forms.Form):
                 raise ValidationError({"member_id": "The roster deadline has passed"})
 
             # Load member with age annotation for efficient age validation
-            member = (
-                Member.objects.get_queryset()
-                .annotate_age(tournament.competition.season.age_reference_date)
-                .get(pk=cleaned_data["member_id"])
-            )
+            try:
+                member = (
+                    Member.objects.get_queryset()
+                    .annotate_age(tournament.competition.season.age_reference_date)
+                    .get(pk=cleaned_data["member_id"])
+                )
+            except Member.DoesNotExist as err:
+                raise ValidationError({"member_id": "Member not found"}) from err
 
             # Store for later use to avoid re-fetching
             self.validated_member = member

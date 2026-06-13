@@ -394,6 +394,16 @@ class TestAddMemberToRosterForm:
 
         assert form.is_valid()
 
+    def test_nonexistent_member_returns_validation_error(self, team_at_tournament):
+        """A non-existent member_id must surface as a ValidationError, not a 500."""
+        form = AddMemberToRosterForm(
+            data={"member_id": 999999999},
+            team_at_tournament=team_at_tournament,
+        )
+
+        assert not form.is_valid()
+        assert "Member not found" in str(form.errors["member_id"])
+
     @pytest.mark.parametrize(
         "min_age_verification_enabled,expected_valid",
         [
