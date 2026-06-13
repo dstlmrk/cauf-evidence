@@ -2,13 +2,11 @@ from clubs.models import Club
 from competitions.models import ApplicationStateEnum, Competition, CompetitionApplication, Season
 from django.db.models import Prefetch, QuerySet
 from django_filters.rest_framework import CharFilter, DjangoFilterBackend, FilterSet
-from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
 from rest_framework.request import Request
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.serializers import Serializer
 from tournaments.models import MemberAtTournament, TeamAtTournament, Tournament
 
 from .serializers import (
@@ -93,65 +91,34 @@ class HttpMethodPermissionsMixin:
         return super().get_permissions()  # type: ignore[misc]
 
 
-class TeamAtTournamentView(HttpMethodPermissionsMixin, APIView):
-    def get(self, request: Request, pk: int) -> Response:
-        try:
-            team = TeamAtTournament.objects.prefetch_related(
-                Prefetch(
-                    "members",
-                    queryset=MemberAtTournament.objects.select_related("member"),
-                    to_attr="prefetched_members",
-                )
-            ).get(pk=pk)
-        except TeamAtTournament.DoesNotExist:
-            return Response(
-                {"error": "Team at tournament not found"}, status=status.HTTP_404_NOT_FOUND
+class TeamAtTournamentView(HttpMethodPermissionsMixin, RetrieveUpdateAPIView):
+    # Only GET and PATCH are exposed; PUT is intentionally excluded.
+    http_method_names = ["get", "patch", "options", "head"]
+
+    def get_queryset(self) -> QuerySet:
+        return TeamAtTournament.objects.prefetch_related(
+            Prefetch(
+                "members",
+                queryset=MemberAtTournament.objects.select_related("member"),
+                to_attr="prefetched_members",
             )
+        )
 
-        serializer = TeamAtTournamentSerializer(team)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def patch(self, request: Request, pk: int) -> Response:
-        try:
-            team = TeamAtTournament.objects.get(pk=pk)
-        except TeamAtTournament.DoesNotExist:
-            return Response(
-                {"error": "Team at tournament not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = TeamAtTournamentUpdateSerializer(team, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_serializer_class(self) -> type[Serializer]:
+        if self.request.method == "PATCH":
+            return TeamAtTournamentUpdateSerializer
+        return TeamAtTournamentSerializer
 
 
-class CompetitionApplicationView(HttpMethodPermissionsMixin, APIView):
-    def get(self, request: Request, pk: int) -> Response:
-        try:
-            team = CompetitionApplication.objects.get(pk=pk)
-        except CompetitionApplication.DoesNotExist:
-            return Response(
-                {"error": "Competition application at tournament not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+class CompetitionApplicationView(HttpMethodPermissionsMixin, RetrieveUpdateAPIView):
+    # Only GET and PATCH are exposed; PUT is intentionally excluded.
+    http_method_names = ["get", "patch", "options", "head"]
+    queryset = CompetitionApplication.objects.all()
 
-        serializer = CompetitionApplicationSerializer(team)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def patch(self, request: Request, pk: int) -> Response:
-        try:
-            team = CompetitionApplication.objects.get(pk=pk)
-        except CompetitionApplication.DoesNotExist:
-            return Response(
-                {"error": "Team at tournament not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = CompetitionApplicationUpdateSerializer(team, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_serializer_class(self) -> type[Serializer]:
+        if self.request.method == "PATCH":
+            return CompetitionApplicationUpdateSerializer
+        return CompetitionApplicationSerializer
 
 
 class SeasonsView(ListAPIView):
