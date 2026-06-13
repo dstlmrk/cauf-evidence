@@ -67,18 +67,23 @@ class Tournament(AuditModel):
 
     @transaction.atomic
     def update_winners(self) -> None:
-        """Update winner_team and sotg_winner_team based on current results."""
+        """Update winner_team and sotg_winner_team based on current results.
+
+        Both fields always reflect the current state: they are set to the
+        matching team or cleared to None when no candidate exists (e.g. after
+        a final_placement is removed during a results correction).
+        """
         from django.db.models import F
 
-        if winner := self.teams.filter(final_placement=1).first():
-            self.winner_team = winner
-            sotg_winner = (
-                self.teams.exclude(spirit_avg__isnull=True)
-                .order_by(F("spirit_avg").desc(), "final_placement")
-                .first()
-            )
-            self.sotg_winner_team = sotg_winner
-            self.save(update_fields=["winner_team", "sotg_winner_team"])
+        # Order by primary key as a final tiebreaker to keep the selection
+        # deterministic when multiple teams share the same final_placement.
+        self.winner_team = self.teams.filter(final_placement=1).order_by("pk").first()
+        self.sotg_winner_team = (
+            self.teams.exclude(spirit_avg__isnull=True)
+            .order_by(F("spirit_avg").desc(), "final_placement", "pk")
+            .first()
+        )
+        self.save(update_fields=["winner_team", "sotg_winner_team"])
 
     @property
     def has_open_rosters(self) -> bool:
