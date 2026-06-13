@@ -32,6 +32,8 @@
                                             class="badge text-bg-danger"
                                         {% elif invoice.state == 3 %}
                                             class="badge text-bg-success"
+                                        {% elif invoice.state == 4 %}
+                                            class="badge text-bg-secondary"
                                         {% endif %}
                                     >
                                         {{ invoice.get_state_display | upper }}
@@ -71,6 +73,8 @@
                                     class="badge text-bg-danger"
                                 {% elif invoice.state == 3 %}
                                     class="badge text-bg-success"
+                                {% elif invoice.state == 4 %}
+                                    class="badge text-bg-secondary"
                                 {% endif %}
                             >
                                 {{ invoice.get_state_display | upper }}
