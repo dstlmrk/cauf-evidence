@@ -221,8 +221,13 @@ def change_transfer_state_view(request: HttpRequest) -> HttpResponse:
     action = request.POST.get("action")
     transfer = get_object_or_404(Transfer, pk=transfer_id)
 
+    # Validate the action explicitly so an unknown or missing value does not silently
+    # fall through to revoke.
+    if action not in ("approve", "reject", "revoke"):
+        return HttpResponse(status=400)
+
     try:
-        if action in ["approve", "reject"]:
+        if action in ("approve", "reject"):
             if transfer.approving_club.id != get_current_club(request).id:
                 return HttpResponse(status=403)
             if action == "approve":
