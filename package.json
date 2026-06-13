@@ -8,7 +8,7 @@
     },
     "scripts": {
         "build": "webpack",
-        "watch": "webpack --watch"
+        "watch": "webpack --watch --node-env development"
     },
     "keywords": [],
     "author": "",
