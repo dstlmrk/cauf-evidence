@@ -1,5 +1,7 @@
 from datetime import timedelta
+from unittest.mock import patch
 
+from django.db import IntegrityError
 from django.urls import reverse
 from django.utils import timezone
 from tournaments.models import MemberAtTournament
@@ -99,6 +101,24 @@ class TestRosterDialogAddFormView:
         response = client.get(reverse("tournaments:roster_dialog_add_form", args=[tat.id]))
 
         assert response.status_code == 200
+
+    def test_duplicate_submit_returns_400_instead_of_500(self, logged_in_client):
+        user = UserFactory()
+        club = ClubFactory()
+        _, _, _, tat = _create_tournament_setup(club)
+        member = MemberFactory(club=club, citizenship="CZ", email_confirmed_at=timezone.now())
+        client = logged_in_client(user, club)
+
+        # Simulate the race where a concurrent submit already added the member: the
+        # unique constraint rejects this insert and the view must surface a friendly
+        # message with a 400, never a 500.
+        with patch.object(MemberAtTournament.objects, "create", side_effect=IntegrityError):
+            response = client.post(
+                reverse("tournaments:roster_dialog_add_form", args=[tat.id]),
+                data={"member_id": member.id},
+            )
+
+        assert response.status_code == 400
 
 
 class TestRosterDialogUpdateFormView:

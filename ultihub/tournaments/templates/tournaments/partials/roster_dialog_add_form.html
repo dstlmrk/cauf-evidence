@@ -5,7 +5,11 @@
     <div class="modal-body">
         {% load crispy_forms_tags %}
         {% include "members/partials/member_search.html" %}
-        <form id="addMemberToRosterForm" hx-post="{% url 'tournaments:roster_dialog_add_form' team_at_tournament_id %}">
+        <form
+            id="addMemberToRosterForm"
+            hx-post="{% url 'tournaments:roster_dialog_add_form' team_at_tournament_id %}"
+            hx-disabled-elt="closest .modal-content find button[type='submit']"
+        >
             {% csrf_token %}
             {{ form.member_id }}
             <div class="form-group">

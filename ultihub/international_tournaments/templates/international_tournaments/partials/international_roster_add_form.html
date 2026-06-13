@@ -8,6 +8,7 @@
         <form
             id="addMemberToInternationalRosterForm"
             hx-post="{% url 'international_tournaments:roster_add' team_at_tournament_id %}"
+            hx-disabled-elt="closest .modal-content find button[type='submit']"
         >
             {% csrf_token %}
             {{ form.member_id }}

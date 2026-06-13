@@ -1,7 +1,10 @@
+from unittest.mock import patch
+
 import pytest
 from django.conf import settings
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.core.exceptions import PermissionDenied
+from django.db import IntegrityError
 from django.test import RequestFactory
 from django.urls import reverse
 
@@ -88,6 +91,40 @@ class TestRosterPermissions:
 
         # Should either render form (GET) or process form (POST)
         assert response.status_code in [200, 204]
+
+    def test_duplicate_submit_returns_400_instead_of_500(
+        self,
+        rf: RequestFactory,
+        agent_factory,
+        club_factory,
+        team_at_international_tournament_factory,
+        member_factory,
+    ):
+        """A racing duplicate submit hits the unique constraint and must return a
+        friendly 400, never a 500."""
+        national_club = club_factory(id=settings.NATIONAL_TEAM_CLUB_ID)
+        agent = agent_factory()
+        user = agent.user
+        team_at_tournament = team_at_international_tournament_factory()
+        member = member_factory()
+
+        request = rf.post(
+            reverse(
+                "international_tournaments:roster_add",
+                kwargs={"team_at_tournament_id": team_at_tournament.id},
+            ),
+            data={"member_id": member.id},
+        )
+        request.user = user
+        request.session = {"club": {"id": national_club.id, "name": national_club.name}}
+        attach_messages_storage(request)
+
+        with patch.object(
+            MemberAtInternationalTournament.objects, "create", side_effect=IntegrityError
+        ):
+            response = international_roster_add_form_view(request, team_at_tournament.id)
+
+        assert response.status_code == 400
 
     def test_update_member_denied_for_non_national_team_club(
         self,

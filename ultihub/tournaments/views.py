@@ -11,6 +11,7 @@ from core.helpers import get_current_club, get_current_club_or_none
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db import IntegrityError
 from django.db.models import BooleanField, Count, Exists, OuterRef, Value
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -139,12 +140,19 @@ def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int
         if form.is_valid():
             # Use validated member from form (already loaded with age annotation)
             member = cast(Member, form.validated_member)
-            MemberAtTournament.objects.create(
-                tournament_id=team_at_tournament.tournament_id,
-                team_at_tournament_id=team_at_tournament.id,
-                member_id=member.id,
-                jersey_number=member.default_jersey_number,
-            )
+            try:
+                # A double submit can pass the form check twice; the (tournament, member)
+                # unique constraint then rejects the second insert. Surface a readable
+                # message instead of letting the view return a 500.
+                MemberAtTournament.objects.create(
+                    tournament_id=team_at_tournament.tournament_id,
+                    team_at_tournament_id=team_at_tournament.id,
+                    member_id=member.id,
+                    jersey_number=member.default_jersey_number,
+                )
+            except IntegrityError:
+                messages.error(request, "This member is already on the roster.")
+                return HttpResponse(status=400)
             messages.success(request, "Member added successfully")
 
             if member.club != team_at_tournament.application.team.club:

@@ -11,6 +11,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db import IntegrityError
 from django.db.models import BooleanField, Count, Exists, F, OuterRef, Prefetch, Q, Value
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
@@ -175,12 +176,19 @@ def international_roster_add_form_view(
         if form.is_valid():
             # Use validated member from form
             member = cast(Member, form.validated_member)
-            MemberAtInternationalTournament.objects.create(
-                tournament_id=team_at_tournament.tournament_id,
-                team_at_tournament_id=team_at_tournament.id,
-                member_id=member.id,
-                jersey_number=member.default_jersey_number,
-            )
+            try:
+                # A double submit can pass the form check twice; the (tournament, member)
+                # unique constraint then rejects the second insert. Surface a readable
+                # message instead of letting the view return a 500.
+                MemberAtInternationalTournament.objects.create(
+                    tournament_id=team_at_tournament.tournament_id,
+                    team_at_tournament_id=team_at_tournament.id,
+                    member_id=member.id,
+                    jersey_number=member.default_jersey_number,
+                )
+            except IntegrityError:
+                messages.error(request, "This member is already on the roster.")
+                return HttpResponse(status=400)
             messages.success(request, "Member added successfully")
 
             response = HttpResponse(status=204)
