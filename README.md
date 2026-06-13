@@ -116,6 +116,10 @@ For more informations visit [django-extensions](https://django-extensions.readth
 For fresh start, follow these steps:
 
 ```bash
+# Create the local env file from the template and fill in the missing values
+# (Google OAuth credentials, email, etc.). The defaults match the dev setup.
+cp secrets/.env.example secrets/.env.dev
+
 # Pull and build for images
 docker compose -f docker/compose.dev.yaml build
 
