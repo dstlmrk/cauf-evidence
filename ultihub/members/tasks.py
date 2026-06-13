@@ -43,19 +43,23 @@ def generate_nsa_export(user: User, season: Season, club: Club | None) -> None:
     eligible_member_ids = set(member_participation.keys()) & {m.id for m in members_with_fees}
     logger.info(f"Eligible members for NSA export: {len(eligible_member_ids)}")
 
-    members_qs = Member.objects.filter(id__in=eligible_member_ids).annotate(
-        has_coach_licence=Exists(
-            CoachLicence.objects.filter(
-                member=OuterRef("pk"),
-                valid_from__lte=current_date,
-                valid_to__gte=current_date,
-            )
-        ),
-        earliest_coach_licence_date=Subquery(
-            CoachLicence.objects.filter(member=OuterRef("pk"))
-            .order_by("valid_from")
-            .values("valid_from")[:1]
-        ),
+    members_qs = (
+        Member.objects.filter(id__in=eligible_member_ids)
+        .select_related("club")
+        .annotate(
+            has_coach_licence=Exists(
+                CoachLicence.objects.filter(
+                    member=OuterRef("pk"),
+                    valid_from__lte=current_date,
+                    valid_to__gte=current_date,
+                )
+            ),
+            earliest_coach_licence_date=Subquery(
+                CoachLicence.objects.filter(member=OuterRef("pk"))
+                .order_by("valid_from")
+                .values("valid_from")[:1]
+            ),
+        )
     )
 
     if club:

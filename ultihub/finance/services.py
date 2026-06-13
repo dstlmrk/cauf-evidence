@@ -177,15 +177,11 @@ def calculate_season_fees(
         (season.regular_fee, CompetitionFeeTypeEnum.REGULAR),
     ]:
         # Domestic tournaments
-        members_at_tournaments = (
-            MemberAtTournament.objects.filter(
-                Q(tournament__competition__season=season),
-                Q(tournament__competition__fee_type=fee_type),
-                Q(member__club=club_id) if club_id else Q(),
-            )
-            .select_related("member")
-            .prefetch_related("tournament__competition")
-        )
+        members_at_tournaments = MemberAtTournament.objects.filter(
+            Q(tournament__competition__season=season),
+            Q(tournament__competition__fee_type=fee_type),
+            Q(member__club=club_id) if club_id else Q(),
+        ).select_related("member__club", "tournament__competition")
 
         for member_at_tournament in members_at_tournaments:
             member = member_at_tournament.member
