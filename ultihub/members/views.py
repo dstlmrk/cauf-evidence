@@ -187,7 +187,9 @@ def transfer_form(request: HttpRequest) -> HttpResponse:
                 messages.error(request, ex.message)
                 form = TransferRequestForm()
             except ValueError as ex:
-                # Raised when the unique constraint rejects a duplicate pending request.
+                # create_transfer_request raises ValueError when the member's club changed
+                # between opening and submitting the form, or when the unique constraint
+                # rejects a duplicate pending request. Show the message instead of a 500.
                 messages.error(request, str(ex))
                 form = TransferRequestForm()
         else:
