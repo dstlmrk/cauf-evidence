@@ -3,6 +3,71 @@ document.addEventListener("alpine:init", () => {
     Alpine.data("memberSearch", window.memberSearch);
 });
 
+// Global double-submit protection and loading state for HTMX requests.
+// On every request we disable the submit controls inside the initiating
+// element (or the element itself when it triggers the request directly) and
+// show a Bootstrap spinner; the original state is restored once the request
+// finishes. This prevents duplicate submits and gives feedback on slow actions.
+(function () {
+    const SUBMIT_SELECTOR = "button[type=submit], button:not([type]), [type=submit]";
+
+    function collectControls(elt) {
+        const controls = new Set();
+        if (elt.matches && elt.matches(SUBMIT_SELECTOR)) {
+            controls.add(elt);
+        }
+        if (elt.querySelectorAll) {
+            elt.querySelectorAll(SUBMIT_SELECTOR).forEach((control) => controls.add(control));
+        }
+        return controls;
+    }
+
+    document.body.addEventListener("htmx:beforeRequest", (evt) => {
+        const elt = evt.detail.elt;
+        if (!elt) {
+            return;
+        }
+
+        const controls = collectControls(elt);
+        if (controls.size === 0) {
+            return;
+        }
+
+        // Keep the list on the initiating element so it can be restored even if
+        // an Alpine :disabled binding re-evaluates the control in the meantime.
+        elt._htmxLoadingControls = controls;
+
+        controls.forEach((control) => {
+            // Remember whether the control was already disabled (e.g. invalid form)
+            // so we do not accidentally re-enable it afterwards.
+            control._htmxWasDisabled = control.disabled === true;
+            control.disabled = true;
+            control.classList.add("htmx-loading");
+        });
+    });
+
+    function restore(elt) {
+        const controls = elt && elt._htmxLoadingControls;
+        if (!controls) {
+            return;
+        }
+
+        controls.forEach((control) => {
+            control.classList.remove("htmx-loading");
+            if (!control._htmxWasDisabled) {
+                control.disabled = false;
+            }
+            delete control._htmxWasDisabled;
+        });
+
+        delete elt._htmxLoadingControls;
+    }
+
+    document.body.addEventListener("htmx:afterRequest", (evt) => restore(evt.detail.elt));
+    // Safety net for transport-level failures that never reach afterRequest.
+    document.body.addEventListener("htmx:sendError", (evt) => restore(evt.detail.elt));
+})();
+
 // Event listener for roster dialog
 document.body.addEventListener("showRosterDialog", (event) => {
     const { teamAtTournamentId } = event.detail;

@@ -159,3 +159,32 @@ body {
     box-sizing: border-box !important;
     font-weight: bolder !important;
 }
+
+/* Loading state for submit controls during an in-flight HTMX request */
+.htmx-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.htmx-loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1rem;
+    height: 1rem;
+    margin-top: -0.5rem;
+    margin-left: -0.5rem;
+    border: 0.15em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    color: #fff;
+    animation: htmx-loading-spin 0.75s linear infinite;
+}
+
+@keyframes htmx-loading-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
