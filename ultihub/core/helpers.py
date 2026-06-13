@@ -1,9 +1,10 @@
 import csv
+import json
 from dataclasses import dataclass
 from io import StringIO
 from typing import Any
 
-from django.http import HttpRequest, QueryDict
+from django.http import HttpRequest, HttpResponse, QueryDict
 
 from core.models import AppSettings
 
@@ -60,6 +61,18 @@ def get_filter_context_and_params(
     }
 
     return query_params, filter_context
+
+
+def hx_trigger_response(*, status: int = 204, **events: Any) -> HttpResponse:
+    """
+    Build an ``HttpResponse`` with a JSON-encoded ``HX-Trigger`` header.
+
+    Each keyword argument is an HTMX event name mapped to its detail payload, e.g.
+    ``hx_trigger_response(teamsListChanged=True)`` yields ``{"teamsListChanged": true}``.
+    """
+    response = HttpResponse(status=status)
+    response["HX-Trigger"] = json.dumps(dict(events))
+    return response
 
 
 def get_app_settings() -> AppSettings:

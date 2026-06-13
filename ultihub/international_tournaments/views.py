@@ -1,5 +1,4 @@
 import csv
-import json
 import logging
 from functools import wraps
 from typing import Any, cast
@@ -9,6 +8,7 @@ from core.helpers import (
     get_current_club,
     get_current_club_or_none,
     get_filter_context_and_params,
+    hx_trigger_response,
 )
 from django.conf import settings
 from django.contrib import messages
@@ -127,14 +127,9 @@ def require_national_team_permission(view_func):  # type: ignore
     return wrapper
 
 
-@require_GET
-def international_roster_dialog_view(
-    request: HttpRequest, team_at_tournament_id: int
+def _render_international_roster_dialog(
+    request: HttpRequest, team_at_tournament: TeamAtInternationalTournament
 ) -> HttpResponse:
-    team_at_tournament = get_object_or_404(
-        TeamAtInternationalTournament.objects.select_related("division", "age_limit", "tournament"),
-        pk=team_at_tournament_id,
-    )
     return render(
         request,
         "international_tournaments/partials/international_roster_dialog.html",
@@ -147,6 +142,17 @@ def international_roster_dialog_view(
             .order_by(F("jersey_number").asc(nulls_last=True)),
         },
     )
+
+
+@require_GET
+def international_roster_dialog_view(
+    request: HttpRequest, team_at_tournament_id: int
+) -> HttpResponse:
+    team_at_tournament = get_object_or_404(
+        TeamAtInternationalTournament.objects.select_related("division", "age_limit", "tournament"),
+        pk=team_at_tournament_id,
+    )
+    return _render_international_roster_dialog(request, team_at_tournament)
 
 
 @require_national_team_permission
@@ -186,14 +192,10 @@ def international_roster_add_form_view(
                 return HttpResponse(status=400)
             messages.success(request, "Member added successfully")
 
-            response = HttpResponse(status=204)
-            response["HX-Trigger"] = json.dumps(
-                dict(
-                    showRosterDialog=dict(teamAtTournamentId=team_at_tournament_id),
-                    teamsListChanged=True,
-                )
+            return hx_trigger_response(
+                showRosterDialog=dict(teamAtTournamentId=team_at_tournament_id),
+                teamsListChanged=True,
             )
-            return response
     else:
         form = AddMemberToInternationalRosterForm()
 
@@ -222,16 +224,9 @@ def international_roster_update_form_view(
         if form.is_valid():
             form.save()
             messages.success(request, "Member updated successfully")
-            response = HttpResponse(status=204)
-
-            response["HX-Trigger"] = json.dumps(
-                {
-                    "showRosterDialog": {
-                        "teamAtTournamentId": member_at_tournament.team_at_tournament.id
-                    }
-                }
+            return hx_trigger_response(
+                showRosterDialog={"teamAtTournamentId": member_at_tournament.team_at_tournament.id}
             )
-            return response
     else:
         form = UpdateMemberToInternationalRosterForm(instance=member_at_tournament)
 
@@ -263,18 +258,7 @@ def remove_member_from_international_roster_view(
     member_at_tournament.delete()
     messages.success(request, "Member removed successfully")
 
-    response = render(
-        request,
-        "international_tournaments/partials/international_roster_dialog.html",
-        {
-            "team_at_tournament": team_at_tournament,
-            "members_at_tournament": MemberAtInternationalTournament.objects.select_related(
-                "member", "member__club"
-            )
-            .filter(team_at_tournament_id=team_at_tournament.id)
-            .order_by(F("jersey_number").asc(nulls_last=True)),
-        },
-    )
+    response = _render_international_roster_dialog(request, team_at_tournament)
     response["HX-Trigger"] = "teamsListChanged"
     return response
 
