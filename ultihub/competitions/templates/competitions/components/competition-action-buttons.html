@@ -1,5 +1,5 @@
 <button
-    {% if request.session.club and competition.registration_deadline > now %}
+    {% if request.session.club and competition.has_open_registration %}
         class="btn btn-success position-relative"
     {% else %}
         class="btn btn-primary position-relative"
