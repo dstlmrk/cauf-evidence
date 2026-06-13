@@ -199,10 +199,16 @@ def add_agent(request: HttpRequest) -> HttpResponse:
 @login_required
 @require_POST
 def remove_agent(request: HttpRequest) -> HttpResponse:
-    unassign_or_cancel_agent_invite_from_club(
-        email=request.POST["email"],
-        club=get_object_or_404(Club, pk=get_club_id(request)),
-    )
+    try:
+        unassign_or_cancel_agent_invite_from_club(
+            email=request.POST["email"],
+            club=get_object_or_404(Club, pk=get_club_id(request)),
+        )
+    except ValueError as ex:
+        # The agent is already removed (e.g. double click) or is the primary
+        # agent which cannot be removed at all.
+        messages.error(request, str(ex))
+        return HttpResponse(status=409)
     messages.success(request, "Agent removed successfully.")
     return HttpResponse(status=204, headers={"HX-Trigger": "agentListChanged"})
 

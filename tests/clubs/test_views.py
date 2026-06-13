@@ -146,6 +146,34 @@ class TestRemoveAgent:
         assert response.status_code == 204
         mock_unassign.assert_called_once()
 
+    @patch("clubs.views.unassign_or_cancel_agent_invite_from_club")
+    def test_removing_already_removed_agent_returns_409(self, mock_unassign, logged_in_client):
+        mock_unassign.side_effect = ValueError("Cannot remove already removed agent from club")
+        user = UserFactory()
+        club = ClubFactory()
+        client = logged_in_client(user, club)
+
+        response = client.post(
+            reverse("clubs:remove_agent"),
+            data={"email": "agent@example.com"},
+        )
+
+        assert response.status_code == 409
+
+    @patch("clubs.views.unassign_or_cancel_agent_invite_from_club")
+    def test_removing_primary_agent_returns_409(self, mock_unassign, logged_in_client):
+        mock_unassign.side_effect = ValueError("Cannot remove primary agent from club")
+        user = UserFactory()
+        club = ClubFactory()
+        client = logged_in_client(user, club)
+
+        response = client.post(
+            reverse("clubs:remove_agent"),
+            data={"email": "primary@example.com"},
+        )
+
+        assert response.status_code == 409
+
 
 class TestNotificationsDialog:
     def test_get_shows_notifications(self, logged_in_client):
