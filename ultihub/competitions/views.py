@@ -5,7 +5,7 @@ from core.helpers import get_current_club, get_current_club_or_none
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Exists, OuterRef, Prefetch, ProtectedError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -97,17 +97,30 @@ def registration(request: HttpRequest, competition_id: int) -> HttpResponse:
                 team = teams_with_applications.get(pk=team_id)
                 if team.club.id == current_club.id:
                     if value and not team.prefetched_applications:  # type: ignore
-                        CompetitionApplication.objects.create(
-                            team_name=team.name,
-                            competition_id=competition_id,
-                            team=team,
-                            registered_by=request.user,  # type: ignore
-                            state=(
-                                ApplicationStateEnum.PAID
-                                if competition.deposit == 0
-                                else ApplicationStateEnum.AWAITING_PAYMENT
-                            ),
-                        )
+                        try:
+                            # A double submit can race past the prefetched-applications check
+                            # above; the (competition, team) unique constraint then rejects the
+                            # second insert. Wrap each create in a savepoint so one duplicate
+                            # does not break the surrounding atomic transaction, and treat it as
+                            # an already-registered team instead of returning a 500.
+                            with transaction.atomic():
+                                CompetitionApplication.objects.create(
+                                    team_name=team.name,
+                                    competition_id=competition_id,
+                                    team=team,
+                                    registered_by=request.user,  # type: ignore
+                                    state=(
+                                        ApplicationStateEnum.PAID
+                                        if competition.deposit == 0
+                                        else ApplicationStateEnum.AWAITING_PAYMENT
+                                    ),
+                                )
+                        except IntegrityError:
+                            messages.error(
+                                request,
+                                f"Team {team.name} is already registered for this tournament.",
+                            )
+                            return HttpResponse(status=400)
                 else:
                     raise PermissionDenied()
 

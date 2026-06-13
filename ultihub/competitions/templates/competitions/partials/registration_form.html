@@ -12,6 +12,7 @@
 >
     <form
         hx-post="{{ request.path }}"
+        hx-disabled-elt="find button[type='submit']"
         class="modal-content"
         x-ref="form"
         @input="

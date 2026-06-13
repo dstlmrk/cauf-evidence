@@ -1,5 +1,7 @@
 from datetime import timedelta
+from unittest.mock import patch
 
+from django.db import IntegrityError
 from django.urls import reverse
 from django.utils import timezone
 
@@ -96,6 +98,27 @@ class TestRegistrationView:
         assert not CompetitionApplication.objects.filter(
             team=team, competition=competition
         ).exists()
+
+    def test_duplicate_submit_returns_400_instead_of_500(self, logged_in_client):
+        user = UserFactory()
+        club = ClubFactory()
+        team = TeamFactory(club=club, is_primary=True)
+        competition = CompetitionFactory(
+            registration_deadline=timezone.now() + timedelta(days=5),
+        )
+        TournamentFactory(competition=competition)
+        client = logged_in_client(user, club)
+
+        # Simulate the race where a concurrent submit already created the application:
+        # the unique constraint rejects this insert and the view must surface a
+        # friendly message with a 400, never a 500.
+        with patch.object(CompetitionApplication.objects, "create", side_effect=IntegrityError):
+            response = client.post(
+                reverse("competitions:registration", args=[competition.id]),
+                data={f"team_{team.id}": True},
+            )
+
+        assert response.status_code == 400
 
 
 class TestCancelApplicationView:
