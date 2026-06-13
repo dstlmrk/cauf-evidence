@@ -289,4 +289,4 @@ class CompetitionApplicationAdmin(AuditlogMixin, admin.ModelAdmin):
     @admin.display(description="Decline selected applications")
     def decline(self, request: HttpRequest, queryset: QuerySet) -> None:
         queryset.update(state=ApplicationStateEnum.DECLINED)
-        self.message_user(request, "Applications approved")
+        self.message_user(request, "Applications declined")
