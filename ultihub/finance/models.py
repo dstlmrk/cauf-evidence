@@ -29,6 +29,7 @@ class Invoice(AuditModel):
     state = models.IntegerField(
         choices=InvoiceStateEnum.choices,
         default=InvoiceStateEnum.DRAFT,
+        db_index=True,
     )
     type = models.IntegerField(
         choices=InvoiceTypeEnum.choices,
