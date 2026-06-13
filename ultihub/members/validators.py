@@ -5,6 +5,23 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 
+def _normalize_birth_number_month(month: int) -> int:
+    """Normalize the month part of a Czech birth number to the range 1-12.
+
+    Men use months 01-12. Women have 50 added (51-62). Since 2004, when all
+    sequences for a given day are exhausted, an extra 20 is added: men 21-32,
+    women 71-82. Any month outside these ranges is invalid and is returned
+    unchanged so that the subsequent date construction fails.
+    """
+    if 71 <= month <= 82:
+        return month - 70
+    if 51 <= month <= 62:
+        return month - 50
+    if 21 <= month <= 32:
+        return month - 20
+    return month
+
+
 def validate_czech_birth_number(value: str) -> None:
     value_cleaned = value.replace("/", "")
 
@@ -19,11 +36,7 @@ def validate_czech_birth_number(value: str) -> None:
         month = int(value_cleaned[2:4])
         day = int(value_cleaned[4:6])
 
-        if month > 50:
-            month -= 50
-
-        if month > 70:
-            month -= 70
+        month = _normalize_birth_number_month(month)
 
         current_year = timezone.now().year % 100
         century = 1900 if year > current_year or len(value_cleaned) == 9 else 2000
@@ -61,8 +74,7 @@ def is_valid_birth_date_with_id(birth_date: date, id_number: str) -> bool:
         id_month = int(id_cleaned[2:4])
         id_day = int(id_cleaned[4:6])
 
-        if id_month > 50:
-            id_month -= 50
+        id_month = _normalize_birth_number_month(id_month)
 
         current_year = date.today().year % 100
         full_year = 1900 + id_year if id_year > current_year else 2000 + id_year
