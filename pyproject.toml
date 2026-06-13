@@ -7,7 +7,7 @@ readme = "README.md"
 requires-python = ">=3.12.5,<4.0"
 
 dependencies = [
-    "django>=5.2.11,<6.0",
+    "django>=5.2.15,<6.0",
     "gunicorn>=23.0.0",
     "django-environ>=0.11.2",
     "psycopg2-binary>=2.9.9",
@@ -182,6 +182,10 @@ envfile = "secrets/.env.test"
 help = "Run the mypy type checker"
 cmd = "mypy ."
 envfile = "secrets/.env.test"
+
+[tool.poe.tasks.audit]
+help = "Audit installed dependencies for known security vulnerabilities"
+cmd = "uv run --with pip-audit pip-audit"
 
 [tool.poe.tasks.test]
 help = "Run unit tests with coverage (without checks)"

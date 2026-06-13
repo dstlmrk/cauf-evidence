@@ -1,0 +1,33 @@
+version: 2
+updates:
+    # Python dependencies managed by uv (pyproject.toml + uv.lock).
+    - package-ecosystem: "uv"
+      directory: "/"
+      schedule:
+          interval: "weekly"
+      open-pull-requests-limit: 10
+      groups:
+          python-dependencies:
+              patterns:
+                  - "*"
+
+    # Frontend dependencies (package.json).
+    - package-ecosystem: "npm"
+      directory: "/"
+      schedule:
+          interval: "weekly"
+      open-pull-requests-limit: 10
+      groups:
+          npm-dependencies:
+              patterns:
+                  - "*"
+
+    # GitHub Actions used in the CI/CD workflow.
+    - package-ecosystem: "github-actions"
+      directory: "/"
+      schedule:
+          interval: "weekly"
+      groups:
+          github-actions:
+              patterns:
+                  - "*"
