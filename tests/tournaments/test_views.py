@@ -34,7 +34,7 @@ class TestRemoveMemberFromRoster:
     def test_removes_member_when_roster_open(self, logged_in_client):
         user = UserFactory()
         club = ClubFactory()
-        team, tournament, application, tat = _create_tournament_setup(club)
+        _team, tournament, _application, tat = _create_tournament_setup(club)
         member = MemberFactory(club=club)
         mat = MemberAtTournamentFactory(
             tournament=tournament, team_at_tournament=tat, member=member
@@ -50,7 +50,7 @@ class TestRemoveMemberFromRoster:
         user = UserFactory()
         club = ClubFactory()
         past_deadline = timezone.now() - timedelta(days=1)
-        team, tournament, application, tat = _create_tournament_setup(
+        _team, tournament, _application, tat = _create_tournament_setup(
             club, rosters_deadline=past_deadline
         )
         member = MemberFactory(club=club)
@@ -68,7 +68,7 @@ class TestRemoveMemberFromRoster:
         user = UserFactory()
         club = ClubFactory()
         other_club = ClubFactory()
-        team, tournament, application, tat = _create_tournament_setup(other_club)
+        _team, tournament, _application, tat = _create_tournament_setup(other_club)
         member = MemberFactory(club=other_club)
         mat = MemberAtTournamentFactory(
             tournament=tournament, team_at_tournament=tat, member=member
