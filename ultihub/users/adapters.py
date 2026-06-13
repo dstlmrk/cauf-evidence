@@ -20,7 +20,7 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             logger.info("User %s has logged in", google_email)
         except Agent.DoesNotExist:
             try:
-                NewAgentRequest.objects.filter(email=google_email, processed_at=None).get()
+                NewAgentRequest.objects.filter(email__iexact=google_email, processed_at=None).get()
                 logger.info("User %s is invited to be agent and has logged in", google_email)
             except NewAgentRequest.DoesNotExist:
                 logger.info("User %s is not allowed to log in", google_email)

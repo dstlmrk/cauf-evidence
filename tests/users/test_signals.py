@@ -127,3 +127,15 @@ class TestNormalizeUserEmailSignal:
 
         user.refresh_from_db()
         assert user.email == "test.user@example.com"
+
+
+class TestNewAgentRequestEmailNormalization:
+    def test_normalizes_email_to_lowercase_on_save(self):
+        inviter = UserFactory()
+        new_agent_request = NewAgentRequest.objects.create(
+            email="John.Doe@Gmail.com",
+            invited_by=inviter,
+        )
+
+        new_agent_request.refresh_from_db()
+        assert new_agent_request.email == "john.doe@gmail.com"
