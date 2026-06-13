@@ -37,6 +37,23 @@
             <div id="dialog-xl" class="modal-dialog modal-xl" hx-target="this"></div>
         </div>
 
+        <!-- Confirmation modal used to replace the native confirm() for hx-confirm actions -->
+        <div id="confirmModal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Potvrzení</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+                    </div>
+                    <div id="confirmModalBody" class="modal-body"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zrušit</button>
+                        <button id="confirmModalConfirmBtn" type="button" class="btn btn-primary">Potvrdit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="min-vh-100">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <div class="container">
