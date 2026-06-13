@@ -182,7 +182,7 @@ def get_member_participation_counts(season: Season) -> Counter[int]:
         tournament_id__in=tournament_lengths.keys()
     ):
         member_participation[member_at_tournament.member_id] += tournament_lengths[
-            member_at_tournament.tournament.id
+            member_at_tournament.tournament_id
         ]
 
     # Add days from international tournaments
@@ -190,7 +190,7 @@ def get_member_participation_counts(season: Season) -> Counter[int]:
         tournament_id__in=international_tournament_lengths.keys()
     ):
         member_participation[member_at_int_tournament.member_id] += (
-            international_tournament_lengths[member_at_int_tournament.tournament.id]
+            international_tournament_lengths[member_at_int_tournament.tournament_id]
         )
 
     return member_participation
