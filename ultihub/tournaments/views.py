@@ -170,7 +170,7 @@ def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int
                 )
 
             return hx_trigger_response(
-                showRosterDialog=dict(teamAtTournamentId=team_at_tournament_id),
+                showRosterDialog={"teamAtTournamentId": team_at_tournament_id},
                 teamsListChanged=True,
             )
     else:
@@ -208,9 +208,9 @@ def roster_dialog_update_form_view(
             form.save()
             messages.success(request, "Member updated successfully")
             return hx_trigger_response(
-                showRosterDialog=dict(
-                    teamAtTournamentId=str(member_at_tournament.team_at_tournament.id)
-                )
+                showRosterDialog={
+                    "teamAtTournamentId": str(member_at_tournament.team_at_tournament.id)
+                }
             )
     else:
         form = UpdateMemberToRosterForm(instance=member_at_tournament)

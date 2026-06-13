@@ -278,7 +278,7 @@ class TransferAdmin(AuditlogMixin, ReadOnlyModelAdmin):
                 approved_count += 1
             except Exception as e:
                 self.message_user(
-                    request, f"Error approving transfer {transfer.id}: {str(e)}", level="ERROR"
+                    request, f"Error approving transfer {transfer.id}: {e!s}", level="ERROR"
                 )
 
         if approved_count > 0:

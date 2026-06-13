@@ -22,8 +22,8 @@ def assign_agent_to_club(
         AgentAtClub.objects.update_or_create(
             agent=agent,
             club=club,
-            defaults=dict(is_active=True, is_primary=is_primary, invited_by=invited_by),
-            create_defaults=dict(invited_by=invited_by, is_primary=is_primary),
+            defaults={"is_active": True, "is_primary": is_primary, "invited_by": invited_by},
+            create_defaults={"invited_by": invited_by, "is_primary": is_primary},
         )
         assign_perm("manage_club", agent.user, club)
 

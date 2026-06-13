@@ -253,7 +253,7 @@ class Member(AuditModel):
             .exists()
         ):
             errors["email_confirmation_token"] = (
-                "Member with this email confirmation token already exists"
+                "Member with this email confirmation token already exists"  # noqa: S105
             )
 
         if errors:
