@@ -224,7 +224,10 @@ class Member(AuditModel):
                     if not getattr(self, field):
                         errors[field] = "This field is required if an address is provided"
 
-        if self.email and Member.objects.filter(email=self.email).exclude(pk=self.pk).exists():
+        if (
+            self.email
+            and Member.objects.filter(email__iexact=self.email).exclude(pk=self.pk).exists()
+        ):
             errors["email"] = "Member with this email already exists"
 
         if self.birth_date:
@@ -257,6 +260,13 @@ class Member(AuditModel):
             raise ValidationError(errors)
 
     def save(self, *args: Any, **kwargs: Any) -> None:
+        # Normalize emails to lowercase so case variants are treated as the same address
+        # (e.g. Jan@seznam.cz and jan@seznam.cz). Empty values are left untouched.
+        if self.email:
+            self.email = self.email.lower()
+        if self.legal_guardian_email:
+            self.legal_guardian_email = self.legal_guardian_email.lower()
+
         send_token = False
 
         is_child = not is_at_least_15(self.birth_date)
