@@ -5,8 +5,14 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const webpack = require("webpack");
 
+// `npm run watch` passes --node-env development; production builds keep the
+// default. In dev we ship readable source maps so browser debugging maps back
+// to the original sources instead of the minified bundle.
+const isProduction = process.env.NODE_ENV !== "development";
+
 module.exports = {
-    mode: "production",
+    mode: isProduction ? "production" : "development",
+    devtool: isProduction ? false : "eval-cheap-module-source-map",
     entry: {
         bundle: "./assets/js/main.js",
     },
