@@ -18,12 +18,12 @@ jobs:
       matrix:
         check: [test, lint, style, type, migrations-check]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v7
         with:
           version: "latest"
           enable-cache: true
@@ -33,20 +33,20 @@ jobs:
     name: Prettier check 🕵️
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
       - run: npm install
       - run: npx prettier --check .
   dependency-audit:
     name: Dependency audit 🔒
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v7
         with:
           version: "latest"
           enable-cache: true
@@ -59,7 +59,7 @@ jobs:
     needs: [qa-check, prettier-check]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Login to docker hub
         id: docker-hub
         env:
@@ -79,13 +79,13 @@ jobs:
     needs: build-and-release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Rename docker-compose file
         run: mv docker/compose.prod.yaml docker-compose.yaml
       - name: Rename docker-compose file
         run: mv nginx-proxy/redirect.conf redirect.conf
       - name: Copy docker-compose file
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -93,7 +93,7 @@ jobs:
           source: docker-compose.yaml,redirect.conf,vhostd.conf
           target: /home/mara/ultihub
       - name: Replace secrets
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -105,7 +105,7 @@ jobs:
               -e 's|__DATABASE_PASSWORD__|${{ secrets.DATABASE_PASSWORD }}|g' \
               /home/mara/ultihub/docker-compose.yaml
       - name: Pull, down and up the docker-compose
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check the deployed service URL
-        uses: jtalk/url-health-check-action@v4
+        uses: jtalk/url-health-check-action@v5
         with:
           url: https://evidence.frisbee.cz
           max-attempts: 10
