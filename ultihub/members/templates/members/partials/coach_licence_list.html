@@ -17,8 +17,8 @@
                         {% for licence in coach_licences %}
                             <tr>
                                 <th scope="row">{{ licence.get_level_display }}</th>
-                                <td>{{ licence.valid_from | date:"Y/d/m" }}</td>
-                                <td>{{ licence.valid_to | date:"Y/d/m" }}</td>
+                                <td>{{ licence.valid_from | date }}</td>
+                                <td>{{ licence.valid_to | date }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
