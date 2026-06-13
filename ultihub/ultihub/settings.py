@@ -197,6 +197,13 @@ TIME_ZONE = "Europe/Prague"
 USE_I18N = False
 USE_TZ = True
 
+# Project-wide default date/time output formats. With localization always on in
+# Django 5.x, a bare DATE_FORMAT setting is overridden by the active locale, so
+# the defaults are provided via a format module instead (see ultihub/formats).
+# Only the output formats are overridden here; input formats, number grouping,
+# etc. still fall back to the built-in en_GB locale.
+FORMAT_MODULE_PATH = ["ultihub.formats"]
+
 # STATIC FILES ----------------------------------------------------------------
 STATIC_URL = "static/"
 STATIC_ROOT = Path("/app/static")
