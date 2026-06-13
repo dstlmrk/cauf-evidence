@@ -239,7 +239,9 @@ class CoachLicenceAdmin(AuditlogMixin, admin.ModelAdmin):
 
     @admin.display(boolean=True)
     def is_valid(self, obj: CoachLicence) -> bool:
-        return obj.valid_from < now().date() < obj.valid_to
+        # Use inclusive bounds to match the rest of the app (e.g. the lte/gte filter
+        # above), so a licence valid "from today" / "until today" counts as valid.
+        return obj.valid_from <= now().date() <= obj.valid_to
 
     def get_queryset(self, request: HttpRequest) -> QuerySet:
         qs = super().get_queryset(request)
