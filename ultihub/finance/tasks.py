@@ -199,11 +199,17 @@ def calculate_season_fees_and_generate_invoices(
     clubs_to_notification = []  # Club objects for notifications (hot mode only)
     total_amount = Decimal("0")
 
+    # Compute fees once for the whole season and group amounts per club, instead of
+    # re-querying participations for every club inside the loop.
+    all_fees = calculate_season_fees(season)
+    club_totals: dict[int, Decimal] = defaultdict(lambda: Decimal("0"))
+    for member, fee in all_fees.items():
+        club_totals[member.club_id] += fee.amount
+
     for club in Club.objects.filter(fakturoid_subject_id__isnull=False).iterator():
-        fees = calculate_season_fees(season, club.id)
         club_info = f"{club.name} ({club.id})"
 
-        if (club_total := Decimal(sum([fee.amount for fee in fees.values()]))) <= 0:
+        if (club_total := club_totals.get(club.id, Decimal("0"))) <= 0:
             logger.info(
                 f"Club {club.name} (ID: {club.id}) has no fees for season {season.name}, skipping"
             )
