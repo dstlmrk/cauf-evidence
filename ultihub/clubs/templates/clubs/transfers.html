@@ -63,23 +63,13 @@
                     {% for transfer in transfers %}
                         <tr>
                             <td>
+                                {% include "clubs/components/transfer-state-badge.html" %}
+                                <br />
                                 {% if transfer.state == 1 %}
-                                    <span class="badge text-bg-warning">{{ transfer.get_state_display | upper }}</span>
-                                    <br />
                                     <small class="text-muted">{{ transfer.created_at | date:'d/m/Y H:i' }}</small>
                                 {% elif transfer.state == 2 %}
-                                    <span class="badge text-bg-success">{{ transfer.get_state_display | upper }}</span>
-                                    <br />
                                     <small class="text-muted">{{ transfer.approved_at | date:'d/m/Y H:i' }}</small>
-                                {% elif transfer.state == 5 %}
-                                    <span class="badge text-bg-secondary"
-                                        >{{ transfer.get_state_display | upper }}</span
-                                    >
-                                    <br />
-                                    <small class="text-muted">{{ transfer.updated_at | date:'d/m/Y H:i' }}</small>
                                 {% else %}
-                                    <span class="badge text-bg-danger">{{ transfer.get_state_display | upper }}</span>
-                                    <br />
                                     <small class="text-muted">{{ transfer.updated_at | date:'d/m/Y H:i' }}</small>
                                 {% endif %}
                             </td>
@@ -116,19 +106,7 @@
                         <div>
                             State:
                             <span style="position: relative; top: -2px;">
-                                <span
-                                    {% if transfer.state == 1 %}
-                                        class="badge text-bg-warning"
-                                    {% elif transfer.state == 2 %}
-                                        class="badge text-bg-success"
-                                    {% elif transfer.state == 5 %}
-                                        class="badge text-bg-secondary"
-                                    {% else %}
-                                        class="badge text-bg-danger"
-                                    {% endif %}
-                                >
-                                    {{ transfer.get_state_display | upper }}
-                                </span>
+                                {% include "clubs/components/transfer-state-badge.html" %}
                             </span>
                             <div>
                                 {% if transfer.state == 1 %}
