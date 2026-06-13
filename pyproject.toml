@@ -56,6 +56,7 @@ dev = [
     "factory-boy>=3.3.1",
     "pytest-factoryboy>=2.7.0",
     "types-requests>=2.32.0.20241016",
+    "pytest-cov>=7.1.0",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -75,6 +76,21 @@ filterwarnings = [
   "ignore::DeprecationWarning:rq.utils",
   "ignore:The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated.",
 ]
+
+[tool.coverage.run]
+source = ["ultihub"]
+omit = [
+  "*/migrations/*",
+  "*/tests/*",
+  "ultihub/manage.py",
+  "ultihub/ultihub/wsgi.py",
+  "ultihub/ultihub/asgi.py",
+  "ultihub/ultihub/settings.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
 
 [tool.ruff]
 line-length = 100
@@ -149,11 +165,11 @@ cmd = "mypy ."
 envfile = "secrets/.env.test"
 
 [tool.poe.tasks.test]
-help = "Run unit tests (without checks)"
+help = "Run unit tests with coverage (without checks)"
 sequence = [
   "docker compose -f docker/compose.test.yaml up -d",
   "python tests/wait_for_postgres.py",
-  "bash -c 'pytest || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down --volumes; exit $EXIT_CODE'"
+  "bash -c 'pytest --cov --cov-report=term-missing || EXIT_CODE=$?; docker compose -f docker/compose.test.yaml down --volumes; exit $EXIT_CODE'"
 ]
 envfile = "secrets/.env.test"
 
