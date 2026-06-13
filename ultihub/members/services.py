@@ -1,6 +1,6 @@
 import logging
 
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from tournaments.models import MemberAtTournament, Tournament
 
 from members.models import Member, MemberSexEnum
@@ -8,9 +8,11 @@ from members.models import Member, MemberSexEnum
 logger = logging.getLogger(__name__)
 
 
-def _get_already_assigned_members_ids(tournament: Tournament) -> list[int]:
-    return list(
-        MemberAtTournament.objects.filter(tournament=tournament).values_list("member_id", flat=True)
+def _get_already_assigned_members_ids(
+    tournament: Tournament,
+) -> QuerySet[MemberAtTournament, int]:
+    return MemberAtTournament.objects.filter(tournament=tournament).values_list(
+        "member_id", flat=True
     )
 
 
@@ -72,9 +74,7 @@ def search(
             else:
                 query_filter &= Q(age__gte=season.min_allowed_age)
 
-            already_assigned_members_ids = _get_already_assigned_members_ids(tournament)
-            if already_assigned_members_ids:
-                query_filter &= ~Q(id__in=already_assigned_members_ids)
+            query_filter &= ~Q(id__in=_get_already_assigned_members_ids(tournament))
 
     # TODO: add higher weight to members who already played for the club in this competition
     return [member for member in qs.filter(query_filter)[:limit]]

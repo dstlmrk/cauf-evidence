@@ -166,7 +166,7 @@ def transfer_form(request: HttpRequest) -> HttpResponse:
 
         if member_id:
             member = get_object_or_404(Member.objects.select_related("club"), pk=member_id)
-            if member.club.id == get_current_club(request).id:
+            if member.club.id == current_club.id:
                 form = TransferRequestFromMyClubForm(request.POST, member=member)
             else:
                 form = TransferRequestToMyClubForm(

@@ -1,5 +1,4 @@
 import csv
-import json
 import logging
 from typing import cast
 
@@ -9,6 +8,7 @@ from core.helpers import (
     get_current_club,
     get_current_club_or_none,
     get_filter_context_and_params,
+    hx_trigger_response,
 )
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -169,16 +169,11 @@ def roster_dialog_add_form_view(request: HttpRequest, team_at_tournament_id: int
                     ),
                 )
 
-            response = HttpResponse(status=204)
-            response["HX-Trigger"] = json.dumps(
-                dict(
-                    showRosterDialog=dict(teamAtTournamentId=team_at_tournament_id),
-                    teamsListChanged=True,
-                )
+            return hx_trigger_response(
+                showRosterDialog=dict(teamAtTournamentId=team_at_tournament_id),
+                teamsListChanged=True,
             )
-            return response
     else:
-        team_at_tournament = get_object_or_404(TeamAtTournament, pk=team_at_tournament_id)
         form = AddMemberToRosterForm()
 
     return render(
@@ -212,13 +207,11 @@ def roster_dialog_update_form_view(
         if form.is_valid():
             form.save()
             messages.success(request, "Member updated successfully")
-            response = HttpResponse(status=204)
-
-            response["HX-Trigger"] = (
-                f'{{"showRosterDialog": {{"teamAtTournamentId":'
-                f' "{member_at_tournament.team_at_tournament.id}"}}}}'
+            return hx_trigger_response(
+                showRosterDialog=dict(
+                    teamAtTournamentId=str(member_at_tournament.team_at_tournament.id)
+                )
             )
-            return response
     else:
         form = UpdateMemberToRosterForm(instance=member_at_tournament)
     return render(
