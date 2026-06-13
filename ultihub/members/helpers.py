@@ -6,7 +6,7 @@ from clubs.service import notify_club
 from competitions.models import Season
 from core.tasks import send_email
 from django.conf import settings
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.html import format_html
@@ -66,14 +66,19 @@ def create_transfer_request(
 
     approving_club = target_club if current_club == source_club else source_club
 
-    Transfer.objects.create(
-        member=member,
-        source_club=source_club,
-        target_club=target_club,
-        requesting_club=current_club,
-        approving_club=approving_club,
-        requested_by=agent,
-    )
+    try:
+        Transfer.objects.create(
+            member=member,
+            source_club=source_club,
+            target_club=target_club,
+            requesting_club=current_club,
+            approving_club=approving_club,
+            requested_by=agent,
+        )
+    except IntegrityError:
+        # The unique constraint rejected a second pending request (e.g. a concurrent
+        # submit). Surface a readable error instead of letting the view return a 500.
+        raise ValueError("Member already has a pending transfer request") from None
 
     notify_club(
         club=approving_club,

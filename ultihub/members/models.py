@@ -370,6 +370,17 @@ class Transfer(AuditModel):
 
     class Meta:
         ordering = ["-created_at"]
+        constraints = [
+            # Back the clean() check at the database level: two concurrent submits cannot
+            # both create the same pending request. A member may still have competing
+            # pending requests from different clubs (see cancel_competing_transfers), so the
+            # constraint is scoped to the source/target pair rather than the member alone.
+            UniqueConstraint(
+                fields=["member", "source_club", "target_club"],
+                condition=Q(state=TransferStateEnum.REQUESTED),
+                name="unique_requested_transfer_per_member",
+            ),
+        ]
 
     def clean(self) -> None:
         if self.source_club == self.target_club:

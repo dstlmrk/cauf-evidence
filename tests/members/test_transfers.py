@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 from members.helpers import (
     approve_transfer,
     cancel_competing_transfers,
@@ -147,6 +148,70 @@ class TestTransferHelpers:
             create_transfer_request(
                 agent=agent, current_club=club, member=member, source_club=club, target_club=club
             )
+
+    @patch("members.helpers.notify_club")
+    def test_duplicate_pending_request_rejected_by_db_constraint(self, mock_notify):
+        """The DB constraint rejects an identical pending request even when clean() is bypassed.
+
+        clean() already blocks the synchronous case; the constraint is the safety net for two
+        concurrent submits that both pass clean() before either is written.
+        """
+        agent = AgentFactory()
+        source_club = ClubFactory()
+        target_club = ClubFactory()
+        member = MemberFactory(club=source_club)
+
+        create_transfer_request(
+            agent=agent,
+            current_club=source_club,
+            member=member,
+            source_club=source_club,
+            target_club=target_club,
+        )
+
+        # bulk_create skips Model.save()/clean(), so it reaches the database directly.
+        with pytest.raises(IntegrityError), transaction.atomic():
+            Transfer.objects.bulk_create(
+                [
+                    Transfer(
+                        member=member,
+                        source_club=source_club,
+                        target_club=target_club,
+                        requesting_club=source_club,
+                        approving_club=target_club,
+                        requested_by=agent,
+                        state=TransferStateEnum.REQUESTED,
+                    )
+                ]
+            )
+
+        assert Transfer.objects.filter(member=member).count() == 1
+
+    @patch("members.helpers.notify_club")
+    def test_create_transfer_request_allows_competing_request_from_other_club(self, mock_notify):
+        """Different target clubs may both have a pending request (competing transfers)."""
+        agent = AgentFactory()
+        source_club = ClubFactory()
+        target_club1 = ClubFactory()
+        target_club2 = ClubFactory()
+        member = MemberFactory(club=source_club)
+
+        create_transfer_request(
+            agent=agent,
+            current_club=source_club,
+            member=member,
+            source_club=source_club,
+            target_club=target_club1,
+        )
+        create_transfer_request(
+            agent=agent,
+            current_club=source_club,
+            member=member,
+            source_club=source_club,
+            target_club=target_club2,
+        )
+
+        assert Transfer.objects.filter(member=member).count() == 2
 
     @patch("members.helpers.notify_club")
     def test_approve_transfer_success(self, mock_notify):
