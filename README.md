@@ -7,35 +7,35 @@ memberships, fees, transfers, and other administrative tasks efficiently.
 
 Below is a high-level overview of the project's components:
 
--   **Containerized Architecture**: The entire application is structured as Docker images managed with `docker-compose`.
--   **Backend**: Developed with the latest versions of Python and Django.
--   **Database**: PostgreSQL serves as the database, with automated backups to Dropbox for data security and redundancy.
--   **Frontend**:
-    -   Primarily server-rendered.
-    -   Dynamic elements implemented using Alpine.js and HTMX.
-    -   Bootstrap is used for responsive and consistent styling.
--   **Authentication**: User authentication is handled exclusively via Google Sign-In for simplicity and security.
--   **Administration**: Django Admin is utilized for administrative tasks, such as managing data or configurations.
--   **Error and Performance Monitoring**:
-    -   Errors are captured by Sentry.
-    -   Performance and application monitoring data are sent to Datadog.
--   **Deployment and Hosting**:
-    -   The application is hosted on a Digital Ocean VPS.
-    -   Automatic HTTPS certificates are managed via `nginxproxy/acme-companion`.
-    -   CI/CD workflows on GitHub automate builds and deployments.
--   **Asynchronous Operations**: Redis is used as the message queue for handling asynchronous tasks.
--   **Invoice Management**: Integration with Fakturoid is used to handle invoicing and financial management.
+- **Containerized Architecture**: The entire application is structured as Docker images managed with `docker-compose`.
+- **Backend**: Developed with the latest versions of Python and Django.
+- **Database**: PostgreSQL serves as the database, with automated backups to Dropbox for data security and redundancy.
+- **Frontend**:
+    - Primarily server-rendered.
+    - Dynamic elements implemented using Alpine.js and HTMX.
+    - Bootstrap is used for responsive and consistent styling.
+- **Authentication**: User authentication is handled exclusively via Google Sign-In for simplicity and security.
+- **Administration**: Django Admin is utilized for administrative tasks, such as managing data or configurations.
+- **Error and Performance Monitoring**:
+    - Errors are captured by Sentry.
+    - Performance and application monitoring data are sent to Datadog.
+- **Deployment and Hosting**:
+    - The application is hosted on a Digital Ocean VPS.
+    - Automatic HTTPS certificates are managed via `nginxproxy/acme-companion`.
+    - CI/CD workflows on GitHub automate builds and deployments.
+- **Asynchronous Operations**: Redis is used as the message queue for handling asynchronous tasks.
+- **Invoice Management**: Integration with Fakturoid is used to handle invoicing and financial management.
 
 ### Applications
 
--   **Api**: Manage API endpoints and permissions for them.
--   **Clubs**: Manage club information, teams and club notifications.
--   **Competitions**: Manage competitions (seasons, divisions, age limits) and applications.
--   **Core**: Includes common logic and utilities used across the project.
--   **Finance**: Manage invoices and Fakturoid integration.
--   **Members**: Manage member information, coach licenses, and transfers.
--   **Tournaments**: Manage tournaments, and teams and members (rosters) at tournaments.
--   **Users**: Manage agents in the app.
+- **Api**: Manage API endpoints and permissions for them.
+- **Clubs**: Manage club information, teams and club notifications.
+- **Competitions**: Manage competitions (seasons, divisions, age limits) and applications.
+- **Core**: Includes common logic and utilities used across the project.
+- **Finance**: Manage invoices and Fakturoid integration.
+- **Members**: Manage member information, coach licenses, and transfers.
+- **Tournaments**: Manage tournaments, and teams and members (rosters) at tournaments.
+- **Users**: Manage agents in the app.
 
 ### Production
 
@@ -63,31 +63,31 @@ Already created tokens are available at `/admin/authtoken/tokenproxy`.
 
 #### /api/competitions
 
--   `GET` Returns all competitions. Query parameter `season` is available (e.g. `?season=2025`).
--   **Note**: The field `type` was renamed to `environment` in the response. The API now returns `environment` field instead of `type`.
+- `GET` Returns all competitions. Query parameter `season` is available (e.g. `?season=2025`).
+- **Note**: The field `type` was renamed to `environment` in the response. The API now returns `environment` field instead of `type`.
 
 #### /api/clubs
 
--   `GET` Returns all clubs. You can filter them by `id` (e.g. `?id=1`).
+- `GET` Returns all clubs. You can filter them by `id` (e.g. `?id=1`).
 
 #### /api/teams-at-tournament
 
--   `GET` Returns all teams at tournament with theirs roster. Parameter `tournament_id` is required.
--   Each member in the roster includes a `sex` field (1=Female, 2=Male).
+- `GET` Returns all teams at tournament with theirs roster. Parameter `tournament_id` is required.
+- Each member in the roster includes a `sex` field (1=Female, 2=Male).
 
 #### /api/team-at-tournament/\<int:pk>
 
--   `GET` Returns team at tournament with its roster.
--   `PATCH` Updates `final_placement` and `spirit_avg` fields.
+- `GET` Returns team at tournament with its roster.
+- `PATCH` Updates `final_placement` and `spirit_avg` fields.
 
 #### /api/competition-application/\<int:pk>
 
--   `GET` Returns competition application.
--   `PATCH` Updates `final_placement` field.
+- `GET` Returns competition application.
+- `PATCH` Updates `final_placement` field.
 
 #### /api/seasons
 
--   `GET` Returns all seasons.
+- `GET` Returns all seasons.
 
 ## Database schema
 
