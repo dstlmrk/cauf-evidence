@@ -13,9 +13,16 @@ repos:
         pass_filenames: false
         language: system
         types: [file, python]
+      - id: prettier
+        name: prettier
+        entry: npx prettier --check
+        language: system
+        types_or: [javascript, css, scss, html, yaml, json, markdown]
+      # mypy is slow over the whole repo; run it on push instead of on every commit.
       - id: type
         name: type
         entry: uv run poe type
         pass_filenames: false
         language: system
         types: [file, python]
+        stages: [pre-push]

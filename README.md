@@ -144,8 +144,8 @@ Then list all available tasks by running `uv run poe` command.
 For better development experience, you need install pre-commit hooks and prettier:
 
 ```bash
-# Install pre-commit for better development experience
-uv run pre-commit install
+# Install the commit and push hooks (lint/style/prettier run on commit, mypy on push)
+uv run pre-commit install --hook-type pre-commit --hook-type pre-push
 
 # Prettier needs to be installed via npm (install node via brew)
 npm install
