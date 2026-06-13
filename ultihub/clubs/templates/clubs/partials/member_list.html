@@ -19,7 +19,7 @@
             <tr
                 class="bg-{% if member.sex == 1 %}female{% else %}male{% endif %}"
                 data-bs-toggle="tooltip"
-                data-bs-title="Pohlaví: {{ member.get_sex_display }}"
+                data-bs-title="Sex: {{ member.get_sex_display }}"
             >
                 <th>{{ member.default_jersey_number | default:"" }}</th>
                 <td>{{ member.full_name }}</td>
@@ -37,18 +37,18 @@
                             class="bi bi-check-circle-fill"
                             style="color: green;"
                             data-bs-toggle="tooltip"
-                            data-bs-title="E-mail potvrzen"
+                            data-bs-title="Email confirmed"
                             role="img"
-                            aria-label="E-mail potvrzen"
+                            aria-label="Email confirmed"
                         ></i>
                     {% else %}
                         <i
                             class="bi bi-x-circle"
                             style="color: red;"
                             data-bs-toggle="tooltip"
-                            data-bs-title="E-mail nepotvrzen"
+                            data-bs-title="Email not confirmed"
                             role="img"
-                            aria-label="E-mail nepotvrzen"
+                            aria-label="Email not confirmed"
                         ></i>
                     {% endif %}
                 </td>
