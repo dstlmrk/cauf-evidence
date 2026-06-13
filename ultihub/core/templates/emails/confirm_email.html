@@ -1,28 +1,51 @@
-<!doctype html>
-<html lang="cs">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Potvrzení e-mailu</title>
-    </head>
-    <body>
-        <b>CZ:</b>
-        <p>Byl(a) jste zaregistrován(a) jako člen klubu <strong>{{ club_name }}</strong>.</p>
-        <p>Pro potvrzení své e-mailové adresy klikněte na následující odkaz:</p>
-        <p><a href="{{ link }}">{{ link }}</a></p>
+{% extends "emails/_base_email.html" %}
 
-        {% if is_child %}
-            <p><strong>Tento e-mail je určen zákonnému zástupci dítěte mladšího 15 let.</strong></p>
-        {% endif %}
+{% block subject %}Potvrzení e-mailu{% endblock %}
 
-        <hr />
+{% block content %}
+    <p style="margin: 0 0 8px;"><b>CZ:</b></p>
+    <p style="margin: 0 0 12px;">Byl(a) jste zaregistrován(a) jako člen klubu <strong>{{ club_name }}</strong>.</p>
+    <p style="margin: 0 0 16px;">Pro potvrzení své e-mailové adresy klikněte na následující tlačítko:</p>
+    <p style="margin: 0 0 12px;">
+        <a
+            href="{{ link }}"
+            style="display: inline-block; background-color: #1a56db; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold;"
+        >
+            Potvrdit e-mail
+        </a>
+    </p>
+    <p style="margin: 0 0 4px; font-size: 12px; color: #9ca3af;">Pokud tlačítko nefunguje, použijte tento odkaz:</p>
+    <p style="margin: 0 0 16px; font-size: 12px; word-break: break-all;">
+        <a href="{{ link }}" style="color: #1a56db;">{{ link }}</a>
+    </p>
 
-        <b>EN:</b>
-        <p>You have been registered as a member of <strong>{{ club_name }}</strong>.</p>
-        <p>To confirm your email address, please click the following link:</p>
-        <p><a href="{{ link }}">{{ link }}</a></p>
+    {% if is_child %}
+        <p style="margin: 0 0 16px;">
+            <strong>Tento e-mail je určen zákonnému zástupci dítěte mladšího 15 let.</strong>
+        </p>
+    {% endif %}
 
-        {% if is_child %}
-            <p><strong>This email is intended for the legal guardian of a child under 15 years of age.</strong></p>
-        {% endif %}
-    </body>
-</html>
+    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
+
+    <p style="margin: 0 0 8px;"><b>EN:</b></p>
+    <p style="margin: 0 0 12px;">You have been registered as a member of <strong>{{ club_name }}</strong>.</p>
+    <p style="margin: 0 0 16px;">To confirm your email address, please click the button below:</p>
+    <p style="margin: 0 0 12px;">
+        <a
+            href="{{ link }}"
+            style="display: inline-block; background-color: #1a56db; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold;"
+        >
+            Confirm email
+        </a>
+    </p>
+    <p style="margin: 0 0 4px; font-size: 12px; color: #9ca3af;">If the button does not work, use this link:</p>
+    <p style="margin: 0 0 16px; font-size: 12px; word-break: break-all;">
+        <a href="{{ link }}" style="color: #1a56db;">{{ link }}</a>
+    </p>
+
+    {% if is_child %}
+        <p style="margin: 0;">
+            <strong>This email is intended for the legal guardian of a child under 15 years of age.</strong>
+        </p>
+    {% endif %}
+{% endblock %}

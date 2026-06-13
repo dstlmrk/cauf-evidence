@@ -1,25 +1,23 @@
-<!doctype html>
-<html lang="cs">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Preview generování faktur - {{ season.name }}</title>
-    </head>
-    <body>
-        <h2>Preview generování faktur - {{ season.name }}</h2>
-        <hr />
+{% extends "emails/_base_email.html" %}
 
-        <p><strong>Sezóna:</strong> {{ season.name }}</p>
-        <p><strong>Čas spuštění:</strong> {{ timestamp }}</p>
-        <p><strong>Počet klubů s fakturou:</strong> {{ invoices_data|length }}</p>
-        <p><strong>Celková částka:</strong> {{ total_amount }} CZK</p>
+{% block subject %}Preview generování faktur - {{ season.name }}{% endblock %}
 
-        {% if invoices_data %}
-            <p><strong>Faktury, které by byly vytvořeny:</strong></p>
-            <ul>
-                {% for club_name, club_id, amount in invoices_data %}
-                    <li>{{ club_name }} (ID: {{ club_id }}): {{ amount }} CZK</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    </body>
-</html>
+{% block content %}
+    <h2 style="margin: 0 0 16px; font-size: 18px;">Preview generování faktur - {{ season.name }}</h2>
+
+    <p style="margin: 0 0 8px;"><strong>Sezóna:</strong> {{ season.name }}</p>
+    <p style="margin: 0 0 8px;"><strong>Čas spuštění:</strong> {{ timestamp }}</p>
+    <p style="margin: 0 0 8px;"><strong>Počet klubů s fakturou:</strong> {{ invoices_data|length }}</p>
+    <p style="margin: 0 0 16px;"><strong>Celková částka:</strong> {{ total_amount }} CZK</p>
+
+    {% if invoices_data %}
+        <p style="margin: 0 0 8px;">
+            <strong>Faktury, které by byly vytvořeny:</strong>
+        </p>
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.7;">
+            {% for club_name, club_id, amount in invoices_data %}
+                <li>{{ club_name }} (ID: {{ club_id }}): {{ amount }} CZK</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
