@@ -147,9 +147,9 @@ def application_list(request: HttpRequest, competition_id: int) -> HttpResponse:
         "competitions/partials/application_list.html",
         {
             "competition": competition,
-            "applications": CompetitionApplication.objects.filter(competition=competition).order_by(
-                "created_at"
-            ),
+            "applications": CompetitionApplication.objects.filter(competition=competition)
+            .select_related("team__club", "invoice")
+            .order_by("created_at"),
         },
     )
 

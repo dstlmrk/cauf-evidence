@@ -43,6 +43,14 @@ def transfers_view(request: HttpRequest) -> HttpResponse:
         {
             "transfers": Transfer.objects.filter(
                 Q(source_club__id=current_club.id) | Q(target_club__id=current_club.id)
+            ).select_related(
+                "member",
+                "source_club",
+                "target_club",
+                "requesting_club",
+                "approving_club",
+                "requested_by__user",
+                "approved_by__user",
             ),
         },
     )
@@ -216,7 +224,9 @@ def remove_agent(request: HttpRequest) -> HttpResponse:
 @login_required
 def agent_list(request: HttpRequest) -> HttpResponse:
     club = get_object_or_404(Club, pk=get_club_id(request))
-    agents_at_club = AgentAtClub.objects.filter(club=club, is_active=True)
+    agents_at_club = AgentAtClub.objects.filter(club=club, is_active=True).select_related(
+        "agent__user"
+    )
 
     agents = [
         {
