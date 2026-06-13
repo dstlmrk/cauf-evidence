@@ -1,5 +1,7 @@
 from core.admin import AuditlogMixin
 from django.contrib import admin
+from django.db.models import QuerySet
+from django.http import HttpRequest
 
 from tournaments.models import MemberAtTournament, TeamAtTournament, Tournament
 
@@ -9,6 +11,9 @@ class TeamAtTournamentInline(admin.TabularInline):
     extra = 0
     fields = ("team_name", "seeding", "final_placement", "spirit_avg")
     readonly_fields = ("team_name",)
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
+        return super().get_queryset(request).select_related("application__team__club")
 
     @admin.display(description="Team name")
     def team_name(self, obj: TeamAtTournament) -> str:
@@ -20,6 +25,13 @@ class MemberAtTournamentInline(admin.TabularInline):
     extra = 0
     fields = ("tournament", "team_name", "is_captain", "is_coach", "jersey_number")
     readonly_fields = ("tournament", "team_name")
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("tournament", "team_at_tournament__application")
+        )
 
     @admin.display(description="Team name")
     def team_name(self, obj: MemberAtTournament) -> str:
@@ -39,6 +51,7 @@ class TournamentAdmin(AuditlogMixin, admin.ModelAdmin):
         "winner_team",
         "sotg_winner_team",
     )
+    list_select_related = ("competition", "winner_team", "sotg_winner_team")
     readonly_fields = ("winner_team", "sotg_winner_team")
     ordering = ("-created_at",)
     inlines = [TeamAtTournamentInline]
