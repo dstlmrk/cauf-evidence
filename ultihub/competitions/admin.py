@@ -120,6 +120,9 @@ class CompetitionApplicationInline(admin.TabularInline):
     fields = ("club", "team_name", "state", "final_placement")
     readonly_fields = ("club",)
 
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
+        return super().get_queryset(request).select_related("team__club")
+
     @admin.display(description="Club")
     def club(self, obj: CompetitionApplication) -> str:
         return str(obj.team.club)
@@ -158,11 +161,7 @@ class SeasonFilter(admin.SimpleListFilter):
     parameter_name = "competition__season"
 
     def lookups(self, request: HttpRequest, model_admin: Any) -> list[tuple]:
-        seasons = set(
-            ca.competition.season
-            for ca in model_admin.model.objects.select_related("competition").all()
-        )
-        return [(season.id, season.name) for season in seasons]
+        return list(Season.objects.values_list("id", "name"))
 
     def queryset(self, request: HttpRequest, queryset: QuerySet) -> QuerySet:
         if self.value():
