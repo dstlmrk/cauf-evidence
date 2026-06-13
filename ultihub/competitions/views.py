@@ -1,7 +1,11 @@
 from typing import Any
 
 from clubs.models import Club, Team
-from core.helpers import get_current_club, get_current_club_or_none
+from core.helpers import (
+    get_current_club,
+    get_current_club_or_none,
+    get_filter_context_and_params,
+)
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -11,15 +15,12 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_GET, require_POST
 
-from competitions.enums import ApplicationStateEnum, EnvironmentEnum
+from competitions.enums import ApplicationStateEnum
 from competitions.filters import CompetitionFilterSet
 from competitions.forms import RegistrationForm
 from competitions.models import (
-    AgeLimit,
     Competition,
     CompetitionApplication,
-    Division,
-    Season,
 )
 from competitions.services import get_competitions_qs_with_related_data
 
@@ -40,12 +41,8 @@ def competitions(request: HttpRequest) -> HttpResponse:
     # Build queryset with filters
     competitions_qs = get_competitions_qs_with_related_data(club_id=club.id if club else None)
 
-    # Set default season to the newest one if no season filter is applied
-    query_params = request.GET.copy()
-    if "season" not in query_params:
-        newest_season = Season.objects.order_by("-name").first()
-        if newest_season:
-            query_params["season"] = str(newest_season.id)
+    # Default season + shared filter context for core/partials/competition_filters.html
+    query_params, filter_context = get_filter_context_and_params(request)
 
     # Apply filters using FilterSet
     filter_set = CompetitionFilterSet(query_params, queryset=competitions_qs)
@@ -64,11 +61,7 @@ def competitions(request: HttpRequest) -> HttpResponse:
                     )
                 )
             ),
-            "seasons": Season.objects.all().order_by("-name"),
-            "selected_season_id": query_params.get("season"),
-            "environments": EnvironmentEnum.choices,
-            "divisions": Division.objects.all().order_by("name"),
-            "age_limits": AgeLimit.objects.all().order_by("name"),
+            **filter_context,
             **context,
         },
     )
