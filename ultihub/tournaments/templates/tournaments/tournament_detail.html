@@ -7,7 +7,9 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="{% url 'tournaments:tournaments' %}?season={{ tournament.competition.season_id }}">Turnaje</a>
+                <a href="{% url 'tournaments:tournaments' %}?season={{ tournament.competition.season_id }}"
+                    >Tournaments</a
+                >
             </li>
             <li class="breadcrumb-item active" aria-current="page">{{ tournament.name }}</li>
         </ol>

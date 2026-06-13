@@ -7,8 +7,8 @@ function initializeMembersTable() {
             processing: true,
             paging: false,
             language: {
-                zeroRecords: "Žádné záznamy k zobrazení",
-                emptyTable: "Žádné záznamy k zobrazení",
+                zeroRecords: "No records to display",
+                emptyTable: "No records to display",
             },
             columnDefs: [
                 { targets: 0, type: "num", className: "text-center" },

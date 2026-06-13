@@ -42,13 +42,13 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Potvrzení</h5>
+                        <h5 class="modal-title">Confirmation</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
                     </div>
                     <div id="confirmModalBody" class="modal-body"></div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zrušit</button>
-                        <button id="confirmModalConfirmBtn" type="button" class="btn btn-primary">Potvrdit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button id="confirmModalConfirmBtn" type="button" class="btn btn-primary">Confirm</button>
                     </div>
                 </div>
             </div>
@@ -58,7 +58,7 @@
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <div class="container">
                     <span class="navbar-brand fs-2">
-                        <img src="{% static 'cauf_monogram.svg' %}" alt="Logo ČAUF" />
+                        <img src="{% static 'cauf_monogram.svg' %}" alt="ČAUF logo" />
                         Evidence ČAUF
                     </span>
                     {% block navbar %}{% endblock %}
