@@ -153,6 +153,8 @@ DATABASES = {
         "PASSWORD": env.str("DATABASE_PASSWORD"),
         "HOST": env.str("DATABASE_HOST"),
         "PORT": "5432",
+        # Reuse DB connections across requests to avoid opening a new connection every time
+        "CONN_MAX_AGE": 60,
     }
 }
 
