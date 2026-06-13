@@ -138,8 +138,8 @@ docker compose -f docker/compose.dev.yaml exec app python manage.py loaddata ini
 
 App is prepared with initial data, and you can access it on `localhost:8000`.
 
-For another useful commands what you could need you need to install `uv`.
-Then check all possible options in output of `uv run poe help` command.
+For other useful commands you will need to install `uv`.
+Then list all available tasks by running `uv run poe` command.
 
 For better development experience, you need install pre-commit hooks and prettier:
 
