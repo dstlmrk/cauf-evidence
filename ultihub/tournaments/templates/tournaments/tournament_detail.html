@@ -4,6 +4,14 @@
 {% block page_title %}{{ tournament.name }} | Evidence ČAUF{% endblock %}
 
 {% block title %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'tournaments:tournaments' %}?season={{ tournament.competition.season_id }}">Turnaje</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ tournament.name }}</li>
+        </ol>
+    </nav>
     <small class="text-muted">
         {{ tournament.competition.season }} • {{ tournament.competition.get_environment_display | upper }}
     </small>
@@ -26,7 +34,7 @@
     </div>
     <div>
         Rosters deadline: {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}
-        <span style="position: relative; top: -2px;">
+        <span class="badge-nudge">
             {% if tournament.has_open_rosters %}
                 <span class="badge text-bg-success">OPEN ROSTERS</span>
             {% else %}
