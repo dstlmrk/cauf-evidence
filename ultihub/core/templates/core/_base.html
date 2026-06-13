@@ -15,6 +15,13 @@
         <title>Evidence ČAUF</title>
         <link href="{% webpack_static 'bundle.css' %}" rel="stylesheet" />
         <script defer src="{% webpack_static 'bundle.js' %}"></script>
+        {% if ENVIRONMENT == "prod" %}
+            <script
+                defer
+                src="https://cloud.umami.is/script.js"
+                data-website-id="e5bd7944-12e0-4d38-b509-49bbfcc04634"
+            ></script>
+        {% endif %}
     </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <!-- Placeholder for the modal -->
