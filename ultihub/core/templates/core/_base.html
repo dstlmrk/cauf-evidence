@@ -12,7 +12,7 @@
             <meta name="sentry-user-email" content="{{ user.email }}" />
         {% endif %}
         <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
-        <title>Evidence ČAUF</title>
+        <title>{% block page_title %}Evidence ČAUF{% endblock %}</title>
         <link href="{% webpack_static 'bundle.css' %}" rel="stylesheet" />
         <script defer src="{% webpack_static 'bundle.js' %}"></script>
         {% if ENVIRONMENT == "prod" %}
