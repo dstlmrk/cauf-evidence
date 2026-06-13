@@ -12,12 +12,15 @@ def notify_club(club: Club, subject: str, message: str) -> None:
     logger.info("Notifying club %s about %s", club.name, subject)
 
     club_agents = AgentAtClub.objects.filter(club=club, is_active=True)
-    for agent_at_club in club_agents:
-        ClubNotification.objects.create(
-            agent_at_club=agent_at_club,
-            subject=subject,
-            message=message,
-        )
+    ClubNotification.objects.bulk_create(
+        [
+            ClubNotification(agent_at_club=agent_at_club, subject=subject, message=message)
+            for agent_at_club in club_agents
+        ]
+    )
 
-    for agent_at_club in club_agents.filter(agent__has_email_notifications_enabled=True):
+    agents_with_email = club_agents.filter(
+        agent__has_email_notifications_enabled=True
+    ).select_related("agent__user")
+    for agent_at_club in agents_with_email:
         send_email(subject, message, to=[agent_at_club.agent.user.email])
