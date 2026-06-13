@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="cs">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block subject %}Evidence ČAUF{% endblock %}</title>
+    </head>
+    <body
+        style="margin: 0; padding: 0; background-color: #f4f5f7; font-family: Arial, Helvetica, sans-serif; color: #333333; line-height: 1.5;"
+    >
+        <!-- Outer wrapper centers the content card on the page background -->
+        <table
+            role="presentation"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            style="background-color: #f4f5f7; padding: 24px 0;"
+        >
+            <tr>
+                <td align="center">
+                    <table
+                        role="presentation"
+                        width="600"
+                        cellpadding="0"
+                        cellspacing="0"
+                        style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb;"
+                    >
+                        <!-- Header -->
+                        <tr>
+                            <td style="padding: 20px 32px; border-bottom: 1px solid #e5e7eb;">
+                                <span
+                                    style="font-size: 18px; font-weight: bold; color: #1a56db; letter-spacing: 0.5px;"
+                                >
+                                    Evidence ČAUF
+                                </span>
+                            </td>
+                        </tr>
+
+                        <!-- Content -->
+                        <tr>
+                            <td style="padding: 32px;">{% block content %}{% endblock %}</td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="padding: 16px 32px; border-top: 1px solid #e5e7eb; background-color: #fafafa;">
+                                <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+                                    <a
+                                        href="https://evidence.frisbee.cz"
+                                        style="color: #9ca3af; text-decoration: none;"
+                                    >
+                                        Evidence ČAUF — evidence.frisbee.cz
+                                    </a>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
