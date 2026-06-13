@@ -26,7 +26,9 @@ from competitions.services import get_competitions_qs_with_related_data
 
 def competitions(request: HttpRequest) -> HttpResponse:
     session_club = get_current_club_or_none(request)
-    club = Club.objects.get(id=session_club.id) if session_club else None
+    # The session may still reference a club that has since been deleted; fall back to
+    # no club instead of raising a 500 so the public competitions page keeps rendering.
+    club = Club.objects.filter(id=session_club.id).first() if session_club else None
 
     context: dict[str, Any] = {}
 
@@ -155,15 +157,16 @@ def application_list(request: HttpRequest, competition_id: int) -> HttpResponse:
 @require_GET
 def competition_detail_view(request: HttpRequest, competition_id: int) -> HttpResponse:
     club = get_current_club_or_none(request)
+    competition = get_object_or_404(
+        get_competitions_qs_with_related_data(
+            club_id=club.id if club else None,
+            competition_id=competition_id,
+        )
+    )
     return render(
         request,
         "competitions/partials/competition_detail.html",
-        {
-            "competition": get_competitions_qs_with_related_data(
-                club_id=club.id if club else None,
-                competition_id=competition_id,
-            ).get(),
-        },
+        {"competition": competition},
     )
 
 

@@ -222,3 +222,24 @@ class TestCancelApplicationView:
         # The protected delete must surface a user-facing error, not an HTTP 500.
         assert response.status_code == 409
         assert CompetitionApplication.objects.filter(pk=application.pk).exists()
+
+
+class TestCompetitionDetailView:
+    def test_returns_existing_competition(self, logged_in_client):
+        user = UserFactory()
+        club = ClubFactory()
+        competition = CompetitionFactory()
+        client = logged_in_client(user, club)
+
+        response = client.get(reverse("competitions:competition_detail", args=[competition.id]))
+
+        assert response.status_code == 200
+
+    def test_unknown_competition_returns_404_not_500(self, logged_in_client):
+        user = UserFactory()
+        club = ClubFactory()
+        client = logged_in_client(user, club)
+
+        response = client.get(reverse("competitions:competition_detail", args=[9999999]))
+
+        assert response.status_code == 404
