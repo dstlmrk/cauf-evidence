@@ -6,6 +6,10 @@ function initializeMembersTable() {
             responsive: true,
             processing: true,
             paging: false,
+            language: {
+                zeroRecords: "Žádné záznamy k zobrazení",
+                emptyTable: "Žádné záznamy k zobrazení",
+            },
             columnDefs: [
                 { targets: 0, type: "num", className: "text-center" },
                 { targets: 2, className: "text-start" },

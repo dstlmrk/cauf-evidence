@@ -188,3 +188,9 @@ body {
         transform: rotate(360deg);
     }
 }
+
+/* Vertical nudge for badges sitting next to inline text */
+.badge-nudge {
+    position: relative;
+    top: -2px;
+}

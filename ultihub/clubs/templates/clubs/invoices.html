@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load humanize %}
 
 {% block page_title %}Faktury | Evidence ČAUF{% endblock %}
 
@@ -41,7 +42,7 @@
                                         {{ invoice.get_state_display | upper }}
                                     </span>
                                 </td>
-                                <td>{{ invoice.amount | floatformat:0 }}</td>
+                                <td>{{ invoice.amount | floatformat:0 | intcomma }}</td>
                                 <td class="fit">
                                     <a
                                         href="{{ invoice.fakturoid_public_html_url }}"
@@ -82,7 +83,7 @@
                                 {{ invoice.get_state_display | upper }}
                             </span>
                         </div>
-                        <div>Amount: <b>CZK {{ invoice.amount | floatformat:0 }}</b></div>
+                        <div>Amount: <b>CZK {{ invoice.amount | floatformat:0 | intcomma }}</b></div>
                         <div>
                             Link:
                             {% if invoice.fakturoid_public_html_url %}
