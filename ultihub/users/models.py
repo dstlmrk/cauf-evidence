@@ -1,3 +1,5 @@
+from typing import Any
+
 from core.fields import ValidatedEmailField
 from core.models import AuditModel
 from django.contrib.auth.models import User
@@ -23,6 +25,13 @@ class NewAgentRequest(AuditModel):
         User,
         on_delete=models.PROTECT,
     )
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        # Normalize email to lowercase so the OAuth login lookup matches
+        # regardless of where the request was created (admin, web, import)
+        if self.email:
+            self.email = self.email.lower()
+        super().save(*args, **kwargs)
 
 
 class Agent(AuditModel):
