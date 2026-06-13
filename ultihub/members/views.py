@@ -186,6 +186,10 @@ def transfer_form(request: HttpRequest) -> HttpResponse:
             except ValidationError as ex:
                 messages.error(request, ex.message)
                 form = TransferRequestForm()
+            except ValueError as ex:
+                # Raised when the unique constraint rejects a duplicate pending request.
+                messages.error(request, str(ex))
+                form = TransferRequestForm()
         else:
             form = TransferRequestForm(request.POST)
 
