@@ -32,7 +32,10 @@ module.exports = {
         }),
         new webpack.ProvidePlugin({
             bootstrap: "bootstrap",
-            htmx: "htmx.org",
+            // htmx.org ships as ESM (`export default htmx`); reference the
+            // default export so the provided `htmx` is the instance with
+            // helpers like `htmx.on`, not the module namespace object.
+            htmx: ["htmx.org", "default"],
             $: "jquery",
             jQuery: "jquery",
             Alpine: "alpinejs",
