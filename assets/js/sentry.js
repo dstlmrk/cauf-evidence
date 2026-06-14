@@ -34,6 +34,13 @@ if (dsn) {
             // The rejection often carries no stack frame, so denyUrls may miss
             // it; keep the message filter as a belt-and-suspenders.
             "Invalid call to runtime.sendMessage(). Tab not found.",
+            // Injected-script noise: in-app browsers, link-preview tools and
+            // SEO/translation extensions read Open Graph tags via
+            // `document.querySelector("meta[property='og:...']").content` and
+            // crash when the tag is absent. We never query og: tags ourselves,
+            // and the top stack frame is our own document, so denyUrls can't
+            // catch it; match on the querySelector instead.
+            /meta\[property=['"]og:/,
         ],
     });
 
