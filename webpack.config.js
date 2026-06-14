@@ -36,8 +36,11 @@ module.exports = {
             // default export so the provided `htmx` is the instance with
             // helpers like `htmx.on`, not the module namespace object.
             htmx: ["htmx.org", "default"],
-            $: "jquery",
-            jQuery: "jquery",
+            // jQuery 4 ships as ESM (`export default jQuery`); reference the
+            // default export so the provided `$`/`jQuery` is the callable
+            // jQuery function, not the module namespace object.
+            $: ["jquery", "default"],
+            jQuery: ["jquery", "default"],
             Alpine: "alpinejs",
         }),
     ],
