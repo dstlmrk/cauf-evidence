@@ -208,3 +208,9 @@ class CompetitionApplication(AuditModel):
 
     def registrant_name(self) -> str:
         return self.registered_by.get_full_name()
+
+    @property
+    def is_cancellable(self) -> bool:
+        # An already accepted application or one tied to an invoice can no longer
+        # be withdrawn by the club.
+        return self.invoice_id is None and self.state != ApplicationStateEnum.ACCEPTED

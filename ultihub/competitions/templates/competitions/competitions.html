@@ -3,7 +3,10 @@
 
 {% block page_title %}Competitions | Evidence ČAUF{% endblock %}
 
-{% block title %}<h1>Competitions</h1>{% endblock %}
+{% block title %}
+    <h1 class="fw-bold mb-1"><i class="bi bi-trophy-fill text-primary me-2"></i>Competitions</h1>
+    <p class="text-muted mb-0">Browse the season's competitions and register your teams.</p>
+{% endblock %}
 
 {% block buttons %}
     {% if request.session.club %}
@@ -37,105 +40,68 @@
     {% include "core/partials/competition_filters.html" %}
 
     {% if competitions %}
-        <div class="d-none d-md-block">
-            <table class="table align-middle">
-                <thead>
-                    <tr class="align-middle">
-                        <th scope="col">Registration<br /><small class="text-muted">Deadline</small></th>
-                        <th scope="col">Season</th>
-                        <th scope="col">Competition</th>
-                        <th scope="col">Deposit<br />per team</th>
-                        <th scope="col">Season fee</th>
-                        <th scope="col" class="text-end"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for competition in competitions %}
-                        <tr>
-                            <td class="fit pe-5">
-                                {% if competition.has_open_registration %}
-                                    <span class="badge text-bg-success">OPEN REGISTRATION</span>
-                                    {% if competition.has_awaiting_payment %}
-                                        <span class="badge text-bg-danger">AWAITING PAYMENT</span>
-                                    {% endif %}
-                                {% else %}
-                                    <span class="badge text-bg-dark">CLOSED REGISTRATION</span>
-                                {% endif %}
-                                <br />
-                                <small class="text-muted"
-                                    >{{ competition.registration_deadline | date:'d/m/Y H:i' }}</small
-                                >
-                            </td>
-                            <td>
-                                {{ competition.season }}<br />
-                                <small class="text-muted">{{ competition.get_environment_display | upper }}</small>
-                            </td>
-                            <td>
-                                {{ competition.name }}<br />
-                                <span class="badge text-bg-primary text-bg-{{ competition.division | lower }}"
-                                    >{{ competition.division | upper }}</span
-                                >
-                                {% if competition.age_limit %}
-                                    <span class="badge text-bg-primary">{{ competition.age_limit | upper }}</span>
-                                {% endif %}
-                            </td>
-                            <td>CZK {{ competition.deposit | floatformat:0 }}</td>
-                            <td>CZK {{ competition.season_fee | floatformat:0 }}</td>
-                            <td class="fit text-end">
-                                {% include "competitions/components/competition-action-buttons.html" %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="d-block d-md-none">
-            <div class="list-group">
-                {% for competition in competitions %}
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <div>
-                                <small class="text-muted">
-                                    {{ competition.season }} • {{ competition.get_environment_display | upper }}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xxl-3 g-3">
+            {% for competition in competitions %}
+                <div class="col">
+                    <div class="card competition-card h-100 shadow-sm">
+                        <div class="card-body d-flex flex-column">
+                            <div class="mb-3">
+                                <small class="text-muted text-uppercase fw-semibold d-block mb-1">
+                                    {{ competition.season }} • {{ competition.get_environment_display }}
                                 </small>
-                                <div>
-                                    <b class="h5">{{ competition.name }}</b>
-                                    <span style="position: relative; top: -3px;">
-                                        <span class="badge text-bg-primary text-bg-{{ competition.division | lower }}">
+                                <div class="d-flex align-items-center flex-wrap gap-2">
+                                    <span class="h4 mb-0">{{ competition.name }}</span>
+                                    <span class="d-flex flex-wrap gap-1">
+                                        <span
+                                            class="badge fs-6 text-bg-primary text-bg-{{ competition.division | lower }}"
+                                        >
                                             {{ competition.division | upper }}
                                         </span>
                                         {% if competition.age_limit %}
-                                            <span class="badge text-bg-primary">
+                                            <span class="badge fs-6 text-bg-primary">
                                                 {{ competition.age_limit | upper }}
                                             </span>
                                         {% endif %}
                                     </span>
                                 </div>
+                                <div class="d-flex flex-wrap gap-1 mt-2">
+                                    {% if competition.has_open_registration %}
+                                        <span class="badge badge-soft-success">Open registration</span>
+                                    {% else %}
+                                        <span class="badge badge-soft-secondary">Closed registration</span>
+                                    {% endif %}
+                                    {% if competition.has_awaiting_payment %}
+                                        <span class="badge badge-soft-danger">
+                                            <i class="bi bi-exclamation-circle me-1"></i>Awaiting payment
+                                        </span>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div>
-                                {% if competition.has_open_registration %}
-                                    <span class="badge text-bg-success">OPEN REGISTRATION</span>
-                                {% else %}
-                                    <span class="badge text-bg-dark">CLOSED REGISTRATION</span>
-                                {% endif %}
+
+                            <div class="competition-meta small">
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted"><i class="bi bi-clock me-1"></i> Deadline</span>
+                                    <span>{{ competition.registration_deadline | date:'d/m/Y H:i' }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted"
+                                        ><i class="bi bi-cash-coin me-1"></i> Deposit per team</span
+                                    >
+                                    <span>CZK {{ competition.deposit | floatformat:0 }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted"><i class="bi bi-receipt me-1"></i> Season fee</span>
+                                    <span>CZK {{ competition.season_fee | floatformat:0 }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div>Registration deadline: {{ competition.registration_deadline | date:'d/m/Y H:i' }}</div>
-                        <div>
-                            Deposit: CZK {{ competition.deposit | floatformat:0 }}
-                            {% if competition.has_awaiting_payment %}
-                                <span style="position: relative; top: -2px;" class="badge text-bg-danger"
-                                    >AWAITING PAYMENT</span
-                                >
-                            {% endif %}
-                        </div>
-                        <div>Season fee: CZK {{ competition.season_fee | floatformat:0 }}</div>
-                        <div class="mt-2 mb-1">
-                            {% include "competitions/components/competition-action-buttons.html" %}
+
+                            <div class="competition-card-actions mt-auto pt-3">
+                                {% include "competitions/components/competition-action-buttons.html" %}
+                            </div>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
         </div>
     {% else %}
         <div class="alert alert-primary" role="alert">

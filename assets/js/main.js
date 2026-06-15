@@ -14,6 +14,7 @@ import "datatables.net-bs5";
 import "datatables.net-responsive-bs5";
 
 // Custom
+import "./theme";
 import "./dtables";
 import "./dialog";
 import "./confirm";

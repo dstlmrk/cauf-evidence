@@ -1,92 +1,96 @@
 <div class="modal-content">
-    <div class="modal-header p-3">
-        <div
-            class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between w-100"
-        >
-            <h5 class="modal-title mb-0"><i class="bi bi-people-fill"></i> {{ competition }}: Registration</h5>
-            {% if request.session.club and competition.has_open_registration %}
-                <button
-                    class="btn btn-success mt-2 mt-md-0 ms-0 ms-md-3 position-relative"
-                    hx-get="{% url 'competitions:registration' competition.id %}"
-                    hx-target="#dialog"
-                    data-bs-dismiss="modal"
-                >
-                    <i class="bi bi-plus-circle"></i> Add team
-                </button>
-            {% endif %}
+    <div class="modal-header gap-2">
+        <div class="me-auto">
+            <h5 class="modal-title d-flex align-items-center gap-2 mb-0">
+                <i class="bi bi-people-fill text-primary"></i> Registration
+            </h5>
+            <small class="text-muted">{{ competition }}</small>
         </div>
+        {% if request.session.club and competition.has_open_registration %}
+            <button
+                class="btn btn-success position-relative text-nowrap"
+                hx-get="{% url 'competitions:registration' competition.id %}"
+                hx-target="#dialog"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi bi-plus-circle me-1"></i> Add team
+            </button>
+        {% endif %}
     </div>
     <div class="modal-body">
-        <div class="mb-2 d-none d-md-block">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Team name</th>
-                        <th scope="col">Club</th>
-                        <th scope="col">State</th>
-                        <th scope="col">Registration time</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for application in applications %}
+        {% if applications %}
+            <!-- Desktop: table -->
+            <div class="d-none d-md-block">
+                <table class="table table-hover align-middle mb-0 registration-table">
+                    <thead>
                         <tr>
-                            <th>{{ forloop.counter }}</th>
-                            <td>{{ application.team_name }}</td>
-                            <td class="text-muted">{{ application.team.club.name }}</td>
-                            <td>{% include "competitions/components/competition-state-badge.html" %}</td>
-                            <td>{{ application.created_at | date:"d/m/Y H:i" }}</td>
-                            <td class="fit">
-                                {% if request.session.club.id == application.team.club.id and competition.has_open_registration and not application.invoice %}
-                                    <div>
+                            <th scope="col">#</th>
+                            <th scope="col">Team name</th>
+                            <th scope="col">Club</th>
+                            <th scope="col">State</th>
+                            <th scope="col">Registration time</th>
+                            <th scope="col" class="text-end"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                            <tr>
+                                <td class="text-muted">{{ forloop.counter }}</td>
+                                <td class="fw-semibold">{{ application.team_name }}</td>
+                                <td class="text-muted">{{ application.team.club.name }}</td>
+                                <td>{% include "competitions/components/competition-state-badge.html" %}</td>
+                                <td class="text-muted">{{ application.created_at | date:"d/m/Y H:i" }}</td>
+                                <td class="fit text-end">
+                                    {% if request.session.club.id == application.team.club.id and competition.has_open_registration and application.is_cancellable %}
                                         <button
-                                            class="btn btn-danger"
+                                            class="btn btn-outline-danger btn-sm"
                                             hx-post="{% url 'competitions:cancel_application' application.id %}"
                                         >
-                                            Remove
+                                            <i class="bi bi-x-lg me-1"></i> Remove
                                         </button>
-                                    </div>
-                                {% else %}
-                                    <button class="btn btn-primary invisible">X</button>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="d-block d-md-none">
-            <ul class="list-group">
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Phones: cards -->
+            <div class="d-block d-md-none d-flex flex-column gap-2">
                 {% for application in applications %}
-                    <div class="list-group-item">
-                        <div>Name: <b>{{ application.team_name }}</b></div>
-                        <div>Club: {{ application.team.club.name }}</div>
-                        <div>
-                            State:
-                            <span style="position: relative; top: -2px;">
-                                {% include "competitions/components/competition-state-badge.html" %}
-                            </span>
-                        </div>
-                        <div>Registration time: {{ application.created_at | date:"d/m/Y H:i" }}</div>
-                        <div>
-                            {% if request.session.club.id == application.team.club.id and competition.has_open_registration and not application.invoice %}
-                                <div class="mt-2 mb-1">
-                                    <button
-                                        class="btn btn-danger"
-                                        hx-post="{% url 'competitions:cancel_application' application.id %}"
-                                    >
-                                        Remove
-                                    </button>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div>
+                                    <div class="fw-semibold">{{ application.team_name }}</div>
+                                    <small class="text-muted">{{ application.team.club.name }}</small>
                                 </div>
+                                {% include "competitions/components/competition-state-badge.html" %}
+                            </div>
+                            <div class="small text-muted mt-2">
+                                <i class="bi bi-clock me-1"></i>{{ application.created_at | date:"d/m/Y H:i" }}
+                            </div>
+                            {% if request.session.club.id == application.team.club.id and competition.has_open_registration and application.is_cancellable %}
+                                <button
+                                    class="btn btn-outline-danger btn-sm w-100 mt-3"
+                                    hx-post="{% url 'competitions:cancel_application' application.id %}"
+                                >
+                                    <i class="bi bi-x-lg me-1"></i> Remove
+                                </button>
                             {% endif %}
                         </div>
                     </div>
                 {% endfor %}
-            </ul>
-        </div>
+            </div>
+        {% else %}
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                No teams registered yet.
+            </div>
+        {% endif %}
     </div>
-    <div class="modal-footer d-flex w-100 justify-content-end">
+    <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
     </div>
 </div>

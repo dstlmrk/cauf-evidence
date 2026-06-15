@@ -5,6 +5,39 @@ body {
     font-family: "Roboto Condensed", sans-serif;
 }
 
+/*
+ * Brand colors and theme tokens. The brand navy is lightened a touch in dark
+ * mode so primary buttons, links and badges keep enough contrast on a dark
+ * surface. Everything theme-dependent below reads from these variables.
+ */
+:root {
+    --brand: #143c7d;
+    --brand-hover: #1c4ea2;
+
+    /* The navbar keeps the deep brand navy in both themes for a stable identity */
+    --brand-navbar: #143c7d;
+
+    /* Subtle page tint so white cards read as elevated surfaces, not flat */
+    --app-bg: #f4f6f9;
+
+    /* Softer rounding for a slightly fresher look across the whole app */
+    --bs-border-radius: 0.5rem;
+    --bs-border-radius-sm: 0.375rem;
+    --bs-border-radius-lg: 0.75rem;
+    --bs-border-radius-xl: 1rem;
+}
+
+[data-bs-theme="dark"] {
+    --brand: #4f7ed1;
+    --brand-hover: #6b95df;
+    --brand-navbar: #10294f;
+    --app-bg: #16181c;
+}
+
+body {
+    background-color: var(--app-bg);
+}
+
 html,
 body {
     height: 100%;
@@ -26,33 +59,48 @@ body {
 /* Footer má automatickou margin-top, aby se "lepila" na spodní část */
 .footer {
     margin-top: auto;
-    background-color: #f8f9fa;
+    background-color: var(--bs-tertiary-bg);
+    border-top: 1px solid var(--bs-border-color);
+}
+
+/* NSA logo has no transparent/dark asset of its own, so swap to a light-text
+ * variant in dark mode (the original would otherwise show as a white plate). */
+.nsa-logo-dark {
+    display: none;
+}
+
+[data-bs-theme="dark"] .nsa-logo-light {
+    display: none;
+}
+
+[data-bs-theme="dark"] .nsa-logo-dark {
+    display: inline;
 }
 
 /* Company colors for primary buttons */
 .btn-primary {
-    background-color: #143c7d;
-    border-color: #143c7d;
+    background-color: var(--brand);
+    border-color: var(--brand);
 }
 
 .btn-primary:hover {
-    background-color: #1c4ea2;
-    border-color: #1c4ea2;
+    background-color: var(--brand-hover);
+    border-color: var(--brand-hover);
 }
 
 .btn-primary:focus {
-    background-color: #1c4ea2;
-    border-color: #1c4ea2;
+    background-color: var(--brand-hover);
+    border-color: var(--brand-hover);
 }
 
 .btn-primary:disabled,
 .btn-primary.disabled {
-    background-color: #1c4ea2;
-    border-color: #1c4ea2;
+    background-color: var(--brand-hover);
+    border-color: var(--brand-hover);
 }
 
 .text-bg-primary {
-    background-color: #143c7d !important;
+    background-color: var(--brand) !important;
 }
 
 .text-bg-open {
@@ -69,7 +117,32 @@ body {
 }
 
 .dropdown-item:active {
-    background-color: #1c4ea2;
+    background-color: var(--brand-hover);
+}
+
+/* Branded navbar: deep navy bar with light content (data-bs-theme="dark") */
+.app-navbar {
+    background-color: var(--brand-navbar);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+/*
+ * Primary buttons inside the navy bar (club switcher, notifications) would
+ * disappear against the navy. Render them as frosted-glass buttons instead.
+ */
+.app-navbar .btn-primary,
+.app-navbar .btn-primary:focus,
+.app-navbar .btn-primary:disabled,
+.app-navbar .btn-primary.disabled {
+    background-color: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.22);
+    color: #fff;
+    opacity: 1;
+}
+
+.app-navbar .btn-primary:hover {
+    background-color: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.32);
 }
 
 /* Bigger fonts for navbar */
@@ -108,6 +181,14 @@ body {
     --bs-table-bg: #fff4f4;
 }
 
+[data-bs-theme="dark"] .bg-male {
+    --bs-table-bg: #14242e;
+}
+
+[data-bs-theme="dark"] .bg-female {
+    --bs-table-bg: #2a1820;
+}
+
 /*.table td,*/
 /*.table th {*/
 /*    padding-top: 1rem; !* Zvětšení horního odsazení *!*/
@@ -129,7 +210,7 @@ body {
 
 .shadowed-list-group {
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Jemný stín */
-    background-color: white; /* Ujistíme se, že je seznam čitelný */
+    background-color: var(--bs-body-bg); /* Ujistíme se, že je seznam čitelný */
 }
 
 .table td.fit,
@@ -139,8 +220,8 @@ body {
 }
 
 .list-group-item.active {
-    background-color: #1c4ea2 !important;
-    border-color: #1c4ea2 !important;
+    background-color: var(--brand-hover) !important;
+    border-color: var(--brand-hover) !important;
     color: white !important;
 }
 
@@ -149,7 +230,7 @@ body {
 }
 
 .text-primary {
-    color: #143c7d !important;
+    color: var(--brand) !important;
 }
 
 .form-error-msg {
@@ -193,4 +274,69 @@ body {
 .badge-nudge {
     position: relative;
     top: -2px;
+}
+
+/* Competition cards (competitions list, used on every breakpoint) */
+.competition-card {
+    border: 1px solid var(--bs-border-color);
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.competition-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.65rem 1.25rem rgba(0, 0, 0, 0.14) !important;
+}
+
+/* Soft (subtle) status badges so cards stay calm; the division/age badges
+ * remain the only vivid colour, giving a clear visual hierarchy. */
+.badge.badge-soft-success {
+    background-color: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+}
+
+.badge.badge-soft-danger {
+    background-color: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger-text-emphasis);
+}
+
+.badge.badge-soft-secondary {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+}
+
+.competition-card .competition-meta > div {
+    border-top: 1px solid var(--bs-border-color-translucent);
+}
+
+.competition-card .competition-meta > div:first-child {
+    border-top: 0;
+}
+
+/* Primary "Registrations" action spans the card; below it a balanced row of
+ * two equal-width secondary buttons (Detail / Standings) provides the quieter
+ * actions without crowding the primary CTA. */
+
+/* Subtle row highlight so the dense desktop table is easier to scan */
+.table-hover > tbody > tr:hover > * {
+    --bs-table-bg-state: var(--bs-tertiary-bg);
+}
+
+/* Label/value rows inside modals (competition detail, etc.) */
+.detail-meta > div {
+    border-top: 1px solid var(--bs-border-color-translucent);
+}
+
+.detail-meta > div:first-child {
+    border-top: 0;
+}
+
+/* Quiet uppercase header for the registrations table in the modal */
+.registration-table thead th {
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--bs-secondary-color);
+    border-bottom: 1px solid var(--bs-border-color);
 }
