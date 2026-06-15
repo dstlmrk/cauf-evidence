@@ -159,10 +159,22 @@ DATABASES = {
 }
 
 # DBBACKUP SETTINGS -----------------------------------------------------------
-DBBACKUP_STORAGE = "storages.backends.dropbox.DropBoxStorage"
-DROPBOX_APP_KEY = env.str("DROPBOX_APP_KEY")
-DROPBOX_APP_SECRET = env.str("DROPBOX_APP_SECRET")
-DROPBOX_OAUTH2_REFRESH_TOKEN = env.str("DROPBOX_OAUTH2_REFRESH_TOKEN")
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+    "dbbackup": {
+        "BACKEND": "storages.backends.dropbox.DropboxStorage",
+        "OPTIONS": {
+            "app_key": env.str("DROPBOX_APP_KEY"),
+            "app_secret": env.str("DROPBOX_APP_SECRET"),
+            "oauth2_refresh_token": env.str("DROPBOX_OAUTH2_REFRESH_TOKEN"),
+        },
+    },
+}
 
 # AUTHENTICATION ---------------------------------------------------------------
 SITE_ID = 1
