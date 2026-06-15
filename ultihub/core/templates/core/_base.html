@@ -5,6 +5,21 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="light dark" />
+        <script>
+            // Apply the color theme before first paint to avoid a flash. The
+            // navbar switcher (theme.js) wires up changes afterwards.
+            (function () {
+                var stored = localStorage.getItem("theme");
+                var theme =
+                    stored && stored !== "auto"
+                        ? stored
+                        : window.matchMedia("(prefers-color-scheme: dark)").matches
+                          ? "dark"
+                          : "light";
+                document.documentElement.setAttribute("data-bs-theme", theme);
+            })();
+        </script>
         <meta name="sentry-dsn" content="{{ SENTRY_DSN }}" />
         <meta name="environment" content="{{ ENVIRONMENT }}" />
         {% if user.is_authenticated %}
@@ -55,7 +70,7 @@
         </div>
 
         <div class="min-vh-100">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <nav class="navbar navbar-expand-lg app-navbar" data-bs-theme="dark">
                 <div class="container">
                     <span class="navbar-brand fs-2">
                         <img src="{% static 'cauf_monogram.svg' %}" alt="ČAUF logo" />
@@ -67,17 +82,15 @@
 
             <div class="container mt-4 mb-5">{% block base_content %}{% endblock %}</div>
 
-            <footer class="footer mt-auto py-3 text-center">
+            <footer class="footer mt-auto py-3 small">
                 <div class="container">
-                    <div class="d-none d-md-block">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>{% include 'core/partials/footer_base_info.html' %}</div>
-                            <div>{% include 'core/partials/footer_nsa_info.html' %}</div>
+                    <div class="d-flex flex-column flex-md-row align-items-center justify-content-md-between gap-3">
+                        <div class="d-flex align-items-center flex-wrap justify-content-center gap-2">
+                            {% include 'core/partials/theme_toggle.html' %}
+                            <span class="opacity-50">|</span>
+                            {% include 'core/partials/footer_base_info.html' %}
                         </div>
-                    </div>
-                    <div class="d-block d-md-none">
-                        <div>{% include 'core/partials/footer_base_info.html' %}</div>
-                        <div class="mt-3">{% include 'core/partials/footer_nsa_info.html' %}</div>
+                        <div class="text-center">{% include 'core/partials/footer_nsa_info.html' %}</div>
                     </div>
                 </div>
             </footer>

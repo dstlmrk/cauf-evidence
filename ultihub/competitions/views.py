@@ -6,6 +6,7 @@ from core.helpers import (
     get_current_club_or_none,
     get_filter_context_and_params,
 )
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -52,7 +53,10 @@ def competitions(request: HttpRequest) -> HttpResponse:
         request,
         "competitions/competitions.html",
         context={
-            "is_unset_fakturoid_id": bool(club and not club.fakturoid_subject_id),
+            # Skip the financial-settings gate locally so registration can be
+            # exercised without a configured Fakturoid subject.
+            "is_unset_fakturoid_id": bool(club and not club.fakturoid_subject_id)
+            and not settings.DEBUG,
             "competitions": competitions_qs.annotate(
                 has_final_placement=Exists(
                     CompetitionApplication.objects.filter(
@@ -170,7 +174,7 @@ def cancel_application_view(request: HttpRequest, application_id: int) -> HttpRe
     if (
         application.team.club.id == get_current_club(request).id
         and application.competition.has_open_registration
-        and not application.invoice
+        and application.is_cancellable
     ):
         try:
             application.delete()
@@ -196,6 +200,7 @@ def competition_final_placements_dialog_view(
         request,
         "competitions/partials/competition_final_placements_dialog.html",
         {
+            "competition": get_object_or_404(Competition, pk=competition_id),
             "competition_applications": CompetitionApplication.objects.select_related(
                 "team", "team__club"
             )

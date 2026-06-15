@@ -1,13 +1,13 @@
 <button
     {% if request.session.club and competition.has_open_registration %}
-        class="btn btn-success position-relative"
+        class="btn btn-success w-100 position-relative"
     {% else %}
-        class="btn btn-primary position-relative"
+        class="btn btn-primary w-100 position-relative"
     {% endif %}
     hx-get="{% url 'competitions:application_list' competition.id %}"
     hx-target="#dialog-lg"
 >
-    Registrations
+    <i class="bi bi-people-fill me-1"></i> Registrations
     <span class="badge text-bg-light ms-1">{{ competition.application_count }}</span>
     {% if competition.club_application_without_invoice_count > 0 %}
         <span
@@ -18,16 +18,20 @@
         </span>
     {% endif %}
 </button>
-<button class="btn btn-primary" hx-get="{% url 'competitions:competition_detail' competition.id %}" hx-target="#dialog">
-    <i class="bi bi-info-circle"></i>
-</button>
-<button
-    class="btn btn-primary"
-    hx-get="{% url 'competitions:competition_final_placements_dialog' competition.id %}"
-    hx-target="#dialog"
-    {% if not competition.has_final_placement %}
-        disabled
-    {% endif %}
->
-    <i class="bi bi-trophy"></i>
-</button>
+<div class="d-flex gap-2 mt-2">
+    <button
+        class="btn btn-outline-secondary flex-fill"
+        hx-get="{% url 'competitions:competition_detail' competition.id %}"
+        hx-target="#dialog"
+    >
+        <i class="bi bi-info-circle me-1"></i> Detail
+    </button>
+    <button
+        class="btn btn-outline-secondary flex-fill"
+        hx-get="{% url 'competitions:competition_final_placements_dialog' competition.id %}"
+        hx-target="#dialog"
+        {% if not competition.has_final_placement %}disabled{% endif %}
+    >
+        <i class="bi bi-trophy me-1"></i> Standings
+    </button>
+</div>
