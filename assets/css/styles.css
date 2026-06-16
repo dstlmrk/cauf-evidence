@@ -77,26 +77,81 @@ body {
     display: inline;
 }
 
-/* Company colors for primary buttons */
+/* Softer "sage" green for success buttons; calmer than the stock vivid green
+ * while keeping a clear, filled call-to-action. Lightened a touch in dark mode. */
+.btn-success {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #4c9a77;
+    --bs-btn-border-color: #4c9a77;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #3f8466;
+    --bs-btn-hover-border-color: #3f8466;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #3f8466;
+    --bs-btn-active-border-color: #3a7a5e;
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #4c9a77;
+    --bs-btn-disabled-border-color: #4c9a77;
+}
+
+/* Dark mode: keep the green a touch darker/calmer than the light base so it
+ * reads as soft on the dark surface; hover lifts it for a clear affordance. */
+[data-bs-theme="dark"] .btn-success {
+    --bs-btn-bg: #4c9a77;
+    --bs-btn-border-color: #4c9a77;
+    --bs-btn-hover-bg: #5aa886;
+    --bs-btn-hover-border-color: #5aa886;
+    --bs-btn-active-bg: #5aa886;
+    --bs-btn-disabled-bg: #4c9a77;
+    --bs-btn-disabled-border-color: #4c9a77;
+}
+
+/* Primary buttons follow the brand navy by default (kept as-is in dark mode);
+ * in light mode they switch to a softer muted blue to match the calmer look. */
 .btn-primary {
-    background-color: var(--brand);
-    border-color: var(--brand);
+    --bs-btn-bg: var(--brand);
+    --bs-btn-border-color: var(--brand);
+    --bs-btn-hover-bg: var(--brand-hover);
+    --bs-btn-hover-border-color: var(--brand-hover);
+    --bs-btn-active-bg: var(--brand-hover);
+    --bs-btn-active-border-color: var(--brand-hover);
+    --bs-btn-disabled-bg: var(--brand-hover);
+    --bs-btn-disabled-border-color: var(--brand-hover);
 }
 
-.btn-primary:hover {
-    background-color: var(--brand-hover);
-    border-color: var(--brand-hover);
+[data-bs-theme="light"] .btn-primary {
+    --bs-btn-bg: #4569a6;
+    --bs-btn-border-color: #4569a6;
+    --bs-btn-hover-bg: #3a5990;
+    --bs-btn-hover-border-color: #3a5990;
+    --bs-btn-active-bg: #3a5990;
+    --bs-btn-active-border-color: #355183;
+    --bs-btn-disabled-bg: #4569a6;
+    --bs-btn-disabled-border-color: #4569a6;
 }
 
-.btn-primary:focus {
-    background-color: var(--brand-hover);
-    border-color: var(--brand-hover);
+/* Danger / secondary: softened only in light mode; dark mode keeps the current
+ * Bootstrap defaults so the buttons stay distinct on the dark surface. */
+[data-bs-theme="light"] .btn-danger {
+    --bs-btn-bg: #c05c5c;
+    --bs-btn-border-color: #c05c5c;
+    --bs-btn-hover-bg: #a94e4e;
+    --bs-btn-hover-border-color: #a94e4e;
+    --bs-btn-active-bg: #a94e4e;
+    --bs-btn-active-border-color: #9d4848;
+    --bs-btn-disabled-bg: #c05c5c;
+    --bs-btn-disabled-border-color: #c05c5c;
 }
 
-.btn-primary:disabled,
-.btn-primary.disabled {
-    background-color: var(--brand-hover);
-    border-color: var(--brand-hover);
+[data-bs-theme="light"] .btn-secondary {
+    --bs-btn-bg: #767e88;
+    --bs-btn-border-color: #767e88;
+    --bs-btn-hover-bg: #676e77;
+    --bs-btn-hover-border-color: #676e77;
+    --bs-btn-active-bg: #676e77;
+    --bs-btn-active-border-color: #5f666e;
+    --bs-btn-disabled-bg: #767e88;
+    --bs-btn-disabled-border-color: #767e88;
 }
 
 .text-bg-primary {
