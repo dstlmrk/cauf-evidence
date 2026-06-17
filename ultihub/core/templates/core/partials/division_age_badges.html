@@ -1,0 +1,12 @@
+{% comment %}
+    Division + age-limit badges for entity cards (competitions, tournaments). Rendered as pill chips so a vivid colour
+    stays readable without feeling heavy. Param: competition - the Competition instance carrying division/age_limit.
+{% endcomment %}
+<span class="d-flex flex-wrap justify-content-end gap-1">
+    <span class="badge card-tag text-bg-primary text-bg-{{ competition.division|lower }}">
+        {{ competition.division|upper }}
+    </span>
+    {% if competition.age_limit %}
+        <span class="badge card-tag text-bg-primary">{{ competition.age_limit|upper }}</span>
+    {% endif %}
+</span>

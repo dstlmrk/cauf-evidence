@@ -331,15 +331,33 @@ body {
     top: -2px;
 }
 
-/* Competition cards (competitions list, used on every breakpoint) */
-.competition-card {
+/* Division / age pill chips on entity cards: visible but not heavy. The roomy
+ * padding and pill shape carry the emphasis instead of a large font size. */
+.card-tag {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.4em 0.85em;
+    border-radius: 50rem;
+}
+
+/* Quiet placeholder shown when a list/section has no items */
+.empty-state-icon {
+    font-size: 2.75rem;
+    opacity: 0.45;
+}
+
+/* Entity cards (competitions and tournaments lists, used on every breakpoint) */
+.competition-card,
+.tournament-card {
     border: 1px solid var(--bs-border-color);
     transition:
         transform 0.15s ease,
         box-shadow 0.15s ease;
 }
 
-.competition-card:hover {
+.competition-card:hover,
+.tournament-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 0.65rem 1.25rem rgba(0, 0, 0, 0.14) !important;
 }
@@ -361,11 +379,13 @@ body {
     color: var(--bs-secondary-color);
 }
 
-.competition-card .competition-meta > div {
+.competition-card .competition-meta > div,
+.tournament-card .tournament-meta > div {
     border-top: 1px solid var(--bs-border-color-translucent);
 }
 
-.competition-card .competition-meta > div:first-child {
+.competition-card .competition-meta > div:first-child,
+.tournament-card .tournament-meta > div:first-child {
     border-top: 0;
 }
 

@@ -1,0 +1,8 @@
+{% comment %}
+    Reusable empty-state placeholder. Params: icon - bootstrap-icons class (e.g. "bi-calendar-x"); defaults to
+    "bi-inbox" message - the text shown below the icon
+{% endcomment %}
+<div class="empty-state text-center text-muted py-5">
+    <i class="bi {{ icon|default:'bi-inbox' }} empty-state-icon d-block mb-3"></i>
+    <p class="mb-0">{{ message }}</p>
+</div>
