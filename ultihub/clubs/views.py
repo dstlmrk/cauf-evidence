@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
 from django.views.decorators.http import require_GET, require_POST
 from finance.forms import SeasonFeesCheckForm
-from finance.models import Invoice
+from finance.models import Invoice, InvoiceTypeEnum
 from members.models import CoachLicence, Member, Transfer
 from users.models import AgentAtClub, NewAgentRequest
 from users.services import (
@@ -27,10 +27,20 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def invoices(request: HttpRequest) -> HttpResponse:
+    invoices_qs = Invoice.objects.filter(club_id=get_club_id(request)).order_by("-pk")
+
+    selected_type = request.GET.get("type")
+    if selected_type and selected_type.isdigit():
+        invoices_qs = invoices_qs.filter(type=selected_type)
+
     return render(
         request,
         "clubs/invoices.html",
-        {"invoices": Invoice.objects.filter(club_id=get_club_id(request)).order_by("-pk")},
+        {
+            "invoices": invoices_qs,
+            "invoice_types": InvoiceTypeEnum.choices,
+            "selected_type": selected_type,
+        },
     )
 
 

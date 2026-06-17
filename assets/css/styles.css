@@ -341,6 +341,29 @@ body {
     border-radius: 50rem;
 }
 
+/* Roomy table inside a card: taller rows and generous side padding so the
+ * first/last columns don't stick to the card edges. The element-qualified
+ * selector (table.table-roomy) outranks Bootstrap's own .table cell padding
+ * regardless of stylesheet order. */
+table.table-roomy > :not(caption) > * > * {
+    padding: 0.9rem 1.5rem;
+}
+
+/* Quiet, uppercase header so the column labels read as metadata, not headlines */
+.table-roomy thead th {
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+/* Lighter row separators inside the card */
+.table-roomy > tbody > tr > td {
+    border-bottom-color: var(--bs-border-color-translucent);
+}
+
 /* Quiet placeholder shown when a list/section has no items */
 .empty-state-icon {
     font-size: 2.75rem;

@@ -1,0 +1,13 @@
+<span
+    {% if invoice.state == 1 %}
+        class="badge badge-soft-secondary"
+    {% elif invoice.state == 2 %}
+        class="badge badge-soft-danger"
+    {% elif invoice.state == 3 %}
+        class="badge badge-soft-success"
+    {% elif invoice.state == 4 %}
+        class="badge badge-soft-secondary"
+    {% endif %}
+>
+    {{ invoice.get_state_display | upper }}
+</span>

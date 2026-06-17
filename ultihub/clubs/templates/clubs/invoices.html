@@ -3,50 +3,63 @@
 
 {% block page_title %}Invoices | Evidence ČAUF{% endblock %}
 
-{% block title %}<h1>Invoices</h1>{% endblock %}
+{% block title %}
+    <h1 class="fw-bold mb-1"><i class="bi bi-receipt-cutoff text-primary me-2"></i>Invoices</h1>
+    <p class="text-muted mb-0">Overview of your club's invoices.</p>
+{% endblock %}
 
 {% block content %}
+    <!-- Filters -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body py-3">
+            <form method="get" class="row g-2">
+                <div class="col-md-3 col-12">
+                    <div class="form-floating">
+                        <select class="form-select" id="type" name="type" onchange="this.form.submit()">
+                            <option value="">All</option>
+                            {% for value, label in invoice_types %}
+                                <option
+                                    value="{{ value }}"
+                                    {% if selected_type == value|stringformat:"s" %}selected{% endif %}
+                                >
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <label for="type">Invoice type</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {% if invoices %}
-        <div class="d-none d-md-block">
-            <div class="table">
-                <table class="table align-middle">
+        <!-- Desktop: table -->
+        <div class="card shadow-sm overflow-hidden d-none d-md-block">
+            <div class="table-responsive">
+                <table class="table table-roomy table-hover align-middle mb-0">
                     <thead>
                         <tr>
                             <th scope="col">FID</th>
                             <th scope="col">Created at</th>
                             <th scope="col">Type</th>
                             <th scope="col">State</th>
-                            <th scope="col">Amount (CZK)</th>
-                            <th scope="col">Link</th>
+                            <th scope="col" class="text-end">Amount (CZK)</th>
+                            <th scope="col" class="text-center">Link</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for invoice in invoices %}
                             <tr>
-                                <th>{{ invoice.fakturoid_invoice_id|default:"N/A" }}</th>
+                                <td class="fw-semibold">{{ invoice.fakturoid_invoice_id|default:"N/A" }}</td>
                                 <td>{{ invoice.created_at | date:'d/m/Y H:i' }}</td>
-                                <td>{{ invoice.get_type_display | upper }}</td>
-
-                                <td>
-                                    <span
-                                        {% if invoice.state == 1 %}
-                                            class="badge text-bg-dark"
-                                        {% elif invoice.state == 2 %}
-                                            class="badge text-bg-danger"
-                                        {% elif invoice.state == 3 %}
-                                            class="badge text-bg-success"
-                                        {% elif invoice.state == 4 %}
-                                            class="badge text-bg-secondary"
-                                        {% endif %}
-                                    >
-                                        {{ invoice.get_state_display | upper }}
-                                    </span>
-                                </td>
-                                <td>{{ invoice.amount | floatformat:0 | intcomma }}</td>
-                                <td class="fit">
+                                <td>{{ invoice.get_type_display }}</td>
+                                <td>{% include "clubs/components/invoice-state-badge.html" %}</td>
+                                <td class="text-end">{{ invoice.amount | floatformat:0 | intcomma }}</td>
+                                <td class="fit text-center">
                                     <a
                                         href="{{ invoice.fakturoid_public_html_url }}"
-                                        class="btn btn-primary {% if not invoice.fakturoid_public_html_url %}disabled{% endif %}"
+                                        class="btn btn-sm btn-secondary {% if not invoice.fakturoid_public_html_url %}disabled{% endif %}"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
@@ -59,53 +72,54 @@
                 </table>
             </div>
         </div>
+
+        <!-- Mobile: cards -->
         <div class="d-block d-md-none">
-            <div class="list-group">
+            <div class="row row-cols-1 g-3">
                 {% for invoice in invoices %}
-                    <div class="list-group-item">
-                        <div>FID: {{ invoice.fakturoid_invoice_id|default:"N/A" }}</div>
-                        <div>Created at: {{ invoice.created_at | date:'d/m/Y H:i' }}</div>
-                        <div>Type: {{ invoice.get_type_display | upper }}</div>
-                        <div>
-                            State:
-                            <span
-                                style="position: relative; top: -2px;"
-                                {% if invoice.state == 1 %}
-                                    class="badge text-bg-dark"
-                                {% elif invoice.state == 2 %}
-                                    class="badge text-bg-danger"
-                                {% elif invoice.state == 3 %}
-                                    class="badge text-bg-success"
-                                {% elif invoice.state == 4 %}
-                                    class="badge text-bg-secondary"
-                                {% endif %}
-                            >
-                                {{ invoice.get_state_display | upper }}
-                            </span>
-                        </div>
-                        <div>Amount: <b>CZK {{ invoice.amount | floatformat:0 | intcomma }}</b></div>
-                        <div>
-                            Link:
-                            {% if invoice.fakturoid_public_html_url %}
-                                <a
-                                    class="text-primary"
-                                    href="{{ invoice.fakturoid_public_html_url }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <i class="bi bi-box-arrow-up-right"></i> Here
-                                </a>
-                            {% else %}
-                                N/A
-                            {% endif %}
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                    <span class="h4 mb-0">CZK {{ invoice.amount | floatformat:0 | intcomma }}</span>
+                                    {% include "clubs/components/invoice-state-badge.html" %}
+                                </div>
+                                <div class="detail-meta small">
+                                    <div class="d-flex justify-content-between align-items-center py-2">
+                                        <span class="text-muted">Type</span>
+                                        <span>{{ invoice.get_type_display }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center py-2">
+                                        <span class="text-muted">Created at</span>
+                                        <span>{{ invoice.created_at | date:'d/m/Y H:i' }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center py-2">
+                                        <span class="text-muted">FID</span>
+                                        <span>{{ invoice.fakturoid_invoice_id|default:"N/A" }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center py-2">
+                                        <span class="text-muted">Link</span>
+                                        {% if invoice.fakturoid_public_html_url %}
+                                            <a
+                                                href="{{ invoice.fakturoid_public_html_url }}"
+                                                class="text-primary"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
     {% else %}
-        <div class="alert alert-primary" role="alert">
-            <i class="bi bi-info-circle-fill me-1"></i> No invoices found.
-        </div>
+        {% include "core/partials/empty_state.html" with icon="bi-receipt" message="No invoices found." %}
     {% endif %}
 {% endblock %}
