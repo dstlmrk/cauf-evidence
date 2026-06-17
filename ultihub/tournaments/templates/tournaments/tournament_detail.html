@@ -17,9 +17,9 @@
     <small class="text-muted">
         {{ tournament.competition.season }} • {{ tournament.competition.get_environment_display | upper }}
     </small>
-    <h1 class="mb-0">
+    <h1 class="d-flex align-items-center flex-wrap gap-2 mb-0">
         {{ tournament.name }}
-        <span style="position: relative; top: -5px;">
+        <span class="d-flex flex-wrap gap-1">
             <span class="fs-4 badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
                 >{{ tournament.competition.division | upper }}</span
             >
@@ -28,7 +28,7 @@
             {% endif %}
         </span>
     </h1>
-    <div>
+    <div class="mt-1">
         <b
             >{{ tournament.location }} • {{ tournament.start_date | date:'d/m/Y' }} -
             {{ tournament.end_date | date:'d/m/Y' }}</b
@@ -38,9 +38,9 @@
         Rosters deadline: {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}
         <span class="badge-nudge">
             {% if tournament.has_open_rosters %}
-                <span class="badge text-bg-success">OPEN ROSTERS</span>
+                <span class="badge badge-soft-success">Open rosters</span>
             {% else %}
-                <span class="badge text-bg-dark">CLOSED ROSTERS</span>
+                <span class="badge badge-soft-secondary">Closed rosters</span>
             {% endif %}
         </span>
     </div>
@@ -63,6 +63,6 @@
             hx-target="this"
         ></div>
     {% else %}
-        <div class="alert alert-dark" role="alert">No teams have been assigned to the tournament yet.</div>
+        {% include "core/partials/empty_state.html" with icon="bi-people" message="No teams have been assigned to the tournament yet." %}
     {% endif %}
 {% endblock %}
