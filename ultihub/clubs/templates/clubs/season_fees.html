@@ -2,16 +2,18 @@
 
 {% block page_title %}Season fees | Evidence ČAUF{% endblock %}
 
-{% block title %}<h1>Season fees</h1>{% endblock %}
+{% block title %}
+    <h1 class="fw-bold mb-1"><i class="bi bi-cash-stack text-primary me-2"></i>Season fees</h1>
+    <p class="text-muted mb-0">Monitor your club's member fees during the season.</p>
+{% endblock %}
 
 {% block content %}
-    <div class="alert alert-light" role="alert">
-        <i class="bi bi-question-circle-fill me-1"></i> This overview is intended for monitoring during the season only.
-        At the end of the season, an invoice will be automatically generated, and you will be notified about its
-        issuance.
+    <div class="alert alert-light border" role="alert">
+        <i class="bi bi-question-circle me-1"></i> This overview is intended for monitoring during the season only. At
+        the end of the season, an invoice will be automatically generated, and you will be notified about its issuance.
     </div>
 
-    <div class="card">
+    <div class="card shadow-sm">
         <div class="card-body">
             {% load crispy_forms_tags %}
             <form
@@ -27,5 +29,5 @@
         </div>
     </div>
 
-    <div id="results-container" class="mt-3"></div>
+    <div id="results-container" class="mt-4"></div>
 {% endblock %}

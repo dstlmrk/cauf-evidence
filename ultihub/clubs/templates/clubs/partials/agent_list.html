@@ -1,65 +1,51 @@
 {% load static %}
 
-<div class="list-group">
-    {% for agent in agents %}
-        <div class="list-group-item">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <img
-                        src="{% if agent.picture_url %}{{ agent.picture_url }}{% else %}{% static 'cauf_monogram.svg' %}{% endif %}"
-                        alt="Avatar"
-                        class="rounded-circle me-3"
-                        width="45"
-                        height="45"
-                    />
-                    <div class="mt-1">
-                        <strong class="mb-1"> {{ agent.email }} </strong>
-                        <div>
-                            {% if agent.has_joined %}
-                                <span class="mb-1">{{ agent.full_name }}</span>
-                                {% if agent.is_primary %}
-                                    <span class="badge bg-dark" style="position: relative; top: -2px;">Primary</span>
+{% if agents %}
+    <div class="card shadow-sm">
+        <div class="list-group list-group-flush">
+            {% for agent in agents %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center gap-2">
+                        <div class="d-flex align-items-center">
+                            <img
+                                src="{% if agent.picture_url %}{{ agent.picture_url }}{% else %}{% static 'cauf_monogram.svg' %}{% endif %}"
+                                alt="Avatar"
+                                class="rounded-circle me-3"
+                                width="45"
+                                height="45"
+                            />
+                            <div>
+                                <strong class="d-block">{{ agent.email }}</strong>
+                                {% if agent.has_joined %}
+                                    <span>{{ agent.full_name }}</span>
+                                    {% if agent.is_primary %}
+                                        <span class="badge badge-soft-secondary">Primary</span>
+                                    {% endif %}
+                                {% else %}
+                                    <small class="text-muted">
+                                        Invited by
+                                        {{ agent.invited_by.get_full_name|default:agent.invited_by.username }}
+                                    </small>
                                 {% endif %}
-                            {% else %}
-                                <small class="mb-0 text-muted">
-                                    Invited by {{ agent.invited_by.get_full_name|default:agent.invited_by.username }}
-                                </small>
-                            {% endif %}
+                            </div>
                         </div>
+                        {% if not agent.is_primary %}
+                            <button
+                                class="btn btn-sm btn-danger flex-shrink-0"
+                                hx-post="{% url 'clubs:remove_agent' %}"
+                                hx-trigger="click"
+                                hx-confirm="Do you really want to remove this agent?"
+                                hx-vals='{"email": "{{ agent.email }}"}'
+                                hx-swap="none"
+                            >
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="d-none d-md-block">
-                    {% if not agent.is_primary %}
-                        <button
-                            class="btn btn-danger"
-                            hx-post="{% url 'clubs:remove_agent' %}"
-                            hx-trigger="click"
-                            hx-confirm="Do you really want to remove this agent?"
-                            hx-vals='{"email": "{{ agent.email }}"}'
-                            hx-swap="none"
-                        >
-                            Remove
-                        </button>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="d-block d-md-none">
-                {% if not agent.is_primary %}
-                    <div class="mt-2 mb-1">
-                        <button
-                            class="btn btn-danger"
-                            hx-post="{% url 'clubs:remove_agent' %}"
-                            hx-trigger="click"
-                            hx-confirm="Do you really want to remove this agent?"
-                            hx-vals='{"email": "{{ agent.email }}"}'
-                            hx-swap="none"
-                        >
-                            Remove
-                        </button>
-                    </div>
-                {% endif %}
-            </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-</div>
+    </div>
+{% else %}
+    {% include "core/partials/empty_state.html" with icon="bi-person-x" message="No agents found." %}
+{% endif %}

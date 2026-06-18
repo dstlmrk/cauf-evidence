@@ -1,31 +1,30 @@
 {% load humanize %}
 
-<h2>Season {{ season.name }}</h2>
-<div class="d-none d-md-block">
-    <div class="card mt-3">
-        <div class="card-body">
-            <table class="table align-middle">
+<h2 class="h5 fw-bold mb-3">Season {{ season.name }}</h2>
+
+{% if fees %}
+    <!-- Desktop: table -->
+    <div class="card shadow-sm overflow-hidden d-none d-md-block">
+        <div class="table-responsive">
+            <table class="table table-roomy table-hover align-middle mb-0">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Member</th>
                         <th scope="col">Birth date</th>
-                        <th scope="col">Fee (CZK)</th>
-                        <th scope="col" class="fit pe-5 text-center">
-                            <div data-bs-toggle="tooltip" data-bs-title="Total regular / discounted tournaments">
-                                Total<br />R / D
-                            </div>
-                        </th>
+                        <th scope="col" class="text-end">Fee (CZK)</th>
+                        <th scope="col" class="text-center ps-5">Regular</th>
+                        <th scope="col" class="text-center">Discounted</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for member, fee in fees %}
                         <tr>
-                            <th scope="row">{{ forloop.counter }}</th>
+                            <td class="text-muted">{{ forloop.counter }}</td>
                             <td>
                                 <a
                                     href=""
-                                    class="text-primary"
+                                    class="text-primary fw-semibold text-decoration-none"
                                     hx-post="{% url 'finance:season_fees_member_detail' %}"
                                     hx-vals='{"member_id": "{{ member.id }}", "season_id": "{{ season.id }}"}'
                                     hx-target="#dialog-xl"
@@ -33,49 +32,68 @@
                                 >
                             </td>
                             <td>{{ member.birth_date | date:'d/m/Y' }}</td>
-                            <td>{{ fee.amount | intcomma }}</td>
-                            <td>{{ fee.regular_tournaments | length }} / {{ fee.discounted_tournaments | length }}</td>
+                            <td class="text-end">{{ fee.amount | intcomma }}</td>
+                            <td class="text-center ps-5">{{ fee.regular_tournaments | length }}</td>
+                            <td class="text-center">{{ fee.discounted_tournaments | length }}</td>
                         </tr>
                     {% endfor %}
-                    <tr class="table-secondary">
-                        <td></td>
-                        <td></td>
-                        <td class="text-end"><b>Total</b></td>
-                        <td><b>{{ total_amount | intcomma }}</b></td>
+                </tbody>
+                <tfoot>
+                    <tr class="border-top">
+                        <td colspan="4" class="text-end">
+                            <span class="fw-semibold me-4">Total</span>
+                            <span class="fw-bold">{{ total_amount | intcomma }}</span>
+                        </td>
+                        <td class="ps-5"></td>
                         <td></td>
                     </tr>
-                </tbody>
+                </tfoot>
             </table>
         </div>
     </div>
-</div>
 
-<div class="d-block d-md-none">
-    <p>Total amount: <b>CZK {{ total_amount | intcomma }}</b></p>
-    <div class="list-group">
-        {% for member, fee in fees %}
-            <div class="list-group-item">
-                <div>
-                    Member:
-                    <b>
-                        <a
-                            href=""
-                            class="text-primary"
-                            hx-post="{% url 'finance:season_fees_member_detail' %}"
-                            hx-vals='{"member_id": "{{ member.id }}", "season_id": "{{ season.id }}"}'
-                            hx-target="#dialog"
-                            >{{ member.full_name }}</a
-                        >
-                    </b>
+    <!-- Mobile: cards -->
+    <div class="d-block d-md-none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Total amount</span>
+            <span class="h5 mb-0">CZK {{ total_amount | intcomma }}</span>
+        </div>
+        <div class="row row-cols-1 g-3">
+            {% for member, fee in fees %}
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                <a
+                                    href=""
+                                    class="h5 mb-0 text-primary text-decoration-none"
+                                    hx-post="{% url 'finance:season_fees_member_detail' %}"
+                                    hx-vals='{"member_id": "{{ member.id }}", "season_id": "{{ season.id }}"}'
+                                    hx-target="#dialog"
+                                    >{{ member.full_name }}</a
+                                >
+                                <span class="fw-bold text-nowrap">CZK {{ fee.amount | intcomma }}</span>
+                            </div>
+                            <div class="detail-meta small">
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted">Birth date</span>
+                                    <span>{{ member.birth_date | date:'d/m/Y' }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted">Regular tournaments</span>
+                                    <span>{{ fee.regular_tournaments | length }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted">Discounted tournaments</span>
+                                    <span>{{ fee.discounted_tournaments | length }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>Birth date: {{ member.birth_date | date:'d/m/Y' }}</div>
-                <div>Fee: <b>CZK {{ fee.amount | intcomma }}</b></div>
-                <div>Regular tournaments: {{ fee.regular_tournaments | length }}</div>
-                <div>Discounted tournaments: {{ fee.discounted_tournaments | length }}</div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-</div>
-<script>
-    initializeTooltips();
-</script>
+{% else %}
+    {% include "core/partials/empty_state.html" with icon="bi-cash-stack" message="No fees found for this season." %}
+{% endif %}

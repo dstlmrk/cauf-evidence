@@ -41,26 +41,28 @@
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <!-- Placeholder for the modal -->
         <div id="modal" class="modal fade" tabindex="-1">
-            <div id="dialog" class="modal-dialog" hx-target="this"></div>
+            <div id="dialog" class="modal-dialog modal-dialog-centered" hx-target="this"></div>
         </div>
 
         <div id="modal-lg" class="modal fade" tabindex="-1">
-            <div id="dialog-lg" class="modal-dialog modal-lg" hx-target="this"></div>
+            <div id="dialog-lg" class="modal-dialog modal-dialog-centered modal-lg" hx-target="this"></div>
         </div>
 
         <div id="modal-xl" class="modal fade" tabindex="-1">
-            <div id="dialog-xl" class="modal-dialog modal-xl" hx-target="this"></div>
+            <div id="dialog-xl" class="modal-dialog modal-dialog-centered modal-xl" hx-target="this"></div>
         </div>
 
         <!-- Confirmation modal used to replace the native confirm() for hx-confirm actions -->
         <div id="confirmModal" class="modal fade" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Confirmation</h5>
+                        <h5 class="modal-title">
+                            <i class="bi bi-exclamation-triangle text-primary me-2"></i>Confirmation
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
                     </div>
-                    <div id="confirmModalBody" class="modal-body"></div>
+                    <div id="confirmModalBody" class="modal-body text-secondary"></div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button id="confirmModalConfirmBtn" type="button" class="btn btn-primary">Confirm</button>
