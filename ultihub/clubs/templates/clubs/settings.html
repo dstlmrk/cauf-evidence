@@ -2,20 +2,23 @@
 
 {% block page_title %}Settings | Evidence ČAUF{% endblock %}
 
-{% block title %}<h1>Settings</h1>{% endblock %}
+{% block title %}
+    <h1 class="fw-bold mb-1"><i class="bi bi-gear text-primary me-2"></i>Settings</h1>
+    <p class="text-muted mb-0">Manage your club details and agents.</p>
+{% endblock %}
 
 {% block buttons %}
-    <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_agent' %}" hx-target="#dialog">
+    <button class="btn btn-success" hx-get="{% url 'clubs:add_agent' %}" hx-target="#dialog">
         <i class="bi bi-person-plus"></i> Add agent
     </button>
 {% endblock %}
 
 {% block content %}
     {% load crispy_forms_tags %}
-    <div class="row">
+    <div class="row g-4">
         <div class="col-lg-7">
-            <h2>Club</h2>
-            <div class="card mb-3">
+            <h2 class="h5 fw-bold mb-3"><i class="bi bi-shield-fill text-primary me-2"></i>Club</h2>
+            <div class="card shadow-sm">
                 <div class="card-body" x-data="{ isModified: false }">
                     <form method="POST" x-on:input="isModified = true">
                         {% csrf_token %}
@@ -39,7 +42,7 @@
             </div>
         </div>
         <div class="col-lg-5">
-            <h2>Agents</h2>
+            <h2 class="h5 fw-bold mb-3"><i class="bi bi-people-fill text-primary me-2"></i>Agents</h2>
             <div
                 hx-trigger="load, agentListChanged from:body"
                 hx-get="{% url 'clubs:agent_list' %}"

@@ -397,9 +397,47 @@ table.table-roomy > :not(caption) > * > * {
     color: var(--bs-danger-text-emphasis);
 }
 
+.badge.badge-soft-warning {
+    background-color: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
 .badge.badge-soft-secondary {
     background-color: var(--bs-secondary-bg);
     color: var(--bs-secondary-color);
+}
+
+/* Centered modal dialogs use flexbox, which shrinks a non-.modal-content
+ * direct child (e.g. the Alpine wrapper <div> some HTMX form partials use) to
+ * its content width. Force the immediate child to fill the dialog so those
+ * modals keep their full width. */
+#dialog > *,
+#dialog-lg > *,
+#dialog-xl > * {
+    width: 100%;
+}
+
+/* Checkboxes, switches and radios default to Bootstrap's bright blue when
+ * checked. Recolour them to the brand navy so they match the primary buttons
+ * (which read from --brand). Mirrors the .btn-primary light-mode override. */
+.form-check-input:checked {
+    background-color: var(--brand);
+    border-color: var(--brand);
+}
+
+.form-check-input:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 0.25rem rgba(79, 126, 209, 0.25);
+}
+
+[data-bs-theme="light"] .form-check-input:checked {
+    background-color: #4569a6;
+    border-color: #4569a6;
+}
+
+[data-bs-theme="light"] .form-check-input:focus {
+    border-color: #4569a6;
+    box-shadow: 0 0 0 0.25rem rgba(69, 105, 166, 0.25);
 }
 
 .competition-card .competition-meta > div,

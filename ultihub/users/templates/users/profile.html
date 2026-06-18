@@ -1,18 +1,45 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block page_title %}Profile | Evidence ČAUF{% endblock %}
 
-{% block title %}<h1>Personal profile</h1>{% endblock %}
+{% block title %}
+    <h1 class="fw-bold mb-1"><i class="bi bi-person-fill text-primary me-2"></i>Personal profile</h1>
+    <p class="text-muted mb-0">Manage your account and notification preferences.</p>
+{% endblock %}
 
 {% block content %}
-    <div class="card">
-        <div class="card-body">
-            {% load crispy_forms_tags %}
-            <form method="post">
-                {% csrf_token %}
-                {{ form | crispy }}
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+    {% load crispy_forms_tags %}
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    {% static 'user_default.svg' as fallback_image %}
+                    <img
+                        src="{{ request.user.agent.picture_url|default:fallback_image }}"
+                        alt="Avatar"
+                        class="rounded-circle mb-3"
+                        width="96"
+                        height="96"
+                    />
+                    <h2 class="h5 fw-bold mb-1">{{ request.user.get_full_name|default:request.user.username }}</h2>
+                    <p class="text-muted mb-0"><i class="bi bi-envelope me-1"></i>{{ request.user.email }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-transparent py-3">
+                    <h2 class="h6 fw-bold mb-0"><i class="bi bi-sliders text-primary me-2"></i>Preferences</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form | crispy }}
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i> Save</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

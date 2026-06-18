@@ -1,12 +1,12 @@
 <span
     {% if transfer.state == 1 %}
-        class="badge text-bg-warning"
+        class="badge badge-soft-warning"
     {% elif transfer.state == 2 %}
-        class="badge text-bg-success"
+        class="badge badge-soft-success"
     {% elif transfer.state == 5 %}
-        class="badge text-bg-secondary"
+        class="badge badge-soft-secondary"
     {% else %}
-        class="badge text-bg-danger"
+        class="badge badge-soft-danger"
     {% endif %}
 >
     {{ transfer.get_state_display | upper }}

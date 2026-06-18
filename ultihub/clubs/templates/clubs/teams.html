@@ -2,11 +2,14 @@
 
 {% block page_title %}Teams | Evidence ČAUF{% endblock %}
 
-{% block title %}<h1>Teams</h1>{% endblock %}
+{% block title %}
+    <h1 class="fw-bold mb-1"><i class="bi bi-lightning-fill text-primary me-2"></i>Teams</h1>
+    <p class="text-muted mb-0">Manage the teams your club registers under.</p>
+{% endblock %}
 
 {% block buttons %}
     {% if app_settings.team_management_enabled %}
-        <button class="btn btn-success mb-3" hx-get="{% url 'clubs:add_team' %}" hx-target="#dialog">
+        <button class="btn btn-success" hx-get="{% url 'clubs:add_team' %}" hx-target="#dialog">
             <i class="bi bi-plus"></i> Create team
         </button>
     {% endif %}
@@ -14,24 +17,16 @@
 
 {% block content %}
     {% load crispy_forms_tags %}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="alert alert-light " role="alert">
-                <i class="bi bi-question-circle-fill me-1"></i>
-                Additional teams are suitable if you want to register your B team for a tournament or if you
-                occasionally want to register your club under a different name. For example, your junior’s team might
-                have a different name than the others, etc.
-            </div>
-            {% if not app_settings.team_management_enabled %}
-                <div class="alert alert-warning " role="alert">
-                    <i class="bi bi-exclamation-octagon-fill me-1"></i> Teams management is currently <b>disabled</b>.
-                </div>
-            {% endif %}
-            <div
-                hx-trigger="load, teamListChanged from:body"
-                hx-get="{% url 'clubs:team_list' %}"
-                hx-target="this"
-            ></div>
-        </div>
+    <div class="alert alert-light border" role="alert">
+        <i class="bi bi-question-circle me-1"></i>
+        Additional teams are suitable if you want to register your B team for a tournament or if you occasionally want
+        to register your club under a different name. For example, your junior’s team might have a different name than
+        the others, etc.
     </div>
+    {% if not app_settings.team_management_enabled %}
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-octagon-fill me-1"></i> Teams management is currently <b>disabled</b>.
+        </div>
+    {% endif %}
+    <div hx-trigger="load, teamListChanged from:body" hx-get="{% url 'clubs:team_list' %}" hx-target="this"></div>
 {% endblock %}

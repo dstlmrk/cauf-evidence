@@ -10,17 +10,20 @@
         <div class="modal-header">
             <h5 class="modal-title">
                 {% if form.instance.pk %}
-                    <i class="bi bi-pencil-fill"></i> Edit team
+                    <i class="bi bi-pencil-fill text-primary me-2"></i>Edit team
                 {% else %}
-                    <i class="bi bi-plus"></i> Create team
+                    <i class="bi bi-lightning-fill text-primary me-2"></i>Create team
                 {% endif %}
             </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <div class="modal-body">{% csrf_token %}{{ form|crispy }}</div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-success" :disabled="!isFormValid">Submit</button>
+            <button type="submit" class="btn btn-success" :disabled="!isFormValid">
+                <i class="bi bi-check-lg me-1"></i> Submit
+            </button>
         </div>
     </form>
 </div>
