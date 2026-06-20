@@ -1,0 +1,9 @@
+{% comment %}
+    Active/inactive status badge with an icon, matching the email status badge so the two status columns read
+    consistently.
+{% endcomment %}
+{% if member.is_active %}
+    <span class="badge badge-soft-success"><i class="bi bi-check-circle-fill"></i> Active</span>
+{% else %}
+    <span class="badge badge-soft-secondary"><i class="bi bi-slash-circle"></i> Inactive</span>
+{% endif %}

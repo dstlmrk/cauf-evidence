@@ -197,8 +197,6 @@
             </div>
         </div>
     {% else %}
-        <div class="alert alert-primary" role="alert">
-            <i class="bi bi-info-circle-fill me-1"></i> No international tournaments found.
-        </div>
+        {% include "core/partials/empty_state.html" with icon="bi-globe-americas" message="No international tournaments found." %}
     {% endif %}
 {% endblock %}

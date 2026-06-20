@@ -30,7 +30,7 @@ from members.helpers import (
     reject_transfer,
     revoke_transfer,
 )
-from members.models import CoachLicence, Member, Transfer
+from members.models import CoachLicence, FavouriteMember, Member, Transfer
 from members.services import search as search_service
 from members.tasks import generate_nsa_export
 
@@ -75,6 +75,23 @@ def edit_member(request: HttpRequest, member_id: int) -> HttpResponse:
     else:
         form = MemberForm(instance=member)
     return render(request, "members/partials/member_form.html", {"form": form})
+
+
+@login_required
+@require_POST
+def toggle_favourite_member(request: HttpRequest, member_id: int) -> HttpResponse:
+    # Favourites are per-agent, so scope the toggle to the current agent and only
+    # allow it for members of the agent's current club.
+    member = get_object_or_404(Member, pk=member_id, club_id=get_current_club(request).id)
+    favourite, created = FavouriteMember.objects.get_or_create(
+        agent=request.user.agent,  # type: ignore
+        member=member,
+    )
+    if not created:
+        favourite.delete()
+    # The star state is updated optimistically on the client, so there is no need
+    # to reload the list here; the new favourite floats to the top on next load.
+    return HttpResponse(status=204)
 
 
 @login_required

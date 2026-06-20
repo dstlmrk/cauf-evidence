@@ -25,7 +25,7 @@
                 </table>
             </div>
         {% else %}
-            <div class="alert alert-primary" role="alert">No coach licences found.</div>
+            {% include "core/partials/empty_state.html" with icon="bi-mortarboard" message="No coach licences found." %}
         {% endif %}
     </div>
     <div class="modal-footer">

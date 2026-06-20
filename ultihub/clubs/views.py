@@ -1,6 +1,7 @@
 import logging
+from datetime import date
 
-from competitions.models import Season
+from competitions.models import AgeLimit, Season
 from core.helpers import get_club_id, get_current_club
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,7 +12,7 @@ from django.utils.timezone import now
 from django.views.decorators.http import require_GET, require_POST
 from finance.forms import SeasonFeesCheckForm
 from finance.models import Invoice, InvoiceTypeEnum
-from members.models import CoachLicence, Member, Transfer
+from members.models import CoachLicence, FavouriteMember, Member, Transfer
 from users.models import AgentAtClub, NewAgentRequest
 from users.services import (
     NewAgentRequestAlreadyExistsError,
@@ -73,7 +74,10 @@ def members(request: HttpRequest) -> HttpResponse:
         "clubs/members.html",
         {
             "any_member_exists": Member.objects.filter(club_id=get_club_id(request)).exists(),
-            "last_season": Season.objects.last(),
+            "age_limits": AgeLimit.objects.all().order_by("name"),
+            # The season whose reference date drives the age-category filter (newest
+            # by name), shown next to each category so it's clear what age is used.
+            "age_season": Season.objects.order_by("-name").first(),
         },
     )
 
@@ -87,18 +91,38 @@ def season_fees_view(request: HttpRequest) -> HttpResponse:
 @require_GET
 def member_list(request: HttpRequest) -> HttpResponse:
     current_date = now().date()
+    # The age-category filter mirrors competition eligibility, which evaluates age
+    # at the season's reference date (typically 31st December) rather than today —
+    # so the filter matches the selections made later when building rosters. The
+    # "current" season is the newest by name (year), matching how the rest of the
+    # app resolves it; fall back to the end of the current year when none exists.
+    season = Season.objects.order_by("-name").first()
+    age_reference_date = season.age_reference_date if season else date(current_date.year, 12, 31)
     return render(
         request,
         "clubs/partials/member_list.html",
         {
-            "members": Member.objects.filter(club_id=get_club_id(request)).annotate(
-                has_coach_licence=Exists(
-                    CoachLicence.objects.filter(
-                        member=OuterRef("pk"),
-                        valid_from__lte=current_date,
-                        valid_to__gte=current_date,
-                    )
-                ),
+            "members": (
+                Member.objects.filter(club_id=get_club_id(request))
+                .annotate(
+                    has_coach_licence=Exists(
+                        CoachLicence.objects.filter(
+                            member=OuterRef("pk"),
+                            valid_from__lte=current_date,
+                            valid_to__gte=current_date,
+                        )
+                    ),
+                    # Favourites are per-agent; pin the current agent's favourites
+                    # to the top of the default ordering.
+                    is_favourite=Exists(
+                        FavouriteMember.objects.filter(
+                            agent=request.user.agent,  # type: ignore[union-attr]
+                            member=OuterRef("pk"),
+                        )
+                    ),
+                )
+                .annotate_age(age_reference_date)  # type: ignore[attr-defined]
+                .order_by("-is_favourite", "last_name", "first_name")
             )
         },
     )

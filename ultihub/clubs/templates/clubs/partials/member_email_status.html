@@ -1,0 +1,11 @@
+{% comment %}
+    Three-state email indicator: the address is confirmed, awaiting confirmation, or the member has no email on file at
+    all. Clearer than a bare check/cross.
+{% endcomment %}
+{% if member.has_email_confirmed %}
+    <span class="badge badge-soft-success"> <i class="bi bi-patch-check-fill"></i> Confirmed </span>
+{% elif member.email or member.legal_guardian_email %}
+    <span class="badge badge-soft-warning"> <i class="bi bi-hourglass-split"></i> Pending </span>
+{% else %}
+    <span class="badge badge-soft-secondary"> <i class="bi bi-dash-circle"></i> No email </span>
+{% endif %}

@@ -2,7 +2,10 @@
 
 {% block page_title %}Members | Evidence ČAUF{% endblock %}
 
-{% block title %}<h1>Members</h1>{% endblock %}
+{% block title %}
+    <h1 class="fw-bold mb-1"><i class="bi bi-people-fill text-primary me-2"></i>Members</h1>
+    <p class="text-muted mb-0">Manage your club's members.</p>
+{% endblock %}
 
 {% block buttons %}
     <div class="d-none d-md-block">{% include 'members/components/members-action-buttons.html' %}</div>
@@ -12,22 +15,66 @@
     <div class="d-block d-md-none mb-3">{% include 'members/components/members-action-buttons.html' %}</div>
 
     {% if any_member_exists %}
-        <div class="row align-items-center">
-            <div class="col-md-4 mb-2">
-                <input id="memberSearch" type="text" class="form-control" placeholder="Search..." aria-label="Search" />
-            </div>
-            <div class="col-md-4 mb-2">
-                <select id="sexFilter" class="form-select" aria-label="Sex filter">
-                    <option value="" selected>All sex</option>
-                    <option value="Female">Female</option>
-                    <option value="Male">Male</option>
-                </select>
-            </div>
-            <div class="col-md-4 mb-2">
-                <div class="form-check d-flex align-items-center">
-                    <input class="form-check-input me-2" type="checkbox" value="" id="activeFilter" />
-                    <label class="form-check-label mt-1" for="flexCheckDefault">Include inactive members</label>
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row g-3 align-items-end">
+                    <div class="col-12 col-lg-4">
+                        <label for="memberSearch" class="form-label small text-muted mb-1">Search</label>
+                        <input
+                            id="memberSearch"
+                            type="text"
+                            class="form-control"
+                            placeholder="Name, number, country..."
+                            aria-label="Search"
+                        />
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label for="sexFilter" class="form-label small text-muted mb-1">Sex</label>
+                        <select id="sexFilter" class="form-select" aria-label="Sex filter">
+                            <option value="" selected>All</option>
+                            <option value="Female">Female</option>
+                            <option value="Male">Male</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label for="ageFilter" class="form-label small text-muted mb-1">Age category</label>
+                        <select id="ageFilter" class="form-select" aria-label="Age category filter">
+                            <option value="" selected>All</option>
+                            {% for age_limit in age_limits %}
+                                <option
+                                    value="{{ age_limit.id }}"
+                                    data-m-min="{{ age_limit.m_min }}"
+                                    data-m-max="{{ age_limit.m_max }}"
+                                    data-f-min="{{ age_limit.f_min }}"
+                                    data-f-max="{{ age_limit.f_max }}"
+                                >
+                                    {{ age_limit.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label for="licenceFilter" class="form-label small text-muted mb-1">Coach licence</label>
+                        <select id="licenceFilter" class="form-select" aria-label="Coach licence filter">
+                            <option value="" selected>All</option>
+                            <option value="1">Licensed</option>
+                            <option value="0">No licence</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-lg-2">
+                        <label class="form-label small mb-1 d-none d-lg-block">&nbsp;</label>
+                        <div class="d-flex align-items-center members-active-check">
+                            <input class="form-check-input mt-0 me-2" type="checkbox" id="activeFilter" checked />
+                            <label class="form-check-label mb-0" for="activeFilter">Only active</label>
+                        </div>
+                    </div>
                 </div>
+                {% if age_season %}
+                    <div class="form-text mt-2">
+                        <i class="bi bi-info-circle me-1"></i>Age categories are evaluated for season
+                        {{ age_season.name }}.
+                    </div>
+                {% endif %}
             </div>
         </div>
         <div
@@ -36,8 +83,6 @@
             hx-target="this"
         ></div>
     {% else %}
-        <div class="alert alert-primary" role="alert">
-            <i class="bi bi-info-circle-fill me-1"></i> No members found.
-        </div>
+        {% include "core/partials/empty_state.html" with icon="bi-people" message="No members found." %}
     {% endif %}
 {% endblock %}

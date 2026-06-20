@@ -1,0 +1,7 @@
+{% comment %}
+    Circular jersey-number badge, tinted by sex so gender reads at a glance without a dedicated column. Left empty when
+    the member has no number.
+{% endcomment %}
+<span class="member-avatar sex-{% if member.sex == 1 %}female{% else %}male{% endif %}"
+    >{{ member.default_jersey_number | default:"" }}</span
+>
