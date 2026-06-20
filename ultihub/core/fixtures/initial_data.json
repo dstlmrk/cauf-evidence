@@ -386,5 +386,632 @@
             "created_at": "2025-11-01T00:00:00Z",
             "updated_at": "2025-11-01T00:00:00Z"
         }
+    },
+    {
+        "model": "clubs.club",
+        "pk": 2,
+        "fields": {
+            "name": "Brno Hammers",
+            "short_name": "BRN",
+            "email": "info@brnohammers.cz",
+            "website": "https://brnohammers.cz/",
+            "city": "Brno",
+            "organization_name": "Brno Hammers, z.s.",
+            "identification_number": "",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.club",
+        "pk": 3,
+        "fields": {
+            "name": "Ostrava Ospreys",
+            "short_name": "OST",
+            "email": "info@ostravaospreys.cz",
+            "website": "https://ostravaospreys.cz/",
+            "city": "Ostrava",
+            "organization_name": "Ostrava Ospreys, z.s.",
+            "identification_number": "",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.club",
+        "pk": 4,
+        "fields": {
+            "name": "Plzeň Pelicans",
+            "short_name": "PLZ",
+            "email": "info@plzenpelicans.cz",
+            "website": "https://plzenpelicans.cz/",
+            "city": "Plzeň",
+            "organization_name": "Plzeň Pelicans, z.s.",
+            "identification_number": "",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.team",
+        "pk": 3,
+        "fields": {
+            "name": "Brno Hammers",
+            "is_primary": true,
+            "is_active": true,
+            "club": 2,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.team",
+        "pk": 4,
+        "fields": {
+            "name": "Ostrava Ospreys",
+            "is_primary": true,
+            "is_active": true,
+            "club": 3,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.team",
+        "pk": 5,
+        "fields": {
+            "name": "Plzeň Pelicans",
+            "is_primary": true,
+            "is_active": true,
+            "club": 4,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "members.member",
+        "pk": 5,
+        "fields": {
+            "club": 1,
+            "first_name": "Petr",
+            "last_name": "Svoboda",
+            "birth_date": "1992-04-12",
+            "sex": 2,
+            "citizenship": "CZ",
+            "birth_number": "",
+            "email": "petr.svoboda@example.com",
+            "email_confirmed_at": "2024-11-01T00:00:00Z",
+            "is_active": true,
+            "default_jersey_number": 11,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "members.member",
+        "pk": 6,
+        "fields": {
+            "club": 1,
+            "first_name": "Eva",
+            "last_name": "Horáková",
+            "birth_date": "1998-08-22",
+            "sex": 1,
+            "citizenship": "CZ",
+            "birth_number": "",
+            "email": "eva.horakova@example.com",
+            "email_confirmed_at": "2024-11-01T00:00:00Z",
+            "is_active": true,
+            "default_jersey_number": 5,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "members.member",
+        "pk": 7,
+        "fields": {
+            "club": 2,
+            "first_name": "Tomáš",
+            "last_name": "Novotný",
+            "birth_date": "1990-01-30",
+            "sex": 2,
+            "citizenship": "CZ",
+            "birth_number": "",
+            "email": "tomas.novotny@example.com",
+            "email_confirmed_at": "2024-11-01T00:00:00Z",
+            "is_active": true,
+            "default_jersey_number": 21,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "members.member",
+        "pk": 8,
+        "fields": {
+            "club": 2,
+            "first_name": "Lucie",
+            "last_name": "Marková",
+            "birth_date": "1996-11-05",
+            "sex": 1,
+            "citizenship": "CZ",
+            "birth_number": "",
+            "email": "lucie.markova@example.com",
+            "email_confirmed_at": "2024-11-01T00:00:00Z",
+            "is_active": true,
+            "default_jersey_number": 8,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "members.member",
+        "pk": 9,
+        "fields": {
+            "club": 2,
+            "first_name": "Martin",
+            "last_name": "Dvořák",
+            "birth_date": "1988-06-18",
+            "sex": 2,
+            "citizenship": "CZ",
+            "birth_number": "",
+            "email": "martin.dvorak@example.com",
+            "email_confirmed_at": "2024-11-01T00:00:00Z",
+            "is_active": true,
+            "default_jersey_number": 14,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "members.member",
+        "pk": 10,
+        "fields": {
+            "club": 3,
+            "first_name": "Jana",
+            "last_name": "Kučerová",
+            "birth_date": "1994-02-14",
+            "sex": 1,
+            "citizenship": "CZ",
+            "birth_number": "",
+            "email": "jana.kucerova@example.com",
+            "email_confirmed_at": "2024-11-01T00:00:00Z",
+            "is_active": true,
+            "default_jersey_number": 3,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "members.member",
+        "pk": 11,
+        "fields": {
+            "club": 3,
+            "first_name": "Jakub",
+            "last_name": "Veselý",
+            "birth_date": "1991-09-09",
+            "sex": 2,
+            "citizenship": "CZ",
+            "birth_number": "",
+            "email": "jakub.vesely@example.com",
+            "email_confirmed_at": "2024-11-01T00:00:00Z",
+            "is_active": true,
+            "default_jersey_number": 17,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "members.member",
+        "pk": 12,
+        "fields": {
+            "club": 4,
+            "first_name": "Karolína",
+            "last_name": "Pokorná",
+            "birth_date": "1999-12-25",
+            "sex": 1,
+            "citizenship": "CZ",
+            "birth_number": "",
+            "email": "karolina.pokorna@example.com",
+            "email_confirmed_at": "2024-11-01T00:00:00Z",
+            "is_active": true,
+            "default_jersey_number": 9,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "members.member",
+        "pk": 13,
+        "fields": {
+            "club": 4,
+            "first_name": "Ondřej",
+            "last_name": "Černý",
+            "birth_date": "1987-03-03",
+            "sex": 2,
+            "citizenship": "CZ",
+            "birth_number": "",
+            "email": "ondrej.cerny@example.com",
+            "email_confirmed_at": "2024-11-01T00:00:00Z",
+            "is_active": true,
+            "default_jersey_number": 22,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 4,
+        "fields": {
+            "username": "brno_agent",
+            "password": "!",
+            "is_staff": false,
+            "is_superuser": false,
+            "is_active": true,
+            "first_name": "Petr",
+            "last_name": "Novák",
+            "email": "agent@brnohammers.cz",
+            "date_joined": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 5,
+        "fields": {
+            "username": "ostrava_agent",
+            "password": "!",
+            "is_staff": false,
+            "is_superuser": false,
+            "is_active": true,
+            "first_name": "Marie",
+            "last_name": "Kratochvílová",
+            "email": "agent@ostravaospreys.cz",
+            "date_joined": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "users.agent",
+        "pk": 2,
+        "fields": {
+            "picture_url": "",
+            "user": 4,
+            "has_email_notifications_enabled": true,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "users.agent",
+        "pk": 3,
+        "fields": {
+            "picture_url": "",
+            "user": 5,
+            "has_email_notifications_enabled": true,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "users.agentatclub",
+        "pk": 1,
+        "fields": {
+            "agent": 1,
+            "club": 1,
+            "is_primary": true,
+            "is_active": true,
+            "invited_by": 2,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "users.agentatclub",
+        "pk": 2,
+        "fields": {
+            "agent": 2,
+            "club": 2,
+            "is_primary": true,
+            "is_active": true,
+            "invited_by": 2,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "users.agentatclub",
+        "pk": 3,
+        "fields": {
+            "agent": 3,
+            "club": 3,
+            "is_primary": true,
+            "is_active": true,
+            "invited_by": 2,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "finance.invoice",
+        "pk": 1,
+        "fields": {
+            "club": 1,
+            "state": 3,
+            "type": 1,
+            "original_amount": "4000.00",
+            "lines": [
+                {
+                    "name": "Juniorské mistrovství ČR 2025 WOMEN U20 - Startovné za Prague Devils",
+                    "unit_price": "2000.00"
+                },
+                {
+                    "name": "Halové mistrovství ČR 2025 MIXED - Startovné za Prague Devils B",
+                    "unit_price": "2000.00"
+                }
+            ],
+            "fakturoid_invoice_id": null,
+            "fakturoid_total": "4000.00",
+            "fakturoid_status": "paid",
+            "fakturoid_public_html_url": "",
+            "fakturoid_due_on": "2025-04-15",
+            "created_at": "2025-03-15T00:00:00Z",
+            "updated_at": "2025-03-15T00:00:00Z"
+        }
+    },
+    {
+        "model": "finance.invoice",
+        "pk": 2,
+        "fields": {
+            "club": 1,
+            "state": 2,
+            "type": 2,
+            "original_amount": "1800.00",
+            "lines": [
+                {
+                    "name": "Sezónní poplatky hráčů 2025",
+                    "unit_price": "1800.00"
+                }
+            ],
+            "fakturoid_invoice_id": null,
+            "fakturoid_total": null,
+            "fakturoid_status": "open",
+            "fakturoid_public_html_url": "",
+            "fakturoid_due_on": "2025-05-30",
+            "created_at": "2025-05-15T00:00:00Z",
+            "updated_at": "2025-05-15T00:00:00Z"
+        }
+    },
+    {
+        "model": "finance.invoice",
+        "pk": 3,
+        "fields": {
+            "club": 2,
+            "state": 1,
+            "type": 1,
+            "original_amount": "2000.00",
+            "lines": [
+                {
+                    "name": "Halové mistrovství ČR 2025 MIXED - Startovné za Brno Hammers",
+                    "unit_price": "2000.00"
+                }
+            ],
+            "fakturoid_invoice_id": null,
+            "fakturoid_total": null,
+            "fakturoid_status": "",
+            "fakturoid_public_html_url": "",
+            "fakturoid_due_on": null,
+            "created_at": "2025-03-20T00:00:00Z",
+            "updated_at": "2025-03-20T00:00:00Z"
+        }
+    },
+    {
+        "model": "members.transfer",
+        "pk": 1,
+        "fields": {
+            "member": 1,
+            "state": 1,
+            "source_club": 1,
+            "target_club": 2,
+            "requesting_club": 1,
+            "approving_club": 2,
+            "requested_by": 1,
+            "approved_by": null,
+            "approved_at": null,
+            "created_at": "2025-04-01T09:00:00Z",
+            "updated_at": "2025-04-01T09:00:00Z"
+        }
+    },
+    {
+        "model": "members.transfer",
+        "pk": 2,
+        "fields": {
+            "member": 4,
+            "state": 2,
+            "source_club": 1,
+            "target_club": 3,
+            "requesting_club": 1,
+            "approving_club": 3,
+            "requested_by": 1,
+            "approved_by": 1,
+            "approved_at": "2025-03-05T10:00:00Z",
+            "created_at": "2025-03-01T09:00:00Z",
+            "updated_at": "2025-03-05T10:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.clubnotification",
+        "pk": 1,
+        "fields": {
+            "agent_at_club": 1,
+            "subject": "Přihláška schválena",
+            "message": "Vaše přihláška do soutěže JMČR 2025 WOMEN U20 byla schválena.",
+            "is_read": false,
+            "created_at": "2025-03-18T08:00:00Z",
+            "updated_at": "2025-03-18T08:00:00Z"
+        }
+    },
+    {
+        "model": "clubs.clubnotification",
+        "pk": 2,
+        "fields": {
+            "agent_at_club": 1,
+            "subject": "Faktura vystavena",
+            "message": "Byla vystavena faktura za startovné. Zkontrolujte prosím platbu.",
+            "is_read": true,
+            "created_at": "2025-03-15T08:00:00Z",
+            "updated_at": "2025-03-16T08:00:00Z"
+        }
+    },
+    {
+        "model": "tournaments.teamattournament",
+        "pk": 2,
+        "fields": {
+            "tournament": 1,
+            "application": 3,
+            "final_placement": 2,
+            "spirit_avg": "12.500",
+            "seeding": 1,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tournaments.memberattournament",
+        "pk": 3,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 2,
+            "member": 2,
+            "is_captain": true,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 7,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tournaments.memberattournament",
+        "pk": 4,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 2,
+            "member": 3,
+            "is_captain": false,
+            "is_spirit_captain": true,
+            "is_coach": false,
+            "jersey_number": 10,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.season",
+        "pk": 2,
+        "fields": {
+            "name": "2035",
+            "discounted_fee": "250.00",
+            "regular_fee": "700.00",
+            "fee_at_tournament": "70.00",
+            "min_allowed_age": 14,
+            "age_reference_date": "2035-12-31",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.competition",
+        "pk": 3,
+        "fields": {
+            "name": "MČR",
+            "season": 2,
+            "division": 2,
+            "age_limit": null,
+            "environment": 1,
+            "fee_type": 3,
+            "deposit": "2000.00",
+            "registration_deadline": "2035-06-30T23:59:59Z",
+            "description": "Otevřená registrace pro mistrovství ČR ve výkonnostní kategorii Mixed.",
+            "allow_team_transfers": false,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.competition",
+        "pk": 4,
+        "fields": {
+            "name": "JMČR",
+            "season": 2,
+            "division": 1,
+            "age_limit": 1,
+            "environment": 2,
+            "fee_type": 2,
+            "deposit": "1500.00",
+            "registration_deadline": "2035-07-15T23:59:59Z",
+            "description": "Otevřená registrace pro juniorské mistrovství ČR žen.",
+            "allow_team_transfers": true,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.competition",
+        "pk": 5,
+        "fields": {
+            "name": "HMČR",
+            "season": 2,
+            "division": 2,
+            "age_limit": null,
+            "environment": 2,
+            "fee_type": 1,
+            "deposit": "1000.00",
+            "registration_deadline": "2026-03-01T23:59:59Z",
+            "description": "Registrace pro halové mistrovství ČR je již uzavřena.",
+            "allow_team_transfers": false,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tournaments.tournament",
+        "pk": 7,
+        "fields": {
+            "competition": 3,
+            "name": "Summer Series 2035",
+            "start_date": "2035-08-15",
+            "end_date": "2035-08-17",
+            "location": "Praha",
+            "rosters_deadline": "2035-08-14T18:00:00Z",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tournaments.tournament",
+        "pk": 8,
+        "fields": {
+            "competition": 3,
+            "name": "Autumn Series 2035",
+            "start_date": "2035-09-20",
+            "end_date": "2035-09-22",
+            "location": "Brno",
+            "rosters_deadline": "2035-09-19T18:00:00Z",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "tournaments.tournament",
+        "pk": 9,
+        "fields": {
+            "competition": 4,
+            "name": "Indoor Cup 2035",
+            "start_date": "2035-10-10",
+            "end_date": "2035-10-11",
+            "location": "Ostrava",
+            "rosters_deadline": "2035-10-09T18:00:00Z",
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
     }
 ]
