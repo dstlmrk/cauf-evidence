@@ -33,9 +33,7 @@
         "alpinejs": "^3.15.12",
         "bootstrap": "^5.3.8",
         "bootstrap-icons": "^1.13.1",
-        "datatables.net-bs5": "^2.3.8",
-        "datatables.net-responsive-bs5": "^3.0.8",
-        "htmx.org": "^2.0.10",
-        "jquery": "^4.0.0"
+        "country-flag-emoji-polyfill": "^0.1.8",
+        "htmx.org": "^2.0.10"
     }
 }

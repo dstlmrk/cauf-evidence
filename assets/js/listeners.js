@@ -236,10 +236,12 @@ function memberForm() {
                 if (value === "CZ") {
                     input.value = "";
                     input.style.pointerEvents = "none";
-                    input.style.backgroundColor = "#e9ecef";
+                    // Theme-aware disabled background (dark in dark mode) instead of a
+                    // hardcoded light grey, which showed as a white field on the dark surface.
+                    input.style.backgroundColor = "var(--bs-secondary-bg)";
                 } else {
                     input.style.pointerEvents = "auto";
-                    input.style.backgroundColor = "white";
+                    input.style.backgroundColor = "";
                 }
             });
             this.$refs.form

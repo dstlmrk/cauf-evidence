@@ -1,0 +1,14 @@
+{% comment %}
+    Favourite toggle. The star state is flipped optimistically on the client (see members-table.js) for an instant,
+    animated response; the hx-post just persists it in the background without reloading the list.
+{% endcomment %}
+<button
+    type="button"
+    class="btn btn-link star-toggle {% if member.is_favourite %}is-favourite{% endif %}"
+    hx-post="{% url 'members:toggle_favourite' member.id %}"
+    hx-swap="none"
+    aria-label="Toggle favourite"
+    aria-pressed="{% if member.is_favourite %}true{% else %}false{% endif %}"
+>
+    <i class="bi {% if member.is_favourite %}bi-star-fill{% else %}bi-star{% endif %}"></i>
+</button>

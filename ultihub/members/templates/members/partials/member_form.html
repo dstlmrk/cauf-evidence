@@ -1,7 +1,7 @@
 {% load crispy_forms_tags %}
 
 <div x-data="memberForm()">
-    <form hx-post="{{ request.path }}" class="modal-content" x-ref="form" novalidate>
+    <form hx-post="{{ request.path }}" class="modal-content member-form-modal" x-ref="form" novalidate>
         {% csrf_token %}
         <div class="modal-header">
             <h5 class="modal-title">
@@ -11,85 +11,47 @@
                     <i class="bi bi-person-plus-fill"></i> Create member
                 {% endif %}
             </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            {% csrf_token %}
-            <div class="card">
-                <div class="card-header d-flex align-items-center">
-                    <i class="bi bi-person me-2"></i>
-                    <b class="flex-grow-1">Personal information</b>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">{{ form.first_name|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.last_name|as_crispy_field }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">{{ form.citizenship|as_crispy_field }}</div>
-                        <div class="col-md-6 disabled-for-cz">{{ form.sex|as_crispy_field }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 disabled-for-foreigners">{{ form.birth_number|as_crispy_field }}</div>
-                        <div class="col-md-6 disabled-for-cz">{{ form.birth_date|as_crispy_field }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="card mt-3">
-                <div class="card-header d-flex align-items-center">
-                    <i class="bi bi-shield-fill me-2"></i>
-                    <b class="flex-grow-1">Membership details</b>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">{{ form.default_jersey_number|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.is_active|as_crispy_field }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="card mt-3">
-                <div class="card-header d-xl-flex align-items-center">
-                    <i class="bi bi-envelope me-2"></i>
-                    <b class="flex-grow-1 me-2 me-xl-0">Contact information</b>
-                    <small class="text-muted">
-                        For members under 15 years old, the consent link for personal data processing will be sent to
-                        the legal guardian's email.
-                    </small>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 regular-email">{{ form.email|as_crispy_field }}</div>
-                        <div class="col-md-6 legal-guardian-field">{{ form.legal_guardian_email|as_crispy_field }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 legal-guardian-field">
-                            {{ form.legal_guardian_first_name|as_crispy_field }}
-                        </div>
-                        <div class="col-md-6 legal-guardian-field">
-                            {{ form.legal_guardian_last_name|as_crispy_field }}
-                        </div>
-                    </div>
-                </div>
+            <h6 class="form-section-title"><i class="bi bi-person me-2"></i>Personal information</h6>
+            <div class="row">
+                <div class="col-md-4">{{ form.first_name|as_crispy_field }}</div>
+                <div class="col-md-4">{{ form.last_name|as_crispy_field }}</div>
+                <div class="col-md-4">{{ form.citizenship|as_crispy_field }}</div>
+                <div class="col-md-4 disabled-for-foreigners">{{ form.birth_number|as_crispy_field }}</div>
+                <div class="col-md-4 disabled-for-cz">{{ form.birth_date|as_crispy_field }}</div>
+                <div class="col-md-4 disabled-for-cz">{{ form.sex|as_crispy_field }}</div>
             </div>
 
-            <div class="card mt-3">
-                <div class="card-header d-xl-flex align-items-center">
-                    <i class="bi bi-house-door me-2"></i>
-                    <b class="flex-grow-1 me-2 me-xl-0">Residential address</b>
-                    <small class="text-muted">
-                        If the member is a foreigner permanently residing in the Czech Republic, it is mandatory to
-                        provide a Czech address.
-                    </small>
-                </div>
-                <div class="card-body" x-ref="addressContainer">
-                    <div class="row">
-                        <div class="col-md-6 disabled-for-cz">{{ form.street|as_crispy_field }}</div>
-                        <div class="col-md-6 disabled-for-cz">{{ form.house_number|as_crispy_field }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 disabled-for-cz">{{ form.city|as_crispy_field }}</div>
-                        <div class="col-md-6 disabled-for-cz">{{ form.postal_code|as_crispy_field }}</div>
-                    </div>
-                </div>
+            <h6 class="form-section-title mt-2"><i class="bi bi-shield me-2"></i>Membership details</h6>
+            <div class="row">
+                <div class="col-md-6">{{ form.default_jersey_number|as_crispy_field }}</div>
+                <div class="col-md-6">{{ form.is_active|as_crispy_field }}</div>
+            </div>
+
+            <h6 class="form-section-title mt-2"><i class="bi bi-envelope me-2"></i>Contact information</h6>
+            <p class="text-muted small mb-3">
+                For members under 15 years old, the consent link for personal data processing will be sent to the legal
+                guardian's email.
+            </p>
+            <div class="row">
+                <div class="col-md-6 regular-email">{{ form.email|as_crispy_field }}</div>
+                <div class="col-md-6 legal-guardian-field">{{ form.legal_guardian_email|as_crispy_field }}</div>
+                <div class="col-md-6 legal-guardian-field">{{ form.legal_guardian_first_name|as_crispy_field }}</div>
+                <div class="col-md-6 legal-guardian-field">{{ form.legal_guardian_last_name|as_crispy_field }}</div>
+            </div>
+
+            <h6 class="form-section-title mt-2"><i class="bi bi-house-door me-2"></i>Residential address</h6>
+            <p class="text-muted small mb-3">
+                If the member is a foreigner permanently residing in the Czech Republic, it is mandatory to provide a
+                Czech address.
+            </p>
+            <div class="row" x-ref="addressContainer">
+                <div class="col-md-6 disabled-for-cz">{{ form.street|as_crispy_field }}</div>
+                <div class="col-md-6 disabled-for-cz">{{ form.house_number|as_crispy_field }}</div>
+                <div class="col-md-6 disabled-for-cz">{{ form.city|as_crispy_field }}</div>
+                <div class="col-md-6 disabled-for-cz">{{ form.postal_code|as_crispy_field }}</div>
             </div>
         </div>
         <div class="modal-footer">

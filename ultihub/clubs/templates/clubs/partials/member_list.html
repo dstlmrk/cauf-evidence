@@ -1,71 +1,178 @@
 {% load static %}
 
-<table class="table align-middle" id="membersTable" style="visibility: hidden;">
-    <thead>
-        <tr class="align-middle">
-            <th>Number</th>
-            <th>Name</th>
-            <th>Birthdate</th>
-            <th>Citizenship</th>
-            <th>Sex</th>
-            <th>Coach licence</th>
-            <th>Confirmed email</th>
-            <th>Active</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for member in members %}
-            <tr
-                class="bg-{% if member.sex == 1 %}female{% else %}male{% endif %}"
-                data-bs-toggle="tooltip"
-                data-bs-title="Sex: {{ member.get_sex_display }}"
-            >
-                <th>{{ member.default_jersey_number | default:"" }}</th>
-                <td>{{ member.full_name }}</td>
-                <td>{{ member.birth_date | date }}</td>
-                <td>{{ member.citizenship.unicode_flag }} {{ member.citizenship }}</td>
-                <td>{{ member.get_sex_display }}</td>
-                <td>
-                    <a href="" hx-get="{% url 'members:coach_licence_list' member.id %}" hx-target="#dialog"
-                        >{% if member.has_coach_licence %}YES{% else %}NO{% endif %}</a
-                    >
-                </td>
-                <td data-order="{% if member.has_email_confirmed %}1{% else %}0{% endif %}">
-                    {% if member.has_email_confirmed %}
-                        <i
-                            class="bi bi-check-circle-fill"
-                            style="color: green;"
-                            data-bs-toggle="tooltip"
-                            data-bs-title="Email confirmed"
-                            role="img"
-                            aria-label="Email confirmed"
-                        ></i>
-                    {% else %}
-                        <i
-                            class="bi bi-x-circle"
-                            style="color: red;"
-                            data-bs-toggle="tooltip"
-                            data-bs-title="Email not confirmed"
-                            role="img"
-                            aria-label="Email not confirmed"
-                        ></i>
-                    {% endif %}
-                </td>
-                <td>{% if member.is_active %}YES{% else %}NO{% endif %}</td>
-                <td>
-                    <button
-                        class="btn btn-primary"
-                        hx-get="{% url 'members:edit_member' member.id %}"
-                        hx-target="#dialog-xl"
-                    >
-                        Edit
-                    </button>
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div id="membersTable">
+    <!-- Desktop: sortable roomy table -->
+    <div class="card shadow-sm overflow-hidden d-none d-md-block">
+        <div class="table-responsive">
+            <table class="table table-roomy table-hover align-middle mb-0 members-table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-center"></th>
+                        <th scope="col" class="sortable text-center" data-sort="number">#</th>
+                        <th scope="col" class="sortable" data-sort="name">Name</th>
+                        <th scope="col" class="sortable" data-sort="birthdate">Birthdate</th>
+                        <th scope="col" class="sortable" data-sort="citizenship">Citizenship</th>
+                        <th scope="col" class="sortable" data-sort="licence">Coach licence</th>
+                        <th scope="col" class="sortable" data-sort="email">Email</th>
+                        <th scope="col" class="sortable text-center" data-sort="active">Active</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in members %}
+                        <tr
+                            data-member-row
+                            data-search="{{ member.default_jersey_number }} {{ member.full_name }} {{ member.citizenship.code }} {{ member.citizenship.alpha3 }} {{ member.citizenship.name }} {{ member.get_sex_display }}"
+                            data-sex="{{ member.get_sex_display }}"
+                            data-age="{{ member.age | floatformat:0 }}"
+                            data-active="{% if member.is_active %}1{% else %}0{% endif %}"
+                            data-favourite="{% if member.is_favourite %}1{% else %}0{% endif %}"
+                            data-s-number="{{ member.default_jersey_number | default:'' }}"
+                            data-s-name="{{ member.full_name }}"
+                            data-s-birthdate="{{ member.birth_date | date:'Ymd' }}"
+                            data-s-citizenship="{{ member.citizenship.code }}"
+                            data-s-licence="{% if member.has_coach_licence %}1{% else %}0{% endif %}"
+                            data-s-email="{% if member.has_email_confirmed %}2{% elif member.email or member.legal_guardian_email %}1{% else %}0{% endif %}"
+                            data-s-active="{% if member.is_active %}1{% else %}0{% endif %}"
+                        >
+                            <td class="text-center">
+                                {% include "clubs/partials/member_star.html" with member=member %}
+                            </td>
+                            <td class="text-center">
+                                {% include "clubs/partials/member_avatar.html" with member=member %}
+                            </td>
+                            <td class="fw-semibold">{{ member.full_name }}</td>
+                            <td class="text-nowrap">{{ member.birth_date | date:'d/m/Y' }}</td>
+                            <td class="text-nowrap">
+                                {{ member.citizenship.unicode_flag }} {{ member.citizenship.alpha3 }}
+                            </td>
+                            <td>
+                                <a
+                                    href=""
+                                    class="member-chip {% if member.has_coach_licence %}member-chip-success{% else %}member-chip-muted{% endif %}"
+                                    hx-get="{% url 'members:coach_licence_list' member.id %}"
+                                    hx-target="#dialog"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="View coach licences"
+                                >
+                                    <i class="bi bi-mortarboard-fill"></i>
+                                    {% if member.has_coach_licence %}Licensed{% else %}No{% endif %}
+                                </a>
+                            </td>
+                            <td>{% include "clubs/partials/member_email_status.html" with member=member %}</td>
+                            <td class="text-center">
+                                {% include "clubs/partials/member_active_status.html" with member=member %}
+                            </td>
+                            <td class="text-end">
+                                <button
+                                    class="btn btn-sm btn-secondary"
+                                    hx-get="{% url 'members:edit_member' member.id %}"
+                                    hx-target="#dialog-lg"
+                                >
+                                    Edit
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Mobile: cards showing the essentials, tap to expand the full detail -->
+    <div class="d-block d-md-none">
+        <div class="row row-cols-1 g-3">
+            {% for member in members %}
+                <div
+                    class="col"
+                    data-member-card
+                    data-search="{{ member.default_jersey_number }} {{ member.full_name }} {{ member.citizenship.code }} {{ member.citizenship.alpha3 }} {{ member.citizenship.name }} {{ member.get_sex_display }}"
+                    data-sex="{{ member.get_sex_display }}"
+                    data-age="{{ member.age | floatformat:0 }}"
+                    data-active="{% if member.is_active %}1{% else %}0{% endif %}"
+                    data-favourite="{% if member.is_favourite %}1{% else %}0{% endif %}"
+                    data-s-number="{{ member.default_jersey_number | default:'' }}"
+                    data-s-name="{{ member.full_name }}"
+                    data-s-birthdate="{{ member.birth_date | date:'Ymd' }}"
+                    data-s-citizenship="{{ member.citizenship.code }}"
+                    data-s-licence="{% if member.has_coach_licence %}1{% else %}0{% endif %}"
+                    data-s-email="{% if member.has_email_confirmed %}2{% elif member.email or member.legal_guardian_email %}1{% else %}0{% endif %}"
+                    data-s-active="{% if member.is_active %}1{% else %}0{% endif %}"
+                >
+                    <div class="card shadow-sm" x-data="{ open: false }">
+                        <div class="d-flex align-items-center ps-2">
+                            {% include "clubs/partials/member_star.html" with member=member %}
+                            <button
+                                type="button"
+                                class="member-card-head d-flex align-items-center gap-2 flex-grow-1 text-start"
+                                @click="open = !open"
+                                :aria-expanded="open"
+                            >
+                                {% include "clubs/partials/member_avatar.html" with member=member %}
+                                <span class="flex-grow-1">
+                                    <span class="d-block fw-semibold">{{ member.full_name }}</span>
+                                    <span class="d-block small text-muted">
+                                        {{ member.birth_date | date:'Y' }} · {{ member.citizenship.alpha3 }}
+                                    </span>
+                                </span>
+                                {% if not member.is_active %}
+                                    <span class="badge badge-soft-secondary"
+                                        ><i class="bi bi-slash-circle"></i> Inactive</span
+                                    >
+                                {% endif %}
+                                <i class="bi bi-chevron-down member-card-chevron" :class="{ 'rotated': open }"></i>
+                            </button>
+                        </div>
+                        <div class="card-body pt-0" x-show="open" x-cloak>
+                            <div class="detail-meta small">
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted">Birthdate</span>
+                                    <span>{{ member.birth_date | date:'d/m/Y' }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted">Citizenship</span>
+                                    <span>{{ member.citizenship.unicode_flag }} {{ member.citizenship.alpha3 }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted">Coach licence</span>
+                                    <a
+                                        href=""
+                                        class="member-chip {% if member.has_coach_licence %}member-chip-success{% else %}member-chip-muted{% endif %}"
+                                        hx-get="{% url 'members:coach_licence_list' member.id %}"
+                                        hx-target="#dialog"
+                                    >
+                                        <i class="bi bi-mortarboard-fill"></i>
+                                        {% if member.has_coach_licence %}Licensed{% else %}No{% endif %}
+                                    </a>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted">Email</span>
+                                    {% include "clubs/partials/member_email_status.html" with member=member %}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted">Active</span>
+                                    {% include "clubs/partials/member_active_status.html" with member=member %}
+                                </div>
+                            </div>
+                            <button
+                                class="btn btn-secondary w-100 mt-3"
+                                hx-get="{% url 'members:edit_member' member.id %}"
+                                hx-target="#dialog-lg"
+                            >
+                                Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Shown by JS when the active search/filters match no members -->
+    <div data-members-empty hidden>
+        {% include "core/partials/empty_state.html" with icon="bi-search" message="No members match the current filters." %}
+    </div>
+</div>
 <script>
     initializeMembersTable();
     initializeTooltips();

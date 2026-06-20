@@ -413,3 +413,34 @@ class Transfer(AuditModel):
     def save(self, *args: Any, **kwargs: Any) -> None:
         self.clean()
         super().save(*args, **kwargs)
+
+
+class FavouriteMember(AuditModel):
+    """A per-agent bookmark of a club member.
+
+    Agents pin members they work with often so they float to the top of the
+    member list. Favourites are scoped to the agent, so two agents in the same
+    club keep independent sets.
+    """
+
+    agent = models.ForeignKey(
+        "users.Agent",
+        on_delete=models.CASCADE,
+        related_name="favourite_members",
+    )
+    member = models.ForeignKey(
+        Member,
+        on_delete=models.CASCADE,
+        related_name="favoured_by",
+    )
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                fields=["agent", "member"],
+                name="unique_favourite_member_per_agent",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"<FavouriteMember(agent={self.agent_id}, member={self.member_id})>"

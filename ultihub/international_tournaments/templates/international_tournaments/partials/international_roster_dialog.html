@@ -137,9 +137,7 @@
                 </div>
             </div>
         {% else %}
-            <div class="alert alert-primary" role="alert">
-                <i class="bi bi-info-circle-fill me-1"></i> No members found in this roster.
-            </div>
+            {% include "core/partials/empty_state.html" with icon="bi-people" message="No members found in this roster." %}
         {% endif %}
     </div>
     <div class="modal-footer d-flex w-100 justify-content-end">

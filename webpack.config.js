@@ -36,11 +36,6 @@ module.exports = {
             // default export so the provided `htmx` is the instance with
             // helpers like `htmx.on`, not the module namespace object.
             htmx: ["htmx.org", "default"],
-            // jQuery 4 ships as ESM (`export default jQuery`); reference the
-            // default export so the provided `$`/`jQuery` is the callable
-            // jQuery function, not the module namespace object.
-            $: ["jquery", "default"],
-            jQuery: ["jquery", "default"],
             Alpine: "alpinejs",
         }),
     ],
@@ -49,6 +44,12 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: [MiniCssExtractPlugin.loader, "css-loader"],
+            },
+            {
+                // Fonts imported from JS (e.g. the flag web font) are emitted as
+                // hashed files and the import resolves to their public URL.
+                test: /\.(woff2?|ttf|eot)$/,
+                type: "asset/resource",
             },
         ],
     },

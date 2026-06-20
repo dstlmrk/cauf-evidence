@@ -1,8 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 
-/* Company font */
+/* Company font. "Twemoji Country Flags" comes first but only carries flag glyphs
+ * (via its unicode-range), so it is used solely to render flag emoji on browsers
+ * that lack them (Windows); all other text falls through to Roboto Condensed.
+ * The font-face itself is injected at runtime by assets/js/flags.js. */
 body {
-    font-family: "Roboto Condensed", sans-serif;
+    font-family: "Twemoji Country Flags", "Roboto Condensed", sans-serif;
 }
 
 /*
@@ -226,22 +229,6 @@ body {
 .navbar-brand img {
     /* Space between logo and text */
     margin-right: 7px;
-}
-
-.bg-male {
-    --bs-table-bg: #f0fbff;
-}
-
-.bg-female {
-    --bs-table-bg: #fff4f4;
-}
-
-[data-bs-theme="dark"] .bg-male {
-    --bs-table-bg: #14242e;
-}
-
-[data-bs-theme="dark"] .bg-female {
-    --bs-table-bg: #2a1820;
 }
 
 /*.table td,*/
@@ -475,4 +462,191 @@ table.table-roomy > :not(caption) > * > * {
     letter-spacing: 0.04em;
     color: var(--bs-secondary-color);
     border-bottom: 1px solid var(--bs-border-color);
+}
+
+/* Hide Alpine-managed elements until Alpine initialises, so collapsed mobile
+ * member details don't flash open on first paint. */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Members table: clickable column headers carry a sort affordance. The neutral
+ * up/down glyph hints sortability; the active column shows a solid arrow. */
+.members-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.members-table th.sortable::after {
+    content: "\2195"; /* ↕ */
+    margin-left: 0.4em;
+    font-size: 0.8em;
+    opacity: 0.35;
+}
+
+.members-table th.sortable[aria-sort="ascending"]::after {
+    content: "\2191"; /* ↑ */
+    opacity: 1;
+}
+
+.members-table th.sortable[aria-sort="descending"]::after {
+    content: "\2193"; /* ↓ */
+    opacity: 1;
+}
+
+/* Favourite star toggle. A quiet outline star by default that fills warm gold
+ * when starred. Toggling is optimistic (see members-table.js) and plays a quick
+ * "pop" so the interaction feels responsive instead of triggering a reload. */
+.star-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    color: var(--bs-tertiary-color);
+    font-size: 1.15rem;
+    line-height: 1;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.star-toggle:hover {
+    color: #f5b50a;
+}
+
+.star-toggle:focus,
+.star-toggle:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
+.star-toggle.is-favourite {
+    color: #f5b50a;
+}
+
+.star-toggle.pop {
+    animation: star-pop 0.3s ease;
+}
+
+@keyframes star-pop {
+    0% {
+        transform: scale(1);
+    }
+    45% {
+        transform: scale(1.4);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Circular member badge holding the jersey number, tinted by sex so gender reads
+ * at a glance without a dedicated column. Soft tint stays calm in both themes. */
+.member-avatar {
+    flex: 0 0 auto;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.member-avatar.sex-female {
+    background-color: #fbe3ec;
+    color: #9c2f5c;
+}
+
+.member-avatar.sex-male {
+    background-color: #dceaf5;
+    color: #265d80;
+}
+
+[data-bs-theme="dark"] .member-avatar.sex-female {
+    background-color: #45222f;
+    color: #f0aac4;
+}
+
+[data-bs-theme="dark"] .member-avatar.sex-male {
+    background-color: #1d3445;
+    color: #8fc1e3;
+}
+
+/* Clickable chip used for the coach-licence cell. The pill shape, icon and hover
+ * lift make it obvious it opens a dialog, rather than a bare YES/NO link. */
+.member-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    padding: 0.3em 0.7em;
+    border-radius: 50rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        filter 0.15s ease,
+        transform 0.15s ease;
+}
+
+.member-chip:hover {
+    filter: brightness(0.96);
+    transform: translateY(-1px);
+}
+
+.member-chip-success {
+    background-color: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+}
+
+.member-chip-muted {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+}
+
+/* Mobile member card header is a borderless button that toggles the detail. */
+.member-card-head {
+    background: none;
+    border: 0;
+    padding: 0.9rem 0.75rem 0.9rem 0.25rem;
+}
+
+.member-card-chevron {
+    transition: transform 0.2s ease;
+    color: var(--bs-secondary-color);
+}
+
+.member-card-chevron.rotated {
+    transform: rotate(180deg);
+}
+
+/* The "Only active" check sits next to label+input filters; give its row the
+ * height of a form control so, centred, it lines up with the inputs (the empty
+ * label above it reserves the matching label row). */
+.members-active-check {
+    min-height: calc(1.5em + 0.75rem + 2px);
+}
+
+/* The member form shares the large (lg) modal container with other dialogs but
+ * reads better a bit narrower, so constrain and centre just its content within
+ * the dialog instead of resizing the shared container. */
+.member-form-modal {
+    max-width: 680px;
+    margin-inline: auto;
+}
+
+/* Quiet section heading for grouping fields inside forms/modals without the
+ * visual weight of a bordered card — a small uppercase label over a hairline. */
+.form-section-title {
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+    border-bottom: 1px solid var(--bs-border-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
