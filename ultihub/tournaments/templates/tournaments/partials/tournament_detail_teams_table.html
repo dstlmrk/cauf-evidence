@@ -1,40 +1,93 @@
-<div class="d-none d-md-block">
-    <table class="table align-middle">
-        <thead>
-            <tr class="align-middle">
-                <th>Standing</th>
-                <th>SOTG avg</th>
-                <th>Team</th>
-                <th>Club</th>
-                <th>Seeding</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for team in teams_at_tournament %}
+{% load humanize %}
+
+<!-- Desktop: table -->
+<div class="card shadow-sm overflow-hidden d-none d-md-block">
+    <div class="table-responsive">
+        <table class="table table-roomy table-hover align-middle mb-0">
+            <thead>
                 <tr>
-                    <td>{{ team.final_placement | default:"" }}</td>
-                    <td>{{ team.spirit_avg | floatformat:2 }}</td>
-                    <td><b>{{ team.application.team_name }}</b></td>
-                    <td>{{ team.application.team.club.name }}</td>
-                    <td>{{ team.seeding | default:"" }}</td>
-                    <td class="fit text-end">{% include "tournaments/components/roster-button.html" %}</td>
+                    <th scope="col" class="text-center" style="width: 1%;">Standing</th>
+                    <th scope="col">Team</th>
+                    <th scope="col">Club</th>
+                    <th scope="col" class="text-center">Seeding</th>
+                    <th scope="col" class="text-center">SOTG avg</th>
+                    <th scope="col" class="text-end"></th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for team in teams_at_tournament %}
+                    <tr>
+                        <td class="text-center fw-semibold">{{ team.final_placement | default:"—" }}</td>
+                        <td class="fw-semibold">
+                            {{ team.application.team_name }}
+                            {% if team.id == tournament.winner_team_id %}
+                                <span class="badge badge-soft-warning ms-1">
+                                    <i class="bi bi-trophy-fill me-1"></i>Winner
+                                </span>
+                            {% endif %}
+                            {% if team.id == tournament.sotg_winner_team_id %}
+                                <span class="badge badge-soft-success ms-1">
+                                    <i class="bi bi-stars me-1"></i>Spirit winner
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>{{ team.application.team.club.name }}</td>
+                        <td class="text-center">{{ team.seeding | default:"—" }}</td>
+                        <td class="text-center">{{ team.spirit_avg | floatformat:2 | default:"—" }}</td>
+                        <td class="fit text-end">{% include "tournaments/components/roster-button.html" %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
+<!-- Mobile: cards -->
 <div class="d-block d-md-none">
-    <div class="list-group">
+    <div class="row row-cols-1 g-3">
         {% for team in teams_at_tournament %}
-            <div class="list-group-item">
-                <div>Standing: {{ team.final_placement | default:"" }}</div>
-                <div>SOTG avg: {{ team.spirit_avg | floatformat:2 }}</div>
-                <div>Team: <b>{{ team.application.team_name }}</b></div>
-                <div>Club: {{ team.application.team.club.name }}</div>
-                <div>Seeding: {{ team.seeding | default:"" }}</div>
-                <div class="mt-2 mb-1">{% include "tournaments/components/roster-button.html" %}</div>
+            <div class="col">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                            <span class="h5 mb-0">{{ team.application.team_name }}</span>
+                            {% if team.final_placement %}
+                                <span class="badge badge-soft-secondary text-nowrap">
+                                    <i class="bi bi-trophy me-1"></i>{{ team.final_placement | ordinal }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        {% if team.id == tournament.winner_team_id or team.id == tournament.sotg_winner_team_id %}
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                {% if team.id == tournament.winner_team_id %}
+                                    <span class="badge badge-soft-warning">
+                                        <i class="bi bi-trophy-fill me-1"></i>Winner
+                                    </span>
+                                {% endif %}
+                                {% if team.id == tournament.sotg_winner_team_id %}
+                                    <span class="badge badge-soft-success">
+                                        <i class="bi bi-stars me-1"></i>Spirit winner
+                                    </span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        <div class="detail-meta small">
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span class="text-muted">Club</span>
+                                <span>{{ team.application.team.club.name }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span class="text-muted">Seeding</span>
+                                <span>{{ team.seeding | default:"—" }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span class="text-muted">SOTG avg</span>
+                                <span>{{ team.spirit_avg | floatformat:2 | default:"—" }}</span>
+                            </div>
+                        </div>
+                        <div class="mt-3">{% include "tournaments/components/roster-button.html" %}</div>
+                    </div>
+                </div>
             </div>
         {% endfor %}
     </div>
