@@ -1,37 +1,44 @@
-<button
-    {% if request.session.club and competition.has_open_registration %}
-        class="btn btn-success w-100 position-relative"
-    {% else %}
-        class="btn btn-primary w-100 position-relative"
-    {% endif %}
-    hx-get="{% url 'competitions:application_list' competition.id %}"
-    hx-target="#dialog-lg"
->
-    <i class="bi bi-people-fill me-1"></i> Registrations
-    <span class="badge text-bg-light ms-1">{{ competition.application_count }}</span>
-    {% if competition.club_application_without_invoice_count > 0 %}
-        <span
-            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-            style="z-index: 1050;"
+<div class="d-flex align-items-center justify-content-between gap-2">
+    <button
+        {% if request.session.club and competition.has_open_registration %}
+            class="btn btn-success position-relative"
+        {% else %}
+            class="btn btn-secondary position-relative"
+        {% endif %}
+        hx-get="{% url 'competitions:application_list' competition.id %}"
+        hx-target="#dialog-lg"
+    >
+        <i class="bi bi-people-fill me-1"></i> Registrations
+        <span class="badge text-bg-light ms-1">{{ competition.application_count }}</span>
+        {% if competition.club_application_without_invoice_count > 0 %}
+            <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="z-index: 1050;"
+            >
+                {{ competition.club_application_without_invoice_count }}
+            </span>
+        {% endif %}
+    </button>
+    <div class="d-flex align-items-center gap-3">
+        <a
+            href="#"
+            class="link-secondary text-decoration-none small"
+            hx-get="{% url 'competitions:competition_detail' competition.id %}"
+            hx-target="#dialog"
         >
-            {{ competition.club_application_without_invoice_count }}
-        </span>
-    {% endif %}
-</button>
-<div class="d-flex gap-2 mt-2">
-    <button
-        class="btn btn-secondary flex-fill"
-        hx-get="{% url 'competitions:competition_detail' competition.id %}"
-        hx-target="#dialog"
-    >
-        <i class="bi bi-info-circle me-1"></i> Detail
-    </button>
-    <button
-        class="btn btn-secondary flex-fill"
-        hx-get="{% url 'competitions:competition_final_placements_dialog' competition.id %}"
-        hx-target="#dialog"
-        {% if not competition.has_final_placement %}disabled{% endif %}
-    >
-        <i class="bi bi-trophy me-1"></i> Standings
-    </button>
+            <i class="bi bi-info-circle me-1"></i> Detail
+        </a>
+        {% if competition.has_final_placement %}
+            <a
+                href="#"
+                class="link-secondary text-decoration-none small"
+                hx-get="{% url 'competitions:competition_final_placements_dialog' competition.id %}"
+                hx-target="#dialog"
+            >
+                <i class="bi bi-trophy me-1"></i> Standings
+            </a>
+        {% else %}
+            <span class="text-muted small opacity-50"> <i class="bi bi-trophy me-1"></i> Standings </span>
+        {% endif %}
+    </div>
 </div>
