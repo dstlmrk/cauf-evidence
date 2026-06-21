@@ -1013,5 +1013,862 @@
             "created_at": "2024-11-01T00:00:00Z",
             "updated_at": "2024-11-01T00:00:00Z"
         }
+    },
+    {
+        "model": "competitions.division",
+        "pk": 3,
+        "fields": {
+            "name": "Open",
+            "is_female_allowed": true,
+            "is_male_allowed": true,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.agelimit",
+        "pk": 3,
+        "fields": {
+            "name": "U24",
+            "m_min": 12,
+            "m_max": 23,
+            "f_min": 12,
+            "f_max": 23,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "competitions.agelimit",
+        "pk": 4,
+        "fields": {
+            "name": "Grand Masters",
+            "m_min": 40,
+            "m_max": 99,
+            "f_min": 37,
+            "f_max": 99,
+            "created_at": "2024-11-01T00:00:00Z",
+            "updated_at": "2024-11-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.internationaltournament",
+        "pk": 1,
+        "fields": {
+            "name": "World Beach Ultimate Championships",
+            "season": 1,
+            "date_from": "2025-11-15",
+            "date_to": "2025-11-22",
+            "city": "Portimão",
+            "country": "PT",
+            "type": 1,
+            "environment": 3,
+            "fee_type": 1,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.internationaltournament",
+        "pk": 2,
+        "fields": {
+            "name": "European Youth Ultimate Championships U20",
+            "season": 1,
+            "date_from": "2025-08-03",
+            "date_to": "2025-08-09",
+            "city": "Trnava",
+            "country": "SK",
+            "type": 1,
+            "environment": 1,
+            "fee_type": 1,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.internationaltournament",
+        "pk": 3,
+        "fields": {
+            "name": "European Masters Ultimate Championships",
+            "season": 1,
+            "date_from": "2025-07-16",
+            "date_to": "2025-07-20",
+            "city": "Lund",
+            "country": "SE",
+            "type": 1,
+            "environment": 1,
+            "fee_type": 1,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.internationaltournament",
+        "pk": 4,
+        "fields": {
+            "name": "World Under-24 Ultimate Championship",
+            "season": 1,
+            "date_from": "2025-06-21",
+            "date_to": "2025-06-28",
+            "city": "Logroño",
+            "country": "ES",
+            "type": 1,
+            "environment": 1,
+            "fee_type": 1,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.teamatinternationaltournament",
+        "pk": 1,
+        "fields": {
+            "tournament": 1,
+            "team": 33,
+            "age_limit": null,
+            "division": 2,
+            "team_name": "National team",
+            "final_placement": 3,
+            "total_teams": 27,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.teamatinternationaltournament",
+        "pk": 2,
+        "fields": {
+            "tournament": 1,
+            "team": 33,
+            "age_limit": 4,
+            "division": 3,
+            "team_name": "National team",
+            "final_placement": 7,
+            "total_teams": 13,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.teamatinternationaltournament",
+        "pk": 3,
+        "fields": {
+            "tournament": 1,
+            "team": 33,
+            "age_limit": null,
+            "division": 1,
+            "team_name": "National team",
+            "final_placement": 12,
+            "total_teams": 18,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.teamatinternationaltournament",
+        "pk": 4,
+        "fields": {
+            "tournament": 2,
+            "team": 33,
+            "age_limit": 1,
+            "division": 3,
+            "team_name": "National team",
+            "final_placement": 5,
+            "total_teams": 14,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.teamatinternationaltournament",
+        "pk": 5,
+        "fields": {
+            "tournament": 2,
+            "team": 33,
+            "age_limit": 1,
+            "division": 1,
+            "team_name": "National team",
+            "final_placement": 3,
+            "total_teams": 7,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.teamatinternationaltournament",
+        "pk": 6,
+        "fields": {
+            "tournament": 3,
+            "team": 33,
+            "age_limit": 2,
+            "division": 3,
+            "team_name": "National team",
+            "final_placement": 11,
+            "total_teams": 12,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.teamatinternationaltournament",
+        "pk": 7,
+        "fields": {
+            "tournament": 3,
+            "team": 33,
+            "age_limit": 2,
+            "division": 1,
+            "team_name": "National team",
+            "final_placement": 7,
+            "total_teams": 8,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.teamatinternationaltournament",
+        "pk": 8,
+        "fields": {
+            "tournament": 4,
+            "team": 33,
+            "age_limit": 3,
+            "division": 2,
+            "team_name": "National team",
+            "final_placement": 6,
+            "total_teams": 21,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 1,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 1,
+            "member": 2,
+            "is_captain": true,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 23,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 2,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 1,
+            "member": 3,
+            "is_captain": false,
+            "is_spirit_captain": true,
+            "is_coach": false,
+            "jersey_number": 10,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 3,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 1,
+            "member": 1,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": true,
+            "jersey_number": 7,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 4,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 1,
+            "member": 5,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 11,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 5,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 1,
+            "member": 6,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 5,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 6,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 1,
+            "member": 8,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 8,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 7,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 2,
+            "member": 7,
+            "is_captain": true,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 21,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 8,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 2,
+            "member": 9,
+            "is_captain": false,
+            "is_spirit_captain": true,
+            "is_coach": false,
+            "jersey_number": 14,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 9,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 2,
+            "member": 11,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": true,
+            "jersey_number": 17,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 10,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 2,
+            "member": 4,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 96,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 11,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 3,
+            "member": 10,
+            "is_captain": true,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 3,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 12,
+        "fields": {
+            "tournament": 1,
+            "team_at_tournament": 3,
+            "member": 12,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 9,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 13,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 4,
+            "member": 1,
+            "is_captain": true,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 7,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 14,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 4,
+            "member": 5,
+            "is_captain": false,
+            "is_spirit_captain": true,
+            "is_coach": false,
+            "jersey_number": 11,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 15,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 4,
+            "member": 7,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 21,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 16,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 4,
+            "member": 9,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 14,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 17,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 4,
+            "member": 11,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 17,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 18,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 4,
+            "member": 13,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": true,
+            "jersey_number": 22,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 19,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 5,
+            "member": 3,
+            "is_captain": true,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 10,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 20,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 5,
+            "member": 6,
+            "is_captain": false,
+            "is_spirit_captain": true,
+            "is_coach": false,
+            "jersey_number": 5,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 21,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 5,
+            "member": 2,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 23,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 22,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 5,
+            "member": 8,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 8,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 23,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 5,
+            "member": 10,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 3,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 24,
+        "fields": {
+            "tournament": 2,
+            "team_at_tournament": 5,
+            "member": 12,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 9,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 25,
+        "fields": {
+            "tournament": 4,
+            "team_at_tournament": 8,
+            "member": 7,
+            "is_captain": true,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 21,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 26,
+        "fields": {
+            "tournament": 4,
+            "team_at_tournament": 8,
+            "member": 8,
+            "is_captain": false,
+            "is_spirit_captain": true,
+            "is_coach": false,
+            "jersey_number": 8,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 27,
+        "fields": {
+            "tournament": 4,
+            "team_at_tournament": 8,
+            "member": 1,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": true,
+            "jersey_number": 7,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 28,
+        "fields": {
+            "tournament": 4,
+            "team_at_tournament": 8,
+            "member": 2,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 23,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 29,
+        "fields": {
+            "tournament": 4,
+            "team_at_tournament": 8,
+            "member": 5,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 11,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 30,
+        "fields": {
+            "tournament": 4,
+            "team_at_tournament": 8,
+            "member": 6,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 5,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 31,
+        "fields": {
+            "tournament": 4,
+            "team_at_tournament": 8,
+            "member": 9,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 14,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 32,
+        "fields": {
+            "tournament": 4,
+            "team_at_tournament": 8,
+            "member": 10,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 3,
+            "created_at": "2025-06-01T00:00:00Z",
+            "updated_at": "2025-06-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.internationaltournament",
+        "pk": 5,
+        "fields": {
+            "name": "European Ultimate Championships",
+            "season": 2,
+            "date_from": "2035-07-28",
+            "date_to": "2035-08-03",
+            "city": "Frankfurt",
+            "country": "DE",
+            "type": 1,
+            "environment": 1,
+            "fee_type": 2,
+            "created_at": "2035-01-15T00:00:00Z",
+            "updated_at": "2035-01-15T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.teamatinternationaltournament",
+        "pk": 9,
+        "fields": {
+            "tournament": 5,
+            "team": 33,
+            "age_limit": null,
+            "division": 3,
+            "team_name": "National team",
+            "final_placement": null,
+            "total_teams": null,
+            "created_at": "2035-01-15T00:00:00Z",
+            "updated_at": "2035-01-15T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.teamatinternationaltournament",
+        "pk": 10,
+        "fields": {
+            "tournament": 5,
+            "team": 33,
+            "age_limit": null,
+            "division": 1,
+            "team_name": "National team",
+            "final_placement": null,
+            "total_teams": null,
+            "created_at": "2035-01-15T00:00:00Z",
+            "updated_at": "2035-01-15T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.teamatinternationaltournament",
+        "pk": 11,
+        "fields": {
+            "tournament": 5,
+            "team": 33,
+            "age_limit": null,
+            "division": 2,
+            "team_name": "National team",
+            "final_placement": null,
+            "total_teams": null,
+            "created_at": "2035-01-15T00:00:00Z",
+            "updated_at": "2035-01-15T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 33,
+        "fields": {
+            "tournament": 5,
+            "team_at_tournament": 9,
+            "member": 1,
+            "is_captain": true,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 7,
+            "created_at": "2035-01-15T00:00:00Z",
+            "updated_at": "2035-01-15T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 34,
+        "fields": {
+            "tournament": 5,
+            "team_at_tournament": 9,
+            "member": 5,
+            "is_captain": false,
+            "is_spirit_captain": true,
+            "is_coach": false,
+            "jersey_number": 11,
+            "created_at": "2035-01-15T00:00:00Z",
+            "updated_at": "2035-01-15T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 35,
+        "fields": {
+            "tournament": 5,
+            "team_at_tournament": 9,
+            "member": 7,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 21,
+            "created_at": "2035-01-15T00:00:00Z",
+            "updated_at": "2035-01-15T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 36,
+        "fields": {
+            "tournament": 5,
+            "team_at_tournament": 9,
+            "member": 9,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 14,
+            "created_at": "2035-01-15T00:00:00Z",
+            "updated_at": "2035-01-15T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 37,
+        "fields": {
+            "tournament": 5,
+            "team_at_tournament": 9,
+            "member": 11,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": false,
+            "jersey_number": 17,
+            "created_at": "2035-01-15T00:00:00Z",
+            "updated_at": "2035-01-15T00:00:00Z"
+        }
+    },
+    {
+        "model": "international_tournaments.memberatinternationaltournament",
+        "pk": 38,
+        "fields": {
+            "tournament": 5,
+            "team_at_tournament": 9,
+            "member": 13,
+            "is_captain": false,
+            "is_spirit_captain": false,
+            "is_coach": true,
+            "jersey_number": 22,
+            "created_at": "2035-01-15T00:00:00Z",
+            "updated_at": "2035-01-15T00:00:00Z"
+        }
     }
 ]

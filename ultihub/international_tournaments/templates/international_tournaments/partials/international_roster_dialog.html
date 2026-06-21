@@ -1,89 +1,108 @@
 <div class="modal-content">
-    <div class="modal-header p-3">
+    <div class="modal-header">
         <div
-            class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between w-100"
+            class="w-100 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2"
         >
             <div>
-                <h5 class="modal-title mb-0">
-                    <i class="bi bi-people"></i> Roster:
-                    <span style="position: relative; top: -2px;">
-                        <span class="badge text-bg-primary text-bg-{{ team_at_tournament.division.name|lower }}">
-                            {{ team_at_tournament.division.name|upper }}
-                        </span>
-                        {% if team_at_tournament.age_limit %}
-                            <span class="badge text-bg-primary"> {{ team_at_tournament.age_limit.name|upper }} </span>
-                        {% endif %}
+                <h5 class="modal-title mb-1 d-flex align-items-center flex-wrap gap-2">
+                    <span class="badge card-tag text-bg-primary text-bg-{{ team_at_tournament.division.name|lower }}">
+                        {{ team_at_tournament.division.name|upper }}
                     </span>
-                    {{ team_at_tournament.team_name }}
-                    {% if members_at_tournament %}
-                        ({{ members_at_tournament|length }} member{{ members_at_tournament|length|pluralize }})
+                    {% if team_at_tournament.age_limit %}
+                        <span class="badge card-tag text-bg-primary">
+                            {{ team_at_tournament.age_limit.name|upper }}
+                        </span>
                     {% endif %}
+                    <span>{{ team_at_tournament.team_name }}</span>
                 </h5>
-                <small class="text-muted">{{ team_at_tournament.tournament.name }}</small>
+                <div class="text-muted small">
+                    <i class="bi bi-globe-americas me-1"></i>{{ team_at_tournament.tournament.name }}
+                    {% if members_at_tournament %}
+                        · {{ members_at_tournament|length }} member{{ members_at_tournament|length|pluralize }}
+                    {% endif %}
+                </div>
             </div>
-            {% if request.session.club.id == NATIONAL_TEAM_CLUB_ID %}
-                <button
-                    class="btn btn-success mt-2 mt-md-0 ms-0 ms-md-3"
-                    hx-get="{% url 'international_tournaments:roster_add' team_at_tournament.id %}"
-                    hx-target="#dialog"
-                    data-bs-dismiss="modal"
-                >
-                    <i class="bi bi-person-plus"></i> Add member
-                </button>
-            {% endif %}
+            <div class="d-flex align-items-center gap-2">
+                {% if request.session.club.id == NATIONAL_TEAM_CLUB_ID %}
+                    <button
+                        class="btn btn-success btn-sm"
+                        hx-get="{% url 'international_tournaments:roster_add' team_at_tournament.id %}"
+                        hx-target="#dialog"
+                        data-bs-dismiss="modal"
+                    >
+                        <i class="bi bi-person-plus me-1"></i> Add member
+                    </button>
+                {% endif %}
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
         </div>
     </div>
     <div class="modal-body">
         {% if members_at_tournament %}
+            <!-- Desktop: table -->
             <div class="d-none d-md-block">
-                <table class="table align-middle">
+                <table class="table align-middle mb-0">
                     <thead>
-                        <tr class="align-middle">
-                            <th scope="col">#</th>
+                        <tr>
+                            <th scope="col" class="text-center" style="width: 1%;">#</th>
                             <th scope="col">Name</th>
                             <th scope="col">Home club</th>
                             <th scope="col">Birth year</th>
-                            <th scope="col"></th>
+                            {% if request.session.club.id == NATIONAL_TEAM_CLUB_ID %}
+                                <th scope="col" class="text-end">Actions</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
                         {% for member_at_tournament in members_at_tournament %}
-                            {% with member_at_tournament.member as member %}
+                            {% with member=member_at_tournament.member %}
                                 <tr>
-                                    <th>{{ member_at_tournament.jersey_number | default:"" }}</th>
+                                    <td class="text-center">
+                                        <span
+                                            class="member-avatar sex-{% if member.sex == 1 %}female{% else %}male{% endif %}"
+                                        >
+                                            {{ member_at_tournament.jersey_number | default:"" }}
+                                        </span>
+                                    </td>
                                     <td>
-                                        {{ member.citizenship.unicode_flag }} {{ member.full_name }}
-                                        {% if member_at_tournament.is_captain %}
-                                            (C)
-                                        {% endif %}
-                                        {% if member_at_tournament.is_spirit_captain %}
-                                            (SC)
-                                        {% endif %}
-                                        {% if member_at_tournament.is_coach %}
-                                            (COACH)
-                                        {% endif %}
+                                        <div class="d-flex align-items-center flex-wrap gap-2">
+                                            <span>{{ member.citizenship.unicode_flag }} {{ member.full_name }}</span>
+                                            {% if member_at_tournament.is_captain %}
+                                                <span class="badge badge-soft-secondary">Captain</span>
+                                            {% endif %}
+                                            {% if member_at_tournament.is_spirit_captain %}
+                                                <span class="badge badge-soft-secondary">Spirit Captain</span>
+                                            {% endif %}
+                                            {% if member_at_tournament.is_coach %}
+                                                <span class="badge badge-soft-warning">Coach</span>
+                                            {% endif %}
+                                        </div>
                                     </td>
                                     <td>{{ member.club.name }}</td>
                                     <td>{{ member.birth_date | date:'Y' }}</td>
-                                    <td class="fit text-end">
-                                        {% if request.session.club.id == NATIONAL_TEAM_CLUB_ID %}
-                                            <button
-                                                class="btn btn-primary"
-                                                hx-get="{% url 'international_tournaments:roster_update' member_at_tournament.id %}"
-                                                hx-target="#dialog"
-                                                data-bs-dismiss="modal"
-                                            >
-                                                Edit
-                                            </button>
-                                            <form
-                                                style="display: inline;"
-                                                hx-post="{% url 'international_tournaments:roster_remove' member_at_tournament.id %}"
-                                            >
-                                                {% csrf_token %}
-                                                <button class="btn btn-danger" type="submit">Remove</button>
-                                            </form>
-                                        {% endif %}
-                                    </td>
+                                    {% if request.session.club.id == NATIONAL_TEAM_CLUB_ID %}
+                                        <td class="fit text-end">
+                                            <div class="d-inline-flex gap-2">
+                                                <button
+                                                    class="btn btn-sm btn-secondary"
+                                                    hx-get="{% url 'international_tournaments:roster_update' member_at_tournament.id %}"
+                                                    hx-target="#dialog"
+                                                    data-bs-dismiss="modal"
+                                                >
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <form
+                                                    hx-post="{% url 'international_tournaments:roster_remove' member_at_tournament.id %}"
+                                                    hx-confirm="Remove {{ member.full_name }} from this roster?"
+                                                >
+                                                    {% csrf_token %}
+                                                    <button class="btn btn-sm btn-danger" type="submit">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    {% endif %}
                                 </tr>
                             {% endwith %}
                         {% endfor %}
@@ -91,46 +110,70 @@
                 </table>
             </div>
 
+            <!-- Mobile: cards -->
             <div class="d-block d-md-none">
-                <div class="list-group">
+                <div class="row row-cols-1 g-2">
                     {% for member_at_tournament in members_at_tournament %}
-                        {% with member_at_tournament.member as member %}
-                            <div class="list-group-item">
-                                <div>Jersey number: {{ member_at_tournament.jersey_number | default:"" }}</div>
-                                <div>
-                                    Member: {{ member.citizenship.unicode_flag }} <b>{{ member.full_name }}</b>
-                                    {% if member_at_tournament.is_captain %}
-                                        (C)
-                                    {% endif %}
-                                    {% if member_at_tournament.is_spirit_captain %}
-                                        (SC)
-                                    {% endif %}
-                                    {% if member_at_tournament.is_coach %}
-                                        (COACH)
-                                    {% endif %}
-                                </div>
-                                <div>Club: {{ member.club.name }}</div>
-                                <div>Birth year: {{ member.birth_date | date:'Y' }}</div>
-
-                                {% if request.session.club.id == NATIONAL_TEAM_CLUB_ID %}
-                                    <div class="mt-2 mb-1">
-                                        <button
-                                            class="btn btn-primary"
-                                            hx-get="{% url 'international_tournaments:roster_update' member_at_tournament.id %}"
-                                            hx-target="#dialog"
-                                            data-bs-dismiss="modal"
-                                        >
-                                            Edit
-                                        </button>
-                                        <form
-                                            style="display: inline;"
-                                            hx-post="{% url 'international_tournaments:roster_remove' member_at_tournament.id %}"
-                                        >
-                                            {% csrf_token %}
-                                            <button class="btn btn-danger" type="submit">Remove</button>
-                                        </form>
+                        {% with member=member_at_tournament.member %}
+                            <div class="col">
+                                <div class="card">
+                                    <div class="card-body py-3">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <span
+                                                class="member-avatar sex-{% if member.sex == 1 %}female{% else %}male{% endif %}"
+                                            >
+                                                {{ member_at_tournament.jersey_number | default:"" }}
+                                            </span>
+                                            <div>
+                                                <div class="fw-semibold">
+                                                    {{ member.citizenship.unicode_flag }} {{ member.full_name }}
+                                                </div>
+                                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                                    {% if member_at_tournament.is_captain %}
+                                                        <span class="badge badge-soft-secondary">Captain</span>
+                                                    {% endif %}
+                                                    {% if member_at_tournament.is_spirit_captain %}
+                                                        <span class="badge badge-soft-secondary">Spirit Captain</span>
+                                                    {% endif %}
+                                                    {% if member_at_tournament.is_coach %}
+                                                        <span class="badge badge-soft-warning">Coach</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="detail-meta small">
+                                            <div class="d-flex justify-content-between align-items-center py-1">
+                                                <span class="text-muted">Home club</span>
+                                                <span>{{ member.club.name }}</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center py-1">
+                                                <span class="text-muted">Birth year</span>
+                                                <span>{{ member.birth_date | date:'Y' }}</span>
+                                            </div>
+                                        </div>
+                                        {% if request.session.club.id == NATIONAL_TEAM_CLUB_ID %}
+                                            <div class="mt-2 d-flex gap-2">
+                                                <button
+                                                    class="btn btn-sm btn-secondary"
+                                                    hx-get="{% url 'international_tournaments:roster_update' member_at_tournament.id %}"
+                                                    hx-target="#dialog"
+                                                    data-bs-dismiss="modal"
+                                                >
+                                                    <i class="bi bi-pencil me-1"></i> Edit
+                                                </button>
+                                                <form
+                                                    hx-post="{% url 'international_tournaments:roster_remove' member_at_tournament.id %}"
+                                                    hx-confirm="Remove {{ member.full_name }} from this roster?"
+                                                >
+                                                    {% csrf_token %}
+                                                    <button class="btn btn-sm btn-danger" type="submit">
+                                                        <i class="bi bi-trash me-1"></i> Remove
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        {% endif %}
                                     </div>
-                                {% endif %}
+                                </div>
                             </div>
                         {% endwith %}
                     {% endfor %}
@@ -140,7 +183,7 @@
             {% include "core/partials/empty_state.html" with icon="bi-people" message="No members found in this roster." %}
         {% endif %}
     </div>
-    <div class="modal-footer d-flex w-100 justify-content-end">
+    <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
     </div>
 </div>
