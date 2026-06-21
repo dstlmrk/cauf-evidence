@@ -47,9 +47,14 @@ function compareMembers(a, b) {
     if (SORT_TYPES[sortKey] === "num") {
         va = parseFloat(va);
         vb = parseFloat(vb);
-        // Blank numbers (e.g. missing jersey number) sink to the bottom.
-        if (isNaN(va)) va = -Infinity;
-        if (isNaN(vb)) vb = -Infinity;
+        // Blank numbers (e.g. missing jersey number) always sink to the bottom,
+        // regardless of sort direction, so they are resolved before sortDir applies.
+        const aEmpty = isNaN(va);
+        const bEmpty = isNaN(vb);
+        if (aEmpty || bEmpty) {
+            if (aEmpty && bEmpty) return 0;
+            return aEmpty ? 1 : -1;
+        }
         return (va - vb) * sortDir;
     }
 
