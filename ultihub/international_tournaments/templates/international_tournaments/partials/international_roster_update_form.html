@@ -1,7 +1,8 @@
 {% load crispy_forms_tags %}
 <div class="modal-content">
     <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-person"></i> Roster</h5>
+        <h5 class="modal-title"><i class="bi bi-pencil text-primary me-2"></i>Edit member</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <form hx-post="{{ request.path }}">
         <div class="modal-body">

@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
-from django.db.models import BooleanField, Count, Exists, OuterRef, Value
+from django.db.models import Avg, BooleanField, Count, Exists, OuterRef, Value
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -83,6 +83,7 @@ def tournament_detail_view(request: HttpRequest, tournament_id: int) -> HttpResp
         Tournament.objects.select_related("competition").annotate(
             team_count=Count("teams", distinct=True),
             member_count=Count("members", distinct=True),
+            avg_spirit=Avg("teams__spirit_avg"),
         ),
         pk=tournament_id,
     )

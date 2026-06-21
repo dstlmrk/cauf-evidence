@@ -1,9 +1,9 @@
 <button
     id="rosterButton-{{ team.id }}"
     {% if request.session.club.id == team.application.team.club_id and tournament.has_open_rosters %}
-        class="btn btn-success"
+        class="btn btn-success btn-sm"
     {% else %}
-        class="btn btn-primary"
+        class="btn btn-secondary btn-sm"
     {% endif %}
     hx-get="{% url 'tournaments:roster_dialog' team.id %}"
     hx-target="#dialog-lg"

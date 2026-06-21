@@ -38,15 +38,15 @@
             <h6 class="text-uppercase text-muted small fw-semibold mb-1 mt-4">Tournaments</h6>
             <div class="detail-meta">
                 {% for tournament in competition.prefetched_tournaments %}
-                    <div class="py-2">
-                        <div class="fw-semibold">{{ tournament.name }}</div>
-                        <small class="text-muted">
+                    <a href="{% url 'tournaments:detail' tournament.id %}" class="d-block py-2 text-decoration-none">
+                        <span class="fw-semibold">{{ tournament.name }}</span>
+                        <small class="text-muted d-block">
                             <i class="bi bi-geo-alt me-1"></i>{{ tournament.location }}
                             <span class="mx-1">•</span>
                             <i class="bi bi-calendar-event me-1"></i>{{ tournament.start_date | date:'d/m/Y' }} –
                             {{ tournament.end_date | date:'d/m/Y' }}
                         </small>
-                    </div>
+                    </a>
                 {% endfor %}
             </div>
         {% endif %}

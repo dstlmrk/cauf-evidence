@@ -5,57 +5,98 @@
 
 {% block title %}
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+        <ol class="breadcrumb mb-2">
             <li class="breadcrumb-item">
-                <a href="{% url 'tournaments:tournaments' %}?season={{ tournament.competition.season_id }}"
+                <a
+                    href="{% url 'tournaments:tournaments' %}?season={{ tournament.competition.season_id }}"
+                    class="text-decoration-none"
                     >Tournaments</a
                 >
             </li>
-            <li class="breadcrumb-item active" aria-current="page">{{ tournament.name }}</li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {{ tournament.name }} · {{ tournament.competition.season }} ·
+                {{ tournament.competition.get_environment_display }}
+            </li>
         </ol>
     </nav>
-    <small class="text-muted">
-        {{ tournament.competition.season }} • {{ tournament.competition.get_environment_display | upper }}
-    </small>
-    <h1 class="d-flex align-items-center flex-wrap gap-2 mb-0">
-        {{ tournament.name }}
+    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+        <h1 class="fw-bold mb-0"><i class="bi bi-fire text-primary me-2"></i>{{ tournament.name }}</h1>
         <span class="d-flex flex-wrap gap-1">
-            <span class="fs-4 badge text-bg-primary text-bg-{{ tournament.competition.division | lower }}"
-                >{{ tournament.competition.division | upper }}</span
-            >
+            <span class="badge card-tag fs-6 text-bg-primary text-bg-{{ tournament.competition.division | lower }}">
+                {{ tournament.competition.division | upper }}
+            </span>
             {% if tournament.competition.age_limit %}
-                <span class="fs-4 badge text-bg-primary"> {{ tournament.competition.age_limit | upper }} </span>
-            {% endif %}
-        </span>
-    </h1>
-    <div class="mt-1">
-        <b
-            >{{ tournament.location }} • {{ tournament.start_date | date:'d/m/Y' }} -
-            {{ tournament.end_date | date:'d/m/Y' }}</b
-        >
-    </div>
-    <div>
-        Rosters deadline: {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}
-        <span class="badge-nudge">
-            {% if tournament.has_open_rosters %}
-                <span class="badge badge-soft-success">Open rosters</span>
-            {% else %}
-                <span class="badge badge-soft-secondary">Closed rosters</span>
+                <span class="badge card-tag fs-6 text-bg-primary">
+                    {{ tournament.competition.age_limit | upper }}
+                </span>
             {% endif %}
         </span>
     </div>
-    <div>Total teams/members: {{ tournament.team_count }}/{{ tournament.member_count }}</div>
+    <small class="text-muted">
+        <i class="bi bi-calendar-event me-1"></i>{{ tournament.start_date | date:'d/m/Y' }} –
+        {{ tournament.end_date | date:'d/m/Y' }}
+        <span class="mx-1">•</span>
+        <i class="bi bi-geo-alt me-1"></i>{{ tournament.location }}
+    </small>
 {% endblock %}
 
 {% block buttons %}
     {% if user.is_staff or user.is_superuser %}
         <a href="{% url 'tournaments:export_rosters_csv' tournament.id %}" class="btn btn-primary">
-            <i class="bi bi-download"></i> Export rosters
+            <i class="bi bi-download me-1"></i> Export rosters
         </a>
     {% endif %}
 {% endblock %}
 
 {% block content %}
+    <!-- Summary -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body py-3">
+            <div class="row g-3 row-cols-2 row-cols-md-4">
+                <div class="col">
+                    <div class="text-muted text-uppercase detail-stat-label mb-1">
+                        <i class="bi bi-trophy me-1"></i>Competition
+                    </div>
+                    <div class="small">
+                        <a
+                            href="#"
+                            class="text-decoration-none fw-semibold"
+                            hx-get="{% url 'competitions:competition_detail' tournament.competition_id %}"
+                            hx-target="#dialog"
+                            style="cursor: pointer;"
+                            >{{ tournament.competition.name }}</a
+                        >
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="text-muted text-uppercase detail-stat-label mb-1">
+                        <i class="bi bi-clock me-1"></i>Rosters deadline
+                    </div>
+                    <div class="small">
+                        {{ tournament.rosters_deadline | date:'d/m/Y H:i' }}
+                        {% if tournament.has_open_rosters %}
+                            <span class="badge badge-soft-success ms-1">Open</span>
+                        {% else %}
+                            <span class="badge badge-soft-secondary ms-1">Closed</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="text-muted text-uppercase detail-stat-label mb-1">
+                        <i class="bi bi-people me-1"></i>Total teams / members
+                    </div>
+                    <div class="small">{{ tournament.team_count }} / {{ tournament.member_count }}</div>
+                </div>
+                <div class="col">
+                    <div class="text-muted text-uppercase detail-stat-label mb-1">
+                        <i class="bi bi-stars me-1"></i>Avg spirit
+                    </div>
+                    <div class="small">{{ tournament.avg_spirit | floatformat:2 | default:"—" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {% if tournament.team_count %}
         <div
             hx-trigger="load, teamsListChanged from:body"
