@@ -18,7 +18,7 @@ jobs:
       matrix:
         check: [test, lint, style, type, migrations-check]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -33,7 +33,7 @@ jobs:
     name: Prettier check 🕵️
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
       - run: npm install
       - run: npx prettier --check .
@@ -41,7 +41,7 @@ jobs:
     name: Dependency audit 🔒
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -59,7 +59,7 @@ jobs:
     needs: [qa-check, prettier-check]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Login to docker hub
         id: docker-hub
         env:
@@ -79,7 +79,7 @@ jobs:
     needs: build-and-release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Rename docker-compose file
         run: mv docker/compose.prod.yaml docker-compose.yaml
       - name: Rename docker-compose file
