@@ -12,7 +12,7 @@ dependencies = [
     "django-environ>=0.14.0",
     "psycopg2-binary>=2.9.12",
     "sentry-sdk[django]>=2.64.0",
-    "ddtrace>=4.10.7",
+    "ddtrace>=4.11.0",
     "python-json-logger>=4.1.0",
     "django-allauth[socialaccount]>=65.18.0",
     "django-htmx>=1.27.0",
@@ -24,7 +24,7 @@ dependencies = [
     "django-countries>=9.0.0",
     "django-admin-rangefilter>=0.13.5",
     "fakeredis>=2.36.2",
-    "django-filter>=25.2",
+    "django-filter>=26.1",
     "requests>=2.32.5",
     "urllib3>=2.6.3",
     "tenacity>=9.1.4",
@@ -33,7 +33,7 @@ dependencies = [
     "pydot>=3.0.3",
     "pycountry>=26.2.16",
     "protobuf>=7.35.1,<8.0",
-    "huey[redis]>=3.1.1,<4.0.0",
+    "huey[redis]>=3.2.1,<4.0.0",
     "django-dbbackup>=5.3.0,<6.0.0",
     "django-storages[dropbox]>=1.14.6,<2.0.0",
     "django-solo>=2.5.1",
@@ -41,21 +41,21 @@ dependencies = [
     "django-auditlog>=3.4.1",
     "sqlparse>=0.5.4",
     "cryptography>=46.0.5",
-    "filelock>=3.29.6",
-    "virtualenv>=21.6.0",
+    "filelock>=3.29.7",
+    "virtualenv>=21.6.1",
 ]
 
 [dependency-groups]
 dev = [
     "pytest-django>=4.12.0",
-    "ruff>=0.15.20",
+    "ruff>=0.15.21",
     "poethepoet>=0.48.0",
-    "mypy>=2.1.0",
+    "mypy>=2.2.0",
     "django-stubs>=6.0.6",
     "pre-commit>=4.6.0",
     "factory-boy>=3.3.1",
     "pytest-factoryboy>=2.7.0",
-    "types-requests>=2.33.0.20260518",
+    "types-requests>=2.33.0.20260712",
     "pytest-cov>=7.1.0",
 ]
 
