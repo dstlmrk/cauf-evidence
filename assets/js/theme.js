@@ -18,7 +18,23 @@ const LABELS = {
     auto: "Auto mode",
 };
 
-const getStoredTheme = () => localStorage.getItem(STORAGE_KEY) || "auto";
+// localStorage access can throw a SecurityError when the browser blocks
+// storage (e.g. mobile Chrome with cookies disabled), so read/write defensively.
+const getStoredTheme = () => {
+    try {
+        return localStorage.getItem(STORAGE_KEY) || "auto";
+    } catch {
+        return "auto";
+    }
+};
+
+const storeTheme = (theme) => {
+    try {
+        localStorage.setItem(STORAGE_KEY, theme);
+    } catch {
+        // Storage is unavailable; keep the theme for this page load only.
+    }
+};
 
 const resolveTheme = (theme) => (theme === "auto" ? (darkQuery.matches ? "dark" : "light") : theme);
 
@@ -36,7 +52,7 @@ const updateSwitcherUI = (theme) => {
 };
 
 const setTheme = (theme) => {
-    localStorage.setItem(STORAGE_KEY, theme);
+    storeTheme(theme);
     applyTheme(theme);
     updateSwitcherUI(theme);
 };

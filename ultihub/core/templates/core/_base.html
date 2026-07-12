@@ -10,7 +10,12 @@
             // Apply the color theme before first paint to avoid a flash. The
             // navbar switcher (theme.js) wires up changes afterwards.
             (function () {
-                var stored = localStorage.getItem("theme");
+                // localStorage can throw a SecurityError when storage is blocked
+                // (e.g. mobile Chrome with cookies disabled); fall back to "auto".
+                var stored = null;
+                try {
+                    stored = localStorage.getItem("theme");
+                } catch (e) {}
                 var theme =
                     stored && stored !== "auto"
                         ? stored
