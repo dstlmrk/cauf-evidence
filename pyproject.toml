@@ -11,8 +11,8 @@ dependencies = [
     "gunicorn>=26.0.0",
     "django-environ>=0.14.0",
     "psycopg2-binary>=2.9.12",
-    "sentry-sdk[django]>=2.65.0",
-    "ddtrace>=4.11.0",
+    "sentry-sdk[django]>=2.66.0",
+    "ddtrace>=4.11.1",
     "python-json-logger>=4.1.0",
     "django-allauth[socialaccount]>=65.18.0",
     "django-htmx>=1.28.0",
@@ -41,17 +41,17 @@ dependencies = [
     "django-auditlog>=3.4.1",
     "sqlparse>=0.5.4",
     "cryptography>=46.0.5",
-    "filelock>=3.29.7",
+    "filelock>=3.31.2",
     "virtualenv>=21.6.1",
 ]
 
 [dependency-groups]
 dev = [
     "pytest-django>=4.12.0",
-    "ruff>=0.15.21",
+    "ruff>=0.15.22",
     "poethepoet>=0.48.0",
     "mypy>=2.3.0",
-    "django-stubs>=6.0.6",
+    "django-stubs>=6.0.7",
     "pre-commit>=4.6.0",
     "factory-boy>=3.3.1",
     "pytest-factoryboy>=2.7.0",
