@@ -8,7 +8,13 @@ from core.helpers import get_current_club, get_default_season
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
+from django.http import (
+    Http404,
+    HttpRequest,
+    HttpResponse,
+    HttpResponseBadRequest,
+    JsonResponse,
+)
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.timezone import now
@@ -284,11 +290,10 @@ def nsa_export_modal_view(request: HttpRequest) -> HttpResponse:
 @require_POST
 def export_members_csv_for_nsa_view(request: HttpRequest) -> HttpResponse:
     season_id = request.POST.get("season_id")
+    if not season_id:
+        return HttpResponseBadRequest("Missing season_id parameter")
 
-    if season_id:
-        season = get_object_or_404(Season, pk=season_id)
-    else:
-        season = cast(Season, get_default_season("competition"))
+    season = get_object_or_404(Season, pk=season_id)
 
     generate_nsa_export(
         user=request.user,
