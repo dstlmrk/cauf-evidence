@@ -496,3 +496,35 @@ class TestNsaExportModalDefaultSeason:
         response = client.get(reverse("members:nsa_export_modal"))
 
         assert response.context["last_season"] == with_competitions
+
+
+class TestNsaExportRequiresSeason:
+    def test_missing_season_id_is_rejected(self, logged_in_client):
+        client = logged_in_client(UserFactory(), ClubFactory())
+        SeasonFactory(name="2026")
+
+        response = client.post(reverse("members:export_members_csv_for_nsa"))
+
+        assert response.status_code == 400
+
+    def test_unknown_season_id_is_not_found(self, logged_in_client):
+        client = logged_in_client(UserFactory(), ClubFactory())
+
+        response = client.post(
+            reverse("members:export_members_csv_for_nsa"), data={"season_id": 123456}
+        )
+
+        assert response.status_code == 404
+
+    @patch("members.views.generate_nsa_export")
+    def test_exports_the_requested_season(self, mock_export, logged_in_client):
+        club = ClubFactory()
+        client = logged_in_client(UserFactory(), club)
+        season = SeasonFactory(name="2026")
+
+        response = client.post(
+            reverse("members:export_members_csv_for_nsa"), data={"season_id": season.id}
+        )
+
+        assert response.status_code == 204
+        assert mock_export.call_args.kwargs["season"] == season
