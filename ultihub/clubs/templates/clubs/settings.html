@@ -42,7 +42,14 @@
             </div>
         </div>
         <div class="col-lg-5">
-            <h2 class="h5 fw-bold mb-3"><i class="bi bi-people-fill text-primary me-2"></i>Agents</h2>
+            {% if app_settings.club_logo_upload_enabled %}
+                <h2 class="h5 fw-bold mb-3"><i class="bi bi-image text-primary me-2"></i>Logo</h2>
+                {% include "clubs/partials/club_logo_form.html" %}
+            {% endif %}
+
+            <h2 class="h5 fw-bold mb-3 {% if app_settings.club_logo_upload_enabled %}mt-5{% endif %}">
+                <i class="bi bi-people-fill text-primary me-2"></i>Agents
+            </h2>
             <div
                 hx-trigger="load, agentListChanged from:body"
                 hx-get="{% url 'clubs:agent_list' %}"

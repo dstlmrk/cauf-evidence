@@ -31,7 +31,12 @@
                                 </span>
                             {% endif %}
                         </td>
-                        <td>{{ team.application.team.club.name }}</td>
+                        <td>
+                            <span class="d-inline-flex align-items-center gap-2">
+                                {% include "clubs/components/club-logo.html" with club=team.application.team.club %}
+                                {{ team.application.team.club.name }}
+                            </span>
+                        </td>
                         <td class="text-center">{{ team.seeding | default:"—" }}</td>
                         <td class="text-center">{{ team.spirit_avg | floatformat:2 | default:"—" }}</td>
                         <td class="fit text-end">{% include "tournaments/components/roster-button.html" %}</td>
@@ -74,7 +79,10 @@
                         <div class="detail-meta small">
                             <div class="d-flex justify-content-between align-items-center py-2">
                                 <span class="text-muted">Club</span>
-                                <span>{{ team.application.team.club.name }}</span>
+                                <span class="d-inline-flex align-items-center gap-2">
+                                    {% include "clubs/components/club-logo.html" with club=team.application.team.club %}
+                                    {{ team.application.team.club.name }}
+                                </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center py-2">
                                 <span class="text-muted">Seeding</span>

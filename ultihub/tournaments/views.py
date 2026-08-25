@@ -44,8 +44,8 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
         "competition__division",
         "competition__age_limit",
     ).prefetch_related(
-        "winner_team__application",
-        "sotg_winner_team__application",
+        "winner_team__application__team__club",
+        "sotg_winner_team__application__team__club",
     )
 
     # Default season + shared filter context for core/partials/competition_filters.html

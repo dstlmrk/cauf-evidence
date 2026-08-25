@@ -36,6 +36,10 @@ class AppSettings(SingletonModel):
         default=False,
         help_text="Show/hide player transfer UI between clubs",
     )
+    club_logo_upload_enabled = models.BooleanField(
+        default=False,
+        help_text="Let clubs upload their own logo; when off, only admins can set it",
+    )
 
     class Meta:
         verbose_name = "Application Settings"

@@ -585,6 +585,66 @@ table.table-roomy > :not(caption) > * > * {
     color: #8fc1e3;
 }
 
+/* Club logo shown as a small rounded square. object-fit keeps padded logos undistorted,
+ * and the empty state falls back to the club's short name so rows keep their shape. */
+.club-logo {
+    flex: 0 0 auto;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.375rem;
+    object-fit: contain;
+    vertical-align: middle;
+}
+
+.btn > .club-logo {
+    width: 2.125rem;
+    height: 2.125rem;
+    margin-right: 0.5rem;
+    /* Let the logo overflow the button padding so the navbar keeps its height */
+    margin-block: -0.25rem;
+}
+
+.club-logo-empty {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.club-logo-slot {
+    flex: 0 0 auto;
+    text-align: center;
+    line-height: 1.3;
+}
+
+/* The hint wraps beside the previews, but never squeezes into a narrow column. */
+.club-logo-hint {
+    flex: 1 1 12rem;
+}
+
+/* Upload preview in club settings, sized generously so the club can judge the result. */
+.club-logo-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 5rem;
+    height: 5rem;
+    border: 1px dashed var(--bs-border-color);
+    border-radius: 0.5rem;
+    font-size: 1.75rem;
+}
+
+.club-logo-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
 /* Clickable chip used for the coach-licence cell. The pill shape, icon and hover
  * lift make it obvious it opens a dialog, rather than a bare YES/NO link. */
 .member-chip {
