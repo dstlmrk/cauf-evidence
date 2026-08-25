@@ -43,7 +43,7 @@ def competitions(request: HttpRequest) -> HttpResponse:
     competitions_qs = get_competitions_qs_with_related_data(club_id=club.id if club else None)
 
     # Default season + shared filter context for core/partials/competition_filters.html
-    query_params, filter_context = get_filter_context_and_params(request)
+    query_params, filter_context = get_filter_context_and_params(request, "competition")
 
     # Apply filters using FilterSet
     filter_set = CompetitionFilterSet(query_params, queryset=competitions_qs)

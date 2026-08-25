@@ -49,7 +49,9 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
     )
 
     # Default season + shared filter context for core/partials/competition_filters.html
-    query_params, filter_context = get_filter_context_and_params(request)
+    query_params, filter_context = get_filter_context_and_params(
+        request, "competition__tournaments"
+    )
 
     # Apply filters using FilterSet
     filter_set = TournamentFilterSet(query_params, queryset=queryset)

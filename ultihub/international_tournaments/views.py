@@ -41,7 +41,9 @@ def international_tournaments_view(request: HttpRequest) -> HttpResponse:
     club = get_current_club_or_none(request)
 
     # Default season + shared filter context for core/partials/competition_filters.html
-    query_params, filter_context = get_filter_context_and_params(request)
+    query_params, filter_context = get_filter_context_and_params(
+        request, "international_tournaments"
+    )
 
     # Get filter values
     division_id = query_params.get("division")

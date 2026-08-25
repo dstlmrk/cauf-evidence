@@ -2,11 +2,14 @@ import csv
 import json
 from dataclasses import dataclass
 from io import StringIO
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.http import HttpRequest, HttpResponse, QueryDict
 
 from core.models import AppSettings
+
+if TYPE_CHECKING:
+    from competitions.models import Season
 
 
 @dataclass
@@ -30,27 +33,43 @@ def get_current_club_or_none(request: HttpRequest) -> SessionClub | None:
         return None
 
 
+def get_default_season(content_relation: str) -> "Season | None":
+    """
+    Newest season that already holds content, falling back to the newest season
+    overall. A season created ahead of time is empty for a while, and defaulting
+    to it would show an empty list page until it gets filled.
+
+    ``content_relation`` is the lookup path from ``Season`` to the objects that
+    make a season non-empty, e.g. ``competition__tournaments``.
+    """
+    # Imported locally to avoid a circular import (competitions.models imports core.models).
+    from competitions.models import Season
+
+    seasons = Season.objects.order_by("-name")
+    return seasons.filter(**{f"{content_relation}__isnull": False}).first() or seasons.first()
+
+
 def get_filter_context_and_params(
     request: HttpRequest,
+    content_relation: str,
 ) -> tuple[QueryDict, dict[str, Any]]:
     """
     Shared "default season + competition filters" logic used by the tournaments,
     international tournaments and competitions list views.
 
     Returns a copy of the request GET params with the season defaulted to the
-    newest season (when no season filter is provided) and the context dict
-    consumed by ``core/partials/competition_filters.html``.
+    newest non-empty season (when no season filter is provided) and the context
+    dict consumed by ``core/partials/competition_filters.html``.
     """
     # Imported locally to avoid a circular import (competitions.models imports core.models).
     from competitions.enums import EnvironmentEnum
     from competitions.models import AgeLimit, Division, Season
 
-    # Set default season to the newest one if no season filter is applied
     query_params = request.GET.copy()
     if "season" not in query_params:
-        newest_season = Season.objects.order_by("-name").first()
-        if newest_season:
-            query_params["season"] = str(newest_season.id)
+        default_season = get_default_season(content_relation)
+        if default_season:
+            query_params["season"] = str(default_season.id)
 
     filter_context: dict[str, Any] = {
         "seasons": Season.objects.all().order_by("-name"),
