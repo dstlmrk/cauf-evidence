@@ -1,0 +1,18 @@
+{% comment %}
+    Club logo as a small square avatar. Clubs without a logo get their short name instead, so rows keep the same shape
+    either way; pass hide_empty=True where that placeholder would only repeat a club name that is already on screen. The
+    approval timestamp in the query string makes every logo taken into use a new, separately cacheable URL. Include with
+    `club`.
+{% endcomment %}
+{% if club.logo_updated_at %}
+    <img
+        class="club-logo"
+        src="{% url 'clubs:club_logo' club.pk 'small' %}?v={{ club.logo_updated_at|date:'U' }}"
+        alt="{{ club.short_name_or_name }}"
+        width="96"
+        height="96"
+        loading="lazy"
+    />
+{% elif club and not hide_empty %}
+    <span class="club-logo club-logo-empty">{{ club.short_name_or_name|slice:":3"|upper }}</span>
+{% endif %}

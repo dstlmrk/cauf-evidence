@@ -64,13 +64,19 @@
                                 {% if tournament.winner_team %}
                                     <div class="d-flex justify-content-between align-items-center py-2">
                                         <span class="text-muted"><i class="bi bi-trophy me-1"></i> Winner</span>
-                                        <span>{{ tournament.winner_team.application.team_name }}</span>
+                                        <span class="d-inline-flex align-items-center gap-2">
+                                            {% include "clubs/components/club-logo.html" with club=tournament.winner_team.application.team.club hide_empty=True %}
+                                            {{ tournament.winner_team.application.team_name }}
+                                        </span>
                                     </div>
                                 {% endif %}
                                 {% if tournament.sotg_winner_team %}
                                     <div class="d-flex justify-content-between align-items-center py-2">
                                         <span class="text-muted"><i class="bi bi-stars me-1"></i> Spirit</span>
-                                        <span>{{ tournament.sotg_winner_team.application.team_name }}</span>
+                                        <span class="d-inline-flex align-items-center gap-2">
+                                            {% include "clubs/components/club-logo.html" with club=tournament.sotg_winner_team.application.team.club hide_empty=True %}
+                                            {{ tournament.sotg_winner_team.application.team_name }}
+                                        </span>
                                     </div>
                                 {% endif %}
                             </div>

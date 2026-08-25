@@ -1,3 +1,4 @@
+from base64 import b64encode
 from typing import Any
 
 from core.fields import ValidatedEmailField
@@ -7,6 +8,10 @@ from django.core.validators import MinLengthValidator
 from django.db import models
 
 from clubs.validators import validate_identification_number
+
+
+def _data_uri(image: bytes | memoryview) -> str:
+    return "data:image/webp;base64," + b64encode(bytes(image)).decode()
 
 
 class Club(AuditModel):
@@ -49,6 +54,12 @@ class Club(AuditModel):
         null=True,
         help_text="ID of the subject in Fakturoid. The club cannot be invoiced without this ID.",
     )
+    logo_updated_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        editable=False,
+        help_text="Timestamp of the approved logo. Empty means no logo is in use.",
+    )
 
     class Meta:
         permissions = (("manage_club", "Can manage club"),)
@@ -78,6 +89,60 @@ class Club(AuditModel):
             raise ValidationError(
                 {"identification_number": "Club with this identification number already exists."}
             )
+
+
+class ClubLogo(AuditModel):
+    """
+    Rendered logo variants of a club, stored in their own table so the binary data is never
+    fetched along with a regular Club query. A club holds at most one approved logo and at
+    most one waiting for approval, so uploading a replacement never takes the current logo
+    out of use. Whether a club has a logo in use is answered by Club.logo_updated_at, which
+    doubles as the cache-busting stamp of the public URL.
+    """
+
+    club = models.ForeignKey(
+        Club,
+        on_delete=models.CASCADE,
+        related_name="logos",
+    )
+    large = models.BinaryField()
+    small = models.BinaryField()
+    is_approved = models.BooleanField(default=False)
+    approved_at = models.DateTimeField(blank=True, null=True)
+    approved_by = models.ForeignKey(
+        "users.Agent",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="approved_club_logos",
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["club"],
+                condition=models.Q(is_approved=True),
+                name="one_approved_logo_per_club",
+            ),
+            models.UniqueConstraint(
+                fields=["club"],
+                condition=models.Q(is_approved=False),
+                name="one_pending_logo_per_club",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        state = "approved" if self.is_approved else "waiting for approval"
+        return f"<ClubLogo(club={self.club_id}, {state})>"
+
+    @property
+    def large_data_uri(self) -> str:
+        """Inline source for previews of logos that are not public yet (club settings, admin)."""
+        return _data_uri(self.large)
+
+    @property
+    def small_data_uri(self) -> str:
+        return _data_uri(self.small)
 
 
 class Team(AuditModel):

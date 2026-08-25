@@ -109,7 +109,10 @@
         <div class="d-flex">
             {% if request.user.is_authenticated and request.session.club %}
                 {% if user_managed_clubs|length == 1 %}
-                    <button type="button" class="btn btn-primary" disabled>{{ request.session.club.name }}</button>
+                    <button type="button" class="btn btn-primary" disabled>
+                        {% include "clubs/components/club-logo.html" with club=current_club hide_empty=True only %}
+                        {{ request.session.club.name }}
+                    </button>
                 {% else %}
                     <div class="btn-group" role="group">
                         <button
@@ -118,6 +121,7 @@
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                         >
+                            {% include "clubs/components/club-logo.html" with club=current_club hide_empty=True only %}
                             {{ request.session.club.name }}
                         </button>
                         <ul class="dropdown-menu">

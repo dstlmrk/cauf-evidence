@@ -43,6 +43,7 @@ dependencies = [
     "cryptography>=50.0.0",
     "filelock>=3.32.4",
     "virtualenv>=21.7.5",
+    "pillow>=12.3.0",
 ]
 
 [dependency-groups]

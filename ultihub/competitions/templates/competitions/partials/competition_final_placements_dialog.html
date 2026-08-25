@@ -31,7 +31,12 @@
                             {% endif %}
                         </th>
                         <td>{{ application.team_name }}</td>
-                        <td class="text-muted">{{ application.team.club.name }}</td>
+                        <td class="text-muted">
+                            <span class="d-inline-flex align-items-center gap-2">
+                                {% include "clubs/components/club-logo.html" with club=application.team.club %}
+                                {{ application.team.club.name }}
+                            </span>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

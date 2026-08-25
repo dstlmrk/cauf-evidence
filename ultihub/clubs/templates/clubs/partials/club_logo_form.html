@@ -1,0 +1,71 @@
+{% load crispy_forms_tags %}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex flex-wrap align-items-start gap-4 mb-4">
+            <div class="club-logo-slot">
+                <div class="club-logo-preview">
+                    {% if club.logo_updated_at %}
+                        <img
+                            src="{% url 'clubs:club_logo' club.pk 'large' %}?v={{ club.logo_updated_at|date:'U' }}"
+                            alt="{{ club.short_name_or_name }}"
+                        />
+                    {% else %}
+                        <span class="text-muted"><i class="bi bi-image"></i></span>
+                    {% endif %}
+                </div>
+                <small class="text-muted d-block mt-2">In use</small>
+            </div>
+
+            {% if pending_logo %}
+                <div class="club-logo-slot">
+                    <div class="club-logo-preview">
+                        <img src="{{ pending_logo.large_data_uri }}" alt="Logo waiting for approval" />
+                    </div>
+                    <small class="text-warning-emphasis d-block mt-2">
+                        <i class="bi bi-hourglass-split me-1"></i>Waiting
+                    </small>
+                </div>
+            {% endif %}
+
+            <p class="small text-muted mb-0 club-logo-hint">
+                {% if pending_logo %}
+                    The uploaded logo is waiting for approval by the association. Until then, the club keeps the logo
+                    currently in use.
+                {% else %}
+                    A newly uploaded logo is used once the association approves it.
+                {% endif %}
+            </p>
+        </div>
+
+        <form method="POST" action="{% url 'clubs:upload_logo' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ logo_form.logo|as_crispy_field }}
+            <div class="d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-success"><i class="bi bi-upload me-1"></i> Upload</button>
+                {% if pending_logo %}
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        hx-post="{% url 'clubs:cancel_pending_logo' %}"
+                        hx-confirm="Do you really want to cancel the logo waiting for approval?"
+                        hx-swap="none"
+                    >
+                        <i class="bi bi-x-lg me-1"></i> Cancel upload
+                    </button>
+                {% endif %}
+                {% if club.logo_updated_at %}
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        hx-post="{% url 'clubs:remove_logo' %}"
+                        hx-confirm="Do you really want to remove the club logo?"
+                        hx-swap="none"
+                    >
+                        <i class="bi bi-trash me-1"></i> Remove
+                    </button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>

@@ -2,11 +2,11 @@ import logging
 from datetime import date
 
 from competitions.models import AgeLimit
-from core.helpers import get_club_id, get_current_club, get_default_season
+from core.helpers import get_app_settings, get_club_id, get_current_club, get_default_season
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Exists, OuterRef, Q
-from django.http import HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
 from django.views.decorators.http import require_GET, require_POST
@@ -20,8 +20,9 @@ from users.services import (
     unassign_or_cancel_agent_invite_from_club,
 )
 
-from clubs.forms import AddAgentForm, ClubForm, TeamForm
-from clubs.models import Club, ClubNotification, Team
+from clubs.forms import AddAgentForm, ClubForm, ClubLogoForm, TeamForm
+from clubs.models import Club, ClubLogo, ClubNotification, Team
+from clubs.services import remove_club_logo, save_club_logo
 
 logger = logging.getLogger(__name__)
 
@@ -206,9 +207,75 @@ def settings(request: HttpRequest) -> HttpResponse:
         request,
         "clubs/settings.html",
         context={
+            "club": club,
             "club_form": club_form,
+            "logo_form": ClubLogoForm(),
+            "pending_logo": ClubLogo.objects.filter(club=club, is_approved=False).first(),
         },
     )
+
+
+@login_required
+@require_POST
+def upload_logo(request: HttpRequest) -> HttpResponse:
+    if not get_app_settings().club_logo_upload_enabled:
+        raise Http404
+
+    club = get_object_or_404(Club, pk=get_club_id(request))
+    logo_form = ClubLogoForm(request.POST, request.FILES)
+
+    if not logo_form.is_valid():
+        for error in logo_form.errors["logo"]:
+            messages.error(request, str(error))
+        return redirect("clubs:settings")
+
+    save_club_logo(club, logo_form.cleaned_data["logo"])
+    messages.success(
+        request,
+        "Logo uploaded successfully. It will be used once the association approves it.",
+    )
+    return redirect("clubs:settings")
+
+
+@login_required
+@require_POST
+def remove_logo(request: HttpRequest) -> HttpResponse:
+    if not get_app_settings().club_logo_upload_enabled:
+        raise Http404
+
+    remove_club_logo(get_object_or_404(Club, pk=get_club_id(request)))
+    messages.success(request, "Logo removed successfully.")
+    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
+
+@login_required
+@require_POST
+def cancel_pending_logo(request: HttpRequest) -> HttpResponse:
+    if not get_app_settings().club_logo_upload_enabled:
+        raise Http404
+
+    remove_club_logo(get_object_or_404(Club, pk=get_club_id(request)), pending_only=True)
+    messages.success(request, "Upload cancelled successfully.")
+    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
+
+@require_GET
+def club_logo(request: HttpRequest, club_id: int, size: str) -> HttpResponse:
+    """
+    Serves the approved logo of a club. Deliberately public and cached hard: the URL carries
+    the approval timestamp as a query parameter, so a logo taken into use is a new URL and
+    the previous one can be considered immutable. Logos waiting for approval are never served
+    here; they are previewed inline where they are reviewed.
+    """
+    logo = get_object_or_404(
+        ClubLogo.objects.only(size),
+        club_id=club_id,
+        is_approved=True,
+    )
+
+    response = HttpResponse(getattr(logo, size), content_type="image/webp")
+    response["Cache-Control"] = "public, max-age=31536000, immutable"
+    return response
 
 
 @login_required
