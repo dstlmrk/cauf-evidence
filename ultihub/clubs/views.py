@@ -1,8 +1,8 @@
 import logging
 from datetime import date
 
-from competitions.models import AgeLimit, Season
-from core.helpers import get_club_id, get_current_club
+from competitions.models import AgeLimit
+from core.helpers import get_club_id, get_current_club, get_default_season
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Exists, OuterRef, Q
@@ -75,9 +75,9 @@ def members(request: HttpRequest) -> HttpResponse:
         {
             "any_member_exists": Member.objects.filter(club_id=get_club_id(request)).exists(),
             "age_limits": AgeLimit.objects.all().order_by("name"),
-            # The season whose reference date drives the age-category filter (newest
-            # by name), shown next to each category so it's clear what age is used.
-            "age_season": Season.objects.order_by("-name").first(),
+            # The season whose reference date drives the age-category filter, shown
+            # next to each category so it's clear what age is used.
+            "age_season": get_default_season("competition"),
         },
     )
 
@@ -94,9 +94,9 @@ def member_list(request: HttpRequest) -> HttpResponse:
     # The age-category filter mirrors competition eligibility, which evaluates age
     # at the season's reference date (typically 31st December) rather than today —
     # so the filter matches the selections made later when building rosters. The
-    # "current" season is the newest by name (year), matching how the rest of the
-    # app resolves it; fall back to the end of the current year when none exists.
-    season = Season.objects.order_by("-name").first()
+    # "current" season matches how the rest of the app resolves it; fall back to
+    # the end of the current year when none exists.
+    season = get_default_season("competition")
     age_reference_date = season.age_reference_date if season else date(current_date.year, 12, 31)
     return render(
         request,

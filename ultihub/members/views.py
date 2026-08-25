@@ -4,7 +4,7 @@ from uuid import UUID
 
 from clubs.models import Club
 from competitions.models import Season
-from core.helpers import get_current_club
+from core.helpers import get_current_club, get_default_season
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
@@ -273,11 +273,10 @@ def change_transfer_state_view(request: HttpRequest) -> HttpResponse:
 @require_GET
 def nsa_export_modal_view(request: HttpRequest) -> HttpResponse:
     seasons = Season.objects.all().order_by("-name")
-    newest_season = seasons.first()
     return render(
         request,
         "members/partials/nsa_export_modal.html",
-        {"seasons": seasons, "last_season": newest_season},
+        {"seasons": seasons, "last_season": get_default_season("competition")},
     )
 
 
@@ -289,7 +288,7 @@ def export_members_csv_for_nsa_view(request: HttpRequest) -> HttpResponse:
     if season_id:
         season = get_object_or_404(Season, pk=season_id)
     else:
-        season = cast(Season, Season.objects.order_by("-name").first())
+        season = cast(Season, get_default_season("competition"))
 
     generate_nsa_export(
         user=request.user,
