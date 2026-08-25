@@ -2,10 +2,13 @@ from datetime import date
 from unittest.mock import patch
 
 from competitions.models import CompetitionFeeTypeEnum
+from django.urls import reverse
 from members.helpers import get_member_participation_counts
 from members.tasks import generate_nsa_export
 
 from tests.factories import (
+    ClubFactory,
+    CompetitionFactory,
     InternationalTournamentFactory,
     MemberAtInternationalTournamentFactory,
     MemberAtTournamentFactory,
@@ -481,3 +484,15 @@ def test_nsa_export_activity_columns_non_coach(mock_send_email):
     assert data_row[trenerem_od_idx] == ""
     assert data_row[trener_cinnost_od_idx] == ""
     assert data_row[trener_cinnost_do_idx] == ""
+
+
+class TestNsaExportModalDefaultSeason:
+    def test_preselects_newest_season_with_competitions(self, logged_in_client):
+        client = logged_in_client(UserFactory(), ClubFactory())
+        with_competitions = SeasonFactory(name="2026")
+        SeasonFactory(name="2027")
+        CompetitionFactory(season=with_competitions)
+
+        response = client.get(reverse("members:nsa_export_modal"))
+
+        assert response.context["last_season"] == with_competitions

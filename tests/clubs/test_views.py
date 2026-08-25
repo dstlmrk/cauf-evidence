@@ -1,10 +1,20 @@
+from datetime import date
 from unittest.mock import patch
 
 from clubs.models import ClubNotification, Team
 from django.test import Client
 from django.urls import reverse
 
-from tests.factories import AgentAtClubFactory, AgentFactory, ClubFactory, TeamFactory, UserFactory
+from tests.factories import (
+    AgentAtClubFactory,
+    AgentFactory,
+    ClubFactory,
+    CompetitionFactory,
+    MemberFactory,
+    SeasonFactory,
+    TeamFactory,
+    UserFactory,
+)
 
 
 class TestAddTeam:
@@ -210,3 +220,28 @@ class TestNotificationsDialog:
         client = Client()
         response = client.get(reverse("clubs:notifications_dialog"))
         assert response.status_code == 302
+
+
+class TestMembersAgeSeason:
+    def test_uses_newest_season_with_competitions(self, logged_in_client):
+        client = logged_in_client(UserFactory(), ClubFactory())
+        with_competitions = SeasonFactory(name="2026")
+        SeasonFactory(name="2027")
+        CompetitionFactory(season=with_competitions)
+
+        response = client.get(reverse("clubs:members"))
+
+        assert response.context["age_season"] == with_competitions
+
+    def test_member_list_ages_use_newest_season_with_competitions(self, logged_in_client):
+        club = ClubFactory()
+        client = logged_in_client(UserFactory(), club)
+        with_competitions = SeasonFactory(name="2026")
+        SeasonFactory(name="2027")
+        CompetitionFactory(season=with_competitions)
+        MemberFactory(club=club, birth_date=date(2000, 6, 15))
+
+        response = client.get(reverse("clubs:member_list"))
+
+        # 26 at the 2026 reference date, 27 at the empty 2027 one
+        assert response.context["members"][0].age == 26

@@ -1,6 +1,7 @@
 from typing import Any
 
 from competitions.models import Season
+from core.helpers import get_default_season
 from django import forms
 
 
@@ -15,8 +16,7 @@ class SeasonFeesCheckForm(forms.Form):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        # Set default season to the newest one if no initial value is provided
         if not self.initial.get("season"):
-            newest_season = Season.objects.order_by("-name").first()
-            if newest_season:
-                self.initial["season"] = newest_season
+            default_season = get_default_season("competition")
+            if default_season:
+                self.initial["season"] = default_season
