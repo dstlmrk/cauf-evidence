@@ -173,7 +173,7 @@ class SeasonFilter(admin.SimpleListFilter):
 class CompetitionApplicationAdmin(AuditlogMixin, admin.ModelAdmin):
     list_display = (
         "id",
-        "competition__season",
+        "season",
         "competition",
         "team_name",
         "team__club__name",
@@ -185,6 +185,17 @@ class CompetitionApplicationAdmin(AuditlogMixin, admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
 
     actions = ["approve", "decline", "add_teams_to_tournament"]
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet:
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("competition__season", "team__club", "registered_by")
+        )
+
+    @admin.display(description="Season", ordering="competition__season")
+    def season(self, obj: CompetitionApplication) -> str:
+        return str(obj.competition.season)
 
     def get_urls(self) -> list[URLPattern]:
         urls = super().get_urls()
