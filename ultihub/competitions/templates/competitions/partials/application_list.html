@@ -38,7 +38,7 @@
                                 <td class="text-muted">{{ forloop.counter }}</td>
                                 <td class="fw-semibold">{{ application.team_name }}</td>
                                 <td class="text-muted">
-                                    <span class="d-inline-flex align-items-center gap-2">
+                                    <span class="club-cell">
                                         {% include "clubs/components/club-logo.html" with club=application.team.club %}
                                         {{ application.team.club.name }}
                                     </span>
@@ -69,7 +69,7 @@
                             <div class="d-flex justify-content-between align-items-start gap-2">
                                 <div>
                                     <div class="fw-semibold">{{ application.team_name }}</div>
-                                    <small class="text-muted d-inline-flex align-items-center gap-2">
+                                    <small class="text-muted club-cell">
                                         {% include "clubs/components/club-logo.html" with club=application.team.club %}
                                         {{ application.team.club.name }}
                                     </small>
