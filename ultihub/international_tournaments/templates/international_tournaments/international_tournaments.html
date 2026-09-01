@@ -114,6 +114,8 @@
                 </div>
             {% endfor %}
         </div>
+
+        {% include "core/partials/pagination.html" %}
     {% else %}
         {% include "core/partials/empty_state.html" with icon="bi-globe-americas" message="No international tournaments found." %}
     {% endif %}

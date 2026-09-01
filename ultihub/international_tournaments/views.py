@@ -8,6 +8,7 @@ from core.helpers import (
     get_current_club,
     get_current_club_or_none,
     get_filter_context_and_params,
+    get_pagination_context,
     hx_trigger_response,
 )
 from django.conf import settings
@@ -40,10 +41,8 @@ logger = logging.getLogger(__name__)
 def international_tournaments_view(request: HttpRequest) -> HttpResponse:
     club = get_current_club_or_none(request)
 
-    # Default season + shared filter context for core/partials/competition_filters.html
-    query_params, filter_context = get_filter_context_and_params(
-        request, "international_tournaments"
-    )
+    # Shared filter context for core/partials/competition_filters.html
+    query_params, filter_context = get_filter_context_and_params(request)
 
     # Get filter values
     division_id = query_params.get("division")
@@ -100,12 +99,15 @@ def international_tournaments_view(request: HttpRequest) -> HttpResponse:
         else Value(False, output_field=BooleanField()),
     ).order_by("-date_from", "name")
 
+    pagination_context = get_pagination_context(request, tournaments)
+
     return render(
         request,
         "international_tournaments/international_tournaments.html",
         {
-            "tournaments": tournaments,
+            "tournaments": pagination_context["page_obj"],
             "tournament_types": InternationalTournamentTypeEnum.choices,
+            **pagination_context,
             **filter_context,
         },
     )

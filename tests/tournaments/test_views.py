@@ -1,6 +1,7 @@
 from datetime import timedelta
 from unittest.mock import patch
 
+from core.helpers import LIST_PAGE_SIZE
 from django.db import IntegrityError
 from django.urls import reverse
 from django.utils import timezone
@@ -12,6 +13,7 @@ from tests.factories import (
     CompetitionFactory,
     MemberAtTournamentFactory,
     MemberFactory,
+    SeasonFactory,
     TeamAtTournamentFactory,
     TeamFactory,
     TournamentFactory,
@@ -187,3 +189,28 @@ class TestRosterDialogUpdateFormView:
         assert response.status_code == 204
         mat.refresh_from_db()
         assert mat.jersey_number == 42
+
+
+class TestTournamentsListView:
+    def test_lists_tournaments_from_all_seasons_by_default(self, client):
+        older = TournamentFactory(competition=CompetitionFactory(season=SeasonFactory(name="2025")))
+        newer = TournamentFactory(competition=CompetitionFactory(season=SeasonFactory(name="2026")))
+
+        response = client.get(reverse("tournaments:tournaments"))
+
+        assert response.status_code == 200
+        assert set(response.context["tournaments"].object_list) == {older, newer}
+
+    def test_paginates_tournaments(self, client):
+        competition = CompetitionFactory(season=SeasonFactory(name="2026"))
+        for _ in range(LIST_PAGE_SIZE + 2):
+            TournamentFactory(competition=competition)
+
+        response = client.get(reverse("tournaments:tournaments"))
+
+        assert len(response.context["tournaments"]) == LIST_PAGE_SIZE
+        assert response.context["page_obj"].paginator.count == LIST_PAGE_SIZE + 2
+
+        response = client.get(reverse("tournaments:tournaments"), data={"page": 2})
+
+        assert len(response.context["tournaments"]) == 2

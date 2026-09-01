@@ -5,6 +5,7 @@ from core.helpers import (
     get_current_club,
     get_current_club_or_none,
     get_filter_context_and_params,
+    get_pagination_context,
 )
 from django.conf import settings
 from django.contrib import messages
@@ -42,12 +43,21 @@ def competitions(request: HttpRequest) -> HttpResponse:
     # Build queryset with filters
     competitions_qs = get_competitions_qs_with_related_data(club_id=club.id if club else None)
 
-    # Default season + shared filter context for core/partials/competition_filters.html
-    query_params, filter_context = get_filter_context_and_params(request, "competition")
+    # Shared filter context for core/partials/competition_filters.html
+    query_params, filter_context = get_filter_context_and_params(request)
 
     # Apply filters using FilterSet
     filter_set = CompetitionFilterSet(query_params, queryset=competitions_qs)
-    competitions_qs = filter_set.qs
+    competitions_qs = filter_set.qs.annotate(
+        has_final_placement=Exists(
+            CompetitionApplication.objects.filter(
+                competition_id=OuterRef("pk"),
+                final_placement__isnull=False,
+            )
+        )
+    )
+
+    pagination_context = get_pagination_context(request, competitions_qs)
 
     return render(
         request,
@@ -57,14 +67,8 @@ def competitions(request: HttpRequest) -> HttpResponse:
             # exercised without a configured Fakturoid subject.
             "is_unset_fakturoid_id": bool(club and not club.fakturoid_subject_id)
             and not settings.DEBUG,
-            "competitions": competitions_qs.annotate(
-                has_final_placement=Exists(
-                    CompetitionApplication.objects.filter(
-                        competition_id=OuterRef("pk"),
-                        final_placement__isnull=False,
-                    )
-                )
-            ),
+            "competitions": pagination_context["page_obj"],
+            **pagination_context,
             **filter_context,
             **context,
         },
