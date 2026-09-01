@@ -14,14 +14,14 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "css-loader": "^7.1.4",
+        "css-loader": "^7.1.5",
         "mini-css-extract-plugin": "^2.10.2",
         "postcss-loader": "^8.2.1",
         "prettier": "^3.9.6",
         "prettier-plugin-jinja-template": "^2.2.0",
         "style-loader": "^4.0.0",
-        "webpack": "^5.109.2",
-        "webpack-cli": "^7.2.2",
+        "webpack": "^5.110.1",
+        "webpack-cli": "^7.2.3",
         "webpack-manifest-plugin": "^6.0.1"
     },
     "overrides": {
@@ -29,7 +29,7 @@
     },
     "dependencies": {
         "@popperjs/core": "^2.11.8",
-        "@sentry/browser": "^10.71.0",
+        "@sentry/browser": "^10.72.0",
         "alpinejs": "^3.16.3",
         "bootstrap": "^5.3.8",
         "bootstrap-icons": "^1.13.1",
