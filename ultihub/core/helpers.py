@@ -4,12 +4,17 @@ from dataclasses import dataclass
 from io import StringIO
 from typing import TYPE_CHECKING, Any
 
+from django.core.paginator import Paginator
+from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, QueryDict
 
 from core.models import AppSettings
 
 if TYPE_CHECKING:
     from competitions.models import Season
+
+
+LIST_PAGE_SIZE = 12
 
 
 @dataclass
@@ -51,25 +56,19 @@ def get_default_season(content_relation: str) -> "Season | None":
 
 def get_filter_context_and_params(
     request: HttpRequest,
-    content_relation: str,
 ) -> tuple[QueryDict, dict[str, Any]]:
     """
-    Shared "default season + competition filters" logic used by the tournaments,
-    international tournaments and competitions list views.
+    Shared competition filters logic used by the tournaments, international
+    tournaments and competitions list views.
 
-    Returns a copy of the request GET params with the season defaulted to the
-    newest non-empty season (when no season filter is provided) and the context
-    dict consumed by ``core/partials/competition_filters.html``.
+    Returns a copy of the request GET params and the context dict consumed by
+    ``core/partials/competition_filters.html``.
     """
     # Imported locally to avoid a circular import (competitions.models imports core.models).
     from competitions.enums import EnvironmentEnum
     from competitions.models import AgeLimit, Division, Season
 
     query_params = request.GET.copy()
-    if "season" not in query_params:
-        default_season = get_default_season(content_relation)
-        if default_season:
-            query_params["season"] = str(default_season.id)
 
     filter_context: dict[str, Any] = {
         "seasons": Season.objects.all().order_by("-name"),
@@ -80,6 +79,32 @@ def get_filter_context_and_params(
     }
 
     return query_params, filter_context
+
+
+def get_pagination_context(
+    request: HttpRequest,
+    queryset: QuerySet[Any],
+    per_page: int = LIST_PAGE_SIZE,
+) -> dict[str, Any]:
+    """
+    Paginate ``queryset`` by the ``page`` GET param and return the context dict
+    consumed by ``core/partials/pagination.html``.
+
+    ``pagination_query`` carries the other GET params (typically the active filters)
+    ready to be appended to a ``?page=N`` link.
+    """
+    paginator = Paginator(queryset, per_page)
+    page_obj = paginator.get_page(request.GET.get("page"))
+
+    other_params = request.GET.copy()
+    other_params.pop("page", None)
+    encoded_params = other_params.urlencode()
+
+    return {
+        "page_obj": page_obj,
+        "page_range": list(paginator.get_elided_page_range(page_obj.number)),
+        "pagination_query": f"&{encoded_params}" if encoded_params else "",
+    }
 
 
 def hx_trigger_response(*, status: int = 204, **events: Any) -> HttpResponse:

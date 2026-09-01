@@ -1,0 +1,48 @@
+{% comment %}
+    Reusable pagination controls. Expects the context built by core.helpers.get_pagination_context: page_obj, page_range
+    and pagination_query (the current GET params without "page").
+{% endcomment %}
+{% if page_obj.paginator.num_pages > 1 %}
+    <nav class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4">
+        <small class="text-muted">
+            Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }}
+        </small>
+        <ul class="pagination pagination-sm mb-0">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{{ pagination_query }}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="bi bi-chevron-left"></i></span>
+                </li>
+            {% endif %}
+            {% for page_number in page_range %}
+                {% if page_number == page_obj.number %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ page_number }}</span>
+                    </li>
+                {% elif page_number == page_obj.paginator.ELLIPSIS %}
+                    <li class="page-item disabled"><span class="page-link">{{ page_number }}</span></li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_number }}{{ pagination_query }}">{{ page_number }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{{ pagination_query }}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="bi bi-chevron-right"></i></span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

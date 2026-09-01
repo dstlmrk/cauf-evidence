@@ -8,6 +8,7 @@ from core.helpers import (
     get_current_club,
     get_current_club_or_none,
     get_filter_context_and_params,
+    get_pagination_context,
     hx_trigger_response,
 )
 from django.contrib import messages
@@ -48,10 +49,8 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
         "sotg_winner_team__application__team__club",
     )
 
-    # Default season + shared filter context for core/partials/competition_filters.html
-    query_params, filter_context = get_filter_context_and_params(
-        request, "competition__tournaments"
-    )
+    # Shared filter context for core/partials/competition_filters.html
+    query_params, filter_context = get_filter_context_and_params(request)
 
     # Apply filters using FilterSet
     filter_set = TournamentFilterSet(query_params, queryset=queryset)
@@ -69,11 +68,14 @@ def tournaments_view(request: HttpRequest) -> HttpResponse:
         else Value(False, output_field=BooleanField()),
     ).order_by("-start_date", "competition__division", "name")
 
+    pagination_context = get_pagination_context(request, tournaments)
+
     return render(
         request,
         "tournaments/tournaments.html",
         {
-            "tournaments": tournaments,
+            "tournaments": pagination_context["page_obj"],
+            **pagination_context,
             **filter_context,
         },
     )

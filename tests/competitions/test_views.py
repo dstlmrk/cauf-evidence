@@ -1,6 +1,7 @@
 from datetime import timedelta
 from unittest.mock import patch
 
+from core.helpers import LIST_PAGE_SIZE
 from django.db import IntegrityError
 from django.urls import reverse
 from django.utils import timezone
@@ -12,6 +13,7 @@ from tests.factories import (
     CompetitionApplicationFactory,
     CompetitionFactory,
     InvoiceFactory,
+    SeasonFactory,
     TeamAtTournamentFactory,
     TeamFactory,
     TournamentFactory,
@@ -243,3 +245,41 @@ class TestCompetitionDetailView:
         response = client.get(reverse("competitions:competition_detail", args=[9999999]))
 
         assert response.status_code == 404
+
+
+class TestCompetitionsListView:
+    def test_lists_competitions_from_all_seasons_by_default(self, client):
+        older = CompetitionFactory(season=SeasonFactory(name="2025"))
+        newer = CompetitionFactory(season=SeasonFactory(name="2026"))
+
+        response = client.get(reverse("competitions:competitions"))
+
+        assert response.status_code == 200
+        listed = set(response.context["competitions"].object_list)
+        assert listed == {older, newer}
+
+    def test_paginates_competitions(self, client):
+        season = SeasonFactory(name="2026")
+        for _ in range(LIST_PAGE_SIZE + 3):
+            CompetitionFactory(season=season)
+
+        response = client.get(reverse("competitions:competitions"))
+
+        assert len(response.context["competitions"]) == LIST_PAGE_SIZE
+        assert response.context["page_obj"].paginator.count == LIST_PAGE_SIZE + 3
+
+        response = client.get(reverse("competitions:competitions"), data={"page": 2})
+
+        assert len(response.context["competitions"]) == 3
+
+    def test_season_filter_is_kept_in_pagination_links(self, client):
+        season = SeasonFactory(name="2026")
+        for _ in range(LIST_PAGE_SIZE + 1):
+            CompetitionFactory(season=season)
+
+        response = client.get(
+            reverse("competitions:competitions"), data={"season": season.id, "page": 2}
+        )
+
+        assert response.context["pagination_query"] == f"&season={season.id}"
+        assert len(response.context["competitions"]) == 1
