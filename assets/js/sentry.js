@@ -22,6 +22,7 @@ if (dsn) {
             /moz-extension:\/\//, // Firefox extensions
             /chrome-extension:\/\//, // Chromium extensions
             /safari-web-extension:\/\//, // Safari web extensions
+            /iabjs:\/\//, // Instagram / Facebook in-app browser bridge scripts
         ],
         ignoreErrors: [
             // Firefox cross-origin noise: Alpine's MutationObserver touches
