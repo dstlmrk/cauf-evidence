@@ -217,13 +217,15 @@ USE_TZ = True
 FORMAT_MODULE_PATH = ["ultihub.formats"]
 
 # STATIC FILES ----------------------------------------------------------------
+# The source tree and the collected output must stay separate directories, so
+# collectstatic --clear can wipe the output without deleting the sources.
 STATIC_URL = "static/"
-STATIC_ROOT = Path("/app/static")
+STATICFILES_DIRS = [BASE_DIR.parent / "static"]
+STATIC_ROOT = Path("/app/staticfiles")
 WEBPACK_DIST_DIR = Path(STATIC_ROOT) / "dist"
 
 if ENVIRONMENT == "dev":
-    STATICFILES_DIRS = [BASE_DIR / "static"]
-    WEBPACK_DIST_DIR = Path(BASE_DIR) / "static" / "dist"
+    WEBPACK_DIST_DIR = BASE_DIR.parent / "static" / "dist"
 
 # DJANGO ----------------------------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

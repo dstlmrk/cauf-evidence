@@ -18,6 +18,11 @@ def homepage_view(request: HttpRequest) -> HttpResponse:
 
 
 @require_GET
+def healthz_view(request: HttpRequest) -> HttpResponse:
+    return HttpResponse("ok", content_type="text/plain")
+
+
+@require_GET
 def faq_view(request: HttpRequest) -> HttpResponse:
     return render(request, "core/faq.html")
 

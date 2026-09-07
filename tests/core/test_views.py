@@ -11,3 +11,9 @@ def test_homepage_head_request_returns_redirect(client: Client):
 def test_tournaments_head_request_returns_ok(client: Client):
     response = client.head("/tournaments/")
     assert response.status_code == 200
+
+
+def test_healthz_returns_ok_without_authentication(client: Client):
+    response = client.get("/healthz")
+    assert response.status_code == 200
+    assert response.content == b"ok"
