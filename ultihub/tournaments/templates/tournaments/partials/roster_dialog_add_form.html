@@ -26,14 +26,7 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button
-            type="submit"
-            class="btn btn-primary"
-            form="addMemberToRosterForm"
-            disabled
-            x-data
-            x-init="document.querySelector('#id_member_id')?.closest('form')?.addEventListener('change', (e) => { if (e.target.id === 'id_member_id') $el.disabled = !e.target.value })"
-        >
+        <button type="submit" class="btn btn-primary" form="addMemberToRosterForm" disabled x-data="memberSubmitButton">
             Submit
         </button>
     </div>

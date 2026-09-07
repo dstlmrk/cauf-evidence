@@ -1,6 +1,7 @@
 // Alpine.js initialization
 document.addEventListener("alpine:init", () => {
     Alpine.data("memberSearch", window.memberSearch);
+    Alpine.data("memberSubmitButton", window.memberSubmitButton);
 });
 
 // Global double-submit protection and loading state for HTMX requests.

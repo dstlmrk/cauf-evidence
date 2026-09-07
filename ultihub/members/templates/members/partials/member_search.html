@@ -9,9 +9,10 @@
         type="text"
         class="form-control"
         placeholder="Search members..."
+        autocomplete="off"
         x-model="query"
         @input.debounce.300ms="search()"
-        @input="if (!$event.target.value) { const mi = document.querySelector('#id_member_id'); mi.value = ''; mi.dispatchEvent(new Event('change', { bubbles: true })); } document.querySelector('.form-error-msg')?.remove()"
+        @input="onInput($event)"
         @focus="onFocus()"
         @blur="onBlur()"
         @keydown.arrow-down.prevent="moveDown()"
@@ -27,7 +28,7 @@
             <li
                 class="list-group-item list-group-item-action"
                 :class="{'active': highlightedIndex === index}"
-                @click="selectMember(result)"
+                @mousedown.prevent="selectMember(result)"
                 style="cursor: pointer"
             >
                 <div class="d-flex justify-content-between align-items-center">
