@@ -1,12 +1,10 @@
 #!/bin/sh
 
-# Collect all static files to the root directory
-python manage.py collectstatic --no-input
-
-# Apply database migrations
-python manage.py migrate
-
-# Start the gunicorn worker process at the defined port
-ddtrace-run gunicorn ultihub.wsgi:application --access-logfile - --error-logfile - --bind 0.0.0.0:8000 &
-
-wait
+# Static files and migrations are handled by the `release` service before the
+# application containers are replaced, so the start-up is just gunicorn.
+# exec keeps gunicorn as PID 1 so it receives SIGTERM and shuts down gracefully
+# instead of waiting for the kill timeout.
+exec ddtrace-run gunicorn ultihub.wsgi:application \
+    --access-logfile - \
+    --error-logfile - \
+    --bind 0.0.0.0:8000

@@ -11,7 +11,7 @@ services:
     entrypoint: ["/app/ultihub/manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - ../ultihub/:/app/ultihub
-      - ../static/:/app/ultihub/static
+      - ../static/:/app/static
     environment:
       PYTHONUNBUFFERED: true
     env_file:
