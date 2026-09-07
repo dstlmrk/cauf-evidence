@@ -112,10 +112,14 @@ jobs:
           key: ${{ secrets.SSH_DEPLOY_KEY }}
           script: |
             cd ultihub
+            docker system df
+            docker tag ${{ secrets.DOCKERHUB_USERNAME }}/ultihub:latest ${{ secrets.DOCKERHUB_USERNAME }}/ultihub:previous || true
             docker compose pull
             docker compose down
             docker volume rm ultihub_static
             docker compose up -d
+            docker image prune -f || true
+            docker system df
   # --------------------------------------------------------------------------------
   healthcheck:
     name: Healthcheck ✅
