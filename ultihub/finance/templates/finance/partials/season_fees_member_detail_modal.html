@@ -18,6 +18,7 @@
                                 <th scope="col">Tournament</th>
                                 <th scope="col">Team</th>
                                 <th scope="col">Fee Type</th>
+                                <th scope="col" class="text-center">Days played</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -81,15 +82,28 @@
                                             <span class="badge badge-soft-secondary">Regular</span>
                                         {% endif %}
                                     </td>
+                                    <td class="text-center">{{ item.days }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
+                        <tfoot>
+                            <tr class="border-top">
+                                <td colspan="5" class="text-end">
+                                    <span class="fw-semibold">Total days played</span>
+                                </td>
+                                <td class="text-center fw-bold">{{ total_days }}</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
 
             <!-- Mobile: cards -->
             <div class="d-block d-md-none">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted">Total days played</span>
+                    <span class="h5 mb-0">{{ total_days }}</span>
+                </div>
                 <div class="row row-cols-1 g-3">
                     {% for item in tournaments %}
                         <div class="col">
@@ -157,6 +171,10 @@
                                                 >{{ item.date_from|date:'d. m. Y' }} –
                                                 {{ item.date_to|date:'d. m. Y' }}</span
                                             >
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center py-2">
+                                            <span class="text-muted">Days played</span>
+                                            <span>{{ item.days }}</span>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center py-2">
                                             <span class="text-muted">Team</span>

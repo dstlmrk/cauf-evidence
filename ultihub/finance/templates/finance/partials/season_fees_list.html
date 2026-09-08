@@ -15,10 +15,11 @@
                         <th scope="col" class="text-end">Fee (CZK)</th>
                         <th scope="col" class="text-center ps-5">Regular</th>
                         <th scope="col" class="text-center">Discounted</th>
+                        <th scope="col" class="text-center">Days played</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for member, fee in fees %}
+                    {% for member, fee, days in fees %}
                         <tr>
                             <td class="text-muted">{{ forloop.counter }}</td>
                             <td>
@@ -35,6 +36,7 @@
                             <td class="text-end">{{ fee.amount | intcomma }}</td>
                             <td class="text-center ps-5">{{ fee.regular_tournaments | length }}</td>
                             <td class="text-center">{{ fee.discounted_tournaments | length }}</td>
+                            <td class="text-center">{{ days }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -45,6 +47,7 @@
                             <span class="fw-bold">{{ total_amount | intcomma }}</span>
                         </td>
                         <td class="ps-5"></td>
+                        <td></td>
                         <td></td>
                     </tr>
                 </tfoot>
@@ -59,7 +62,7 @@
             <span class="h5 mb-0">CZK {{ total_amount | intcomma }}</span>
         </div>
         <div class="row row-cols-1 g-3">
-            {% for member, fee in fees %}
+            {% for member, fee, days in fees %}
                 <div class="col">
                     <div class="card shadow-sm">
                         <div class="card-body">
@@ -86,6 +89,10 @@
                                 <div class="d-flex justify-content-between align-items-center py-2">
                                     <span class="text-muted">Discounted tournaments</span>
                                     <span>{{ fee.discounted_tournaments | length }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center py-2">
+                                    <span class="text-muted">Days played</span>
+                                    <span>{{ days }}</span>
                                 </div>
                             </div>
                         </div>
