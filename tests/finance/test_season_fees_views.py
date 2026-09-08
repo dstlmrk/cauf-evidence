@@ -61,7 +61,7 @@ class TestSeasonFeesListView:
         assert response.status_code == 200
         assert [(m.id, days) for m, _fee, days in response.context["fees"]] == [(member.id, 5)]
 
-    def test_counts_days_of_free_tournaments_too(self, logged_in_client):
+    def test_free_tournaments_are_counted_in_their_own_column_and_in_days(self, logged_in_client):
         """Days must match the NSA export, which counts every tournament the member played."""
         season = SeasonFactory()
         club = ClubFactory()
@@ -81,7 +81,25 @@ class TestSeasonFeesListView:
         member_, fee, days = response.context["fees"][0]
         assert member_.id == member.id
         assert len(fee.regular_tournaments) == 1
+        assert len(fee.free_tournaments) == 1
         assert days == 6
+
+    def test_omits_members_who_only_played_free_tournaments(self, logged_in_client):
+        season = SeasonFactory()
+        club = ClubFactory()
+        member = MemberFactory(club=club)
+        _add_domestic_tournament(
+            season,
+            member,
+            date(2025, 1, 1),
+            date(2025, 1, 2),
+            fee_type=CompetitionFeeTypeEnum.FREE,
+        )
+
+        client = logged_in_client(UserFactory(), club)
+        response = client.post(reverse("finance:season_fees_list"), {"season": season.id})
+
+        assert response.context["fees"] == []
 
 
 class TestSeasonFeesMemberDetailView:

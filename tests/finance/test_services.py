@@ -138,11 +138,13 @@ def test_calculate_season_fees():
             season.regular_fee,
             [regular_complete_competition["tournament"]],
             [],
+            [],
         ),
         member_2: SeasonFeeData(
             season.discounted_fee,
             [],
             [discounted_complete_competition["tournament"]],
+            [],
         ),
     }
 
@@ -164,16 +166,19 @@ def test_calculate_season_fees():
             season.regular_fee,
             [regular_complete_competition["tournament"]],
             [],
+            [],
         ),
         member_2: SeasonFeeData(
             season.regular_fee,
             [regular_complete_competition["tournament"]],
             [discounted_complete_competition["tournament"]],
+            [],
         ),
         member_3: SeasonFeeData(
             season.discounted_fee,
             [],
             [discounted_complete_competition["tournament"]],
+            [free_complete_competition["tournament"]],
         ),
     }
 
@@ -184,6 +189,7 @@ def test_calculate_season_fees():
         member_1: SeasonFeeData(
             season.regular_fee,
             [regular_complete_competition["tournament"]],
+            [],
             [],
         )
     }

@@ -34,6 +34,8 @@ class SeasonFeeData:
     regular_tournaments: list[Tournament]
     # List of tournaments with discounted fee
     discounted_tournaments: list[Tournament]
+    # List of tournaments with no fee
+    free_tournaments: list[Tournament]
 
 
 class NoSubjectIdError(Exception):
@@ -170,9 +172,10 @@ def calculate_season_fees(
 ) -> dict[Member, SeasonFeeData]:
     from international_tournaments.models import MemberAtInternationalTournament
 
-    fees: dict[Member, SeasonFeeData] = defaultdict(lambda: SeasonFeeData(Decimal(0), [], []))
+    fees: dict[Member, SeasonFeeData] = defaultdict(lambda: SeasonFeeData(Decimal(0), [], [], []))
 
     for amount, fee_type in [
+        (Decimal(0), CompetitionFeeTypeEnum.FREE),
         (season.discounted_fee, CompetitionFeeTypeEnum.DISCOUNTED),
         (season.regular_fee, CompetitionFeeTypeEnum.REGULAR),
     ]:
@@ -204,4 +207,11 @@ def calculate_season_fees(
                 member_at_international_tournament.tournament
             )
 
-    return fees
+    # Free tournaments are listed only as context for members who owe something. A member
+    # who played nothing but free tournaments must stay out, since callers treat the
+    # returned members as the ones to invoice or to put in the NSA export.
+    return {
+        member: data
+        for member, data in fees.items()
+        if data.regular_tournaments or data.discounted_tournaments
+    }
