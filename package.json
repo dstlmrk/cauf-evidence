@@ -20,7 +20,7 @@
         "prettier": "^3.9.6",
         "prettier-plugin-jinja-template": "^2.2.0",
         "style-loader": "^4.0.0",
-        "webpack": "^5.110.1",
+        "webpack": "^5.110.3",
         "webpack-cli": "^7.2.3",
         "webpack-manifest-plugin": "^6.0.1"
     },
@@ -29,8 +29,8 @@
     },
     "dependencies": {
         "@popperjs/core": "^2.11.8",
-        "@sentry/browser": "^10.72.0",
-        "alpinejs": "^3.16.3",
+        "@sentry/browser": "^10.73.0",
+        "alpinejs": "^3.17.1",
         "bootstrap": "^5.3.8",
         "bootstrap-icons": "^1.13.1",
         "country-flag-emoji-polyfill": "^0.1.10",
