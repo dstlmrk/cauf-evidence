@@ -80,11 +80,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Rename docker-compose file
-        run: mv docker/compose.prod.yaml docker-compose.yaml
-      - name: Rename docker-compose file
-        run: mv nginx-proxy/redirect.conf redirect.conf
-      - name: Copy docker-compose file
+      - name: Move the deployment files to the repository root
+        run: |
+          mv docker/compose.prod.yaml docker-compose.yaml
+          mv nginx-proxy/redirect.conf redirect.conf
+          mv nginx-proxy/vhostd.conf vhostd.conf
+      - name: Copy the deployment files
         uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -117,6 +118,9 @@ jobs:
             docker compose pull
             docker compose run --rm release
             docker compose up -d --remove-orphans --wait --wait-timeout 180
+            # docker-gen reloads nginx only when its own generated config changes,
+            # so a changed vhost.d snippet needs an explicit reload.
+            docker compose exec -T nginx-proxy nginx -s reload || true
             docker image prune -f || true
             docker system df
   # --------------------------------------------------------------------------------
