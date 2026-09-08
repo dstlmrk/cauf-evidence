@@ -1,0 +1,32 @@
+{% extends "emails/_base_email.html" %}
+
+{% block subject %}Blíží se uzávěrka soupisek{% endblock %}
+
+{% block content %}
+    <h2 style="margin: 0 0 16px; font-size: 18px;">Blíží se uzávěrka soupisek</h2>
+
+    <p style="margin: 0 0 16px;">
+        Soupisky turnaje <strong>{{ tournament.name }}</strong> se zavírají <strong>{{ deadline }}</strong>. Zkontroluj
+        si je prosím, po uzávěrce už je nelze upravit.
+    </p>
+
+    {% for team in teams %}
+        <p style="margin: 0 0 8px;"><strong>{{ team.name }}</strong> — hráčů na soupisce: {{ team.members|length }}</p>
+
+        {% if team.members %}
+            <ul style="margin: 0 0 8px; padding-left: 20px; line-height: 1.7;">
+                {% for member in team.members %}
+                    <li>{{ member.full_name }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="margin: 0 0 8px; color: #b91c1c;">
+                <strong>Soupiska je prázdná!</strong>
+            </p>
+        {% endif %}
+
+        <p style="margin: 0 0 24px;">
+            <a href="{{ team.roster_link }}" style="color: #1a56db;">Otevřít soupisku</a>
+        </p>
+    {% endfor %}
+{% endblock %}

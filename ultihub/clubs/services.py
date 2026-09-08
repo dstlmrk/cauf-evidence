@@ -21,7 +21,11 @@ LOGO_MAX_BYTES = 5 * 1024 * 1024
 LOGO_ALLOWED_FORMATS = ("PNG", "JPEG", "WEBP")
 
 
-def notify_club(club: Club, subject: str, message: str) -> None:
+def notify_club(club: Club, subject: str, message: str, email_body: str | None = None) -> None:
+    """
+    Notify all active agents of a club. The in-app notification always carries `message`;
+    `email_body` lets the caller send a richer HTML body by e-mail instead.
+    """
     logger.info("Notifying club %s about %s", club.name, subject)
 
     club_agents = AgentAtClub.objects.filter(club=club, is_active=True)
@@ -36,7 +40,7 @@ def notify_club(club: Club, subject: str, message: str) -> None:
         agent__has_email_notifications_enabled=True
     ).select_related("agent__user")
     for agent_at_club in agents_with_email:
-        send_email(subject, message, to=[agent_at_club.agent.user.email])
+        send_email(subject, email_body or message, to=[agent_at_club.agent.user.email])
 
 
 def build_logo_variants(uploaded_file: UploadedFile) -> tuple[bytes, bytes]:
