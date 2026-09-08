@@ -147,6 +147,7 @@ def calculate_season_fees_for_check(user: User, season: Season) -> None:
                 ", ".join(str(tournament.id) for tournament in data.discounted_tournaments),
             ]
             for member, data in fees.items()
+            if data.is_billable
         ],
     )
 

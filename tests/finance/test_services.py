@@ -132,7 +132,7 @@ def test_calculate_season_fees():
     ).member
 
     results = calculate_season_fees(Season.objects.last())
-    assert len(results) == 2
+    assert len(results) == 3
     assert results == {
         member_1: SeasonFeeData(
             season.regular_fee,
@@ -146,7 +146,15 @@ def test_calculate_season_fees():
             [discounted_complete_competition["tournament"]],
             [],
         ),
+        member_3: SeasonFeeData(
+            Decimal(0),
+            [],
+            [],
+            [free_complete_competition["tournament"]],
+        ),
     }
+    assert results[member_1].is_billable
+    assert not results[member_3].is_billable
 
     MemberAtTournamentFactory(
         tournament=regular_complete_competition["tournament"],
@@ -388,8 +396,7 @@ def test_calculate_season_fees_with_international_tournaments():
     # Calculate fees
     results = calculate_season_fees(season)
 
-    # Should only include members with regular or discounted fees (not free)
-    assert len(results) == 3
+    assert len(results) == 4
 
     # Member 1 played in domestic regular tournament
     assert member_1 in results
@@ -409,8 +416,10 @@ def test_calculate_season_fees_with_international_tournaments():
     assert len(results[member_3].regular_tournaments) == 0
     assert discounted_international_tournament in results[member_3].discounted_tournaments
 
-    # Member 4 played in free tournament, should not be included
-    assert member_4 not in results
+    # Member 4 played in a free tournament, so they are listed but owe nothing
+    assert results[member_4].amount == 0
+    assert free_international_tournament in results[member_4].free_tournaments
+    assert not results[member_4].is_billable
 
     # Test that member playing in both domestic and international tournaments gets correct fee
     MemberAtInternationalTournamentFactory(
@@ -420,7 +429,7 @@ def test_calculate_season_fees_with_international_tournaments():
     )
 
     results = calculate_season_fees(season)
-    assert len(results) == 3
+    assert len(results) == 4
     # Member 1 now has both regular (domestic) and discounted (international) tournaments
     # Should be charged regular fee (higher priority)
     assert results[member_1].amount == season.regular_fee
