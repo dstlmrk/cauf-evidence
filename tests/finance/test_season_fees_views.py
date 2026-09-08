@@ -84,7 +84,7 @@ class TestSeasonFeesListView:
         assert len(fee.free_tournaments) == 1
         assert days == 6
 
-    def test_omits_members_who_only_played_free_tournaments(self, logged_in_client):
+    def test_lists_members_who_only_played_free_tournaments(self, logged_in_client):
         season = SeasonFactory()
         club = ClubFactory()
         member = MemberFactory(club=club)
@@ -99,7 +99,12 @@ class TestSeasonFeesListView:
         client = logged_in_client(UserFactory(), club)
         response = client.post(reverse("finance:season_fees_list"), {"season": season.id})
 
-        assert response.context["fees"] == []
+        member_, fee, days = response.context["fees"][0]
+        assert member_.id == member.id
+        assert fee.amount == 0
+        assert len(fee.free_tournaments) == 1
+        assert days == 2
+        assert response.context["total_amount"] == 0
 
 
 class TestSeasonFeesMemberDetailView:

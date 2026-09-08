@@ -38,7 +38,7 @@ def generate_nsa_export(user: User, season: Season, club: Club | None) -> None:
     # Calculate season fees to filter out members who only played in free tournaments
     logger.info("Calculating season fees to filter free-only players")
     season_fees = calculate_season_fees(season, club.id if club else None)
-    members_with_fees = set(season_fees.keys())
+    members_with_fees = {member for member, data in season_fees.items() if data.is_billable}
     logger.info(f"Found {len(members_with_fees)} members with season fees")
 
     # Filter members: must have participation AND season fees (not free-only)

@@ -37,6 +37,11 @@ class SeasonFeeData:
     # List of tournaments with no fee
     free_tournaments: list[Tournament]
 
+    @property
+    def is_billable(self) -> bool:
+        """A member who only played free tournaments owes nothing for the season."""
+        return bool(self.regular_tournaments or self.discounted_tournaments)
+
 
 class NoSubjectIdError(Exception):
     pass
@@ -170,12 +175,19 @@ def create_deposit_invoice(club: Club) -> bool:
 def calculate_season_fees(
     season: Season, club_id: int | None = None
 ) -> dict[Member, SeasonFeeData]:
+    """
+    Return the season fee data of every member who played at least one tournament.
+
+    Members who only played free tournaments are included with a zero amount, so callers
+    that bill or export have to select the billable ones via SeasonFeeData.is_billable.
+    """
     from international_tournaments.models import MemberAtInternationalTournament
 
-    fees: dict[Member, SeasonFeeData] = defaultdict(lambda: SeasonFeeData(Decimal(0), [], [], []))
+    no_fee = Decimal("0.00")
+    fees: dict[Member, SeasonFeeData] = defaultdict(lambda: SeasonFeeData(no_fee, [], [], []))
 
     for amount, fee_type in [
-        (Decimal(0), CompetitionFeeTypeEnum.FREE),
+        (no_fee, CompetitionFeeTypeEnum.FREE),
         (season.discounted_fee, CompetitionFeeTypeEnum.DISCOUNTED),
         (season.regular_fee, CompetitionFeeTypeEnum.REGULAR),
     ]:
@@ -207,11 +219,4 @@ def calculate_season_fees(
                 member_at_international_tournament.tournament
             )
 
-    # Free tournaments are listed only as context for members who owe something. A member
-    # who played nothing but free tournaments must stay out, since callers treat the
-    # returned members as the ones to invoice or to put in the NSA export.
-    return {
-        member: data
-        for member, data in fees.items()
-        if data.regular_tournaments or data.discounted_tournaments
-    }
+    return fees
