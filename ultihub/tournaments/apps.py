@@ -6,4 +6,4 @@ class TournamentsConfig(AppConfig):
     name = "tournaments"
 
     def ready(self) -> None:
-        import tournaments.signals  # noqa: F401
+        from tournaments import signals, tasks  # noqa: F401

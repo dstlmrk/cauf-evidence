@@ -19,6 +19,12 @@ class Tournament(AuditModel):
     end_date = models.DateField()
     location = models.CharField(max_length=128)
     rosters_deadline = models.DateTimeField()
+    rosters_reminder_sent_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="When the reminder about the approaching rosters deadline was sent",
+    )
     winner_team = models.ForeignKey(
         "TeamAtTournament",
         on_delete=models.SET_NULL,
