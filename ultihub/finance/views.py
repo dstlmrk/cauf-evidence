@@ -9,6 +9,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 from django_countries.fields import Country
+from members.helpers import get_member_participation_counts, get_played_days
 from members.models import Member
 from tournaments.models import MemberAtTournament
 
@@ -41,14 +42,19 @@ def season_fees_list_view(request: HttpRequest) -> HttpResponse:
     form = SeasonFeesCheckForm(request.POST)
     if form.is_valid():
         club = get_current_club(request)
-        fees = calculate_season_fees(form.cleaned_data["season"], club.id)
+        season = form.cleaned_data["season"]
+        fees = calculate_season_fees(season, club.id)
+        played_days = get_member_participation_counts(season, club.id)
         messages.success(request, "Season fees have been calculated")
         return render(
             request,
             "finance/partials/season_fees_list.html",
             {
-                "season": form.cleaned_data["season"],
-                "fees": sorted(fees.items(), key=lambda x: x[0].full_name),
+                "season": season,
+                "fees": [
+                    (member, fee, played_days[member.id])
+                    for member, fee in sorted(fees.items(), key=lambda x: x[0].full_name)
+                ],
                 "total_amount": sum([fee.amount for fee in fees.values()]),
             },
         )
@@ -102,6 +108,7 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
                 "location": mat.tournament.location,
                 "date_from": mat.tournament.start_date,
                 "date_to": mat.tournament.end_date,
+                "days": get_played_days(mat.tournament.start_date, mat.tournament.end_date),
             }
         )
 
@@ -136,6 +143,7 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
                 "location": f"{mait.tournament.city}, {country.name}",
                 "date_from": mait.tournament.date_from,
                 "date_to": mait.tournament.date_to,
+                "days": get_played_days(mait.tournament.date_from, mait.tournament.date_to),
             }
         )
 
@@ -149,5 +157,6 @@ def season_fees_member_detail_view(request: HttpRequest) -> HttpResponse:
             "member": member,
             "season": season,
             "tournaments": tournaments_data,
+            "total_days": sum(cast(int, item["days"]) for item in tournaments_data),
         },
     )

@@ -12,6 +12,7 @@ from tests.factories import (
     InternationalTournamentFactory,
     MemberAtInternationalTournamentFactory,
     MemberAtTournamentFactory,
+    MemberFactory,
     SeasonFactory,
     TeamAtInternationalTournamentFactory,
     UserFactory,
@@ -176,6 +177,36 @@ def test_member_participation_multiple_tournaments():
 
     # Total: 2 + 3 + 2 + 4 = 11 days
     assert participation[member.id] == 11
+
+
+def test_member_participation_counts_can_be_scoped_to_club():
+    """Days can be limited to one club, e.g. for the season fees overview"""
+    season = SeasonFactory()
+    club = ClubFactory()
+
+    competition = create_complete_competition(
+        season=season,
+        fee_type=CompetitionFeeTypeEnum.REGULAR,
+    )
+    tournament = competition["tournament"]
+    tournament.start_date = date(2025, 1, 1)
+    tournament.end_date = date(2025, 1, 2)  # 2 days
+    tournament.save()
+
+    member = MemberAtTournamentFactory(
+        tournament=tournament,
+        team_at_tournament=competition["team_at_tournament"],
+        member=MemberFactory(club=club),
+    ).member
+    other_club_member = MemberAtTournamentFactory(
+        tournament=tournament,
+        team_at_tournament=competition["team_at_tournament"],
+    ).member
+
+    participation = get_member_participation_counts(season, club.id)
+
+    assert participation[member.id] == 2
+    assert other_club_member.id not in participation
 
 
 @patch("members.tasks.send_email")
