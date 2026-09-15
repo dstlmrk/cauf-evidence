@@ -29,8 +29,8 @@
     },
     "dependencies": {
         "@popperjs/core": "^2.11.8",
-        "@sentry/browser": "^10.73.0",
-        "alpinejs": "^3.17.1",
+        "@sentry/browser": "^10.74.0",
+        "alpinejs": "^3.17.2",
         "bootstrap": "^5.3.8",
         "bootstrap-icons": "^1.13.1",
         "country-flag-emoji-polyfill": "^0.1.10",
