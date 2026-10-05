@@ -43,6 +43,15 @@ if (dsn) {
             // catch it; match on the querySelector instead.
             /meta\[property=['"]og:/,
         ],
+        // Scripts injected by in-app browsers (e.g. the Google app on iOS) report
+        // their frames on the document URL; drop errors with no frame from our bundle.
+        beforeSend(event) {
+            const frames = event.exception?.values?.flatMap((value) => value.stacktrace?.frames ?? []) ?? [];
+            if (frames.length > 0 && !frames.some((frame) => frame.filename?.includes("/static/dist/"))) {
+                return null;
+            }
+            return event;
+        },
     });
 
     if (userId) {
