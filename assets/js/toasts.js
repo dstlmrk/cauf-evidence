@@ -36,6 +36,27 @@
         event.detail.value.forEach(createToast);
     });
 
+    const GENERIC_ERROR = {
+        message: "Something went wrong. Please try again later.",
+        tags: "text-white bg-danger error",
+    };
+
+    function hasServerMessages(xhr) {
+        try {
+            return "messages" in JSON.parse(xhr.getResponseHeader("HX-Trigger"));
+        } catch {
+            return false;
+        }
+    }
+
+    // Without this, a failed request that carries no message leaves the user with no feedback at all.
+    htmx.on("htmx:responseError", (event) => {
+        if (!hasServerMessages(event.detail.xhr)) {
+            createToast(GENERIC_ERROR);
+        }
+    });
+    htmx.on("htmx:sendError", () => createToast(GENERIC_ERROR));
+
     // Show all existsing toasts, except the template
     htmx.findAll(".toast:not([data-toast-template])").forEach((element) => {
         const toast = new bootstrap.Toast(element, toastOptions(element.className));
