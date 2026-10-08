@@ -1,12 +1,40 @@
 {% if transfer.state == 1 %}
-    <form method="POST" hx-post="{% url 'members:change_transfer_state' %}" hx-confirm="Are you sure?">
+    {# hx-post sits on the buttons so the clicked action is always sent, even after the confirm modal steals focus #}
+    <form>
         {% csrf_token %}
         <input type="hidden" name="transfer_id" value="{{ transfer.id }}" />
         {% if transfer.approving_club.id == request.session.club.id %}
-            <button type="submit" class="btn btn-sm btn-success" name="action" value="approve">Approve</button>
-            <button type="submit" class="btn btn-sm btn-danger" name="action" value="reject">Reject</button>
+            <button
+                type="button"
+                class="btn btn-sm btn-success"
+                name="action"
+                value="approve"
+                hx-post="{% url 'members:change_transfer_state' %}"
+                hx-confirm="Are you sure?"
+            >
+                Approve
+            </button>
+            <button
+                type="button"
+                class="btn btn-sm btn-danger"
+                name="action"
+                value="reject"
+                hx-post="{% url 'members:change_transfer_state' %}"
+                hx-confirm="Are you sure?"
+            >
+                Reject
+            </button>
         {% elif transfer.requesting_club.id == request.session.club.id %}
-            <button type="submit" class="btn btn-sm btn-danger" name="action" value="revoke">Revoke</button>
+            <button
+                type="button"
+                class="btn btn-sm btn-danger"
+                name="action"
+                value="revoke"
+                hx-post="{% url 'members:change_transfer_state' %}"
+                hx-confirm="Are you sure?"
+            >
+                Revoke
+            </button>
         {% endif %}
     </form>
 {% endif %}
