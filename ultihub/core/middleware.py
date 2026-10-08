@@ -26,6 +26,7 @@ class SentryUserMiddleware(MiddlewareMixin):
 class HtmxMessageMiddleware(MiddlewareMixin):
     """
     Middleware that moves messages into the HX-Trigger header when request is made with HTMX
+    and reports error responses that carry no message for the user to Sentry
     """
 
     def process_response(self, request: HttpRequest, response: HttpResponse) -> HttpResponse:
@@ -46,6 +47,13 @@ class HtmxMessageMiddleware(MiddlewareMixin):
             {"message": message.message, "tags": message.tags} for message in get_messages(request)
         ]
         if not messages:
+            # A 4xx with a message is a handled case (e.g. validation), a silent one is a bug.
+            # 5xx responses are already reported by the Sentry Django integration.
+            if 400 <= response.status_code < 500:
+                view = request.resolver_match.view_name if request.resolver_match else request.path
+                sentry_sdk.capture_message(
+                    f"Silent HTMX error response {response.status_code} from {view}", level="error"
+                )
             return response
 
         # Get the existing HX-Trigger that could have been defined by the view
