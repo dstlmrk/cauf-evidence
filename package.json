@@ -30,7 +30,7 @@
     "dependencies": {
         "@popperjs/core": "^2.11.8",
         "@sentry/browser": "^11.8.0",
-        "alpinejs": "^3.17.4",
+        "alpinejs": "^3.17.5",
         "bootstrap": "^5.3.8",
         "bootstrap-icons": "^1.13.2",
         "country-flag-emoji-polyfill": "^0.1.10",
