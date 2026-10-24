@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http import HttpRequest
 
+from tournaments.forms import TournamentAdminForm
 from tournaments.models import MemberAtTournament, TeamAtTournament, Tournament
 
 
@@ -54,6 +55,7 @@ class TournamentAdmin(AuditlogMixin, admin.ModelAdmin):
     list_select_related = ("competition", "winner_team", "sotg_winner_team")
     readonly_fields = ("winner_team", "sotg_winner_team")
     ordering = ("-created_at",)
+    form = TournamentAdminForm
     inlines = [TeamAtTournamentInline]
 
 

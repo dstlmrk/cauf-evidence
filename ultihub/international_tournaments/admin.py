@@ -1,6 +1,7 @@
 from core.admin import AuditlogMixin
 from django.contrib import admin
 
+from international_tournaments.forms import InternationalTournamentAdminForm
 from international_tournaments.models import (
     InternationalTournament,
     MemberAtInternationalTournament,
@@ -48,7 +49,9 @@ class InternationalTournamentAdmin(AuditlogMixin, admin.ModelAdmin):
         "type",
         "environment",
         "fee_type",
+        "confirm_season_change",
     )
+    form = InternationalTournamentAdminForm
 
     def save_formset(self, request, form, formset, change):  # type: ignore
         instances = formset.save(commit=False)

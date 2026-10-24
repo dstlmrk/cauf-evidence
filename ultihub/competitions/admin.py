@@ -17,7 +17,7 @@ from members.tasks import generate_nsa_export
 from tournaments.models import TeamAtTournament, Tournament
 
 from competitions.enums import ApplicationStateEnum
-from competitions.forms import AddTeamsToTournamentForm
+from competitions.forms import AddTeamsToTournamentForm, CompetitionAdminForm
 from competitions.helpers import get_clubs_without_subject_id_with_fees
 from competitions.models import (
     AgeLimit,
@@ -152,7 +152,9 @@ class CompetitionAdmin(AuditlogMixin, admin.ModelAdmin):
         "deposit",
         "description",
         "allow_team_transfers",
+        "confirm_season_change",
     )
+    form = CompetitionAdminForm
     inlines = [TournamentInline, CompetitionApplicationInline]
 
 
