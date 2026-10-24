@@ -1,6 +1,6 @@
 {
     $schema: "https://docs.renovatebot.com/renovate-schema.json",
-    extends: ["config:recommended", "docker:pinDigests", "helpers:pinGitHubActionDigestsToSemver"],
+    extends: ["config:recommended", "docker:pinDigests", "helpers:pinGitHubActionDigests"],
     timezone: "Europe/Prague",
     schedule: ["* * * * 1"],
     updateNotScheduled: false,
