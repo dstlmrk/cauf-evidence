@@ -11,7 +11,7 @@ jobs:
   # --------------------------------------------------------------------------------
   qa-check:
     name: QA checks 🕵️
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       # GitHub won't cancel other jobs in the matrix if any job in the matrix fails
       fail-fast: false
@@ -39,7 +39,7 @@ jobs:
       - run: npx prettier --check .
   dependency-audit:
     name: Dependency audit 🔒
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
