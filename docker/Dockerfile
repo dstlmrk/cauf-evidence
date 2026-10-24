@@ -9,7 +9,7 @@ RUN npm install
 COPY assets /app/assets
 RUN npm run build
 
-FROM python:3.12.5-slim AS python-builder
+FROM python:3.14-slim AS python-builder
 
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
@@ -26,14 +26,17 @@ RUN touch README.md
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
-FROM python:3.12.5-slim AS runtime
+FROM python:3.14-slim AS runtime
 
 # Due to pg_dump
 RUN apt-get update && \
-    apt-get install -y wget gnupg lsb-release && \
-    echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" \
+    apt-get install -y wget && \
+    install -d /usr/share/postgresql-common/pgdg && \
+    wget --quiet -O /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+        https://www.postgresql.org/media/keys/ACCC4CF8.asc && \
+    . /etc/os-release && \
+    echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" \
         > /etc/apt/sources.list.d/pgdg.list && \
-    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     apt-get update && \
     apt-get install -y postgresql-client-16 && \
     rm -rf /var/lib/apt/lists/*
