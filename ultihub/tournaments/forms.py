@@ -1,5 +1,6 @@
 from typing import Any
 
+from competitions.forms import SeasonChangeConfirmForm
 from core.helpers import get_app_settings
 from django import forms
 from django.core.exceptions import ValidationError
@@ -187,4 +188,16 @@ class UpdateMemberToRosterForm(forms.ModelForm):
             if existing_spirit_captains.exists():
                 raise ValidationError({"is_spirit_captain": "Team already has a spirit captain."})
 
+        return cleaned_data
+
+
+class TournamentAdminForm(SeasonChangeConfirmForm):
+    def clean(self) -> dict[str, Any] | None:
+        cleaned_data = super().clean()
+        if self.instance.pk and (competition := self.cleaned_data.get("competition")):
+            self.validate_season_change(
+                self.instance.competition.season,
+                competition.season,
+                MemberAtTournament.objects.filter(tournament=self.instance),
+            )
         return cleaned_data

@@ -1,5 +1,6 @@
 from typing import Any
 
+from competitions.forms import SeasonChangeConfirmForm
 from django import forms
 from django.core.exceptions import ValidationError
 from members.models import Member
@@ -97,4 +98,16 @@ class UpdateMemberToInternationalRosterForm(forms.ModelForm):
                     {"jersey_number": f"Another player already has jersey number {jersey_number}."}
                 )
 
+        return cleaned_data
+
+
+class InternationalTournamentAdminForm(SeasonChangeConfirmForm):
+    def clean(self) -> dict[str, Any] | None:
+        cleaned_data = super().clean()
+        if self.instance.pk:
+            self.validate_season_change(
+                self.instance.season,
+                self.cleaned_data.get("season"),
+                MemberAtInternationalTournament.objects.filter(tournament=self.instance),
+            )
         return cleaned_data
