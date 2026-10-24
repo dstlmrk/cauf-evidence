@@ -197,3 +197,16 @@ uv run poe test-db-down
 `poe t` passes any extra arguments straight to `pytest` and adds `--reuse-db`,
 so the schema is created only on the first run. If you change models, run with
 `--create-db` once to refresh the schema.
+
+### Dependency updates
+
+Renovate runs in GitHub Actions (`.github/workflows/renovate.yaml`) every day at
+04:17 UTC with the `RENOVATE_TOKEN` secret and `.github/renovate.json5` as its
+config. Regular pull requests are opened only on Mondays (Prague time) and only
+for versions at least 14 days old, grouped into Python, npm, GitHub Actions and
+Docker images, with major updates separate. Nothing is merged automatically and
+a merge to `main` deploys. New Python versions and a new PostgreSQL major wait
+for approval in the Dependency Dashboard issue. Fixes for Dependabot alerts are
+opened at the next daily run regardless of the schedule and age, labelled
+`security`. Run it by hand with
+`gh workflow run renovate.yaml --repo dstlmrk/cauf-evidence`.

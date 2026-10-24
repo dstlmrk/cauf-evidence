@@ -1,0 +1,67 @@
+{
+    $schema: "https://docs.renovatebot.com/renovate-schema.json",
+    extends: ["config:recommended", "docker:pinDigests", "helpers:pinGitHubActionDigestsToSemver"],
+    timezone: "Europe/Prague",
+    schedule: ["* * * * 1"],
+    updateNotScheduled: false,
+    minimumReleaseAge: "14 days",
+    prHourlyLimit: 0,
+    automerge: false,
+    dependencyDashboard: true,
+    semanticCommits: "disabled",
+    commitMessagePrefix: "Build(deps):",
+    labels: ["dependencies"],
+    vulnerabilityAlerts: {
+        addLabels: ["security"],
+    },
+    packageRules: [
+        {
+            matchManagers: ["pep621"],
+            rangeStrategy: "update-lockfile",
+            groupName: "Python dependencies",
+            addLabels: ["python"],
+        },
+        {
+            matchManagers: ["npm"],
+            rangeStrategy: "bump",
+            groupName: "npm dependencies",
+            addLabels: ["javascript"],
+        },
+        {
+            matchManagers: ["github-actions"],
+            matchDepTypes: ["action"],
+            groupName: "GitHub Actions",
+            addLabels: ["github-actions"],
+        },
+        {
+            matchDatasources: ["docker"],
+            groupName: "Docker images",
+            addLabels: ["docker"],
+        },
+        {
+            matchPackageNames: ["renovatebot/github-action", "renovate/renovate"],
+            groupName: "Renovate",
+            addLabels: ["github-actions"],
+        },
+        {
+            description: "A new Python version also needs PYTHON_VERSION in main.yaml, so only on request",
+            matchDepNames: ["python"],
+            matchUpdateTypes: ["major", "minor"],
+            groupName: "Python",
+            dependencyDashboardApproval: true,
+        },
+        {
+            description: "A new PostgreSQL major needs a dump and restore of the production database",
+            matchDatasources: ["docker"],
+            matchPackageNames: ["postgres"],
+            matchUpdateTypes: ["major"],
+            dependencyDashboardApproval: true,
+        },
+        {
+            description: "The app's own image, built by CI and deployed as latest",
+            matchDatasources: ["docker"],
+            matchPackageNames: ["ultihub", "dstlmrk/ultihub"],
+            enabled: false,
+        },
+    ],
+}
