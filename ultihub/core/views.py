@@ -42,7 +42,7 @@ def sentry_tunnel_view(request: HttpRequest) -> HttpResponse:
         body = request.body
         header_line = body.split(b"\n", 1)[0]
         header = json.loads(header_line)
-    except (json.JSONDecodeError, IndexError):
+    except json.JSONDecodeError, IndexError:
         return HttpResponse("Invalid envelope", status=400)
 
     dsn = header.get("dsn")

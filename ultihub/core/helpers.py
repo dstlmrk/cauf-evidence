@@ -38,7 +38,7 @@ def get_current_club_or_none(request: HttpRequest) -> SessionClub | None:
         return None
 
 
-def get_default_season(content_relation: str) -> "Season | None":
+def get_default_season(content_relation: str) -> Season | None:
     """
     Newest season that already holds content, falling back to the newest season
     overall. A season created ahead of time is empty for a while, and defaulting

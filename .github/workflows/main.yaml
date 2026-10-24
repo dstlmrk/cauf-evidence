@@ -1,6 +1,6 @@
 name: App CI/CD pipeline
 env:
-  PYTHON_VERSION: 3.12.5
+  PYTHON_VERSION: "3.14"
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
   # --------------------------------------------------------------------------------
   qa-check:
     name: QA checks 🕵️
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       # GitHub won't cancel other jobs in the matrix if any job in the matrix fails
       fail-fast: false
@@ -39,7 +39,7 @@ jobs:
       - run: npx prettier --check .
   dependency-audit:
     name: Dependency audit 🔒
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

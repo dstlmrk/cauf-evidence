@@ -25,7 +25,7 @@ def validate_email_mx_record(value: str) -> None:
     domain = value.rsplit("@", 1)[-1]
     try:
         dns.resolver.resolve(domain, "MX")
-    except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.NoNameservers):
+    except dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.NoNameservers:
         raise ValidationError(
             f"Email domain '{domain}' does not accept emails.",
             code="invalid_mx_record",
