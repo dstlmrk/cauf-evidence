@@ -31,13 +31,13 @@ services:
       PYTHONUNBUFFERED: true
 
   redis:
-    image: redis:alpine
+    image: redis:alpine@sha256:0bf6577d7774e592b29d093e3ac9390eb91e13d72c21e506afce736de5e0eeb0
     restart: always
     expose:
       - 6379
 
   db:
-    image: postgres:16.4-alpine
+    image: postgres:16.14-alpine@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
