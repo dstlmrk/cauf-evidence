@@ -16,11 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: renovatebot/github-action@230ce922b08968d0a4f6f70f295601daff09ef1d # v46.3.7
+      - uses: renovatebot/github-action@f0f41e5f2e706165f6814b1d0f0d0e319de7d1d9 # v46.3.8
         with:
           token: ${{ secrets.RENOVATE_TOKEN }}
-          renovate-image: renovate/renovate@sha256:4a93eba384999995555d48ff194d5013230fe44142260292cdaf9e7bd45ed949
-          renovate-version: 44.149.2
+          renovate-image: renovate/renovate@sha256:b7b0c5f713dd38287391674ed814a71a6dcadbc0cc0b7586883a815e15b4fd28
+          renovate-version: 44.151.3
         env:
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           RENOVATE_ONBOARDING: "false"
