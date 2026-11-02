@@ -70,7 +70,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis:alpine
+    image: redis:alpine@sha256:21090af93f8324db2f0f0f4f38a7c60369d47d917e000c3423d89d2ae2883537
     restart: always
     expose:
       - 6379
@@ -79,7 +79,7 @@ services:
 
   db:
     container_name: db
-    image: postgres:16.4-alpine
+    image: postgres:16.14-alpine@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -90,7 +90,7 @@ services:
 
   nginx-proxy:
     container_name: nginx-proxy
-    image: nginxproxy/nginx-proxy:1.6.1-alpine
+    image: nginxproxy/nginx-proxy:1.11.6-alpine@sha256:99376e95c8754547213d411222a2c4dca046d974e753ae2a1c9aef09b2c03364
     restart: always
     ports:
       - "80:80"
@@ -106,7 +106,7 @@ services:
 
   acme-companion:
     container_name: acme-companion
-    image: nginxproxy/acme-companion:2.4.0
+    image: nginxproxy/acme-companion:2.8.2@sha256:e3c5fb08bf623ae93dbc945d78fe50040c1fa107ddf59f7ee04ba6a61f34cbc1
     environment:
       DEFAULT_EMAIL: __LETSENCRYPT_EMAIL__
       ACME_CA_URI: https://acme-v02.api.letsencrypt.org/directory
@@ -122,7 +122,7 @@ services:
 
   dd-agent:
     container_name: dd-agent
-    image: datadog/agent:7.57.1
+    image: datadog/agent:7.84.3@sha256:e0b45d27e7e08abc66097b2c4ce04af02487d6060bbf453268c2825410164b81
     restart: always
     environment:
       DD_API_KEY: __DATADOG_API_KEY__
