@@ -60,6 +60,9 @@ dev = [
     "pytest-cov>=7.1.0",
 ]
 
+[tool.uv]
+exclude-newer = "14 days"
+
 [tool.hatch.build.targets.wheel]
 packages = ["ultihub"]
 
