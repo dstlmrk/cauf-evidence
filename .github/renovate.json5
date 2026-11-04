@@ -11,37 +11,33 @@
     semanticCommits: "disabled",
     commitMessagePrefix: "Build(deps):",
     labels: ["dependencies"],
+    separateMajorMinor: false,
     vulnerabilityAlerts: {
         addLabels: ["security"],
     },
     packageRules: [
         {
+            matchPackageNames: ["*"],
+            groupName: "all dependencies",
+        },
+        {
             matchManagers: ["pep621"],
             rangeStrategy: "update-lockfile",
-            groupName: "Python dependencies",
             addLabels: ["python"],
         },
         {
             matchManagers: ["npm"],
             rangeStrategy: "bump",
-            groupName: "npm dependencies",
             addLabels: ["javascript"],
         },
         {
             matchManagers: ["github-actions"],
             matchDepTypes: ["action"],
-            groupName: "GitHub Actions",
             addLabels: ["github-actions"],
         },
         {
             matchDatasources: ["docker"],
-            groupName: "Docker images",
             addLabels: ["docker"],
-        },
-        {
-            matchPackageNames: ["renovatebot/github-action", "renovate/renovate"],
-            groupName: "Renovate",
-            addLabels: ["github-actions"],
         },
         {
             description: "A new Python version also needs PYTHON_VERSION in main.yaml, so only on request",
@@ -55,6 +51,7 @@
             matchDatasources: ["docker"],
             matchPackageNames: ["postgres"],
             matchUpdateTypes: ["major"],
+            groupName: "PostgreSQL major",
             dependencyDashboardApproval: true,
         },
         {

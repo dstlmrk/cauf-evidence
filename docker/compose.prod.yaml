@@ -70,7 +70,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis:alpine
+    image: redis:8.10-alpine
     restart: always
     expose:
       - 6379
