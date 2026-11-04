@@ -47,11 +47,17 @@
             dependencyDashboardApproval: true,
         },
         {
+            description: "Keep offering PostgreSQL minor updates while the next major waits for approval",
+            matchDatasources: ["docker"],
+            matchPackageNames: ["postgres"],
+            separateMajorMinor: true,
+        },
+        {
             description: "A new PostgreSQL major needs a dump and restore of the production database",
             matchDatasources: ["docker"],
             matchPackageNames: ["postgres"],
             matchUpdateTypes: ["major"],
-            groupName: "PostgreSQL major",
+            groupName: "PostgreSQL",
             dependencyDashboardApproval: true,
         },
         {
