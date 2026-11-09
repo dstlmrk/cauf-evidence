@@ -20,16 +20,16 @@
         "prettier": "^3.9.10",
         "prettier-plugin-jinja-template": "^2.2.0",
         "style-loader": "^4.0.0",
-        "webpack": "^5.112.0",
+        "webpack": "^5.112.2",
         "webpack-cli": "^7.2.3",
         "webpack-manifest-plugin": "^6.0.1"
     },
     "overrides": {
-        "serialize-javascript": ">=7.1.2"
+        "serialize-javascript": ">=7.1.4"
     },
     "dependencies": {
         "@popperjs/core": "^2.11.8",
-        "@sentry/browser": "^11.8.0",
+        "@sentry/browser": "^11.9.0",
         "alpinejs": "^3.17.5",
         "bootstrap": "^5.3.8",
         "bootstrap-icons": "^1.13.2",
