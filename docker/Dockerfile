@@ -1,4 +1,4 @@
-FROM node:24 AS node-builder
+FROM node:26@sha256:e18c3ccdf7d71619990b0e85639f506e2028a95410999cab24cc373cbd10e0ac AS node-builder
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN npm run build
 FROM python:3.14-slim AS python-builder
 
 # Install uv
-COPY --from=astral/uv:0.13.4@sha256:9f130421e930bfbdc563c00740466603f8723158e90297d07957c2294640262b /uv /uvx /usr/local/bin/
+COPY --from=astral/uv:0.13.6@sha256:af22a52f5eafef3d78e551599d405c02df61919d18028f0cea8eda93bc9986d0 /uv /uvx /usr/local/bin/
 
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy
