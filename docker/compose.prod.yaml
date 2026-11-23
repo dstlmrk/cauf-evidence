@@ -79,7 +79,7 @@ services:
 
   db:
     container_name: db
-    image: postgres:16.14-alpine@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
+    image: postgres:16.15-alpine@sha256:aa6cb33cf4c19c765cefcf48d96176258800870a9a1e930ad126200f9d825139
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -122,7 +122,7 @@ services:
 
   dd-agent:
     container_name: dd-agent
-    image: datadog/agent:7.85.0@sha256:2c296582b259c8e5f924fceb613b7da56892b4f7de6b415dc1c6028970a7840a
+    image: datadog/agent:7.85.2@sha256:17bf6cf89c24696110f2807cf7146080efad18c20f91c6515d6fc382c55d7b42
     restart: always
     environment:
       DD_API_KEY: __DATADOG_API_KEY__
