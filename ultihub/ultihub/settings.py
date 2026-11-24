@@ -161,6 +161,7 @@ DATABASES = {
         "PORT": "5432",
         # Reuse DB connections across requests to avoid opening a new connection every time
         "CONN_MAX_AGE": 60,
+        "CONN_HEALTH_CHECKS": True,
     }
 }
 
